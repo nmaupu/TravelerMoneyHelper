@@ -1,0 +1,6 @@
+.DS_Store
+.classpath
+.project
+proguard.cfg
+bin/
+gen/

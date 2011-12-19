@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title_bar_rl"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/title_bar_tv_left"
+        style="?android:attr/windowTitleStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignLeft="@id/title_bar_rl"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:text="@string/app_name" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/title_bar_tv_right"
+        style="?android:attr/windowTitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignRight="@id/title_bar_tv_left"
+        android:gravity="center_vertical"
+        android:textSize="12dip"
+        android:textStyle="italic" />
+
+    <ImageView
+        android:id="@+id/title_bar_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="2dip"
+        android:layout_marginTop="2dip"
+        android:layout_toLeftOf="@id/title_bar_tv_right"
+        android:gravity="center_vertical" />
+
+</RelativeLayout>

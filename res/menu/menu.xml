@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_categories"
+        android:icon="@drawable/ic_menu_category"
+        android:title="Categories"/>
+
+    <item
+        android:id="@+id/item_currencies"
+        android:icon="@drawable/ic_menu_currency"
+        android:title="Currencies"/>
+
+    <item
+        android:id="@+id/item_user"
+        android:icon="@drawable/ic_menu_user"
+        android:title="Users"/>
+
+    <item
+        android:id="@+id/item_options"
+        android:icon="@drawable/ic_menu_parameter"
+        android:title="Options"/>
+
+    <item
+        android:id="@+id/item_add"
+        android:icon="@drawable/ic_menu_add"
+        android:title="Add Expense"/>
+
+    <item
+        android:id="@+id/item_more"
+        android:icon="@drawable/ic_menu_plus"
+        android:title="More"/>
+
+</menu>
