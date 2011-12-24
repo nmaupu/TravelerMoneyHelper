@@ -8,8 +8,10 @@ import org.maupu.android.ui.CustomTitleBar;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,6 +19,7 @@ public class ManageCurrencyActivity extends Activity implements OnClickListener 
 	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private ListView listView = null;
 	private TextView tvEmpty = null;
+	private Button buttonAdd = null;
 //	private Button editButton = null;
 //	private Button addButton = null;
 	
@@ -31,6 +34,8 @@ public class ManageCurrencyActivity extends Activity implements OnClickListener 
 		dbHelper.openWritable();
 		listView = (ListView) findViewById(R.id.currency_list);
 		tvEmpty = (TextView) findViewById(R.id.currency_tv_empty);
+		buttonAdd = (Button) findViewById(R.id.button_add);
+		buttonAdd.setOnClickListener(this);
 		/*
 		editButton = (Button) findViewById(R.id.manageable_header_button_edit);
 		editButton.setOnClickListener(this);
@@ -62,6 +67,10 @@ public class ManageCurrencyActivity extends Activity implements OnClickListener 
 
 	@Override
 	public void onClick(View v) {
-		
+		switch(v.getId()) {
+		case R.id.button_add:
+			Log.d(ManageCurrencyActivity.class.getCanonicalName(), "Adding a currency button pressed");
+			break;
+		}
 	}
 }
