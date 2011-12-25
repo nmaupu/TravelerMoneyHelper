@@ -24,6 +24,9 @@
         <activity
             android:name=".ManageCurrencyActivity" >
         </activity>
+        <activity
+            android:name=".AddCurrencyActivity" >
+        </activity>
     </application>
 
 </manifest>
