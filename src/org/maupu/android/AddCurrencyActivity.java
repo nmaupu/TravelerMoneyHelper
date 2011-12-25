@@ -2,10 +2,9 @@ package org.maupu.android;
 
 import org.maupu.android.database.DatabaseHelper;
 import org.maupu.android.database.object.Currency;
+import org.maupu.android.ui.SimpleDialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,16 +48,7 @@ public class AddCurrencyActivity extends Activity implements OnClickListener {
 					c.insert(dbHelper);
 					super.finish();
 				} else {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setMessage("Impossible to add currency, error in fields !")
-					.setTitle("Error")
-					.setCancelable(false)
-					.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.dismiss();
-						}
-					});
-					builder.show();
+					SimpleDialog.errorDialog(this, "Error", "Impossible to add currency, error in fields !").show();
 				}
 				break;
 			case R.id.add_currency_button_reset:
@@ -80,6 +70,4 @@ public class AddCurrencyActivity extends Activity implements OnClickListener {
 		}
 				
 	}
-
-	
 }

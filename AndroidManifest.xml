@@ -18,14 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ManageCategoryActivity" >
+        <activity android:name=".ManageCategoryActivity" >
         </activity>
-        <activity
-            android:name=".ManageCurrencyActivity" >
+        <activity android:name=".ManageCurrencyActivity" >
         </activity>
-        <activity
-            android:name=".AddCurrencyActivity" >
+        <activity android:name=".AddCurrencyActivity" >
         </activity>
     </application>
 

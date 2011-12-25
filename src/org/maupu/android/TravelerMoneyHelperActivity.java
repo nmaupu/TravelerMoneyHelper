@@ -137,5 +137,4 @@ public class TravelerMoneyHelperActivity extends Activity {
 			dbHelper.close();
 		}
 	}
-
 }

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linear_layout_root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal" >
 
     <CheckBox
@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:paddingRight="2dip"
-        android:checked="false" />
+        android:checked="false"
+        android:paddingRight="2dip" />
 
     <LinearLayout
         android:id="@+id/linear_layout1"
