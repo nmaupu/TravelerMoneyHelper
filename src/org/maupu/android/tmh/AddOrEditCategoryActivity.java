@@ -1,6 +1,7 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
-import org.maupu.android.database.object.Category;
+import org.maupu.android.R;
+import org.maupu.android.tmh.database.object.Category;
 
 import android.widget.TextView;
 

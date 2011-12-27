@@ -1,4 +1,4 @@
-package org.maupu.android.database;
+package org.maupu.android.tmh.database;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,7 +1,7 @@
-package org.maupu.android.database.object;
+package org.maupu.android.tmh.database.object;
 
-import org.maupu.android.database.DatabaseHelper;
-import org.maupu.android.database.UserData;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.UserData;
 
 import android.content.ContentValues;
 import android.database.Cursor;

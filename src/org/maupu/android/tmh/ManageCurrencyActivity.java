@@ -1,9 +1,10 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
-import org.maupu.android.database.CurrencyData;
-import org.maupu.android.database.DatabaseHelper;
-import org.maupu.android.database.ExpenseData;
-import org.maupu.android.database.object.Currency;
+import org.maupu.android.R;
+import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.ExpenseData;
+import org.maupu.android.tmh.database.object.Currency;
 
 import android.database.Cursor;
 import android.os.Bundle;

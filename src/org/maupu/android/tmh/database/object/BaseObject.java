@@ -1,10 +1,10 @@
-package org.maupu.android.database.object;
+package org.maupu.android.tmh.database.object;
 
 import java.io.Serializable;
 
-import org.maupu.android.database.APersistedData;
-import org.maupu.android.database.DatabaseHelper;
-import org.maupu.android.database.cache.SimpleObjectCache;
+import org.maupu.android.tmh.database.APersistedData;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.cache.SimpleObjectCache;
 
 import android.content.ContentValues;
 import android.database.Cursor;

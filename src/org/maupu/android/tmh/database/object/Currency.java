@@ -1,9 +1,9 @@
-package org.maupu.android.database.object;
+package org.maupu.android.tmh.database.object;
 
 import java.util.Date;
 
-import org.maupu.android.database.CurrencyData;
-import org.maupu.android.database.DatabaseHelper;
+import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.content.ContentValues;
 import android.database.Cursor;

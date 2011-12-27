@@ -1,4 +1,4 @@
-package org.maupu.android.ui;
+package org.maupu.android.tmh.ui;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;

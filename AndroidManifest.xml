@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".AddOrEditCurrencyActivity" >
         </activity>
-        <activity android:name=".AddOrEditCategoryActivity" >
+        <activity android:name=".AddOrEditCategoryActivityvity" >
         </activity>
     </application>
 

@@ -1,9 +1,9 @@
-package org.maupu.android.database.cache;
+package org.maupu.android.tmh.database.cache;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maupu.android.database.object.BaseObject;
+import org.maupu.android.tmh.database.object.BaseObject;
 
 /**
  * Class providing a simple DTO cache

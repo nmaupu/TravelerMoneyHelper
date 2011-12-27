@@ -1,10 +1,11 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
-import org.maupu.android.database.APersistedData;
-import org.maupu.android.database.DatabaseHelper;
-import org.maupu.android.database.object.BaseObject;
-import org.maupu.android.ui.CustomTitleBar;
-import org.maupu.android.ui.SimpleDialog;
+import org.maupu.android.R;
+import org.maupu.android.tmh.database.APersistedData;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.BaseObject;
+import org.maupu.android.tmh.ui.CustomTitleBar;
+import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,4 +1,4 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
 public interface NumberCheckedListener {
 	public void onCheckedItem(int numberItemsChecked);

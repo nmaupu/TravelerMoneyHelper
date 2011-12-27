@@ -1,8 +1,9 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
-import org.maupu.android.database.DatabaseHelper;
-import org.maupu.android.database.object.Expense;
-import org.maupu.android.ui.CustomTitleBar;
+import org.maupu.android.R;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.Expense;
+import org.maupu.android.tmh.ui.CustomTitleBar;
 
 import android.app.Activity;
 import android.content.Intent;

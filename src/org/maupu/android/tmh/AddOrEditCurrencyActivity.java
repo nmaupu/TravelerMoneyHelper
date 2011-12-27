@@ -1,8 +1,9 @@
-package org.maupu.android;
+package org.maupu.android.tmh;
 
 import java.util.Date;
 
-import org.maupu.android.database.object.Currency;
+import org.maupu.android.R;
+import org.maupu.android.tmh.database.object.Currency;
 
 import android.widget.CheckBox;
 import android.widget.EditText;
