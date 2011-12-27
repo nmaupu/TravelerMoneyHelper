@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Currency extends BaseObject {
+	private static final long serialVersionUID = 1L;
 	private String longName;
 	private String shortName;
 	private String icon;
@@ -80,8 +81,9 @@ public class Currency extends BaseObject {
 			this.setIcon(cursor.getString(idxIcon));
 			this.setTauxEuro(cursor.getFloat(idxTauxEuro));
 			String sDate = cursor.getString(idxLastUpdate);
-			if(sDate != null)
-				this.setLastUpdate(new Date(sDate));
+			if(sDate != null) {
+				this.setLastUpdate(DatabaseHelper.toDate(sDate));
+			}
 		}
 		
 		return super.getFromCache();

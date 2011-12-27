@@ -5,13 +5,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal" >
 
-    <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:checked="false"
-        android:paddingRight="2dip" />
+    <include layout="@layout/checkbox_item" />
 
     <LinearLayout
         android:id="@+id/linear_layout1"

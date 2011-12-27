@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Expense extends BaseObject {
+	private static final long serialVersionUID = 1L;
 	private Float amount;
 	private String description;
 	private Date date;

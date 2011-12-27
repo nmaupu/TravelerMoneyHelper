@@ -1,5 +1,7 @@
 package org.maupu.android.database.object;
 
+import java.io.Serializable;
+
 import org.maupu.android.database.APersistedData;
 import org.maupu.android.database.DatabaseHelper;
 import org.maupu.android.database.cache.SimpleObjectCache;
@@ -7,7 +9,8 @@ import org.maupu.android.database.cache.SimpleObjectCache;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public abstract class BaseObject implements Validator {
+public abstract class BaseObject implements Validator, Serializable {
+	private static final long serialVersionUID = 1L;
 	static SimpleObjectCache cache;
 	protected Integer _id;
 

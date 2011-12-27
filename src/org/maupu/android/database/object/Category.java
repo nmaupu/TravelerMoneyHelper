@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Category extends BaseObject {
+	private static final long serialVersionUID = 1L;
 	private String name;
 
 	public String getName() {

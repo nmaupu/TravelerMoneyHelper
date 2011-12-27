@@ -1,5 +1,6 @@
 package org.maupu.android.database;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
 	protected static final int DATABASE_VERSION = 1;
 	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
@@ -61,7 +63,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public static String formatDateForSQL(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		return sdf.format(date);
+		return dateFormat.format(date);
+	}
+	
+	public static Date toDate(String sqlDate) {
+		try {
+			return dateFormat.parse(sqlDate);
+		} catch (ParseException pe) {
+			return null;
+		}
 	}
 }
