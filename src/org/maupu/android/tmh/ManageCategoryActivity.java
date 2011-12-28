@@ -1,47 +1,28 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.R;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.ExpenseData;
 import org.maupu.android.tmh.database.object.Category;
 
 import android.database.Cursor;
-import android.os.Bundle;
 
-public class ManageCategoryActivity extends ManageableObjectActivity {
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
-
+public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public ManageCategoryActivity() {
-		super("Categories", R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class);
+		super("Categories", R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class, new Category());
 	}
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		dbHelper.openWritable();
-		refreshListView();
-	}
-	
-	@Override
-	protected boolean delete(int itemId) {
-		Category category = new Category();
-		Cursor cursor = category.fetch(dbHelper, itemId);
-		category.toDTO(dbHelper, cursor);
-		
+	protected boolean validateConstraintsForDeletion(DatabaseHelper dbHelper, Category obj) {
 		int nb = dbHelper.getDb().query(ExpenseData.TABLE_NAME,
 				new String[]{ExpenseData.KEY_ID}, 
-				ExpenseData.KEY_ID_CATEGORY+"="+itemId, null, null, null, null).getCount();
+				ExpenseData.KEY_ID_CATEGORY+"="+obj.getId(), null, null, null, null).getCount();
 		
-		if(nb == 0)
-			return category.delete(dbHelper);
-		else
-			return false;
-
+		return nb == 0;
 	}
 
 	@Override
-	protected void refreshListView() {
+	protected void refreshListView(DatabaseHelper dbHelper) {
 		Category category = new Category();
 		Cursor cursor = category.fetchAll(dbHelper);
 		
@@ -50,5 +31,4 @@ public class ManageCategoryActivity extends ManageableObjectActivity {
 				new String[]{CategoryData.KEY_NAME}, 
 				new int[]{R.id.name});
 	}
-
 }

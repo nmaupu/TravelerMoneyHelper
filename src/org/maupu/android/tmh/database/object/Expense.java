@@ -77,6 +77,7 @@ public class Expense extends BaseObject {
 	
 	@Override
 	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID);
 		int idxAmount = cursor.getColumnIndexOrThrow(ExpenseData.KEY_AMOUNT);
 		int idxDesctipion = cursor.getColumnIndexOrThrow(ExpenseData.KEY_DESCRIPTION);
@@ -112,8 +113,19 @@ public class Expense extends BaseObject {
 				"where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id";
 		return dbHelper.getDb().rawQuery(query, null);
 	}
+	
 	@Override
 	public boolean validate() {
 		return true;
+	}
+	@Override
+	public void reset() {
+		super._id = null;
+		this.amount = null;
+		this.category = null;
+		this.currency = null;
+		this.date = null;
+		this.description = null;
+		this.user = null;
 	}
 }

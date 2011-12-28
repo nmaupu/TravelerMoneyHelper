@@ -1,7 +1,7 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.R;
-import org.maupu.android.tmh.database.APersistedData;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
@@ -14,11 +14,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class ManageableObjectActivity extends Activity implements NumberCheckedListener, OnClickListener {
+public abstract class ManageableObjectActivity<T extends BaseObject> extends Activity implements NumberCheckedListener, OnClickListener {
+	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;
@@ -31,16 +31,18 @@ public abstract class ManageableObjectActivity extends Activity implements Numbe
 	private CustomCheckableCursorAdapter adapter;
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
+	private T obj;
 
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity) {
-		this(title, drawableIcon, addOrEditActivity, R.layout.manageable_object);
+	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj) {
+		this(title, drawableIcon, addOrEditActivity, obj, R.layout.manageable_object);
 	}
 	
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, Integer layoutList) {
+	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, Integer layoutList) {
 		this.title = title;
 		this.drawableIcon = drawableIcon;
 		this.addOrEditActivity = addOrEditActivity;
 		this.layoutList = layoutList;
+		this.obj = obj;
 	}
 
 	@Override
@@ -50,6 +52,8 @@ public abstract class ManageableObjectActivity extends Activity implements Numbe
 		super.onCreate(savedInstanceState);
 		customTB.setName(title);
 		customTB.setIcon(drawableIcon);
+		
+		dbHelper.openWritable();
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
 		
@@ -71,6 +75,7 @@ public abstract class ManageableObjectActivity extends Activity implements Numbe
 			this.deleteButton.setOnClickListener(this);
 
 		initButtons();
+		refreshListView(dbHelper);
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
@@ -101,49 +106,45 @@ public abstract class ManageableObjectActivity extends Activity implements Numbe
 	@Override
 	public void onClick(View v) {
 		Intent intent = null;
+		final Context finalContext = this;
+		final Integer[] posChecked = ((CustomCheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
 		
 		switch(v.getId()) {
 		case R.id.button_edit:
-			Integer itemId = null;
-
-			for(int i=0; i<listView.getCount(); i++) {
-				CheckBox cb = (CheckBox)((View)listView.getChildAt(i)).findViewById(R.id.checkbox);
-				if(cb.isChecked()) {
-					Cursor cursor = (Cursor)listView.getItemAtPosition(i);
-					itemId = cursor.getInt(cursor.getColumnIndex(APersistedData.KEY_ID));
-				}
+			if(posChecked.length == 1) {
+				int p = posChecked[0];
+				Cursor cursor = (Cursor)listView.getItemAtPosition(p);
+				obj.toDTO(dbHelper, cursor);
+				
+				intent = new Intent(this, addOrEditActivity);
+				intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
+				startActivityForResult(intent, ACTIVITY_EDIT);
 			}
-
-			intent = new Intent(this, addOrEditActivity);
-			intent.putExtra(APersistedData.KEY_ID, itemId);
-			startActivityForResult(intent, ACTIVITY_EDIT);
+			
 			break;
 		case R.id.button_delete:
-			final Context finalContext = this;
-
 			SimpleDialog.confirmDialog(this, "Are you sure you want to delete these objects ?", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					String errMessage = "One or more objects could not be deleted";
 					boolean err = false;
 
-					//List<Integer> l = ((CustomCheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
-					Integer[] positions = ((CustomCheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
-					for(int i=0; i<positions.length; i++) {
-						Integer pos = positions[i];
+					for(int i=0; i<posChecked.length; i++) {
+						Integer pos = posChecked[i];
 						//Request deletion
 						Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
-						int itemId = cursor.getInt(cursor.getColumnIndex(APersistedData.KEY_ID));
-						if(! delete(itemId)) {
+						obj.toDTO(dbHelper, cursor);
+						if(validateConstraintsForDeletion(dbHelper, obj))
+							obj.delete(dbHelper);
+						else
 							err = true;
-						}
 					}
 
 					if(err)
 						SimpleDialog.errorDialog(finalContext, "Error", errMessage).show();
 
 					dialog.dismiss();
-					refreshListView();
+					refreshListView(dbHelper);
 				}
 			}).show();
 			break;
@@ -175,9 +176,17 @@ public abstract class ManageableObjectActivity extends Activity implements Numbe
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		refreshListView();
+		refreshListView(dbHelper);
 	}
 
-	protected abstract boolean delete(int itemId);
-	protected abstract void refreshListView();
+	/**
+	 * Validate an object before deletion
+	 * @param obj
+	 * @return true if object can be deleted, false otherwise
+	 */
+	protected abstract boolean validateConstraintsForDeletion(final DatabaseHelper dbHelper, final T obj);
+	/**
+	 * Method refreshing list view from adapter
+	 */
+	protected abstract void refreshListView(final DatabaseHelper dbHelper);
 }

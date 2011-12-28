@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.R;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Expense;
 import org.maupu.android.tmh.ui.CustomTitleBar;
@@ -96,22 +95,25 @@ public class TravelerMoneyHelperActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent = null;
-		
 		switch(item.getItemId()) {
 		case R.id.item_categories:
-			intent = new Intent(this, ManageCategoryActivity.class);
-	        startActivity(intent);
+			startActivityFromMenu(ManageCategoryActivity.class);
 			break;
 		case R.id.item_currencies:
-			intent = new Intent(this, ManageCurrencyActivity.class);
-			startActivity(intent);
+			startActivityFromMenu(ManageCurrencyActivity.class);
+			break;
+		case R.id.item_user:
+			startActivityFromMenu(ManageUserActivity.class);
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 
 		return true;
+	}
+	
+	private void startActivityFromMenu(Class<?> cls) {
+		startActivity(new Intent(this, cls));
 	}
 
 	private void fillData() {

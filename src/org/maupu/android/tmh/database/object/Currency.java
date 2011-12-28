@@ -67,6 +67,7 @@ public class Currency extends BaseObject {
 	
 	@Override
 	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ID);
 		int idxLongName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LONG_NAME);
 		int idxShortName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
@@ -91,5 +92,14 @@ public class Currency extends BaseObject {
 	@Override
 	public boolean validate() {
 		return true;
+	}
+	@Override
+	public void reset() {
+		super._id = null;
+		this.icon = null;
+		this.lastUpdate = null;
+		this.longName = null;
+		this.shortName = null;
+		this.tauxEuro = null;
 	}
 }

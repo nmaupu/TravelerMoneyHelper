@@ -1,6 +1,7 @@
 package org.maupu.android.tmh.ui;
 
-import org.maupu.android.R;
+
+import org.maupu.android.tmh.R;
 
 import android.app.AlertDialog;
 import android.content.Context;

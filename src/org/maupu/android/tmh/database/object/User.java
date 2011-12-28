@@ -39,6 +39,7 @@ public class User extends BaseObject {
 	
 	@Override
 	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(UserData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(UserData.KEY_NAME);
 		int idxIcon = cursor.getColumnIndexOrThrow(UserData.KEY_ICON);
@@ -51,8 +52,16 @@ public class User extends BaseObject {
 		
 		return super.getFromCache();
 	}
+	
 	@Override
 	public boolean validate() {
 		return true;
+	}
+	
+	@Override
+	public void reset() {
+		super._id = null;
+		this.icon = null;
+		this.name = null;
 	}
 }

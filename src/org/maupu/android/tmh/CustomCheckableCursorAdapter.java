@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maupu.android.R;
 
 import android.content.Context;
 import android.database.Cursor;

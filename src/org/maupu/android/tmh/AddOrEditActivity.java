@@ -1,7 +1,5 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.R;
-import org.maupu.android.tmh.database.APersistedData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
@@ -9,7 +7,6 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +19,7 @@ import android.widget.TextView;
  *
  */
 public abstract class AddOrEditActivity<T extends BaseObject> extends Activity implements OnClickListener {
+	public static final String EXTRA_OBJECT_ID = "base_object";
 	protected DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private Button buttonContinue;
 	private Button buttonReset;
@@ -31,7 +29,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 	private String title;
 	private Integer icon;
 
-	protected AddOrEditActivity(String title, Integer icon, int contentView, T obj) {
+	public AddOrEditActivity(String title, Integer icon, int contentView, T obj) {
 		this.contentView = contentView;
 		this.obj = obj;
 		this.title = title;
@@ -56,21 +54,25 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 		textInfo.setText("Please fill this form");
 		textInfo.setVisibility(View.VISIBLE);
 
+		// Init all widgets
 		initResources();
-		fetchAndPreFill();
+		// Retrieve extra parameter
+		retrieveItemFromExtra();
+		// Fill form fields
+		baseObjectToFields(obj);
 	}
-
-	/**
-	 * Get included object id for editing purpose
-	 * @return itemId or null if nothing available
-	 */
-	protected Integer getItemIdToEdit() {
+	
+	@SuppressWarnings("unchecked")
+	private void retrieveItemFromExtra() {
 		try {
 			Intent intent = this.getIntent();
 			Bundle bundle = intent.getExtras();
-			return bundle.getInt(APersistedData.KEY_ID);
-		} catch (NullPointerException npe) {
-			return null;
+			obj = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
+		} catch (NullPointerException e) {
+			// Here, nothing is allocated, we keep default obj
+		} catch (ClassCastException cce) {
+			// This exception should not be thrown
+			throw cce;
 		}
 	}
 
@@ -84,19 +86,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 			baseObjectToFields(null);
 			break;
 		}
-	}
-
-	private void fetchAndPreFill() {
-		Integer id = getItemIdToEdit();
-
-		if(obj != null && id != null) {
-			// Fetch
-			Cursor c = obj.fetch(dbHelper, id);
-			obj.toDTO(dbHelper, c);
-		}
-
-		// Fill
-		baseObjectToFields(obj);
 	}
 
 	private void onContinue() {

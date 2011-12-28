@@ -32,6 +32,7 @@ public class Category extends BaseObject {
 	
 	@Override
 	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CategoryData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(CategoryData.KEY_NAME);
 		
@@ -46,5 +47,11 @@ public class Category extends BaseObject {
 	@Override
 	public boolean validate() {
 		return ! getName().trim().equals("");
+	}
+
+	@Override
+	public void reset() {
+		super._id = null;
+		this.name = null;
 	}
 }
