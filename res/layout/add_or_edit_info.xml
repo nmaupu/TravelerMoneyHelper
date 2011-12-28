@@ -7,4 +7,4 @@
     android:textSize="20dip"
     android:textStyle="bold"
     android:gravity="center_horizontal"
-    android:paddingBottom="40dip" />
+    android:paddingBottom="30dip" />

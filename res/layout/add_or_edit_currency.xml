@@ -6,63 +6,78 @@
 
     <include layout="@layout/add_or_edit_info" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="fill_parent" 
+        android:layout_weight="1" >
 
-        <TextView
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="Long name" />
+            android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/long_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Long name" />
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="Short name" />
+                <EditText
+                    android:id="@+id/long_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/short_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Short name" />
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="Value for 1€" />
+                <EditText
+                    android:id="@+id/short_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/euro_value"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:numeric="integer|decimal" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
-    <CheckBox
-        android:id="@+id/checkbox_last_update"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Set last update to now" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Value for 1€" />
+
+                <EditText
+                    android:id="@+id/euro_value"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:numeric="integer|decimal" />
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/checkbox_last_update"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Set last update to now" />
+        </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/add_or_edit_buttons" />
 

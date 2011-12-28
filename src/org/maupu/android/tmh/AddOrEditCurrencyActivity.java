@@ -43,8 +43,10 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> {
 			editTextLongName.setText("");
 			editTextShortName.setText("");
 			editTextValue.setText("");
-			checkBoxUpdate.setChecked(true);
-			checkBoxUpdate.setEnabled(true);
+			if(checkBoxUpdate.isEnabled()) {
+				checkBoxUpdate.setChecked(true);
+				checkBoxUpdate.setEnabled(true);
+			}
 		} else {
 			editTextLongName.setText(obj.getLongName());
 			editTextShortName.setText(obj.getShortName());
