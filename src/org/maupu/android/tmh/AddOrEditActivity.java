@@ -43,7 +43,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 		setContentView(contentView);
 		ctb.setName(title);
 		ctb.setIcon(icon);
-		
+
 		dbHelper.openWritable();
 
 		buttonContinue = (Button)findViewById(R.id.button_continue);
@@ -51,8 +51,10 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 		buttonContinue.setOnClickListener(this);
 		buttonReset.setOnClickListener(this);
 		textInfo = (TextView)findViewById(R.id.text_info);
-		textInfo.setText("Please fill this form");
-		textInfo.setVisibility(View.VISIBLE);
+		if(textInfo != null) {
+			textInfo.setText("Please fill this form");
+			textInfo.setVisibility(View.VISIBLE);
+		}
 
 		// Init all widgets
 		initResources();
@@ -61,7 +63,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 		// Fill form fields
 		baseObjectToFields(obj);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void retrieveItemFromExtra() {
 		try {
