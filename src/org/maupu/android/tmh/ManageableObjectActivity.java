@@ -4,6 +4,7 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,7 +29,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 	private Button deleteButton;
 	private String title;
 	private Integer drawableIcon;
-	private CustomCheckableCursorAdapter adapter;
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
 	private T obj;
@@ -79,7 +79,13 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
-		adapter = new CustomCheckableCursorAdapter(this, layout, data, from, to);
+		setAdapter(new CheckableCursorAdapter(this, layout, data, from, to));
+	}
+	
+	public void setAdapter(CheckableCursorAdapter adapter) {
+		if(adapter == null)
+			return;
+		
 		adapter.setOnNumberCheckedListener(this);
 		listView.setAdapter(adapter);
 		
@@ -107,7 +113,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 	public void onClick(View v) {
 		Intent intent = null;
 		final Context finalContext = this;
-		final Integer[] posChecked = ((CustomCheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
+		final Integer[] posChecked = ((CheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
 		
 		switch(v.getId()) {
 		case R.id.button_edit:

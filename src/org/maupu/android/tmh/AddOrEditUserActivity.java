@@ -1,5 +1,8 @@
 package org.maupu.android.tmh;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.maupu.android.tmh.database.object.User;
@@ -8,6 +11,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,12 +25,11 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private ImageView imageViewIcon;
 	private TextView textViewName;
-	private GridView gridView;
+	//private GridView gridView;
 	private List<ResolveInfo> mApps;
 	private ImageView icon;
 
@@ -62,21 +67,25 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.dialog_user_icon, (ViewGroup) findViewById(R.id.layout_root));
-
-
-
-		GridView gridview = (GridView)layout.findViewById(R.id.gridview);
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,int position, long id) {
-				Toast.makeText(v.getContext(), "Position is "+position, 3000).show();
-			}
-		});
-		gridview.setAdapter(new AppsAdapter());
-
+		
+		
 		builder = new AlertDialog.Builder(mContext);
 		builder.setView(layout);
 
 		final AlertDialog dialog = builder.create();
+		
+		GridView gridview = (GridView)layout.findViewById(R.id.gridview);
+		gridview.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,int position, long id) {
+				//Toast.makeText(v.getContext(), "Position is "+position, 3000).show();
+				ResolveInfo info = mApps.get(position % mApps.size());
+				imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(getPackageManager())); 
+				dialog.dismiss();
+			}
+		});
+		gridview.setAdapter(new AppsAdapter());
+
+		
 
 		Button close = (Button)layout.findViewById(R.id.close);
 		close.setOnClickListener(new OnClickListener() {
@@ -97,23 +106,46 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	@Override
 	protected void baseObjectToFields(User obj) {
 		if(obj == null) {
-			// TODO Display default icon
 			textViewName.setText("");
+			imageViewIcon.setImageResource(R.drawable.icon_default);
 		} else {
-			// TODO Set icon
 			textViewName.setText(obj.getName());
+			
+			// Loading icon
+			String filename = obj.getIcon();
+			try {
+				FileInputStream fIn = openFileInput(filename);
+				imageViewIcon.setImageBitmap(BitmapFactory.decodeStream(fIn));
+			} catch (Exception e) {
+				// Problem occured, setting default icon
+				imageViewIcon.setImageResource(R.drawable.icon_default);
+			}
 		}
 	}
 
 	@Override
 	protected void fieldsToBaseObject(User obj) {
+		
+		
 		if(obj != null) {
-			// TODO Guess what ? set icon !
+			Bitmap b = ((BitmapDrawable)imageViewIcon.getDrawable()).getBitmap();
+			String filename = obj.getName()+".png";
+			
+			try {
+				FileOutputStream fOut = openFileOutput(filename, Context.MODE_PRIVATE);
+				
+				b.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+				fOut.flush();
+				fOut.close();
+				
+				obj.setIcon(filename);
+			} catch (IOException ioe) {}
+			
 			obj.setName(textViewName.getText().toString().trim());
 		}
 	}
 
-	public class AppsAdapter extends BaseAdapter {
+	class AppsAdapter extends BaseAdapter {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ImageView i = new ImageView(AddOrEditUserActivity.this);
 

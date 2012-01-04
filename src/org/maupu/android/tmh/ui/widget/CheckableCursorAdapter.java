@@ -1,8 +1,10 @@
-package org.maupu.android.tmh;
+package org.maupu.android.tmh.ui.widget;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.maupu.android.tmh.NumberCheckedListener;
+import org.maupu.android.tmh.R;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,12 +20,12 @@ import android.widget.SimpleCursorAdapter;
  * @author nmaupu
  *
  */
-public class CustomCheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
+public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private NumberCheckedListener listener = null;
 	private Map<Integer, Boolean> positionsChecked = new HashMap<Integer, Boolean>();
 	private int numberChecked = 0;
 
-	public CustomCheckableCursorAdapter(Context context, int layout, Cursor c,
+	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
 	}
