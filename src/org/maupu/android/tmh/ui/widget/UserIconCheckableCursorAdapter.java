@@ -13,11 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class UserCheckableCursorAdapter extends CheckableCursorAdapter {
+public class UserIconCheckableCursorAdapter extends CheckableCursorAdapter {
 	private Cursor cursor;
 	private Context context;
 	
-	public UserCheckableCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+	public UserIconCheckableCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		this.cursor = c;
 		this.context = context;

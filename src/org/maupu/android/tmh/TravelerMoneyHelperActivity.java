@@ -3,6 +3,7 @@ package org.maupu.android.tmh;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Expense;
 import org.maupu.android.tmh.ui.CustomTitleBar;
+import org.maupu.android.tmh.ui.widget.UserIconCheckableCursorAdapter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class TravelerMoneyHelperActivity extends Activity {
@@ -126,9 +126,14 @@ public class TravelerMoneyHelperActivity extends Activity {
 			listView.setAdapter(null);
 		} else {
 			// Create list adapter
-			SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.expense_item, data,
-					new String[]{"user", "category", "date", "amount", "tauxEuro"},
-					new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
+			UserIconCheckableCursorAdapter adapter = new UserIconCheckableCursorAdapter(this, 
+					R.layout.expense_item,
+					data,
+					new String[]{"icon", "user", "category", "date", "amount", "tauxEuro"},
+					new int[]{R.id.icon, R.id.username, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
+			//SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.expense_item, data,
+			//		new String[]{"user", "category", "date", "amount", "tauxEuro"},
+			//		new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
 			listView.setAdapter(adapter);
 		}
 	}

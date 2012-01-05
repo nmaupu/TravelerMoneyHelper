@@ -5,6 +5,7 @@ import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
+import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
 
 import android.app.Activity;
 import android.content.Context;

@@ -8,7 +8,9 @@ import java.util.List;
 import org.maupu.android.tmh.database.object.User;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -29,9 +31,12 @@ import android.widget.TextView;
 public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private ImageView imageViewIcon;
 	private TextView textViewName;
-	//private GridView gridView;
 	private List<ResolveInfo> mApps;
 	private ImageView icon;
+	private static final String[] popupMenuIconNames = new String[]{"Apps icon", "URL", "Camera"};
+	private static final int MENU_ITEM_APPS = 0;
+	private static final int MENU_ITEM_URL = 1;
+	private static final int MENU_ITEM_CAMERA = 2;
 
 	public AddOrEditUserActivity() {
 		super("User edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_user, new User());
@@ -43,16 +48,13 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		textViewName = (TextView)findViewById(R.id.name);
 		icon = (ImageView)findViewById(R.id.icon);
 		icon.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-				createDialog().show();
+				createDialogMenu();
 			}
 		});
 
 		loadApps();
-		//gridView = (GridView)findViewById(R.id.grid);
-		//gridView.setAdapter(new AppsAdapter());
 	}
 
 	private void loadApps() {
@@ -62,7 +64,39 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		mApps = getPackageManager().queryIntentActivities(mainIntent, 0);
 	}
 
-	private AlertDialog createDialog() {
+	private void createDialogMenu() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        
+        builder.setTitle("Choose an icon from ...");
+        
+        builder.setItems(popupMenuIconNames, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialogInterface, int item) {
+            	Dialog d =  createDialogIconChooser(item);
+            	
+            	dialogInterface.dismiss();
+            	
+            	if(d != null)
+            		d.show();
+            }
+        });
+        
+        builder.create().show();
+	}
+	
+	private AlertDialog createDialogIconChooser(int dialogType) {
+		switch(dialogType) {
+		case MENU_ITEM_APPS:
+			return createDialogFromApps();
+		case MENU_ITEM_URL:
+			return null;
+		case MENU_ITEM_CAMERA:
+			return null;
+		default:
+			return null;
+		}
+	}
+	
+	private AlertDialog createDialogFromApps() {
 		AlertDialog.Builder builder;
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -75,17 +109,14 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		final AlertDialog dialog = builder.create();
 		
 		GridView gridview = (GridView)layout.findViewById(R.id.gridview);
+		gridview.setAdapter(new AppsAdapter());
 		gridview.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,int position, long id) {
-				//Toast.makeText(v.getContext(), "Position is "+position, 3000).show();
 				ResolveInfo info = mApps.get(position % mApps.size());
 				imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(getPackageManager())); 
 				dialog.dismiss();
 			}
-		});
-		gridview.setAdapter(new AppsAdapter());
-
-		
+		});		
 
 		Button close = (Button)layout.findViewById(R.id.close);
 		close.setOnClickListener(new OnClickListener() {
@@ -160,7 +191,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 
 
 		public final int getCount() {
-			return Math.min(32, mApps.size());
+			return mApps.size();
 		}
 
 		public final Object getItem(int position) {

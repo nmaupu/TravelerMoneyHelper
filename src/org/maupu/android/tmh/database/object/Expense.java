@@ -108,7 +108,7 @@ public class Expense extends BaseObject {
 	}
 	
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		String query = "select e._id _id, u.name user, ca.name category, c.TauxEuro*e.amount tauxEuro, e.amount||' '||c.shortName amount, strftime('%d-%m-%Y', e.date) date "+
+		String query = "select e._id _id, u.icon icon, u.name user, ca.name category, c.TauxEuro*e.amount tauxEuro, e.amount||' '||c.shortName amount, strftime('%d-%m-%Y', e.date) date "+
 				"from category as ca, user as u, expense as e, currency as c "+
 				"where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id";
 		return dbHelper.getDb().rawQuery(query, null);

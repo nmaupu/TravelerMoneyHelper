@@ -3,7 +3,6 @@ package org.maupu.android.tmh.ui.widget;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maupu.android.tmh.NumberCheckedListener;
 import org.maupu.android.tmh.R;
 
 import android.content.Context;
@@ -36,11 +35,13 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 		
 		row.setOnClickListener(this);
 		CheckBox cb = (CheckBox)row.findViewById(R.id.checkbox);
-		cb.setTag(position);
-		cb.setOnClickListener(this);
+		if(cb != null) {
+			cb.setTag(position);
+			cb.setOnClickListener(this);
 		
-		boolean status = positionsChecked.get(position) != null ? positionsChecked.get(position) : false;
-		cb.setChecked(status);
+			boolean status = positionsChecked.get(position) != null ? positionsChecked.get(position) : false;
+			cb.setChecked(status);
+		}
 		
 		return row;
 	}
@@ -52,6 +53,8 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 	@Override
 	public void onClick(View v) {
 		CheckBox cb = (CheckBox)v.findViewById(R.id.checkbox);
+		if(cb == null)
+			return;
 		
 		if(v.getId() != R.id.checkbox) {
 			// When click on checkbox, do nothing because it is toggled automatically
