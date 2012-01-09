@@ -21,9 +21,9 @@
         android:title="Options"/>
 
     <item
-        android:id="@+id/item_add"
-        android:icon="@drawable/ic_menu_add"
-        android:title="Add Expense"/>
+        android:id="@+id/item_refresh"
+        android:icon="@drawable/ic_menu_validate"
+        android:title="Refresh"/>
 
     <item
         android:id="@+id/item_more"

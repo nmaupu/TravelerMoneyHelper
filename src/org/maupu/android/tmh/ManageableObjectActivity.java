@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public abstract class ManageableObjectActivity<T extends BaseObject> extends Activity implements NumberCheckedListener, OnClickListener {
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
+	protected DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;

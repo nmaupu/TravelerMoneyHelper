@@ -4,13 +4,16 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="4dip" >
 
+    <include layout="@layout/checkbox_item" />
+    
     <LinearLayout
         android:id="@+id/ll_user"
+        android:layout_toRightOf="@id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:layout_marginRight="6dip"
-        android:layout_alignParentLeft="true" >
+        android:layout_alignParentLeft="false" >
 
         <ImageView
             android:id="@+id/icon"
@@ -24,7 +27,7 @@
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="11dp"
+            android:textSize="10dp"
             android:textStyle="italic"
             android:gravity="center_horizontal" />
     </LinearLayout>
@@ -65,7 +68,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="5"
+            android:layout_weight="4"
             android:orientation="vertical" >
 
             <TextView

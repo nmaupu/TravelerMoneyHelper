@@ -11,7 +11,7 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name=".TravelerMoneyHelperActivity" >
+            android:name=".ManageExpenseActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,9 +20,11 @@
         </activity>
         <activity android:name=".ManageCategoryActivity" />
         <activity android:name=".ManageCurrencyActivity" />
+        <activity android:name=".ManageExpenseActivity" />
         <activity android:name=".ManageUserActivity" />
         <activity android:name=".AddOrEditCurrencyActivity" />
         <activity android:name=".AddOrEditCategoryActivity" />
+        <activity android:name=".AddOrEditExpenseActivity" />
         <activity android:name=".AddOrEditUserActivity" />
     </application>
 

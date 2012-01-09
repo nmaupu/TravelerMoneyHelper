@@ -1,9 +1,11 @@
 package org.maupu.android.tmh.database.object;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.ExpenseData;
+import org.maupu.android.tmh.database.util.DateUtil;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,7 +18,7 @@ public class Expense extends BaseObject {
 	private User user;
 	private Category category;
 	private Currency currency;
-	
+
 	public Float getAmount() {
 		return amount;
 	}
@@ -53,7 +55,7 @@ public class Expense extends BaseObject {
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
 	}
-	
+
 	public ContentValues createContentValues() {
 		ContentValues cv = new ContentValues();
 		cv.put(ExpenseData.KEY_AMOUNT, this.getAmount());
@@ -66,15 +68,15 @@ public class Expense extends BaseObject {
 			cv.put(ExpenseData.KEY_ID_CATEGORY, this.getCategory().getId());
 		if(this.getCurrency() != null)
 			cv.put(ExpenseData.KEY_ID_CURRENCY, this.getCurrency().getId());
-		
+
 		return cv;
 	}
-	
+
 	@Override
 	public String getTableName() {
 		return ExpenseData.TABLE_NAME;
 	}
-	
+
 	@Override
 	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
 		this.reset();
@@ -85,35 +87,66 @@ public class Expense extends BaseObject {
 		int idxUser = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_USER);
 		int idxCategory = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CATEGORY);
 		int idxCurrency = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CURRENCY);
-		
+
 		User user = new User();
 		Category category = new Category();
 		Currency currency = new Currency();
-		
+
 		if(! cursor.isClosed() && ! cursor.isBeforeFirst() && ! cursor.isAfterLast()) {
 			this._id = cursor.getInt(idxId);
 			this.setAmount(cursor.getFloat(idxAmount));
 			this.setDescription(cursor.getString(idxDesctipion));
-			this.setDate(new Date(cursor.getString(idxDate)));
+			try {
+				this.setDate(DateUtil.StringToDate(cursor.getString(idxDate)));
+			} catch(ParseException pe) {
+				this.setDate(null);
+			}
 			user = (User)user.toDTO(dbHelper, user.fetch(dbHelper, cursor.getInt(idxUser)));
 			category = (Category)category.toDTO(dbHelper, category.fetch(dbHelper, cursor.getInt(idxCategory)));
 			currency = (Currency)currency.toDTO(dbHelper, currency.fetch(dbHelper, cursor.getInt(idxCurrency)));
-			
+
 			this.setUser(user);
 			this.setCategory(category);
 			this.setCurrency(currency);
 		}
-		
+
 		return super.getFromCache();
 	}
-	
+
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		String query = "select e._id _id, u.icon icon, u.name user, ca.name category, c.TauxEuro*e.amount tauxEuro, e.amount||' '||c.shortName amount, strftime('%d-%m-%Y', e.date) date "+
+		/*
+		 e._id _id
+		 e.amount amount
+		 e.description description
+		 e.idUser idUser
+		 e.idCategory idCategory
+		 e.idCurrency idCurrency
+		 u.icon icon
+		 u.name user
+		 ca.name category
+		 c.TauxEuro*e.amount tauxEuro
+		 e.amount||' '||c.shortName amount
+		 strftime('%d-%m-%Y', e.date) date 
+		 */
+		String query = "select " +
+				"e._id _id, " +
+				"e.amount amount, " +
+				"e.description description, " +
+				"e.idUser idUser, " +
+				"e.idCategory idCategory, " +
+				"e.idCurrency idCurrency, " +
+				"strftime('%d-%m-%Y %H:%M:%S', e.date) date, "+
+				"u.icon icon, "+
+				"u.name user, " +
+				"ca.name category, " +
+				"ROUND(e.amount/c.TauxEuro,2) tauxEuro, " +
+				"ROUND(e.amount,2)||' '||c.shortName amountString, " +
+				"strftime('%d-%m-%Y', e.date) dateString "+
 				"from category as ca, user as u, expense as e, currency as c "+
 				"where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id";
 		return dbHelper.getDb().rawQuery(query, null);
 	}
-	
+
 	@Override
 	public boolean validate() {
 		return true;
