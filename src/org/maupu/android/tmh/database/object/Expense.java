@@ -3,9 +3,12 @@ package org.maupu.android.tmh.database.object;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.ExpenseData;
+import org.maupu.android.tmh.database.UserData;
 import org.maupu.android.tmh.database.util.DateUtil;
+import org.maupu.android.tmh.database.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -18,6 +21,7 @@ public class Expense extends BaseObject {
 	private User user;
 	private Category category;
 	private Currency currency;
+	private Float currencyValueOnCreation;
 
 	public Float getAmount() {
 		return amount;
@@ -46,6 +50,12 @@ public class Expense extends BaseObject {
 	public Currency getCurrency() {
 		return currency;
 	}
+	public Float getCurrencyValueOnCreated() {
+		return currencyValueOnCreation;
+	}
+	public void setCurrencyValueOnCreated(Float value) {
+		currencyValueOnCreation = value;
+	}
 	public void setUser(User user) {
 		this.user = user;
 	}
@@ -55,6 +65,7 @@ public class Expense extends BaseObject {
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
 	}
+
 
 	public ContentValues createContentValues() {
 		ContentValues cv = new ContentValues();
@@ -68,6 +79,7 @@ public class Expense extends BaseObject {
 			cv.put(ExpenseData.KEY_ID_CATEGORY, this.getCategory().getId());
 		if(this.getCurrency() != null)
 			cv.put(ExpenseData.KEY_ID_CURRENCY, this.getCurrency().getId());
+		cv.put(ExpenseData.KEY_CURRENCY_VALUE, this.getCurrencyValueOnCreated());
 
 		return cv;
 	}
@@ -87,6 +99,7 @@ public class Expense extends BaseObject {
 		int idxUser = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_USER);
 		int idxCategory = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CATEGORY);
 		int idxCurrency = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CURRENCY);
+		int idxCurrencyValueOnCreated = cursor.getColumnIndexOrThrow(ExpenseData.KEY_CURRENCY_VALUE);
 
 		User user = new User();
 		Category category = new Category();
@@ -108,43 +121,40 @@ public class Expense extends BaseObject {
 			this.setUser(user);
 			this.setCategory(category);
 			this.setCurrency(currency);
+			
+			this.setCurrencyValueOnCreated(cursor.getFloat(idxCurrencyValueOnCreated));
 		}
 
 		return super.getFromCache();
 	}
 
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		/*
-		 e._id _id
-		 e.amount amount
-		 e.description description
-		 e.idUser idUser
-		 e.idCategory idCategory
-		 e.idCurrency idCurrency
-		 u.icon icon
-		 u.name user
-		 ca.name category
-		 c.TauxEuro*e.amount tauxEuro
-		 e.amount||' '||c.shortName amount
-		 strftime('%d-%m-%Y', e.date) date 
-		 */
-		String query = "select " +
-				"e._id _id, " +
-				"e.amount amount, " +
-				"e.description description, " +
-				"e.idUser idUser, " +
-				"e.idCategory idCategory, " +
-				"e.idCurrency idCurrency, " +
-				"strftime('%d-%m-%Y %H:%M:%S', e.date) date, "+
-				"u.icon icon, "+
-				"u.name user, " +
-				"ca.name category, " +
-				"ROUND(e.amount/c.TauxEuro,2) tauxEuro, " +
-				"ROUND(e.amount,2)||' '||c.shortName amountString, " +
-				"strftime('%d-%m-%Y', e.date) dateString "+
-				"from category as ca, user as u, expense as e, currency as c "+
-				"where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id";
-		return dbHelper.getDb().rawQuery(query, null);
+		QueryBuilder qsb = new QueryBuilder(new StringBuilder("select "));
+		qsb.setCurrentTableAlias("e");
+		qsb.addSelectToQuery(ExpenseData.KEY_ID).append(",")
+		.addSelectToQuery(ExpenseData.KEY_AMOUNT).append(",")
+		.addSelectToQuery(ExpenseData.KEY_DESCRIPTION).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_USER).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_CATEGORY).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_CURRENCY).append(",")
+		.addSelectToQuery(ExpenseData.KEY_CURRENCY_VALUE).append(",");
+		
+		qsb.append("strftime('%d-%m-%Y %H:%M:%S', e.date) date, ");
+		
+		qsb.setCurrentTableAlias("u");
+		qsb.addSelectToQuery(UserData.KEY_ICON).append(",")
+		.addSelectToQuery(UserData.KEY_NAME, "user").append(",");
+		
+		qsb.setCurrentTableAlias("ca");
+		qsb.addSelectToQuery(CategoryData.KEY_NAME, "category").append(",");
+		
+		qsb.append("ROUND(e."+ExpenseData.KEY_AMOUNT+"/e."+ExpenseData.KEY_CURRENCY_VALUE+",2) euroAmount, ");
+		qsb.append("ROUND(e.amount,2)||' '||c.shortName amountString, ");
+		qsb.append("strftime('%d-%m-%Y', e.date) dateString ");
+		qsb.append("from category as ca, user as u, expense as e, currency as c ");
+		qsb.append("where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id");
+		
+		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
 	@Override
@@ -160,5 +170,6 @@ public class Expense extends BaseObject {
 		this.date = null;
 		this.description = null;
 		this.user = null;
+		this.currencyValueOnCreation = null;
 	}
 }

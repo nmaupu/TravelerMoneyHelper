@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
-	protected static final int DATABASE_VERSION = 1;
+	protected static final int DATABASE_VERSION = 2;
 	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
 	private Context context;
 	private SQLiteDatabase db;

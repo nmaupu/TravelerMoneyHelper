@@ -119,6 +119,8 @@ public class AddOrEditExpenseActivity extends AddOrEditActivity<Expense> {
 			obj.setCurrency(cur);
 
 			obj.setAmount(Float.valueOf(amount.getText().toString().trim()));
+			// Store currency value for this addition
+			obj.setCurrencyValueOnCreated(cur.getTauxEuro());
 		}
 	}
 

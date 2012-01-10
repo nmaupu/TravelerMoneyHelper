@@ -26,7 +26,7 @@ public class ManageExpenseActivity extends ManageableObjectActivity<Expense> {
 		UserIconCheckableCursorAdapter adapter = new UserIconCheckableCursorAdapter(this, 
 				R.layout.expense_item,
 				c,
-				new String[]{"icon", "user", "category", "dateString", "amountString", "tauxEuro"},
+				new String[]{"icon", "user", "category", "dateString", "amountString", "euroAmount"},
 				new int[]{R.id.icon, R.id.username, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
 		super.setAdapter(adapter);
 	}

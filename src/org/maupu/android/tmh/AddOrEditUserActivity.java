@@ -159,8 +159,9 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		
 		
 		if(obj != null) {
+			String username = textViewName.getText().toString().trim();
 			Bitmap b = ((BitmapDrawable)imageViewIcon.getDrawable()).getBitmap();
-			String filename = obj.getName()+".png";
+			String filename = username+".png";
 			
 			try {
 				FileOutputStream fOut = openFileOutput(filename, Context.MODE_PRIVATE);
@@ -172,7 +173,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 				obj.setIcon(filename);
 			} catch (IOException ioe) {}
 			
-			obj.setName(textViewName.getText().toString().trim());
+			obj.setName(username);
 		}
 	}
 
