@@ -16,18 +16,18 @@
         android:title="Users"/>
 
     <item
+        android:id="@+id/item_home"
+        android:icon="@drawable/ic_menu_home"
+        android:title="Home"/>
+
+    <item
         android:id="@+id/item_options"
         android:icon="@drawable/ic_menu_parameter"
         android:title="Options"/>
 
     <item
         android:id="@+id/item_refresh"
-        android:icon="@drawable/ic_menu_validate"
+        android:icon="@drawable/ic_menu_refresh"
         android:title="Refresh"/>
-
-    <item
-        android:id="@+id/item_more"
-        android:icon="@drawable/ic_menu_plus"
-        android:title="More"/>
 
 </menu>

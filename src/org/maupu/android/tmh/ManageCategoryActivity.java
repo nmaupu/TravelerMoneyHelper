@@ -9,7 +9,7 @@ import android.database.Cursor;
 
 public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public ManageCategoryActivity() {
-		super("Categories", R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class, new Category());
+		super("Categories", R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class, new Category(), true);
 	}
 	
 	@Override
@@ -22,7 +22,7 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	}
 
 	@Override
-	protected void refreshListView(DatabaseHelper dbHelper) {
+	public void refreshDisplay(DatabaseHelper dbHelper) {
 		Category category = new Category();
 		Cursor cursor = category.fetchAll(dbHelper);
 		

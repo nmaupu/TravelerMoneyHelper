@@ -7,7 +7,6 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,8 +18,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class ManageableObjectActivity<T extends BaseObject> extends Activity implements NumberCheckedListener, OnClickListener {
-	protected DatabaseHelper dbHelper = new DatabaseHelper(this);
+public abstract class ManageableObjectActivity<T extends BaseObject> extends TmhActivity implements NumberCheckedListener, OnClickListener {
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;
@@ -33,39 +31,44 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
 	private T obj;
+	private boolean customTitleEnabled;
 
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj) {
-		this(title, drawableIcon, addOrEditActivity, obj, R.layout.manageable_object);
+	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle) {
+		this(title, drawableIcon, addOrEditActivity, obj, enableCustomTitle, R.layout.manageable_object);
 	}
-	
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, Integer layoutList) {
+
+	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle, Integer layoutList) {
 		this.title = title;
 		this.drawableIcon = drawableIcon;
 		this.addOrEditActivity = addOrEditActivity;
 		this.layoutList = layoutList;
 		this.obj = obj;
+		this.customTitleEnabled = enableCustomTitle;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		CustomTitleBar customTB = new CustomTitleBar(this);
+		CustomTitleBar customTB = null;
+		if(customTitleEnabled)
+			customTB = new CustomTitleBar(this);
 		setContentView(layoutList);
 		super.onCreate(savedInstanceState);
-		customTB.setName(title);
-		customTB.setIcon(drawableIcon);
-		
-		dbHelper.openWritable();
+
+		if(customTB != null) {
+			customTB.setName(title);
+			customTB.setIcon(drawableIcon);
+		}
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
-		
+
 		this.addButton = (Button) findViewById(R.id.button_add);
 		this.addButton.setOnClickListener(this);
-		
+
 		this.listView = (ListView) findViewById(R.id.list);
-		this.listView.setItemsCanFocus(false);
+		//this.listView.setItemsCanFocus(false);
 		//this.listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		this.listView.setEmptyView(tvEmpty);
-		
+
 		this.editButton = (Button)findViewById(R.id.button_edit);
 		this.deleteButton = (Button)findViewById(R.id.button_delete);
 
@@ -76,20 +79,20 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 			this.deleteButton.setOnClickListener(this);
 
 		initButtons();
-		refreshListView(dbHelper);
+		refreshDisplay(dbHelper);
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
 		setAdapter(new CheckableCursorAdapter(this, layout, data, from, to));
 	}
-	
+
 	public void setAdapter(CheckableCursorAdapter adapter) {
 		if(adapter == null)
 			return;
-		
+
 		adapter.setOnNumberCheckedListener(this);
 		listView.setAdapter(adapter);
-		
+
 		initButtons();
 	}
 
@@ -115,19 +118,19 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 		Intent intent = null;
 		final Context finalContext = this;
 		final Integer[] posChecked = ((CheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
-		
+
 		switch(v.getId()) {
 		case R.id.button_edit:
 			if(posChecked.length == 1) {
 				int p = posChecked[0];
 				Cursor cursor = (Cursor)listView.getItemAtPosition(p);
 				obj.toDTO(dbHelper, cursor);
-				
+
 				intent = new Intent(this, addOrEditActivity);
 				intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
 				startActivityForResult(intent, ACTIVITY_EDIT);
 			}
-			
+
 			break;
 		case R.id.button_delete:
 			SimpleDialog.confirmDialog(this, "Are you sure you want to delete these objects ?", new DialogInterface.OnClickListener() {
@@ -151,7 +154,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 						SimpleDialog.errorDialog(finalContext, "Error", errMessage).show();
 
 					dialog.dismiss();
-					refreshListView(dbHelper);
+					refreshDisplay(dbHelper);
 				}
 			}).show();
 			break;
@@ -183,7 +186,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		refreshListView(dbHelper);
+		refreshDisplay(dbHelper);
 	}
 
 	/**
@@ -192,8 +195,4 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Act
 	 * @return true if object can be deleted, false otherwise
 	 */
 	protected abstract boolean validateConstraintsForDeletion(final DatabaseHelper dbHelper, final T obj);
-	/**
-	 * Method refreshing list view from adapter
-	 */
-	protected abstract void refreshListView(final DatabaseHelper dbHelper);
 }

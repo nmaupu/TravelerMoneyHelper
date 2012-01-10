@@ -35,6 +35,7 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 		
 		row.setOnClickListener(this);
 		CheckBox cb = (CheckBox)row.findViewById(R.id.checkbox);
+		//cb.setVisibility(View.GONE);
 		if(cb != null) {
 			cb.setTag(position);
 			cb.setOnClickListener(this);

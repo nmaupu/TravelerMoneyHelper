@@ -10,7 +10,7 @@ import android.database.Cursor;
 
 public class ManageUserActivity extends ManageableObjectActivity<User>{
 	public ManageUserActivity() {
-		super("Users", R.drawable.ic_stat_categories, AddOrEditUserActivity.class, new User());
+		super("Users", R.drawable.ic_stat_categories, AddOrEditUserActivity.class, new User(), true);
 	}
 	
 	@Override
@@ -22,7 +22,7 @@ public class ManageUserActivity extends ManageableObjectActivity<User>{
 	}
 
 	@Override
-	protected void refreshListView(DatabaseHelper dbHelper) {
+	public void refreshDisplay(DatabaseHelper dbHelper) {
 		User user = new User();
 		Cursor cursor = user.fetchAll(dbHelper);
 		

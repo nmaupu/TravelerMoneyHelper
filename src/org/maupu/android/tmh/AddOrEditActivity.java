@@ -5,7 +5,6 @@ import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,9 +17,8 @@ import android.widget.TextView;
  * @author nmaupu
  *
  */
-public abstract class AddOrEditActivity<T extends BaseObject> extends Activity implements OnClickListener {
+public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity implements OnClickListener {
 	public static final String EXTRA_OBJECT_ID = "base_object";
-	protected DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private Button buttonContinue;
 	private Button buttonReset;
 	private TextView textInfo;
@@ -43,8 +41,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 		setContentView(contentView);
 		ctb.setName(title);
 		ctb.setIcon(icon);
-
-		dbHelper.openWritable();
 
 		buttonContinue = (Button)findViewById(R.id.button_continue);
 		buttonReset = (Button)findViewById(R.id.button_reset);
@@ -127,4 +123,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends Activity i
 	 * @param obj
 	 */
 	protected abstract void fieldsToBaseObject(T obj);
+	
+	public void refreshDisplay(DatabaseHelper dbHelper){};
 }

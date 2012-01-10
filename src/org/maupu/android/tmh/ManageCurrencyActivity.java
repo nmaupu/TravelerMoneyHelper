@@ -9,11 +9,11 @@ import android.database.Cursor;
 
 public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
-		super("Currencies", R.drawable.ic_stat_categories, AddOrEditCurrencyActivity.class, new Currency());
+		super("Currencies", R.drawable.ic_stat_categories, AddOrEditCurrencyActivity.class, new Currency(), true);
 	}
 
 	@Override
-	protected void refreshListView(DatabaseHelper dbHelper) {
+	public void refreshDisplay(DatabaseHelper dbHelper) {
 		Currency currency = new Currency();
 		Cursor c = currency.fetchAll(dbHelper);
 
