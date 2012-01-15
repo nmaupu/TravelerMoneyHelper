@@ -22,6 +22,7 @@ public class Expense extends BaseObject {
 	private Category category;
 	private Currency currency;
 	private Float currencyValueOnCreation;
+	private String type;
 
 	public Float getAmount() {
 		return amount;
@@ -65,6 +66,12 @@ public class Expense extends BaseObject {
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
 	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 
 
 	public ContentValues createContentValues() {
@@ -80,6 +87,11 @@ public class Expense extends BaseObject {
 		if(this.getCurrency() != null)
 			cv.put(ExpenseData.KEY_ID_CURRENCY, this.getCurrency().getId());
 		cv.put(ExpenseData.KEY_CURRENCY_VALUE, this.getCurrencyValueOnCreated());
+		
+		if(this.getType() == null)
+			cv.put(ExpenseData.KEY_TYPE, ExpenseData.EXPENSE_TYPE_DEFAULT);
+		else
+			cv.put(ExpenseData.KEY_TYPE, this.getType());
 
 		return cv;
 	}
@@ -100,6 +112,7 @@ public class Expense extends BaseObject {
 		int idxCategory = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CATEGORY);
 		int idxCurrency = cursor.getColumnIndexOrThrow(ExpenseData.KEY_ID_CURRENCY);
 		int idxCurrencyValueOnCreated = cursor.getColumnIndexOrThrow(ExpenseData.KEY_CURRENCY_VALUE);
+		int idxType = cursor.getColumnIndexOrThrow(ExpenseData.KEY_TYPE);
 
 		User user = new User();
 		Category category = new Category();
@@ -123,6 +136,7 @@ public class Expense extends BaseObject {
 			this.setCurrency(currency);
 			
 			this.setCurrencyValueOnCreated(cursor.getFloat(idxCurrencyValueOnCreated));
+			this.setType(cursor.getString(idxType));
 		}
 
 		return super.getFromCache();
@@ -137,7 +151,8 @@ public class Expense extends BaseObject {
 		.addSelectToQuery(ExpenseData.KEY_ID_USER).append(",")
 		.addSelectToQuery(ExpenseData.KEY_ID_CATEGORY).append(",")
 		.addSelectToQuery(ExpenseData.KEY_ID_CURRENCY).append(",")
-		.addSelectToQuery(ExpenseData.KEY_CURRENCY_VALUE).append(",");
+		.addSelectToQuery(ExpenseData.KEY_CURRENCY_VALUE).append(",")
+		.addSelectToQuery(ExpenseData.KEY_TYPE).append(",");
 		
 		qsb.append("strftime('%d-%m-%Y %H:%M:%S', e.date) date, ");
 		
@@ -171,5 +186,6 @@ public class Expense extends BaseObject {
 		this.description = null;
 		this.user = null;
 		this.currencyValueOnCreation = null;
+		this.type = ExpenseData.EXPENSE_TYPE_DEFAULT;
 	}
 }
