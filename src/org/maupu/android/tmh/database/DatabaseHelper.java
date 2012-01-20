@@ -17,7 +17,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
 	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
 	protected static final int DATABASE_VERSION = 4;
 	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
@@ -70,6 +71,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public static String formatDateForSQL(Date date) {
 		return dateFormat.format(date);
+	}
+	
+	public static String formatDateForSQLNoHour(Date date) {
+		return dateFormatNoHour.format(date);
 	}
 	
 	public static Date toDate(String sqlDate) {

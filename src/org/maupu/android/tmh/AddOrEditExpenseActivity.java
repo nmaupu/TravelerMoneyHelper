@@ -34,7 +34,7 @@ public class AddOrEditExpenseActivity extends AddOrEditActivity<Expense> {
 	public AddOrEditExpenseActivity() {
 		super("Expense edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_expense, new Expense());
 	}
-
+	
 	@Override
 	protected void initResources() {
 		expenseType = (Spinner)findViewById(R.id.expense_type);
@@ -147,6 +147,7 @@ public class AddOrEditExpenseActivity extends AddOrEditActivity<Expense> {
 		if(d != null)
 			cal.setTime(d);
 
+		// TODO bug : cannot set datePicker date
 		datePicker.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 	}
 

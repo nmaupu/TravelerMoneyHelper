@@ -1,5 +1,7 @@
 package org.maupu.android.tmh;
 
+import java.util.Date;
+
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Expense;
 import org.maupu.android.tmh.ui.widget.UserIconCheckableCursorAdapter;
@@ -21,7 +23,8 @@ public class ManageExpenseActivity extends ManageableObjectActivity<Expense> {
 
 	@Override
 	public void refreshDisplay(DatabaseHelper dbHelper) {
-		Cursor c = dummyExpense.fetchAll(dbHelper);
+		//Cursor c = dummyExpense.fetchAll(dbHelper);
+		Cursor c = dummyExpense.fetchByMonth(dbHelper, new Date());
 
 		UserIconCheckableCursorAdapter adapter = new UserIconCheckableCursorAdapter(this, 
 				R.layout.expense_item,

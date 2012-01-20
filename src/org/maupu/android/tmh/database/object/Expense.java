@@ -1,6 +1,7 @@
 package org.maupu.android.tmh.database.object;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.maupu.android.tmh.database.CategoryData;
@@ -12,6 +13,7 @@ import org.maupu.android.tmh.database.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 public class Expense extends BaseObject {
 	private static final long serialVersionUID = 1L;
@@ -168,6 +170,52 @@ public class Expense extends BaseObject {
 		qsb.append("strftime('%d-%m-%Y', e.date) dateString ");
 		qsb.append("from category as ca, user as u, expense as e, currency as c ");
 		qsb.append("where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id");
+		
+		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
+	}
+	
+	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date) {
+		int year = date.getYear();
+		int month = date.getMonth();
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month, 1);
+		int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
+		Date dateBegin = new Date(year, month, 1, 0, 0, 0);
+		Date dateEnd = new Date(year, month, maxDay, 23, 59, 59);
+		
+		
+		QueryBuilder qsb = new QueryBuilder(new StringBuilder("select "));
+		qsb.setCurrentTableAlias("e");
+		qsb.addSelectToQuery(ExpenseData.KEY_ID).append(",")
+		.addSelectToQuery(ExpenseData.KEY_AMOUNT).append(",")
+		.addSelectToQuery(ExpenseData.KEY_DESCRIPTION).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_USER).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_CATEGORY).append(",")
+		.addSelectToQuery(ExpenseData.KEY_ID_CURRENCY).append(",")
+		.addSelectToQuery(ExpenseData.KEY_CURRENCY_VALUE).append(",")
+		.addSelectToQuery(ExpenseData.KEY_TYPE).append(",");
+		
+		qsb.append("strftime('%d-%m-%Y %H:%M:%S', e.date) date, ");
+		
+		qsb.setCurrentTableAlias("u");
+		qsb.addSelectToQuery(UserData.KEY_ICON).append(",")
+		.addSelectToQuery(UserData.KEY_NAME, "user").append(",");
+		
+		qsb.setCurrentTableAlias("ca");
+		qsb.addSelectToQuery(CategoryData.KEY_NAME, "category").append(",");
+		
+		qsb.append("ROUND(e."+ExpenseData.KEY_AMOUNT+"/e."+ExpenseData.KEY_CURRENCY_VALUE+",2) euroAmount, ");
+		qsb.append("ROUND(e.amount,2)||' '||c.shortName amountString, ");
+		qsb.append("strftime('%d-%m-%Y', e.date) dateString ");
+		qsb.append("from category as ca, user as u, expense as e, currency as c ");
+		qsb.append("where e.idCategory=ca._id and e.idUser=u._id and e.idCurrency=c._id ");
+		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		qsb.append("AND e.date BETWEEN '"+sBeg+"' AND '"+sEnd+"'");
+		
+		Log.d(Expense.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
+		Log.d(Expense.class.getName(), qsb.getStringBuilder().toString());
 		
 		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
