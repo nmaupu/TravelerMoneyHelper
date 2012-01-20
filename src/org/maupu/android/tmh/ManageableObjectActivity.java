@@ -14,6 +14,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -101,11 +103,12 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		// Change state of buttonEdit and buttonDelete
 		switch(numberItemsChecked) {
 		case 0:
-			initButtons();
+			buttonsBarGone();
 			break;
 		case 1:
 			setEnabledDeleteButton(true);
 			setEnabledEditButton(true);
+			buttonsBarVisible();
 			break;
 		default:
 			deleteButton.setEnabled(true);
@@ -178,6 +181,32 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private void initButtons() {
 		setEnabledDeleteButton(false);
 		setEnabledEditButton(false);
+		buttonsBarGone();
+	}
+	
+	private void buttonsBarVisible() {
+		setVisibilityButtonsBar(R.anim.pushup, true);
+	}
+	
+	private void buttonsBarGone() {
+		setVisibilityButtonsBar(R.anim.pushdown, false);
+	}
+	
+	private void setVisibilityButtonsBar(int anim, boolean visible) {
+		View v = (View)findViewById(R.id.layout_root);
+		
+		// Already ok
+		if((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))
+			return;
+		
+		Animation animation  = AnimationUtils.loadAnimation(v.getContext(), anim);
+		v.startAnimation(animation);
+		
+		if(visible) {
+			v.setVisibility(View.VISIBLE);
+		} else {
+			v.setVisibility(View.GONE);
+		}
 	}
 
 	public ListView getListView() {
