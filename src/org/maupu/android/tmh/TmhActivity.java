@@ -55,7 +55,7 @@ public abstract class TmhActivity extends Activity {
 			refreshDisplay(dbHelper);
 			break;
 		case R.id.item_home:
-			startActivityFromMenu(TravelerMoneyHelperActivity.class);
+			startActivityFromMenu(HomeActivity.class);
 			break;
 		case R.id.item_add:
 			onAddClicked();

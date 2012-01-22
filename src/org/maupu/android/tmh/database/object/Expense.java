@@ -1,7 +1,6 @@
 package org.maupu.android.tmh.database.object;
 
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.maupu.android.tmh.database.CategoryData;
@@ -17,6 +16,7 @@ import android.util.Log;
 
 public class Expense extends BaseObject {
 	private static final long serialVersionUID = 1L;
+	public static final String KEY_SUM="sum";
 	private Float amount;
 	private String description;
 	private Date date;
@@ -211,16 +211,32 @@ public class Expense extends BaseObject {
 	}
 	
 	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date, String[] expenseTypes) {
-		int year = date.getYear();
-		int month = date.getMonth();
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, 1);
-		int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-		Date dateBegin = new Date(year, month, 1, 0, 0, 0);
-		Date dateEnd = new Date(year, month, maxDay, 23, 59, 59);
+		Date dateBegin = DateUtil.getFirstDayOfMonth(date);
+		Date dateEnd = DateUtil.getLastDayOfMonth(date);
 
 		return fetchByPeriod(dbHelper, dateBegin, dateEnd, expenseTypes);
+	}
+	
+	public Cursor sumExpenseByMonth(final DatabaseHelper dbHelper, Date date, String expenseType) {
+		return sumExpenseByPeriod(dbHelper, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date), expenseType);
+	}
+	
+	public Cursor sumExpenseByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd, String expenseType) {
+		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("sum("+ExpenseData.KEY_AMOUNT+") "+Expense.KEY_SUM+", ");
+		qb.append(UserData.KEY_NAME+" ");
+		qb.append("FROM "+ExpenseData.TABLE_NAME+" e, "+UserData.TABLE_NAME+" u ");
+		qb.append("WHERE e."+ExpenseData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+		qb.append("AND e."+ExpenseData.KEY_TYPE+"='"+expenseType+"' ");
+		qb.append("AND e."+ExpenseData.KEY_ID_USER+"=u."+UserData.KEY_ID+" ");
+		qb.append("GROUP BY e."+ExpenseData.KEY_ID_USER);
+		
+		Cursor c = dbHelper.getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		return c;
 	}
 
 	@Override

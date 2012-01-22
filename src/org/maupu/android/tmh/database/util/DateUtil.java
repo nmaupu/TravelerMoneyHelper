@@ -2,6 +2,7 @@ package org.maupu.android.tmh.database.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public abstract class DateUtil {
@@ -28,5 +29,24 @@ public abstract class DateUtil {
 	public static String dateToString(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		return sdf.format(date);
+	}
+	
+	public static Date getFirstDayOfMonth(Date date) {
+		int year = date.getYear();
+		int month = date.getMonth();
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month, 1);
+
+		return new Date(year, month, 1, 0, 0, 0);
+	}
+	
+	public static Date getLastDayOfMonth(Date date) {
+		int year = date.getYear();
+		int month = date.getMonth();
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month, 1);
+		int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+		return new Date(year, month, maxDay, 23, 59, 59);
 	}
 }
