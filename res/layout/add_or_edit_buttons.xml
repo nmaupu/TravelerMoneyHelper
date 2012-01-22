@@ -7,15 +7,22 @@
     <Button
         android:id="@+id/button_reset"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Reset" />
+        android:text="@string/reset" />
 
     <Button
         android:id="@+id/button_continue"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Continue" />
+        android:text="@string/save" />
+
+    <Button
+        android:id="@+id/button_continue_and_add"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="@string/save_and_add" />
 
 </LinearLayout>

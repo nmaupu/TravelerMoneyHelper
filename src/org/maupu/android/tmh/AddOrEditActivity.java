@@ -7,9 +7,12 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * Class representing an Activity to add or edit objects
@@ -19,6 +22,7 @@ import android.widget.Button;
 public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity implements OnClickListener {
 	public static final String EXTRA_OBJECT_ID = "base_object";
 	private Button buttonContinue;
+	private Button buttonContinueAndAdd;
 	private Button buttonReset;
 	//private TextView textInfo;
 	private int contentView;
@@ -33,7 +37,16 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		this.title = title;
 		this.icon = icon;
 	}
-	
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// Disable add button for addOrEdit activities
+		MenuItem mi = menu.findItem(R.id.item_add);
+		if(mi != null)
+			mi.setEnabled(false);
+		return true;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,8 +57,10 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		ctb.setIcon(icon);
 
 		buttonContinue = (Button)findViewById(R.id.button_continue);
+		buttonContinueAndAdd = (Button)findViewById(R.id.button_continue_and_add);
 		buttonReset = (Button)findViewById(R.id.button_reset);
 		buttonContinue.setOnClickListener(this);
+		buttonContinueAndAdd.setOnClickListener(this);
 		buttonReset.setOnClickListener(this);
 		/*textInfo = (TextView)findViewById(R.id.text_info);
 		if(textInfo != null) {
@@ -79,7 +94,14 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	public void onClick(View v) {
 		switch(v.getId()) {
 		case R.id.button_continue:
-			onContinue();
+			onContinue(true);
+			break;
+		case R.id.button_continue_and_add:
+			if(onContinue(false)) {
+				Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
+				obj.reset();
+				refreshDisplay(dbHelper);
+			}
 			break;
 		case R.id.button_reset:
 			baseObjectToFields(null);
@@ -87,7 +109,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		}
 	}
 
-	private void onContinue() {
+	private boolean onContinue(boolean disposeActivity) {
 		if(validate()) {
 			fieldsToBaseObject(obj);
 
@@ -97,11 +119,14 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 				obj.insert(dbHelper);
 
 			// Dispose this activity
-			super.finish();
+			if(disposeActivity)
+				super.finish();
+			
+			return true;
 		} else {
 			SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
+			return false;
 		}
-
 	}
 
 	/**
@@ -124,6 +149,12 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	 * @param obj
 	 */
 	protected abstract void fieldsToBaseObject(T obj);
-	
-	public void refreshDisplay(DatabaseHelper dbHelper){};
+
+	public void refreshDisplay(DatabaseHelper dbHelper) {
+		// Restore from begining
+		baseObjectToFields(obj);
+	}
+
+	// Menu item is disabled, so do nothing here
+	protected void onAddClicked() {}
 }

@@ -56,6 +56,10 @@ public abstract class TmhActivity extends Activity {
 			break;
 		case R.id.item_home:
 			startActivityFromMenu(TravelerMoneyHelperActivity.class);
+			break;
+		case R.id.item_add:
+			onAddClicked();
+			break;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -72,4 +76,8 @@ public abstract class TmhActivity extends Activity {
 	 * @param dbHelper
 	 */
 	public abstract void refreshDisplay(final DatabaseHelper dbHelper);
+	/**
+	 * Called when add item menu is clicked
+	 */
+	protected abstract void onAddClicked();
 }

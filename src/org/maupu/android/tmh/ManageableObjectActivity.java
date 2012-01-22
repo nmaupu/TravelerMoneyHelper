@@ -25,7 +25,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;
 	private TextView tvEmpty;
-	private Button addButton;
 	private Button editButton;
 	private Button deleteButton;
 	private int title;
@@ -63,9 +62,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		}
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
-
-		this.addButton = (Button) findViewById(R.id.button_add);
-		this.addButton.setOnClickListener(this);
 
 		this.listView = (ListView) findViewById(R.id.list);
 		//this.listView.setItemsCanFocus(false);
@@ -164,10 +160,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 				}
 			}).show();
 			break;
-		case R.id.button_add:
-			intent = new Intent(this, addOrEditActivity);
-			startActivityForResult(intent, ACTIVITY_ADD);
-			break;
 		}
 	}
 
@@ -227,4 +219,9 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 * @return true if object can be deleted, false otherwise
 	 */
 	protected abstract boolean validateConstraintsForDeletion(final DatabaseHelper dbHelper, final T obj);
+	
+	protected void onAddClicked() {
+		Intent intent = new Intent(this, addOrEditActivity);
+		startActivityForResult(intent, ACTIVITY_ADD);
+	}
 }

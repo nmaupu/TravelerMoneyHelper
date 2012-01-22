@@ -15,7 +15,7 @@
     <string name="activity_title_manage_currency">Monnaie</string>
     <string name="activity_title_manage_expense">Dépense</string>
     <string name="activity_title_manage_user">Utilisateur</string>
-    <string name="tab_expense">Depenses</string>
+    <string name="tab_expense">Dépenses</string>
     <string name="tab_withdrawal">Retrait</string>
     <string name="tab_credit">Carte</string>
     <string name="tab_stats">Stats</string>
@@ -48,5 +48,9 @@
     <string name="popup_app_icon">Icône d\'application</string>
     <string name="popup_url">URL</string>
     <string name="popup_camera">Appareil photo</string>
+    <string name="reset">RaZ</string>
+    <string name="save">Sauver</string>
+    <string name="save_and_add">Sauver and ajouter</string>
+    <string name="toast_success">Opération réalisée avec succès</string>
 
 </resources>

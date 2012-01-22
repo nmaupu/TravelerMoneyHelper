@@ -48,5 +48,9 @@
     <string name="popup_app_icon">App icon</string>
     <string name="popup_url">URL</string>
     <string name="popup_camera">Camera</string>
+    <string name="reset">Reset</string>
+    <string name="save">Save</string>
+    <string name="save_and_add">Save and add</string>
+    <string name="toast_success">Operation successfully completed</string>
 
 </resources>

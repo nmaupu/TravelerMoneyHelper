@@ -17,4 +17,6 @@ public class ShareExpensesActivity extends TmhActivity {
 	
 	@Override
 	public void refreshDisplay(DatabaseHelper dbHelper) {}
+	
+	protected void onAddClicked() {}
 }
