@@ -3,40 +3,40 @@
     <item
         android:id="@+id/item_edit"
         android:icon="@drawable/ic_menu_edit"
-        android:title="Edition">
+        android:title="@string/edition">
 
         <menu >
 
             <item
                 android:id="@+id/item_categories"
                 android:icon="@drawable/ic_menu_category"
-                android:title="Categories"/>
+                android:title="@string/categories"/>
 
             <item
                 android:id="@+id/item_currencies"
                 android:icon="@drawable/ic_menu_currency"
-                android:title="Currencies"/>
+                android:title="@string/currencies"/>
 
             <item
                 android:id="@+id/item_user"
                 android:icon="@drawable/ic_menu_user"
-                android:title="Users"/>
+                android:title="@string/users"/>
         </menu>
     </item>
 
     <item
         android:id="@+id/item_home"
         android:icon="@drawable/ic_menu_home"
-        android:title="Home"/>
+        android:title="@string/home"/>
 
     <item
         android:id="@+id/item_options"
         android:icon="@drawable/ic_menu_parameter"
-        android:title="Parameters"/>
+        android:title="@string/parameters"/>
 
     <item
         android:id="@+id/item_refresh"
         android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh"/>
+        android:title="@string/refresh"/>
 
 </menu>

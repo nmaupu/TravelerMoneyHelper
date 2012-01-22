@@ -9,7 +9,7 @@ import android.database.Cursor;
 
 public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
-		super("Currencies", R.drawable.ic_stat_categories, AddOrEditCurrencyActivity.class, new Currency(), true);
+		super(R.string.activity_title_manage_currency, R.drawable.ic_stat_categories, AddOrEditCurrencyActivity.class, new Currency(), true);
 	}
 
 	@Override

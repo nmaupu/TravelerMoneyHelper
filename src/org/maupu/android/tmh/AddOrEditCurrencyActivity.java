@@ -14,7 +14,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> {
 	private CheckBox checkBoxUpdate = null;
 
 	public AddOrEditCurrencyActivity() {
-		super("Currency edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_currency, new Currency());
+		super(R.string.activity_title_edition_currency, R.drawable.ic_stat_categories, R.layout.add_or_edit_currency, new Currency());
 	}
 	
 	@Override

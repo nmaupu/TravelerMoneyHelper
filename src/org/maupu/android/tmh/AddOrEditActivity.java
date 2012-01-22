@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 /**
  * Class representing an Activity to add or edit objects
@@ -21,36 +20,38 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	public static final String EXTRA_OBJECT_ID = "base_object";
 	private Button buttonContinue;
 	private Button buttonReset;
-	private TextView textInfo;
+	//private TextView textInfo;
 	private int contentView;
 	private T obj;
-	private String title;
+	private int title;
+
 	private Integer icon;
 
-	public AddOrEditActivity(String title, Integer icon, int contentView, T obj) {
+	public AddOrEditActivity(int title, Integer icon, int contentView, T obj) {
 		this.contentView = contentView;
 		this.obj = obj;
 		this.title = title;
 		this.icon = icon;
 	}
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		CustomTitleBar ctb = new CustomTitleBar(this);
 		setContentView(contentView);
-		ctb.setName(title);
+		super.setTitle(getString(title));
+		ctb.setName(getString(title));
 		ctb.setIcon(icon);
 
 		buttonContinue = (Button)findViewById(R.id.button_continue);
 		buttonReset = (Button)findViewById(R.id.button_reset);
 		buttonContinue.setOnClickListener(this);
 		buttonReset.setOnClickListener(this);
-		textInfo = (TextView)findViewById(R.id.text_info);
+		/*textInfo = (TextView)findViewById(R.id.text_info);
 		if(textInfo != null) {
 			textInfo.setText("Please fill this form");
 			textInfo.setVisibility(View.VISIBLE);
-		}
+		}*/
 
 		// Init all widgets
 		initResources();
@@ -98,7 +99,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			// Dispose this activity
 			super.finish();
 		} else {
-			SimpleDialog.errorDialog(this, "Error", "Impossible to add object, error in fields !").show();
+			SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
 		}
 
 	}

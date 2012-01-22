@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
-        android:text="Add" />
+        android:text="@string/add" />
 
     <ListView
         android:id="@+id/expense_list"

@@ -8,7 +8,7 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
+        android:layout_height="fill_parent"
         android:layout_weight="1" >
 
         <LinearLayout
@@ -24,8 +24,9 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="2"
-                    android:text="Long name" />
+                    android:text="@string/long_name" />
 
                 <EditText
                     android:id="@+id/long_name"
@@ -42,8 +43,9 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="2"
-                    android:text="Short name" />
+                    android:text="@string/short_name" />
 
                 <EditText
                     android:id="@+id/short_name"
@@ -60,8 +62,9 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="2"
-                    android:text="Value for 1€" />
+                    android:text="@string/form_addedit_value" />
 
                 <EditText
                     android:id="@+id/euro_value"
@@ -75,7 +78,8 @@
                 android:id="@+id/checkbox_last_update"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Set last update to now" />
+                android:layout_gravity="center_vertical"
+                android:text="@string/form_addedit_update" />
         </LinearLayout>
     </ScrollView>
 

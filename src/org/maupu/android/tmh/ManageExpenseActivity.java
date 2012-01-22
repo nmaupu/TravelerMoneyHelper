@@ -17,7 +17,7 @@ public class ManageExpenseActivity extends ManageableObjectActivity<Expense> {
 
 	public ManageExpenseActivity() {
 		// No custom title bar because activity used in a TabHost
-		super("Expenses", R.drawable.ic_stat_categories, AddOrEditExpenseActivity.class, new Expense(), false);
+		super(R.string.activity_title_manage_expense, R.drawable.ic_stat_categories, AddOrEditExpenseActivity.class, new Expense(), false);
 	}
 
 	@Override

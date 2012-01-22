@@ -28,18 +28,18 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private Button addButton;
 	private Button editButton;
 	private Button deleteButton;
-	private String title;
+	private int title;
 	private Integer drawableIcon;
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
 	private T obj;
 	private boolean customTitleEnabled;
 
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle) {
+	public ManageableObjectActivity(int title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle) {
 		this(title, drawableIcon, addOrEditActivity, obj, enableCustomTitle, R.layout.manageable_object);
 	}
 
-	public ManageableObjectActivity(String title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle, Integer layoutList) {
+	public ManageableObjectActivity(int title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle, Integer layoutList) {
 		this.title = title;
 		this.drawableIcon = drawableIcon;
 		this.addOrEditActivity = addOrEditActivity;
@@ -47,7 +47,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		this.obj = obj;
 		this.customTitleEnabled = enableCustomTitle;
 	}
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		CustomTitleBar customTB = null;
@@ -57,7 +57,8 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		super.onCreate(savedInstanceState);
 
 		if(customTB != null) {
-			customTB.setName(title);
+			setTitle(getString(title));
+			customTB.setName(getString(title));
 			customTB.setIcon(drawableIcon);
 		}
 
@@ -136,10 +137,12 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 			break;
 		case R.id.button_delete:
-			SimpleDialog.confirmDialog(this, "Are you sure you want to delete these objects ?", new DialogInterface.OnClickListener() {
+			SimpleDialog.confirmDialog(this, 
+					getString(R.string.manageable_obj_del_confirm_question), 
+					new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					String errMessage = "One or more objects could not be deleted";
+					String errMessage = getString(R.string.manageable_obj_del_error);
 					boolean err = false;
 
 					for(int i=0; i<posChecked.length; i++) {
@@ -154,7 +157,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 					}
 
 					if(err)
-						SimpleDialog.errorDialog(finalContext, "Error", errMessage).show();
+						SimpleDialog.errorDialog(finalContext, getString(R.string.error), errMessage).show();
 
 					dialog.dismiss();
 					refreshDisplay(dbHelper);

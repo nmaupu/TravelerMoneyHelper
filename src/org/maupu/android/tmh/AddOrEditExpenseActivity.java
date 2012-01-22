@@ -32,7 +32,7 @@ public class AddOrEditExpenseActivity extends AddOrEditActivity<Expense> {
 	private Spinner expenseType;
 
 	public AddOrEditExpenseActivity() {
-		super("Expense edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_expense, new Expense());
+		super(R.string.activity_title_edition_expense, R.drawable.ic_stat_categories, R.layout.add_or_edit_expense, new Expense());
 	}
 	
 	@Override

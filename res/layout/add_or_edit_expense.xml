@@ -26,7 +26,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Type" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/type" />
 
                 <Spinner
                     android:id="@+id/expense_type"
@@ -45,7 +46,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Who" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/who" />
 
                 <Spinner
                     android:id="@+id/user"
@@ -63,7 +65,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Category" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/category" />
 
                 <Spinner
                     android:id="@+id/category"
@@ -81,7 +84,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Amount" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/amount" />
 
                 <EditText
                     android:id="@+id/amount"
@@ -100,7 +104,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Currency" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/currency" />
 
                 <Spinner
                     android:id="@+id/currency"

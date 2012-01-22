@@ -33,13 +33,13 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private TextView textViewName;
 	private List<ResolveInfo> mApps;
 	private ImageView icon;
-	private static final String[] popupMenuIconNames = new String[]{"Apps icon", "URL", "Camera"};
+	private String[] popupMenuIconNames;
 	private static final int MENU_ITEM_APPS = 0;
 	private static final int MENU_ITEM_URL = 1;
 	private static final int MENU_ITEM_CAMERA = 2;
 
 	public AddOrEditUserActivity() {
-		super("User edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_user, new User());
+		super(R.string.activity_title_edition_user, R.drawable.ic_stat_categories, R.layout.add_or_edit_user, new User());
 	}
 
 	@Override
@@ -53,6 +53,9 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 				createDialogMenu();
 			}
 		});
+		
+		popupMenuIconNames = new String[]{getString(R.string.popup_app_icon),
+				getString(R.string.popup_url), getString(R.string.popup_camera)};
 
 		loadApps();
 	}
@@ -67,7 +70,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private void createDialogMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         
-        builder.setTitle("Choose an icon from ...");
+        builder.setTitle(R.string.user_icon_edit_dialog_title);
         
         builder.setItems(popupMenuIconNames, new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialogInterface, int item) {

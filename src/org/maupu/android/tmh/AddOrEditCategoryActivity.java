@@ -8,7 +8,10 @@ public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
 	private TextView tvName;
 	
 	public AddOrEditCategoryActivity() {
-		super("Category edition", R.drawable.ic_stat_categories, R.layout.add_or_edit_category, new Category());
+		super(R.string.activity_title_edition_category, 
+				R.drawable.ic_stat_categories, 
+				R.layout.add_or_edit_category, 
+				new Category());
 	}
 	
 	@Override

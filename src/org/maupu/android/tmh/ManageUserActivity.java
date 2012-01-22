@@ -10,7 +10,7 @@ import android.database.Cursor;
 
 public class ManageUserActivity extends ManageableObjectActivity<User>{
 	public ManageUserActivity() {
-		super("Users", R.drawable.ic_stat_categories, AddOrEditUserActivity.class, new User(), true);
+		super(R.string.activity_title_manage_user, R.drawable.ic_stat_categories, AddOrEditUserActivity.class, new User(), true);
 	}
 	
 	@Override

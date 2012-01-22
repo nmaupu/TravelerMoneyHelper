@@ -9,7 +9,7 @@ import android.database.Cursor;
 
 public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public ManageCategoryActivity() {
-		super("Categories", R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class, new Category(), true);
+		super(R.string.activity_title_manage_category, R.drawable.ic_stat_categories, AddOrEditCategoryActivity.class, new Category(), true);
 	}
 	
 	@Override

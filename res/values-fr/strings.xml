@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Traveler Money Helper</string>
+    <string name="error">Erreur</string>
+    <string name="error_add_object">Impossible d\'ajouter cet objet, il y a des erreurs de saisie !</string>
+    <string name="activity_title_edition_category">Edition de categorie</string>
+    <string name="activity_title_edition_currency">Edition de monnaie</string>
+    <string name="activity_title_edition_expense">Edition de dépense</string>
+    <string name="activity_title_edition_user">Edition d\'utilisateur</string>
+    <string name="user_icon_edit_dialog_title">Choisir l\'icone depuis ...</string>
+    <string name="manageable_obj_del_confirm_question">Etes-vous sûr(e) de vouloir supprimer ces objets ?</string>
+    <string name="manageable_obj_del_error">Un ou plusieurs objets ne peuvent pas être supprimés</string>
+    <string name="activity_title_manage_category">Categorie</string>
+    <string name="activity_title_manage_currency">Monnaie</string>
+    <string name="activity_title_manage_expense">Dépense</string>
+    <string name="activity_title_manage_user">Utilisateur</string>
+    <string name="tab_expense">Depenses</string>
+    <string name="tab_withdrawal">Retrait</string>
+    <string name="tab_credit">Carte</string>
+    <string name="tab_stats">Stats</string>
+    <string name="name">Nom</string>
+    <string name="long_name">Nom long</string>
+    <string name="short_name">Nom court</string>
+    <string name="form_addedit_value">Valeur pour 1€</string>
+    <string name="form_addedit_update">Date de mise à jour actualisée</string>
+    <string name="type">Type</string>
+    <string name="who">Qui</string>
+    <string name="category">Categorie</string>
+    <string name="amount">Montant</string>
+    <string name="currency">Monnaie</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="icon">Icône</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Annumer</string>
+    <string name="close">X</string>
+    <string name="dialog_choose_icon">Choisir une icône</string>
+    <string name="add">Ajouter</string>
+    <string name="edit">Editer</string>
+    <string name="delete">Supprimer</string>
+    <string name="edition">Edition</string>
+    <string name="categories">Categories</string>
+    <string name="currencies">Monnaies</string>
+    <string name="users">Utilisateurs</string>
+    <string name="home">Accueil</string>
+    <string name="parameters">Paramètres</string>
+    <string name="refresh">Rafraichir</string>
+    <string name="popup_app_icon">Icône d\'application</string>
+    <string name="popup_url">URL</string>
+    <string name="popup_camera">Appareil photo</string>
+
+</resources>
