@@ -48,8 +48,8 @@ public abstract class TmhActivity extends Activity {
 		case R.id.item_currencies:
 			startActivityFromMenu(ManageCurrencyActivity.class);
 			break;
-		case R.id.item_user:
-			startActivityFromMenu(ManageUserActivity.class);
+		case R.id.item_account:
+			startActivityFromMenu(ManageAccountActivity.class);
 			break;
 		case R.id.item_refresh:
 			refreshDisplay(dbHelper);

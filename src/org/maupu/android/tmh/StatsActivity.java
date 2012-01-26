@@ -3,9 +3,9 @@ package org.maupu.android.tmh;
 import java.util.Date;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.ExpenseData;
-import org.maupu.android.tmh.database.UserData;
-import org.maupu.android.tmh.database.object.Expense;
+import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.object.Operation;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -25,9 +25,9 @@ public class StatsActivity extends TmhActivity {
 		dbHelper.openReadable();
 		
 		
-		Expense dummyExpense = new Expense();
-		Cursor sumWithdrawal = dummyExpense.sumExpenseByMonth(dbHelper, new Date(), ExpenseData.EXPENSE_TYPE_WITHDRAWAL);
-		Cursor sumCreditCard = dummyExpense.sumExpenseByMonth(dbHelper, new Date(), ExpenseData.EXPENSE_TYPE_CREDITCARD);
+		Operation dummyOperation = new Operation();
+		Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
+		Cursor sumCreditCard = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
 		
 		String sWithdrawalBalance = getStringBalance(sumWithdrawal);
 		String sCreditCardBalance = getStringBalance(sumCreditCard);
@@ -49,12 +49,12 @@ public class StatsActivity extends TmhActivity {
 	private String getStringBalance(Cursor c) {
 		StringBuilder sb = new StringBuilder();
 		for(int i=0; i<c.getCount(); i++) {
-			int userIdx = c.getColumnIndex(UserData.KEY_NAME);
-			int sumIdx = c.getColumnIndex(Expense.KEY_SUM);
-			String user = c.getString(userIdx);
+			int accountIdx = c.getColumnIndex(AccountData.KEY_NAME);
+			int sumIdx = c.getColumnIndex(Operation.KEY_SUM);
+			String account = c.getString(accountIdx);
 			Float sum = c.getFloat(sumIdx);
 			
-			sb.append(user+"="+sum+" | ");
+			sb.append(account+"="+sum+" | ");
 			c.moveToNext();
 		}
 		

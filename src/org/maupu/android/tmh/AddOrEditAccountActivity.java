@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.maupu.android.tmh.database.object.User;
+import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Currency;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,11 +29,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-public class AddOrEditUserActivity extends AddOrEditActivity<User> {
+public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private ImageView imageViewIcon;
 	private TextView textViewName;
+	private Spinner spinnerCurrency;
 	private List<ResolveInfo> mApps;
 	private ImageView icon;
 	private String[] popupMenuIconNames;
@@ -38,14 +43,15 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private static final int MENU_ITEM_URL = 1;
 	private static final int MENU_ITEM_CAMERA = 2;
 
-	public AddOrEditUserActivity() {
-		super(R.string.activity_title_edition_user, R.drawable.ic_stat_categories, R.layout.add_or_edit_user, new User());
+	public AddOrEditAccountActivity() {
+		super(R.string.activity_title_edition_account, R.drawable.ic_stat_categories, R.layout.add_or_edit_account, new Account());
 	}
 
 	@Override
 	protected void initResources() {
 		imageViewIcon = (ImageView)findViewById(R.id.icon);
 		textViewName = (TextView)findViewById(R.id.name);
+		spinnerCurrency = (Spinner)findViewById(R.id.currency);
 		icon = (ImageView)findViewById(R.id.icon);
 		icon.setOnClickListener(new OnClickListener() {
 			@Override
@@ -53,6 +59,11 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 				createDialogMenu();
 			}
 		});
+		
+		// Setting spinner currency values
+		Currency dummyCurrency = new Currency();
+		Cursor c = dummyCurrency.fetchAll(super.dbHelper);
+		spinnerCurrency.setAdapter(getDefaultSpinnerCursorAdapter(c, CurrencyData.KEY_LONG_NAME));
 		
 		popupMenuIconNames = new String[]{getString(R.string.popup_app_icon),
 				getString(R.string.popup_url), getString(R.string.popup_camera)};
@@ -70,7 +81,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	private void createDialogMenu() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         
-        builder.setTitle(R.string.user_icon_edit_dialog_title);
+        builder.setTitle(R.string.account_icon_edit_dialog_title);
         
         builder.setItems(popupMenuIconNames, new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialogInterface, int item) {
@@ -103,7 +114,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 		AlertDialog.Builder builder;
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_user_icon, (ViewGroup) findViewById(R.id.layout_root));
+		View layout = inflater.inflate(R.layout.dialog_account_icon, (ViewGroup) findViewById(R.id.layout_root));
 		
 		
 		builder = new AlertDialog.Builder(mContext);
@@ -138,7 +149,7 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 	}
 
 	@Override
-	protected void baseObjectToFields(User obj) {
+	protected void baseObjectToFields(Account obj) {
 		if(obj == null) {
 			textViewName.setText("");
 			imageViewIcon.setImageResource(R.drawable.icon_default);
@@ -154,17 +165,18 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 				// Problem occured, setting default icon
 				imageViewIcon.setImageResource(R.drawable.icon_default);
 			}
+			
+			if(obj.getCurrency() !=null)
+				setSpinnerPositionCursor(spinnerCurrency, obj.getCurrency().getLongName(), new Currency());
 		}
 	}
 
 	@Override
-	protected void fieldsToBaseObject(User obj) {
-		
-		
+	protected void fieldsToBaseObject(Account obj) {
 		if(obj != null) {
-			String username = textViewName.getText().toString().trim();
+			String account = textViewName.getText().toString().trim();
 			Bitmap b = ((BitmapDrawable)imageViewIcon.getDrawable()).getBitmap();
-			String filename = username+".png";
+			String filename = account+".png";
 			
 			try {
 				FileOutputStream fOut = openFileOutput(filename, Context.MODE_PRIVATE);
@@ -176,13 +188,18 @@ public class AddOrEditUserActivity extends AddOrEditActivity<User> {
 				obj.setIcon(filename);
 			} catch (IOException ioe) {}
 			
-			obj.setName(username);
+			obj.setName(account);
+			
+			Cursor c = (Cursor)spinnerCurrency.getSelectedItem();
+			Currency cur = new Currency();
+			cur.toDTO(super.dbHelper, c);
+			obj.setCurrency(cur);
 		}
 	}
 
 	class AppsAdapter extends BaseAdapter {
 		public View getView(int position, View convertView, ViewGroup parent) {
-			ImageView i = new ImageView(AddOrEditUserActivity.this);
+			ImageView i = new ImageView(AddOrEditAccountActivity.this);
 
 			ResolveInfo info = mApps.get(position % mApps.size());
 

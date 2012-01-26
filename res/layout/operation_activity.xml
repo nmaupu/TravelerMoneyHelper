@@ -12,13 +12,13 @@
         android:text="@string/add" />
 
     <ListView
-        android:id="@+id/expense_list"
+        android:id="@+id/operation_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:dividerHeight="@dimen/list_divider_height" />
 
     <TextView
-        android:id="@+id/expense_empty"
+        android:id="@+id/operation_empty"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

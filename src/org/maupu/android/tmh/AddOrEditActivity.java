@@ -1,17 +1,24 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.BaseObject;
+import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 /**
@@ -127,6 +134,56 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
 			return false;
 		}
+	}
+	
+	protected SpinnerAdapter getDefaultSpinnerCursorAdapter(Cursor c, String from) {
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item,
+				c, new String[]{from}, new int[]{android.R.id.text1});
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		return adapter;
+	}
+	
+	/**
+	 * Set spinner to position corresponding to value
+	 * @param spinner
+	 * @param value
+	 */
+	protected void setSpinnerPositionCursor(Spinner spinner, String value, BaseObject dummy) {
+		// Finding value's position
+		int count = spinner.getCount();
+		SimpleCursorAdapter adapter = (SimpleCursorAdapter)spinner.getAdapter();
+
+		for(int i=0; i<count; i++) {
+			Cursor c = (Cursor)adapter.getItem(i);
+			dummy.toDTO(super.dbHelper, c);
+			if(isSpinnerValueEqualsToBaseObject(dummy, value)) {
+				spinner.setSelection(i, true);
+				break;
+			}
+		}
+	}
+	
+	protected void setSpinnerPositionString(Spinner spinner, String value) {
+		int count = spinner.getCount();
+		SpinnerAdapter adapter = spinner.getAdapter();
+		
+		for(int i=0; i<count; i++) {
+			String val = (String)adapter.getItem(i);
+			if(val.equals(value))
+				spinner.setSelection(i, true);
+		}
+	}
+
+	protected boolean isSpinnerValueEqualsToBaseObject(BaseObject bo, String value) {
+		if(bo instanceof Account) {
+			return value.equals(((Account)bo).getName());
+		} else if (bo instanceof Category) {
+			return value.equals(((Category)bo).getName());
+		} else if (bo instanceof Currency) {
+			return value.equals(((Currency)bo).getLongName());
+		}
+
+		return false;
 	}
 
 	/**

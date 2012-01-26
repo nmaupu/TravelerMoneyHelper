@@ -18,9 +18,9 @@
                 android:title="@string/currencies"/>
 
             <item
-                android:id="@+id/item_user"
-                android:icon="@drawable/ic_menu_user"
-                android:title="@string/users"/>
+                android:id="@+id/item_account"
+                android:icon="@drawable/ic_menu_account"
+                android:title="@string/accounts"/>
         </menu>
     </item>
 

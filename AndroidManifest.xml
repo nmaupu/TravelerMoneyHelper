@@ -20,12 +20,12 @@
         </activity>
         <activity android:name=".ManageCategoryActivity" />
         <activity android:name=".ManageCurrencyActivity" />
-        <activity android:name=".ManageExpenseActivity" />
-        <activity android:name=".ManageUserActivity" />
+        <activity android:name=".ManageOperationActivity" />
+        <activity android:name=".ManageAccountActivity" />
         <activity android:name=".AddOrEditCurrencyActivity" />
         <activity android:name=".AddOrEditCategoryActivity" />
-        <activity android:name=".AddOrEditExpenseActivity" />
-        <activity android:name=".AddOrEditUserActivity" />
+        <activity android:name=".AddOrEditOperationActivity" />
+        <activity android:name=".AddOrEditAccountActivity" />
         <activity android:name=".StatsActivity" />
     </application>
 

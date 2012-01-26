@@ -7,7 +7,7 @@
     <include layout="@layout/checkbox_item" />
     
     <LinearLayout
-        android:id="@+id/ll_user"
+        android:id="@+id/ll_account"
         android:layout_toRightOf="@id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -24,7 +24,7 @@
             android:layout_gravity="center_horizontal" />
 
         <TextView
-            android:id="@+id/username"
+            android:id="@+id/account"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="10dp"
@@ -36,7 +36,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/ll_user"
+        android:layout_toRightOf="@id/ll_account"
         android:orientation="horizontal" >
 
         <LinearLayout
