@@ -54,4 +54,14 @@ public class Category extends BaseObject {
 		super._id = null;
 		this.name = null;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getName();
+	}
+
+	@Override
+	public String getDefaultOrderColumn() {
+		return CategoryData.KEY_NAME;
+	}
 }

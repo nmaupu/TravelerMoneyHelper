@@ -8,6 +8,7 @@ import java.util.List;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -35,7 +36,7 @@ import android.widget.TextView;
 public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private ImageView imageViewIcon;
 	private TextView textViewName;
-	private Spinner spinnerCurrency;
+	private SpinnerManager spinnerCurrencyManager;
 	private List<ResolveInfo> mApps;
 	private ImageView icon;
 	private String[] popupMenuIconNames;
@@ -51,7 +52,9 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	protected void initResources() {
 		imageViewIcon = (ImageView)findViewById(R.id.icon);
 		textViewName = (TextView)findViewById(R.id.name);
-		spinnerCurrency = (Spinner)findViewById(R.id.currency);
+		Spinner spinnerCurrency = (Spinner)findViewById(R.id.currency);
+		//spinnerCurrencyManager = new SpinnerManager(spinnerCurrency);
+		spinnerCurrencyManager = new SpinnerManager(this, spinnerCurrency);
 		icon = (ImageView)findViewById(R.id.icon);
 		icon.setOnClickListener(new OnClickListener() {
 			@Override
@@ -63,7 +66,8 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		// Setting spinner currency values
 		Currency dummyCurrency = new Currency();
 		Cursor c = dummyCurrency.fetchAll(super.dbHelper);
-		spinnerCurrency.setAdapter(getDefaultSpinnerCursorAdapter(c, CurrencyData.KEY_LONG_NAME));
+		//spinnerCurrency.setAdapter(SpinnerManager.createSpinnerCursorAdapter(this, c, CurrencyData.KEY_LONG_NAME));
+		spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		
 		popupMenuIconNames = new String[]{getString(R.string.popup_app_icon),
 				getString(R.string.popup_url), getString(R.string.popup_camera)};
@@ -167,7 +171,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			}
 			
 			if(obj.getCurrency() !=null)
-				setSpinnerPositionCursor(spinnerCurrency, obj.getCurrency().getLongName(), new Currency());
+				spinnerCurrencyManager.setSpinnerPositionCursor(dbHelper, obj.getCurrency().getLongName(), new Currency());
 		}
 	}
 
@@ -190,7 +194,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			
 			obj.setName(account);
 			
-			Cursor c = (Cursor)spinnerCurrency.getSelectedItem();
+			Cursor c = spinnerCurrencyManager.getSelectedItem();
 			Currency cur = new Currency();
 			cur.toDTO(super.dbHelper, c);
 			obj.setCurrency(cur);

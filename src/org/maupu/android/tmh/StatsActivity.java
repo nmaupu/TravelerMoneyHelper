@@ -1,10 +1,7 @@
 package org.maupu.android.tmh;
 
-import java.util.Date;
-
-import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Operation;
 
 import android.database.Cursor;
@@ -25,20 +22,20 @@ public class StatsActivity extends TmhActivity {
 		dbHelper.openReadable();
 		
 		
-		Operation dummyOperation = new Operation();
-		Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
-		Cursor sumCreditCard = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
+		//Operation dummyOperation = new Operation();
+		//Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
+		//Cursor sumCreditCard = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
 		
-		String sWithdrawalBalance = getStringBalance(sumWithdrawal);
-		String sCreditCardBalance = getStringBalance(sumCreditCard);
+		//String sWithdrawalBalance = getStringBalance(sumWithdrawal);
+		//String sCreditCardBalance = getStringBalance(sumCreditCard);
 		
 		
 		LinearLayout ll = new LinearLayout(this);
 		ll.setOrientation(LinearLayout.VERTICAL);
 		TextView tvWithdrawal = new TextView(this);
-		tvWithdrawal.setText("Withdrawal : "+sWithdrawalBalance);
+		tvWithdrawal.setText("Withdrawal : ");
 		TextView tvCredit = new TextView(this);
-		tvCredit.setText("Credit : "+sCreditCardBalance);
+		tvCredit.setText("Credit : ");
 		
 		
 		ll.addView(tvWithdrawal);

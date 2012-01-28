@@ -27,6 +27,7 @@
         <activity android:name=".AddOrEditOperationActivity" />
         <activity android:name=".AddOrEditAccountActivity" />
         <activity android:name=".StatsActivity" />
+        <activity android:name=".ViewPagerTestActivity" />
     </application>
 
 </manifest>

@@ -34,6 +34,7 @@
     <string name="cancel">Cancel</string>
     <string name="close">X</string>
     <string name="dialog_choose_icon">Choose an icon</string>
+    <string name="dialog_choose_account">Choose an account</string>
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>

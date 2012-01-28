@@ -132,7 +132,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		op.setAccount(account);
 		op.setCategory(category);
 		op.setCurrency(currency);
-		op.setType(OperationData.OPERATION_TYPE_DEFAULT);
 		op.setCurrencyValueOnCreated(1f);
 		op.setDate(new Date());
 		op.insert(this);

@@ -89,10 +89,12 @@ public class Currency extends BaseObject {
 		
 		return super.getFromCache();
 	}
+	
 	@Override
 	public boolean validate() {
 		return true;
 	}
+	
 	@Override
 	public void reset() {
 		super._id = null;
@@ -101,5 +103,14 @@ public class Currency extends BaseObject {
 		this.longName = null;
 		this.shortName = null;
 		this.tauxEuro = null;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getLongName();
+	}
+	@Override
+	public String getDefaultOrderColumn() {
+		return CurrencyData.KEY_LONG_NAME;
 	}
 }

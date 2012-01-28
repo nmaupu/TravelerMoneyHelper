@@ -34,6 +34,17 @@ public abstract class BaseObject implements Validator, Serializable {
 	 * @param cursor
 	 */
 	public abstract BaseObject toDTO(final DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException;
+	
+	/**
+	 * Method returning name of object (used in spinners for instance)
+	 */
+	public abstract String toString();
+	
+	/**
+	 * Method returning default order column
+	 * @return a String representing default order column
+	 */
+	public abstract String getDefaultOrderColumn();
 
 	public BaseObject getFromCache() {
 		BaseObject ret = cache.getBaseDTO(SimpleObjectCache.constructKey(getTableName(), getId()));
@@ -73,6 +84,6 @@ public abstract class BaseObject implements Validator, Serializable {
 	}
 
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		return dbHelper.getDb().query(getTableName(), null, null, null, null, null, null);
+		return dbHelper.getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
 	}
 }

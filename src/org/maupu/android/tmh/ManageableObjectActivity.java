@@ -76,9 +76,9 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 		if(this.deleteButton != null)
 			this.deleteButton.setOnClickListener(this);
-
+		
 		initButtons();
-		refreshDisplay(dbHelper);
+		//refreshDisplay(dbHelper);
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {

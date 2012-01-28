@@ -91,11 +91,6 @@ public class Operation extends BaseObject {
 			cv.put(OperationData.KEY_ID_CURRENCY, this.getCurrency().getId());
 		cv.put(OperationData.KEY_CURRENCY_VALUE, this.getCurrencyValueOnCreated());
 
-		if(this.getType() == null)
-			cv.put(OperationData.KEY_TYPE, OperationData.OPERATION_TYPE_DEFAULT);
-		else
-			cv.put(OperationData.KEY_TYPE, this.getType());
-
 		return cv;
 	}
 
@@ -115,7 +110,6 @@ public class Operation extends BaseObject {
 		int idxCategory = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
 		int idxCurrency = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_CURRENCY);
 		int idxCurrencyValueOnCreated = cursor.getColumnIndexOrThrow(OperationData.KEY_CURRENCY_VALUE);
-		int idxType = cursor.getColumnIndexOrThrow(OperationData.KEY_TYPE);
 
 		Account account = new Account();
 		Category category = new Category();
@@ -139,7 +133,6 @@ public class Operation extends BaseObject {
 			this.setCurrency(currency);
 
 			this.setCurrencyValueOnCreated(cursor.getFloat(idxCurrencyValueOnCreated));
-			this.setType(cursor.getString(idxType));
 		}
 
 		return super.getFromCache();
@@ -150,26 +143,14 @@ public class Operation extends BaseObject {
 		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd) {
-		return fetchByPeriod(dbHelper, dateBegin, dateEnd, null);
-	}
-
-	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd, String[] operationTypes) {
+	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd, int accountId) {
 		QueryBuilder qsb = getDefaultQueryBuilder();
 
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
 		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		if(operationTypes != null && operationTypes.length >= 1) {
-			qsb.append("AND (");
-			for(int i=0; i<operationTypes.length; i++) {
-				if(i != 0)
-					qsb.append("OR ");
-				
-				 qsb.append("o.type='" + operationTypes[i] + "' ");
-			}
-			qsb.append(") ");
-		}
+		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
 
 		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
 		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
@@ -186,8 +167,7 @@ public class Operation extends BaseObject {
 		.addSelectToQuery(OperationData.KEY_ID_ACCOUNT).append(",")
 		.addSelectToQuery(OperationData.KEY_ID_CATEGORY).append(",")
 		.addSelectToQuery(OperationData.KEY_ID_CURRENCY).append(",")
-		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",")
-		.addSelectToQuery(OperationData.KEY_TYPE).append(",");
+		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",");
 
 		qsb.append("strftime('%d-%m-%Y %H:%M:%S', o.date) date, ");
 
@@ -207,15 +187,11 @@ public class Operation extends BaseObject {
 		return qsb;
 	}
 
-	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date) {
-		return fetchByMonth(dbHelper, date, null);
-	}
-	
-	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date, String[] operationTypes) {
+	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date, int accountId) {
 		Date dateBegin = DateUtil.getFirstDayOfMonth(date);
 		Date dateEnd = DateUtil.getLastDayOfMonth(date);
 
-		return fetchByPeriod(dbHelper, dateBegin, dateEnd, operationTypes);
+		return fetchByPeriod(dbHelper, dateBegin, dateEnd, accountId);
 	}
 	
 	public Cursor sumOperationByMonth(final DatabaseHelper dbHelper, Date date, String operationType) {
@@ -231,7 +207,6 @@ public class Operation extends BaseObject {
 		qb.append(AccountData.KEY_NAME+" ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a ");
 		qb.append("WHERE o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		qb.append("AND o."+OperationData.KEY_TYPE+"='"+operationType+"' ");
 		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
 		qb.append("GROUP BY o."+OperationData.KEY_ID_ACCOUNT);
 		
@@ -254,6 +229,14 @@ public class Operation extends BaseObject {
 		this.description = null;
 		this.account = null;
 		this.currencyValueOnCreation = null;
-		this.type = OperationData.OPERATION_TYPE_DEFAULT;
+	}
+	
+	@Override
+	public String toString() {
+		return ""+this.getId();
+	}
+	@Override
+	public String getDefaultOrderColumn() {
+		return OperationData.KEY_DATE;
 	}
 }

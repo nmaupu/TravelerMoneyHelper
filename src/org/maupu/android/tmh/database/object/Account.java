@@ -80,4 +80,13 @@ public class Account extends BaseObject {
 		this.icon = null;
 		this.name = null;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getName();
+	}
+	@Override
+	public String getDefaultOrderColumn() {
+		return AccountData.KEY_NAME;
+	}
 }
