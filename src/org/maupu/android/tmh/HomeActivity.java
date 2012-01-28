@@ -34,7 +34,7 @@ public class HomeActivity extends TabActivity {
 		TabHost tabHost = getTabHost();
 		TabHost.TabSpec spec;
 		Intent intent;
-
+		
 		intent = new Intent().setClass(this, activity);
 		spec = tabHost.newTabSpec(getString(titleId)).setIndicator(getString(titleId),
 				res.getDrawable(drawableId)).setContent(intent);

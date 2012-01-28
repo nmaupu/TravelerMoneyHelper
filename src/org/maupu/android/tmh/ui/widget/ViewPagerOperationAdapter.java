@@ -55,6 +55,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 	@Override
 	public void destroyItem(View pager, int position, Object view) {
 		((ViewPager)pager).removeView((View)view);
+		items.remove(position);
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 	}
 	
 	public void refreshItemView(int position) {
-		// Refreshing previous, current and next page
+		// Refreshing previous, current and next pages
 		doRefreshItemView(position-1);
 		doRefreshItemView(position);
 		doRefreshItemView(position+1);
