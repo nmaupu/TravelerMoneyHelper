@@ -6,7 +6,7 @@ import java.util.Date;
 import org.maupu.android.tmh.AddOrEditActivity;
 import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.ViewPagerTestActivity;
+import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener {
-	private ViewPagerTestActivity ctx;
+	private ViewPagerOperationActivity ctx;
 	private View view;
 	private Date date;
 	private DatabaseHelper dbHelper;
@@ -35,7 +35,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private ListView listView;
 	private Operation obj = new Operation();
 
-	public OperationPagerItem(ViewPagerTestActivity ctx, LayoutInflater inflater, DatabaseHelper dbHelper, Date date) {
+	public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, DatabaseHelper dbHelper, Date date) {
 		this.ctx = ctx;
 		this.date = date;
 		this.dbHelper = dbHelper;

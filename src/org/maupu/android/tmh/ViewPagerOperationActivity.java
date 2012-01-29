@@ -9,7 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 
-public class ViewPagerTestActivity extends TmhActivity implements OnPageChangeListener {
+public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
 	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private ViewPagerOperationAdapter adapter;
 	private int currentPosition;
