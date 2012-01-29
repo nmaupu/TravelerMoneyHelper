@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingBottom="2dip"
         android:paddingTop="2dip"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_weight="0" />
 
     <ListView
         android:id="@+id/list"

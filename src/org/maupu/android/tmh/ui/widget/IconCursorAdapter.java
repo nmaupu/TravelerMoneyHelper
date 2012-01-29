@@ -2,27 +2,39 @@ package org.maupu.android.tmh.ui.widget;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
+/**
+ * A cursor adapter with an ImageView named 'icon'
+ * @author nmaupu
+ *
+ */
+public class IconCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private Cursor cursor;
 	private Context context;
+	private ICallback listener;
 	
-	public IconCheckableCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-		super(context, layout, c, from, to);
+	public IconCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, ICallback listener) {
+		super(context, layout, c, from, to, SimpleCursorAdapter.NO_SELECTION);
 		this.cursor = c;
 		this.context = context;
+		this.listener = listener;
 	}
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = super.getView(position, convertView, parent);
+		v.setOnClickListener(this);
+		v.setTag(position);
 		
 		ImageView icon = (ImageView)v.findViewById(R.id.icon);
 		
@@ -38,4 +50,10 @@ public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
 		
 		return v;
 	}
+
+	@Override
+	public void onClick(View v) {
+		if(listener != null)
+			listener.callback(v);
+	}	
 }

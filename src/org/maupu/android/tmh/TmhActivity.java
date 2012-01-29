@@ -16,7 +16,7 @@ public abstract class TmhActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper.openWritable();
-		dbHelper.createSampleData();
+		//dbHelper.createSampleData();
 	}
 	
 	@Override

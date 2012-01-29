@@ -1,33 +1,46 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private ViewPagerOperationAdapter adapter;
 	private int currentPosition;
+	private Account currentAccount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main2);
 
-		dbHelper.openReadable();
+		// Get first account
+		currentAccount = new Account();
+		Cursor c = currentAccount.fetch(dbHelper, 1);
+		currentAccount.toDTO(dbHelper, c);
 
 		adapter = new ViewPagerOperationAdapter(this, dbHelper);
 		ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
 		vp.setAdapter(adapter);
 		currentPosition = adapter.getCount()/2;
 		vp.setCurrentItem(currentPosition);
-		
+
 		vp.setOnPageChangeListener(this);
+	}
+	
+	public Account getCurrentAccount() {
+		return currentAccount;
+	}
+	
+	public void setCurrentAccount(Account account) {
+		this.currentAccount = account;
 	}
 
 	@Override

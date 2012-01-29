@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.List;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -162,13 +161,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			
 			// Loading icon
 			String filename = obj.getIcon();
-			try {
-				FileInputStream fIn = openFileInput(filename);
-				imageViewIcon.setImageBitmap(BitmapFactory.decodeStream(fIn));
-			} catch (Exception e) {
-				// Problem occured, setting default icon
-				imageViewIcon.setImageResource(R.drawable.icon_default);
-			}
+			ImageViewHelper.setIcon(this, imageViewIcon, filename);
 			
 			if(obj.getCurrency() !=null)
 				spinnerCurrencyManager.setSpinnerPositionCursor(dbHelper, obj.getCurrency().getLongName(), new Currency());

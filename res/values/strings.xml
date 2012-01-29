@@ -52,5 +52,6 @@
     <string name="save">Save</string>
     <string name="save_and_add">Save and add</string>
     <string name="toast_success">Operation successfully completed</string>
-
+    <string name="pick_account">Pick an account</string>
+    
 </resources>

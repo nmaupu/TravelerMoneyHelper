@@ -1,5 +1,6 @@
 <resources>
 
     <dimen name="list_divider_height">2px</dimen>
+    <dimen name="header_operation_height">50dip</dimen>
 
 </resources>
