@@ -14,8 +14,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -188,20 +190,25 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	}
 	
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
-		View v = (View)findViewById(R.id.layout_root);
-		
+		View v = (View)findViewById(R.id.layout_root_footer);
+
 		// Already ok
 		if((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))
 			return;
-		
-		Animation animation  = AnimationUtils.loadAnimation(v.getContext(), anim);
-		v.startAnimation(animation);
-		
+
 		if(visible) {
 			v.setVisibility(View.VISIBLE);
 		} else {
 			v.setVisibility(View.GONE);
 		}
+		
+		Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
+		if(anim == R.anim.pushup)
+			animation.setInterpolator(new DecelerateInterpolator());
+		else
+			animation.setInterpolator(new AccelerateInterpolator());
+		
+		v.startAnimation(animation);
 	}
 
 	public ListView getListView() {

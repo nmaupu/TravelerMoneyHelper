@@ -16,17 +16,17 @@ import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -225,20 +225,25 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
-		View v = (View)view.findViewById(R.id.layout_root);
+		View v = (View)view.findViewById(R.id.layout_root_footer);
 
 		// Already ok
 		if((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))
 			return;
-
-		Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
-		v.startAnimation(animation);
 
 		if(visible) {
 			v.setVisibility(View.VISIBLE);
 		} else {
 			v.setVisibility(View.GONE);
 		}
+		
+		Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
+		if(anim == R.anim.pushup)
+			animation.setInterpolator(new DecelerateInterpolator());
+		else
+			animation.setInterpolator(new AccelerateInterpolator());
+		
+		v.startAnimation(animation);
 	}
 
 	public void refreshHeader() {
