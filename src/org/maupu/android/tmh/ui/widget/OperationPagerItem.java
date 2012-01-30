@@ -92,14 +92,18 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	public void refreshDisplay() {
 		if(listView == null)
 			listView = (ListView)view.findViewById(R.id.list);
-		Operation dummy = new Operation();
-		Cursor c = dummy.fetchByMonth(dbHelper, date, viewPagerOperationActivity.getCurrentAccount().getId());
-		CheckableCursorAdapter cca = new CheckableCursorAdapter(viewPagerOperationActivity, R.layout.operation_item, 
-				c, 
-				new String[]{"icon", "account", "category", "dateString", "amountString", "euroAmount"},
-				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
-		cca.setOnNumberCheckedListener(this);
-		listView.setAdapter(cca);
+		
+		Account currentAccount = viewPagerOperationActivity.getCurrentAccount();
+		if(currentAccount != null && currentAccount.getId() != null) {
+			Operation dummy = new Operation();
+			Cursor c = dummy.fetchByMonth(dbHelper, date, currentAccount.getId());
+			CheckableCursorAdapter cca = new CheckableCursorAdapter(viewPagerOperationActivity, R.layout.operation_item, 
+					c, 
+					new String[]{"icon", "account", "category", "dateString", "amountString", "euroAmount"},
+					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
+			cca.setOnNumberCheckedListener(this);
+			listView.setAdapter(cca);
+		}
 		
 		// refresh header if needed
 		refreshHeader();

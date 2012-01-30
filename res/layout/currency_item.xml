@@ -27,7 +27,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:gravity="center_vertical|left"
-            android:textColor="@color/light_gray"
             android:textStyle="italic" />
     </LinearLayout>
 
