@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
 	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
-	protected static final int DATABASE_VERSION = 5;
+	protected static final int DATABASE_VERSION = 7;
 	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
 	private Context context;
 	private SQLiteDatabase db;
@@ -97,10 +97,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		currency.setLongName("Euro");
 		currency.setShortName("e");
 		currency.setTauxEuro(1f);
+		currency.setIsoCode("EUR");
 		currency.insert(this);
 		
 		currency.setLongName("Dollar");
 		currency.setShortName("$");
+		currency.setIsoCode("USD");
 		currency.setTauxEuro(1.4f);
 		currency.insert(this);
 		

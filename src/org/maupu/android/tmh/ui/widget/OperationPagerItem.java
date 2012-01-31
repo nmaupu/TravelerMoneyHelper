@@ -1,6 +1,7 @@
 package org.maupu.android.tmh.ui.widget;
 
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Date;
 
 import org.maupu.android.tmh.AddOrEditActivity;
@@ -8,6 +9,7 @@ import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
@@ -46,6 +48,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private ImageView imageViewIcon;
 	private TextView textViewAccountName;
 	private TextView textViewTitle;
+	private View footerOperationTotal;
+	private TextView textViewTotal;
 
 	public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, DatabaseHelper dbHelper, Date date) {
 		this.viewPagerOperationActivity = ctx;
@@ -62,6 +66,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
 	private void init() {
 		createHeader();
+		createFooterTotal();
 
 		this.editButton = (Button)view.findViewById(R.id.button_edit);
 		this.deleteButton = (Button)view.findViewById(R.id.button_delete);
@@ -88,6 +93,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		header.setVisibility(View.VISIBLE);
 		header.addView(headerContent, 0);
 	}
+	
+	private void createFooterTotal() {
+		footerOperationTotal = inflater.inflate(R.layout.manageable_operation_total, null);
+		LinearLayout content = (LinearLayout)view.findViewById(R.id.layout_root);
+		
+		textViewTotal = (TextView)footerOperationTotal.findViewById(R.id.total);
+		content.addView(footerOperationTotal, content.getChildCount()-2);
+	}
 
 	public void refreshDisplay() {
 		if(listView == null)
@@ -95,6 +108,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		
 		Account currentAccount = viewPagerOperationActivity.getCurrentAccount();
 		if(currentAccount != null && currentAccount.getId() != null) {
+			// Process list
 			Operation dummy = new Operation();
 			Cursor c = dummy.fetchByMonth(dbHelper, date, currentAccount.getId());
 			CheckableCursorAdapter cca = new CheckableCursorAdapter(viewPagerOperationActivity, R.layout.operation_item, 
@@ -103,6 +117,39 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
 			cca.setOnNumberCheckedListener(this);
 			listView.setAdapter(cca);
+			
+			// Process total
+			c = dummy.sumOperationsByMonth(dbHelper, currentAccount, date);
+			float total = 0f;
+			int nbRes = c.getCount();
+			boolean sameCurrency = (nbRes == 1);
+			String symbolCurrency = Currency.getInstance("EUR").getSymbol();
+			
+			for(int i=0; i<nbRes; i++) {
+				int idxSum = c.getColumnIndexOrThrow(Operation.KEY_SUM);
+				int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_TAUX_EURO);
+				int idxCurrencyShortName = c.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+				
+				float amount = c.getFloat(idxSum);
+				float rate = c.getFloat(idxRate);
+				
+				// If not sameCurrency, convert to euro
+				if(! sameCurrency) {
+					total += amount/rate;
+				}
+				else {
+					total += amount;
+					symbolCurrency = c.getString(idxCurrencyShortName);
+				}
+				
+				c.moveToNext();
+			} //for
+			
+			StringBuffer strTotal = new StringBuffer(String.valueOf(total));
+			strTotal.append(" ");
+			strTotal.append(symbolCurrency);
+			
+			textViewTotal.setText(strTotal);
 		}
 		
 		// refresh header if needed

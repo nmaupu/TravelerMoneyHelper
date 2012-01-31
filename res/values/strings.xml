@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    
+    <string name="currency_code">Code</string>
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Error</string>
     <string name="error_add_object">Impossible to add object, error in fields !</string>

@@ -194,21 +194,42 @@ public class Operation extends BaseObject {
 		return fetchByPeriod(dbHelper, dateBegin, dateEnd, accountId);
 	}
 	
-	public Cursor sumOperationByMonth(final DatabaseHelper dbHelper, Date date, String operationType) {
-		return sumOperationByPeriod(dbHelper, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date), operationType);
+	/**
+	 * Select and sum all amounts grouping by currency for a given account and for a given month
+	 * @param dbHelper
+	 * @param account
+	 * @param date
+	 * @return Sum of all operations for given parameters
+	 */
+	public Cursor sumOperationsByMonth(final DatabaseHelper dbHelper, Account account, Date date) {
+		return sumOperationsByPeriod(dbHelper, account, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date));
 	}
 	
-	public Cursor sumOperationByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd, String operationType) {
+	/**
+	 * Select and sum all amounts grouping by currency for a given account and for a given period
+	 * @param dbHelper
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @param operationType
+	 * @return Sum of all operations for given parameters
+	 */
+	public Cursor sumOperationsByPeriod(final DatabaseHelper dbHelper, Account account, Date dateBegin, Date dateEnd) {
+		if(account == null || account.getId() == null)
+			return null;
+		
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("sum("+OperationData.KEY_AMOUNT+") "+Operation.KEY_SUM+", ");
-		qb.append(AccountData.KEY_NAME+" ");
-		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a ");
-		qb.append("WHERE o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
+		qb.append("c."+CurrencyData.KEY_SHORT_NAME+" ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
+		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
-		qb.append("GROUP BY o."+OperationData.KEY_ID_ACCOUNT);
+		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY);
 		
 		Cursor c = dbHelper.getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();

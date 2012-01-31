@@ -8,6 +8,7 @@ public class CurrencyData extends APersistedData {
 	public static final String KEY_ICON="icon";
 	public static final String KEY_TAUX_EURO="tauxEuro";
 	public static final String KEY_LAST_UPDATE="lastUpdate";
+	public static final String KEY_ISO_CODE="isoCode";
 	
 	public static final String TABLE_NAME = "currency";
 	private static final String CREATE_TABLE = 
@@ -17,7 +18,8 @@ public class CurrencyData extends APersistedData {
 			KEY_SHORT_NAME  + " TEXT," +
 			KEY_ICON        + " TEXT," +
 			KEY_TAUX_EURO   + " REAL," +
-			KEY_LAST_UPDATE + " TEXT" +
+			KEY_LAST_UPDATE + " TEXT," +
+			KEY_ISO_CODE    + " TEXT NOT NULL" +
 			")";
 	
 	public CurrencyData(Context ctx) {
