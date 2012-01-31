@@ -32,6 +32,7 @@
         android:layout_marginBottom="2dip"
         android:layout_marginTop="2dip"
         android:layout_toLeftOf="@id/title_bar_tv_right"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:src="@drawable/icon_default" />
 
 </RelativeLayout>

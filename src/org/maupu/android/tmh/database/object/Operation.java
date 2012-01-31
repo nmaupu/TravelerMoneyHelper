@@ -3,21 +3,24 @@ package org.maupu.android.tmh.database.object;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.util.DateUtil;
 import org.maupu.android.tmh.database.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.util.Log;
 
 public class Operation extends BaseObject {
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_SUM="sum";
+	public static final int COLOR_POSITIVE_AMOUNT = Color.parseColor("#3fab37");
+	public static final int COLOR_NEGATIVE_AMOUNT = Color.parseColor("#d03636");
 	private Float amount;
 	private String description;
 	private Date date;

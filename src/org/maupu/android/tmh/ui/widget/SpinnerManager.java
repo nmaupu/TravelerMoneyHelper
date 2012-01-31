@@ -61,11 +61,11 @@ public class SpinnerManager {
 	}
 	
 	/**
-	 * Set position of spinner by privided String
+	 * Set position of spinner by provided a String
 	 * @param spinner
 	 * @param value
 	 */
-	public void setSpinnerPositionString(String value) {
+	/*public void setSpinnerPositionString(String value) {
 		int count = spinner.getCount();
 		SpinnerAdapter adapter = spinner.getAdapter();
 		
@@ -74,7 +74,7 @@ public class SpinnerManager {
 			if(val.equals(value))
 				spinner.setSelection(i, true);
 		}
-	}
+	}*/
 	
 	private boolean isSpinnerValueEqualsToBaseObject(BaseObject bo, String value) {
 		return value.equals(bo.toString());

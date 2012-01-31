@@ -156,5 +156,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	}
 
 	// Menu item is disabled, so do nothing here
-	protected void onAddClicked() {}
+	protected Intent onAddClicked() {
+		return null;
+	}
 }

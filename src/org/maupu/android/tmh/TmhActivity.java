@@ -78,6 +78,7 @@ public abstract class TmhActivity extends Activity {
 	public abstract void refreshDisplay(final DatabaseHelper dbHelper);
 	/**
 	 * Called when add item menu is clicked
+	 * @return intent used to call corresponding activity
 	 */
-	protected abstract void onAddClicked();
+	protected abstract Intent onAddClicked();
 }

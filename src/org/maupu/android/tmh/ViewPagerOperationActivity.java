@@ -55,10 +55,13 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	}
 
 	@Override
-	protected void onAddClicked() {
+	protected Intent onAddClicked() {
 		// Add operation
 		Intent intent = new Intent(this, AddOrEditOperationActivity.class);
+		intent.putExtra("account", currentAccount);
 		this.startActivityForResult(intent, 0);
+		
+		return intent;
 	}
 
 	@Override

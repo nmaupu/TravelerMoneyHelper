@@ -4,6 +4,7 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Operation;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -70,5 +71,7 @@ public class StatsActivity extends TmhActivity {
 	public void refreshDisplay(DatabaseHelper dbHelper) {}
 	
 	@Override
-	protected void onAddClicked() {}
+	protected Intent onAddClicked() {
+		return null; 
+	}
 }

@@ -227,8 +227,10 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 */
 	protected abstract boolean validateConstraintsForDeletion(final DatabaseHelper dbHelper, final T obj);
 	
-	protected void onAddClicked() {
+	protected Intent onAddClicked() {
 		Intent intent = new Intent(this, addOrEditActivity);
 		startActivityForResult(intent, ACTIVITY_ADD);
+		
+		return intent;
 	}
 }

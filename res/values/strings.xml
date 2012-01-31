@@ -54,5 +54,7 @@
     <string name="save_and_add">Save and add</string>
     <string name="toast_success">Operation successfully completed</string>
     <string name="pick_account">Pick an account</string>
+    <string name="debit">Debit</string>
+    <string name="credit">Credit</string>
     
 </resources>

@@ -20,11 +20,12 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private EditText editTextValue = null;
 	private CheckBox checkBoxUpdate = null;
 	private Spinner spinnerCurrencyCode = null;
+	private boolean viewCreated = false;
 
 	public AddOrEditCurrencyActivity() {
 		super(R.string.activity_title_edition_currency, R.drawable.ic_stat_categories, R.layout.add_or_edit_currency, new Currency());
 	}
-	
+
 	@Override
 	protected void initResources() {
 		// Get resource instances
@@ -33,14 +34,14 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		editTextValue = (EditText)findViewById(R.id.euro_value);
 		checkBoxUpdate = (CheckBox)findViewById(R.id.checkbox_last_update);
 		spinnerCurrencyCode = (Spinner)findViewById(R.id.currency_code);
-		
+
 		// init locales
 		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
 				android.R.layout.simple_spinner_item,
 				CurrencyHelper.getListCurrencyISO4217(this));
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerCurrencyCode.setAdapter(adapter);
-		
+
 		spinnerCurrencyCode.setOnItemSelectedListener(this);
 	}
 
@@ -58,8 +59,8 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	@Override
 	protected void baseObjectToFields(Currency obj) {
 		if(obj == null) {
-			editTextLongName.setText("");
-			editTextShortName.setText("");
+			// Force fields to be fill with value corresponding to spinner
+			onItemSelected(null, null, 0, 0);
 			editTextValue.setText("");
 			if(checkBoxUpdate.isEnabled()) {
 				checkBoxUpdate.setChecked(true);
@@ -68,10 +69,10 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		} else {
 			editTextLongName.setText(obj.getLongName());
 			editTextShortName.setText(obj.getShortName());
-			
+
 			if(obj.getTauxEuro() != null)
 				editTextValue.setText(""+obj.getTauxEuro());
-				
+
 			if(obj.getLastUpdate() == null) {
 				checkBoxUpdate.setChecked(true);
 				checkBoxUpdate.setEnabled(false);
@@ -79,7 +80,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 				checkBoxUpdate.setChecked(false);
 				checkBoxUpdate.setEnabled(true);
 			}
-			
+
 			// Searching for locale in spinner and select it
 			for(int i=0; i<spinnerCurrencyCode.getCount(); i++) {
 				CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getItemAtPosition(i);
@@ -95,16 +96,22 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			obj.setLongName(editTextLongName.getText().toString().trim());
 			obj.setShortName(editTextShortName.getText().toString().trim());
 			obj.setTauxEuro(Float.parseFloat(editTextValue.getText().toString().trim()));
-			
+
 			if(obj.getLastUpdate() == null || checkBoxUpdate.isChecked())
 				obj.setLastUpdate(new Date());
-			
+
 			obj.setIsoCode(((CurrencyISO4217)spinnerCurrencyCode.getSelectedItem()).getCode());
 		}
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		if(! viewCreated) {
+			// First call here, ignore it
+			viewCreated = true;
+			return;
+		}
+		
 		CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getSelectedItem();
 		if(c != null) {
 			java.util.Currency currency = java.util.Currency.getInstance(c.getCode());

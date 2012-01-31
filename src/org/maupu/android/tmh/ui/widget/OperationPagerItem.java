@@ -111,7 +111,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			// Process list
 			Operation dummy = new Operation();
 			Cursor c = dummy.fetchByMonth(dbHelper, date, currentAccount.getId());
-			CheckableCursorAdapter cca = new CheckableCursorAdapter(viewPagerOperationActivity, R.layout.operation_item, 
+			OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
+					viewPagerOperationActivity, 
+					R.layout.operation_item, 
 					c, 
 					new String[]{"icon", "account", "category", "dateString", "amountString", "euroAmount"},
 					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
