@@ -1,5 +1,5 @@
 package org.maupu.android.tmh.ui;
 
-public interface ICallback {
-	public void callback(Object item);
+public interface ICallback<T extends Object> {
+	public T callback(Object item);
 }

@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.ui.Preferences;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -10,7 +11,8 @@ import android.view.Window;
 import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
-	private Account selectedAccount;
+	private DatabaseHelper dbHelper = new DatabaseHelper(this);
+	//private Account selectedAccount;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -21,12 +23,14 @@ public class HomeActivity extends TabActivity {
 		//customTB.setName("Operation");
 		//customTB.setIcon(R.drawable.ic_stat_categories);
 
+		dbHelper.openWritable();
+		Preferences.init(dbHelper);
+		
 		addTab(ViewPagerOperationActivity.class, R.string.tab_operation, R.drawable.ic_tab_home);
 		//addTab(ManageOperationActivity.class, R.string.tab_credit, R.drawable.ic_tab_credit);
 		addTab(StatsActivity.class, R.string.tab_stats, R.drawable.ic_tab_trombone);
 
 		//getTabHost().setCurrentTab(1);
-
 	}
 
 	private void addTab(Class<?> activity, int titleId, int drawableId) {

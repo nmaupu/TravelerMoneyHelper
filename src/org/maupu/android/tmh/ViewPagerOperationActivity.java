@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.ui.Preferences;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.content.Intent;
@@ -14,17 +15,11 @@ import android.util.Log;
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
 	private ViewPagerOperationAdapter adapter;
 	private int currentPosition;
-	private Account currentAccount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main2);
-
-		// Get first account
-		currentAccount = new Account();
-		Cursor c = currentAccount.fetch(dbHelper, 1);
-		currentAccount.toDTO(dbHelper, c);
 
 		adapter = new ViewPagerOperationAdapter(this, dbHelper);
 		ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
@@ -35,14 +30,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		vp.setOnPageChangeListener(this);
 	}
 	
-	public Account getCurrentAccount() {
-		return currentAccount;
-	}
-	
-	public void setCurrentAccount(Account account) {
-		this.currentAccount = account;
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("onActivityResult", "message="+resultCode);
@@ -58,7 +45,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	protected Intent onAddClicked() {
 		// Add operation
 		Intent intent = new Intent(this, AddOrEditOperationActivity.class);
-		intent.putExtra("account", currentAccount);
+		intent.putExtra("account", Preferences.currentAccount);
 		this.startActivityForResult(intent, 0);
 		
 		return intent;

@@ -21,9 +21,9 @@ import android.widget.ImageView;
 public class IconCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private Cursor cursor;
 	private Context context;
-	private ICallback listener;
+	private ICallback<View> listener;
 	
-	public IconCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, ICallback listener) {
+	public IconCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, ICallback<View> listener) {
 		super(context, layout, c, from, to, SimpleCursorAdapter.NO_SELECTION);
 		this.cursor = c;
 		this.context = context;

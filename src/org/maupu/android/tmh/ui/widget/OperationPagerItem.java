@@ -15,6 +15,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
+import org.maupu.android.tmh.ui.Preferences;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.app.Dialog;
@@ -106,7 +107,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		if(listView == null)
 			listView = (ListView)view.findViewById(R.id.list);
 		
-		Account currentAccount = viewPagerOperationActivity.getCurrentAccount();
+		// TODO impossible to get previous current account
+		Account currentAccount = Preferences.currentAccount;
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
@@ -187,9 +189,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 					R.layout.account_item_no_checkbox, 
 					cursorAllAccounts,
 					new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
-					new int[]{R.id.icon, R.id.name}, new ICallback() {
+					new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
 						@Override
-						public void callback(Object item) {
+						public View callback(Object item) {
 							int position = (Integer)((View)item).getTag();
 							int oldPosition = cursorAllAccounts.getPosition();
 							cursorAllAccounts.moveToPosition(position);
@@ -199,10 +201,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							
 							cursorAllAccounts.moveToPosition(oldPosition);
 							
-							viewPagerOperationActivity.setCurrentAccount(account);
+							
+							// Replacing preferences account
+							Preferences.replaceCurrentAccount(dbHelper, account);
 							viewPagerOperationActivity.refreshDisplay(dbHelper);
 							Log.d("OperationPagerItem", "Callback called");
 							dialog.dismiss();
+							
+							return (View)item;
 						}
 					});
 			listAccount.setAdapter(adapter);
@@ -296,7 +302,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshHeader() {
-		Account account = viewPagerOperationActivity.getCurrentAccount();
+		Account account = Preferences.currentAccount;
 
 		// Setting parameters - account should not be null
 		if(account != null) {
