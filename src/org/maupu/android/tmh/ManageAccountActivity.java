@@ -27,7 +27,7 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 		Cursor cursor = account.fetchAll(dbHelper);
 		
 		// custom custom cursor adapter lol :D
-		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, R.layout.account_item, cursor, 
+		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, R.layout.icon_name_item, cursor, 
 				new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
 				new int[]{R.id.icon, R.id.name});
 		super.setAdapter(adapter);

@@ -47,6 +47,7 @@
     <string name="parameters">Paramètres</string>
     <string name="refresh">Rafraichir</string>
     <string name="popup_app_icon">Icône d\'application</string>
+    <string name="popup_flag_icon">Bibliothèque de drapeaux</string>
     <string name="popup_url">URL</string>
     <string name="popup_camera">Appareil photo</string>
     <string name="reset">RàZ</string>
@@ -56,5 +57,6 @@
     <string name="pick_account">Choisissez un compte</string>
     <string name="debit">Débit</string>
     <string name="credit">Crédit</string>
+    <string name="not_implemented">Cette fonction n\'est pas encore disponible !</string>
 
 </resources>

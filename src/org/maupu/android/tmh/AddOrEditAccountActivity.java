@@ -7,7 +7,10 @@ import java.util.List;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ImageViewHelper;
+import org.maupu.android.tmh.ui.widget.FlagAdapter;
+import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
@@ -29,8 +32,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private ImageView imageViewIcon;
@@ -42,6 +47,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private static final int MENU_ITEM_APPS = 0;
 	private static final int MENU_ITEM_URL = 1;
 	private static final int MENU_ITEM_CAMERA = 2;
+	private static final int MENU_ITEM_FLAGS = 3;
 
 	public AddOrEditAccountActivity() {
 		super(R.string.activity_title_edition_account, R.drawable.ic_stat_categories, R.layout.add_or_edit_account, new Account());
@@ -68,8 +74,11 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		//spinnerCurrency.setAdapter(SpinnerManager.createSpinnerCursorAdapter(this, c, CurrencyData.KEY_LONG_NAME));
 		spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		
-		popupMenuIconNames = new String[]{getString(R.string.popup_app_icon),
-				getString(R.string.popup_url), getString(R.string.popup_camera)};
+		popupMenuIconNames = new String[]{
+				getString(R.string.popup_app_icon),
+				getString(R.string.popup_url), 
+				getString(R.string.popup_camera),
+				getString(R.string.popup_flag_icon)};
 
 		loadApps();
 	}
@@ -101,13 +110,18 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	}
 	
 	private AlertDialog createDialogIconChooser(int dialogType) {
+		Toast toast = Toast.makeText(this, getString(R.string.not_implemented), Toast.LENGTH_SHORT);
 		switch(dialogType) {
 		case MENU_ITEM_APPS:
 			return createDialogFromApps();
 		case MENU_ITEM_URL:
+			toast.show();
 			return null;
 		case MENU_ITEM_CAMERA:
+			toast.show();
 			return null;
+		case MENU_ITEM_FLAGS:
+			return createDialogFromFlags();
 		default:
 			return null;
 		}
@@ -117,7 +131,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		AlertDialog.Builder builder;
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_account_icon, (ViewGroup) findViewById(R.id.layout_root));
+		View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) findViewById(R.id.layout_root));
 		
 		
 		builder = new AlertDialog.Builder(mContext);
@@ -134,6 +148,32 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 				dialog.dismiss();
 			}
 		});		
+
+		Button close = (Button)layout.findViewById(R.id.close);
+		close.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
+		return dialog;
+	}
+	
+	private AlertDialog createDialogFromFlags() {
+		AlertDialog.Builder builder;
+		Context mContext = this;
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.dialog_flags_icon, (ViewGroup) findViewById(R.id.layout_root));
+		
+		builder = new AlertDialog.Builder(mContext);
+		builder.setView(layout);
+
+		final AlertDialog dialog = builder.create();
+		
+		ListView list = (ListView)layout.findViewById(R.id.list);
+		FlagAdapter adapter = new FlagAdapter(this, Flag.getAllFlags(this), R.layout.icon_name_item_no_checkbox, new String[]{"name", "icon"}, new int[]{R.id.name, R.id.icon});
+		list.setAdapter(adapter);
 
 		Button close = (Button)layout.findViewById(R.id.close);
 		close.setOnClickListener(new OnClickListener() {

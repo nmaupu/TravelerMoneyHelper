@@ -186,7 +186,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			final Cursor cursorAllAccounts = dummyAccount.fetchAll(dbHelper);
 			
 			final IconCursorAdapter adapter = new IconCursorAdapter(viewPagerOperationActivity, 
-					R.layout.account_item_no_checkbox, 
+					R.layout.icon_name_item_no_checkbox, 
 					cursorAllAccounts,
 					new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
 					new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
