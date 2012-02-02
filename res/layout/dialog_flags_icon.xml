@@ -9,15 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/close"
-            android:layout_width="30dip"
-            android:layout_height="30dip"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="3dp"
-            android:text="@string/close"
-            android:textSize="11dip" />
-
         <TextView
             android:id="@+id/text1"
             android:layout_width="wrap_content"
@@ -28,11 +19,58 @@
             android:text="@string/dialog_choose_icon"
             android:textColor="#FFF"
             android:textSize="20dip" />
-    </RelativeLayout>
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/text1"
+            android:layout_marginTop="20dip"
+            android:text="@string/hint_flag_autocompletion"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12dp"
+            android:textStyle="italic" />
+
+        <LinearLayout
+            android:id="@+id/layout_autotext"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="@id/layout_root"
+            android:layout_below="@id/hint" >
+
+            <TextView
+                android:id="@+id/text_auto_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dip"
+                android:text="@string/country" />
+
+            <AutoCompleteTextView
+                android:id="@+id/edit"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:completionHint="@string/hint_star_for_all"
+                android:completionThreshold="1"
+                android:inputType="text|textAutoCorrect|textAutoComplete"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/validate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/layout_autotext"
+            android:text="@string/validate" />
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_autotext"
+            android:layout_toLeftOf="@id/validate"
+            android:text="@string/cancel" />
+    </RelativeLayout>
 
 </LinearLayout>

@@ -2,10 +2,8 @@ package org.maupu.android.tmh.ui;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.maupu.android.tmh.R;
 
@@ -14,13 +12,13 @@ import android.content.Context;
 public final class Flag {
 	private String country;
 	private int drawableId;
-	private static List<Map<String,?>> listFlags;
+	private static List<Flag> listFlags;
 
 	public Flag(String country, int drawableId) {
 		this.country = country;
 		this.drawableId = drawableId;
 	}
-	
+
 	public String getCountry() {
 		return country;
 	}
@@ -28,11 +26,16 @@ public final class Flag {
 	public int getDrawableId() {
 		return drawableId;
 	}
-	
-	public static List<Map<String, ?>> getAllFlags(Context ctx) {
-		if(listFlags != null)
+
+	public String toString() {
+		return country;
+	}
+
+	public static List<Flag> getAllFlags(Context ctx) {
+		if(listFlags != null && listFlags.size() != 0)
 			return listFlags;
-		
+
+		listFlags = new ArrayList<Flag>();
 		RawFileHelper<Flag> rfh = new RawFileHelper<Flag>(ctx, R.raw.flags);
 		rfh.setCallback(new ICallback<Flag>() {
 			@Override
@@ -50,21 +53,37 @@ public final class Flag {
 				}
 			}
 		});
-		
-		toMap(rfh.getRawFile());
-		return listFlags;
+
+		return rfh.getRawFile();
 	}
-	
-	private static void toMap(final List<Flag> flags) {
-		listFlags = new ArrayList<Map<String,?>>();
-		
-		Iterator<Flag> it = flags.iterator();
-		while(it.hasNext()) {
-			Flag current = it.next();
-			Map<String,Object> m = new HashMap<String, Object>();
-			m.put("name", current.getCountry());
-			m.put("icon", current.getDrawableId());
-			listFlags.add(m);
+
+	public static String[] toStringArray(Context ctx) {
+		List<Flag> list = getAllFlags(ctx);
+		String[] ret = new String[list.size()];
+		Iterator<Flag> it = list.iterator();
+
+		int i=0;
+		while (it.hasNext()) {
+			Flag currentFlag = (Flag)it.next(); 
+			ret[i++] = currentFlag.toString();
 		}
+
+		return ret;
+	}
+
+	public static Flag getFlagFromCountry(Context ctx, String country) {
+		if(country == null || "".equals(country))
+			return null;
+		
+		List<Flag> list = getAllFlags(ctx);
+
+		Iterator<Flag> it = list.iterator();
+		while (it.hasNext()) {
+			Flag currentFlag = (Flag)it.next();
+			if(currentFlag.getCountry().equals(country.trim()))
+				return currentFlag;
+		}
+		
+		return null;
 	}
 }

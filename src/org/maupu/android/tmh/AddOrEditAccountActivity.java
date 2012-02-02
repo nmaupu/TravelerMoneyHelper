@@ -9,8 +9,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ImageViewHelper;
-import org.maupu.android.tmh.ui.widget.FlagAdapter;
-import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
+import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
@@ -21,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,11 +28,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.ImageView.ScaleType;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -171,15 +173,41 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 
 		final AlertDialog dialog = builder.create();
 		
-		ListView list = (ListView)layout.findViewById(R.id.list);
-		FlagAdapter adapter = new FlagAdapter(this, Flag.getAllFlags(this), R.layout.icon_name_item_no_checkbox, new String[]{"name", "icon"}, new int[]{R.id.name, R.id.icon});
-		list.setAdapter(adapter);
+		//ListView list = (ListView)layout.findViewById(R.id.list);
+		//FlagAdapter adapter = new FlagAdapter(this, Flag.getAllFlags(this), R.layout.icon_name_item_no_checkbox, new String[]{"name", "icon"}, new int[]{R.id.name, R.id.icon});
+		//list.setAdapter(adapter);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, Flag.toStringArray(this));
+        final AutoCompleteTextView textView = (AutoCompleteTextView)layout.findViewById(R.id.edit);
+        textView.setAdapter(adapter);
 
-		Button close = (Button)layout.findViewById(R.id.close);
-		close.setOnClickListener(new OnClickListener() {
+		Button cancel = (Button)layout.findViewById(R.id.cancel);
+		cancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
+			}
+		});
+		
+		Button validate = (Button) layout.findViewById(R.id.validate);
+		validate.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Flag f = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
+				if(f != null) {
+					// Resize flag
+					Bitmap bmp = BitmapFactory.decodeResource(getResources(), f.getDrawableId());
+					final int w = (int) (65 * getResources().getDisplayMetrics().density + 0.5f);
+				    Bitmap resizedbitmap = Bitmap.createScaledBitmap(bmp, w, w, true);
+					
+				    // Set it
+				    imageViewIcon.setImageBitmap(resizedbitmap);
+				    imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
+				    
+					dialog.dismiss();
+				} else {
+					SimpleDialog.errorDialog(v.getContext(), getString(R.string.error), getString(R.string.country_not_found)).show();
+				}
 			}
 		});
 

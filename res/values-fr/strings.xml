@@ -32,7 +32,7 @@
     <string name="accountname">Nom du compte</string>
     <string name="icon">Icône</string>
     <string name="ok">Ok</string>
-    <string name="cancel">Annumer</string>
+    <string name="cancel">Annuler</string>
     <string name="close">X</string>
     <string name="dialog_choose_icon">Choisir une icône</string>
     <string name="dialog_choose_account">Choisir un compte</string>
@@ -58,5 +58,10 @@
     <string name="debit">Débit</string>
     <string name="credit">Crédit</string>
     <string name="not_implemented">Cette fonction n\'est pas encore disponible !</string>
+    <string name="validate">Valider</string>
+    <string name="hint_flag_autocompletion">Utilisez ce champ afin de choisir le drapeau d\'un pays</string>
+    <string name="country">Pays</string>
+    <string name="country_not_found">Ce pays n\'existe pas !</string>
+    <string name="hint_star_for_all">\'*\' pour tout montrer</string>
 
 </resources>
