@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.ui.Flag;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 /**
  * Adapter to display icon named 'icon' and its related name named 'name'

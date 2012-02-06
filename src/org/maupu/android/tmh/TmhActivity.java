@@ -60,6 +60,8 @@ public abstract class TmhActivity extends Activity {
 		case R.id.item_add:
 			onAddClicked();
 			break;
+		case R.id.item_options:
+			startActivityFromMenu(PreferencesActivity.class);
 		default:
 			return super.onOptionsItemSelected(item);
 		}

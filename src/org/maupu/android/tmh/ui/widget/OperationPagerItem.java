@@ -15,8 +15,8 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
-import org.maupu.android.tmh.ui.Preferences;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -108,7 +108,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView = (ListView)view.findViewById(R.id.list);
 		
 		// TODO impossible to get previous current account
-		Account currentAccount = Preferences.currentAccount;
+		Account currentAccount = StaticData.getCurrentAccount(viewPagerOperationActivity, dbHelper);
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
@@ -203,7 +203,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							
 							
 							// Replacing preferences account
-							Preferences.replaceCurrentAccount(dbHelper, account);
+							StaticData.replaceCurrentAccount(viewPagerOperationActivity, dbHelper, account);
 							viewPagerOperationActivity.refreshDisplay(dbHelper);
 							Log.d("OperationPagerItem", "Callback called");
 							dialog.dismiss();
@@ -302,7 +302,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshHeader() {
-		Account account = Preferences.currentAccount;
+		Account account = StaticData.getCurrentAccount(viewPagerOperationActivity, dbHelper);
 
 		// Setting parameters - account should not be null
 		if(account != null) {

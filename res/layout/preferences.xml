@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        android:id="@+id/def_account"
+        android:defaultValue="0"
+        android:key="account"
+        android:summary="Select default account to use"
+        android:title="Default account" />
+
+</PreferenceScreen>

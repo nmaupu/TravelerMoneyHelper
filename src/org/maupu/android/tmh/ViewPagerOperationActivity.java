@@ -1,12 +1,10 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.ui.Preferences;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -45,7 +43,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	protected Intent onAddClicked() {
 		// Add operation
 		Intent intent = new Intent(this, AddOrEditOperationActivity.class);
-		intent.putExtra("account", Preferences.currentAccount);
+		intent.putExtra("account", StaticData.getCurrentAccount(this, dbHelper));
 		this.startActivityForResult(intent, 0);
 		
 		return intent;

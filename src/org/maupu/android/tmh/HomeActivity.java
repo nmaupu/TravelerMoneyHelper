@@ -1,7 +1,6 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.ui.Preferences;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -24,8 +23,7 @@ public class HomeActivity extends TabActivity {
 		//customTB.setIcon(R.drawable.ic_stat_categories);
 
 		dbHelper.openWritable();
-		Preferences.init(dbHelper);
-		
+				
 		addTab(ViewPagerOperationActivity.class, R.string.tab_operation, R.drawable.ic_tab_home);
 		//addTab(ManageOperationActivity.class, R.string.tab_credit, R.drawable.ic_tab_credit);
 		addTab(StatsActivity.class, R.string.tab_stats, R.drawable.ic_tab_trombone);
