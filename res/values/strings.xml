@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
     <string name="currency_code">Code</string>
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Error</string>
@@ -63,5 +63,7 @@
     <string name="country">Country</string>
     <string name="country_not_found">Country not found !</string>
     <string name="hint_star_for_all">\'*\' to show all</string>
-    
+    <string name="withdrawal">Withdrawal</string>
+    <string name="default_account_name">Account1</string>
+
 </resources>

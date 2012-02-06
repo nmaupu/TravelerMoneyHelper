@@ -63,5 +63,7 @@
     <string name="country">Pays</string>
     <string name="country_not_found">Ce pays n\'existe pas !</string>
     <string name="hint_star_for_all">\'*\' pour tout montrer</string>
+    <string name="withdrawal">Retrait</string>
+    <string name="default_account_name">Compte1</string>
 
 </resources>
