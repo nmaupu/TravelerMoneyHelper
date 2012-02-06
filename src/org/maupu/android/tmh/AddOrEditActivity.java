@@ -81,7 +81,9 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		try {
 			Intent intent = this.getIntent();
 			Bundle bundle = intent.getExtras();
-			obj = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
+			T objnew = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
+			if(objnew != null)
+				obj = objnew;
 		} catch (NullPointerException e) {
 			// Here, nothing is allocated, we keep default obj
 		} catch (ClassCastException cce) {
