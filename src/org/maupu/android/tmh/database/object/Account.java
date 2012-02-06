@@ -2,6 +2,7 @@ package org.maupu.android.tmh.database.object;
 
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -45,6 +46,13 @@ public class Account extends BaseObject {
 	@Override
 	public String getTableName() {
 		return AccountData.TABLE_NAME;
+	}
+	
+	@Override
+	public boolean update(DatabaseHelper dbHelper) {
+		// Force current account to be fetch again if needed
+		StaticData.invalidateCurrentAccount();
+		return super.update(dbHelper);
 	}
 
 	@Override

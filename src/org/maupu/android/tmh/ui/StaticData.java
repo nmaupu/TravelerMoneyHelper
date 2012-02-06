@@ -12,6 +12,7 @@ import android.database.Cursor;
 
 public abstract class StaticData {
 	private static Account currentAccount = new Account();
+	private static boolean isValidCurrentAccount = false;
 	private static Integer defaultAccountId;
 	public static final String STATIC_DATA_PREFS_FILENAME = "staticPreferences";
 	
@@ -29,13 +30,20 @@ public abstract class StaticData {
 		getCurrentAccount(context, dbHelper);
 	}
 	
+	public static void invalidateCurrentAccount() {
+		isValidCurrentAccount = false;
+	}
+	
 	public static Account getCurrentAccount(Context context, final DatabaseHelper dbHelper) {
 		SharedPreferences prefs = getPrefs(context);
-		int id = prefs.getInt("account", getDefaultAccount(dbHelper));
+		Integer id = prefs.getInt("account", getDefaultAccount(dbHelper));
 		
-		if(currentAccount.getId() == null || currentAccount.getId() != id) {
+		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
 			Cursor c = currentAccount.fetch(dbHelper, id);
 			currentAccount.toDTO(dbHelper, c);
+			isValidCurrentAccount = true;
+		} else if (id == null) {
+			return null;
 		}
 		
 		return currentAccount;

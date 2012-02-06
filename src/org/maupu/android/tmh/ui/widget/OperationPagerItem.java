@@ -107,7 +107,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		if(listView == null)
 			listView = (ListView)view.findViewById(R.id.list);
 		
-		// TODO impossible to get previous current account
+		// Getting current account
 		Account currentAccount = StaticData.getCurrentAccount(viewPagerOperationActivity, dbHelper);
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list

@@ -61,7 +61,16 @@ public abstract class BaseObject implements Validator, Serializable {
 		if(! validate())
 			return false;
 		
-		return dbHelper.getDb().insert(getTableName(), null, createContentValues()) > 0;
+		long id = dbHelper.getDb().insert(getTableName(), null, createContentValues());
+		boolean b = id > 0;
+		
+		if(b) {
+			// Refetch it to store all fields
+			Cursor c = this.fetch(dbHelper, (int)id);
+			this.toDTO(dbHelper, c);
+		}
+		
+		return b;
 	}
 
 	public boolean update(final DatabaseHelper dbHelper) {
@@ -85,5 +94,20 @@ public abstract class BaseObject implements Validator, Serializable {
 
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
 		return dbHelper.getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
+	}
+	
+	public int getCount(final DatabaseHelper dbHelper) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT count("+APersistedData.KEY_ID+") count FROM ");
+		builder.append(getTableName());
+		
+		Cursor c = dbHelper.getDb().rawQuery(builder.toString(), null);
+		if(c == null) {
+			return 0;
+		} else {
+			c.moveToFirst();
+			int idx = c.getColumnIndexOrThrow("count");
+			return c.getInt(idx);
+		}
 	}
 }
