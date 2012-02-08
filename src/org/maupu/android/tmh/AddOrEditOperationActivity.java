@@ -10,6 +10,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.database.Cursor;
@@ -76,6 +77,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Category dummyCategory = new Category();
 		c = dummyCategory.fetchAll(super.dbHelper);
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
+		// Set spinner category to current selected one if exists
+		Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
+		smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
 
 		Currency dummyCurrency = new Currency();
 		c = dummyCurrency.fetchAll(super.dbHelper);
@@ -84,6 +88,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	protected boolean validate() {
+		// Called when persisting data, we store current category for next insertion before validating data
+		Category cat = new Category();
+		Cursor c = smCategory.getSelectedItem();
+		cat.toDTO(dbHelper, c);
+		StaticData.setCurrentSelectedCategory(this, dbHelper, cat);
+		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
 	}
 
@@ -110,6 +120,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			// Reset all fields
 			initDatePicker(null);
 			amount.setText("");
+			// Set spinner category to current selected one if exists
+			Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
+			smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
 		}
 	}
 
@@ -152,7 +165,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		if(d != null)
 			cal.setTime(d);
 
-		// init instead of update seems to work as expected ...
+		// init instead of update seems to work as expected and set a good value ...
 		datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
 	}
 

@@ -203,7 +203,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							
 							
 							// Replacing preferences account
-							StaticData.replaceCurrentAccount(viewPagerOperationActivity, dbHelper, account);
+							StaticData.setCurrentAccount(viewPagerOperationActivity, dbHelper, account);
 							viewPagerOperationActivity.refreshDisplay(dbHelper);
 							Log.d("OperationPagerItem", "Callback called");
 							dialog.dismiss();
