@@ -79,11 +79,14 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
 		Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
-		smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
+		if(cat != null && cat.getName() != null)
+			smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
 
 		Currency dummyCurrency = new Currency();
 		c = dummyCurrency.fetchAll(super.dbHelper);
 		smCurrency.setAdapter(c, CurrencyData.KEY_LONG_NAME);
+		if(currentAccount != null && currentAccount.getCurrency() != null)
+			smCurrency.setSpinnerPositionCursor(dbHelper, currentAccount.getCurrency().toString(), new Currency());
 	}
 
 	@Override
