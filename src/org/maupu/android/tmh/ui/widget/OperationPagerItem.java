@@ -11,8 +11,10 @@ import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.database.util.filter.AFilter;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -112,7 +114,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
-			Cursor c = dummy.fetchByMonth(dbHelper, date, currentAccount.getId());
+			dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
+			Cursor c = dummy.fetchByMonth(dbHelper, date);
 			OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
 					viewPagerOperationActivity, 
 					R.layout.operation_item, 

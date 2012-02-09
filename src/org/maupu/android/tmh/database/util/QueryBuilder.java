@@ -1,6 +1,10 @@
 package org.maupu.android.tmh.database.util;
 
-public class QueryBuilder {
+import java.io.Serializable;
+
+public class QueryBuilder implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private String currentTableAlias;
 	private StringBuilder sb = null;
 	

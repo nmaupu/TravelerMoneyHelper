@@ -4,12 +4,12 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.maupu.android.tmh.database.AccountData;
-import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.util.DateUtil;
 import org.maupu.android.tmh.database.util.QueryBuilder;
+import org.maupu.android.tmh.database.util.filter.OperationFilter;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -29,7 +29,12 @@ public class Operation extends BaseObject {
 	private Currency currency;
 	private Float currencyValueOnCreation;
 	private String type;
+	private OperationFilter filter = new OperationFilter();
 
+	public OperationFilter getFilter() {
+		return filter;
+	}
+	
 	public Float getAmount() {
 		return amount;
 	}
@@ -142,16 +147,16 @@ public class Operation extends BaseObject {
 	}
 
 	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		QueryBuilder qsb = getDefaultQueryBuilder();
+		QueryBuilder qsb = filter.getQueryBuilder();
 		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd, int accountId) {
-		QueryBuilder qsb = getDefaultQueryBuilder();
+	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd) {
+		QueryBuilder qsb = filter.getQueryBuilder();
 
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
-		qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
+		//qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
 		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
 
@@ -161,40 +166,11 @@ public class Operation extends BaseObject {
 		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	private QueryBuilder getDefaultQueryBuilder() {
-		QueryBuilder qsb = new QueryBuilder(new StringBuilder("select "));
-		qsb.setCurrentTableAlias("o");
-		qsb.addSelectToQuery(OperationData.KEY_ID).append(",")
-		.addSelectToQuery(OperationData.KEY_AMOUNT).append(",")
-		.addSelectToQuery(OperationData.KEY_DESCRIPTION).append(",")
-		.addSelectToQuery(OperationData.KEY_ID_ACCOUNT).append(",")
-		.addSelectToQuery(OperationData.KEY_ID_CATEGORY).append(",")
-		.addSelectToQuery(OperationData.KEY_ID_CURRENCY).append(",")
-		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",");
-
-		qsb.append("strftime('%d-%m-%Y %H:%M:%S', o.date) date, ");
-
-		qsb.setCurrentTableAlias("a");
-		qsb.addSelectToQuery(AccountData.KEY_ICON).append(",")
-		.addSelectToQuery(AccountData.KEY_NAME, "account").append(",");
-
-		qsb.setCurrentTableAlias("ca");
-		qsb.addSelectToQuery(CategoryData.KEY_NAME, "category").append(",");
-
-		qsb.append("ROUND(o."+OperationData.KEY_AMOUNT+"/o."+OperationData.KEY_CURRENCY_VALUE+",2) euroAmount, ");
-		qsb.append("ROUND(o.amount,2)||' '||c.shortName amountString, ");
-		qsb.append("strftime('%d-%m-%Y', o.date) dateString ");
-		qsb.append("from "+CategoryData.TABLE_NAME+" as ca, "+AccountData.TABLE_NAME+" as a, "+OperationData.TABLE_NAME+" as o, "+CurrencyData.TABLE_NAME+" as c ");
-		qsb.append("where o.idCategory=ca._id and o.idAccount=a._id and o.idCurrency=c._id ");
-
-		return qsb;
-	}
-
-	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date, int accountId) {
+	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date) {
 		Date dateBegin = DateUtil.getFirstDayOfMonth(date);
 		Date dateEnd = DateUtil.getLastDayOfMonth(date);
 
-		return fetchByPeriod(dbHelper, dateBegin, dateEnd, accountId);
+		return fetchByPeriod(dbHelper, dateBegin, dateEnd);
 	}
 	
 	/**

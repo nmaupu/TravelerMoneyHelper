@@ -4,8 +4,10 @@ import java.util.Date;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.database.util.filter.AFilter;
 import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -62,7 +64,8 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		int idxId = c.getColumnIndexOrThrow(AccountData.KEY_ID);
 		int id = c.getInt(idxId);
 		
-		c = dummyOperation.fetchByMonth(dbHelper, new Date(), id);
+		dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
+		c = dummyOperation.fetchByMonth(dbHelper, new Date());
 
 		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,
