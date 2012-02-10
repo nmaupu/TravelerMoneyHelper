@@ -9,17 +9,17 @@
 
             <item
                 android:id="@+id/item_categories"
-                android:icon="@drawable/ic_menu_category"
+                android:icon="@drawable/ic_menu_agenda"
                 android:title="@string/categories"/>
 
             <item
                 android:id="@+id/item_currencies"
-                android:icon="@drawable/ic_menu_currency"
+                android:icon="@drawable/ic_menu_mapmode"
                 android:title="@string/currencies"/>
 
             <item
                 android:id="@+id/item_account"
-                android:icon="@drawable/ic_menu_account"
+                android:icon="@drawable/ic_menu_friendslist"
                 android:title="@string/accounts"/>
         </menu>
     </item>
@@ -31,14 +31,14 @@
 
     <item
         android:id="@+id/item_options"
-        android:icon="@drawable/ic_menu_parameter"
+        android:icon="@drawable/ic_menu_preferences"
         android:title="@string/parameters"/>
 
     <item
         android:id="@+id/item_refresh"
         android:icon="@drawable/ic_menu_refresh"
         android:title="@string/refresh"/>
-    
+
     <item
         android:id="@+id/item_add"
         android:icon="@drawable/ic_menu_add"

@@ -9,8 +9,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
+	private static final int menuItemFilterId = 1234;
 	private ViewPagerOperationAdapter adapter;
 	private int currentPosition;
 
@@ -26,6 +30,24 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		vp.setCurrentItem(currentPosition);
 
 		vp.setOnPageChangeListener(this);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// Recreate menu to add filter icon
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		menu.add(Menu.NONE, menuItemFilterId, Menu.NONE, R.string.menu_item_filter).setIcon(R.drawable.ic_menu_view);
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		if(item.getItemId() == menuItemFilterId) {
+			Log.d("ViewPagerOperationAdapter", "Filter menu item clicked");
+		}
+		return super.onMenuItemSelected(featureId, item);
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ import android.view.Window;
 import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
-	private static String PREF_KEY_APP_INIT;
+	//private static String PREF_KEY_APP_INIT;
 	
 	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	//private Account selectedAccount;

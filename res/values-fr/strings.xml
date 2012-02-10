@@ -65,5 +65,6 @@
     <string name="hint_star_for_all">\'*\' pour tout montrer</string>
     <string name="withdrawal">Retrait</string>
     <string name="default_account_name">Compte1</string>
+    <string name="menu_item_filter">Filtre</string>
 
 </resources>
