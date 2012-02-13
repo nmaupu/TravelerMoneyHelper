@@ -1,21 +1,40 @@
 package org.maupu.android.tmh.database.util.filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.util.QueryBuilder;
 
-public class OperationFilter extends AFilter implements IFilter {
+public class OperationFilter extends AFilter implements IFilter, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
+	private List<Integer> categoryIds = new ArrayList<Integer>();
 	private QueryBuilder queryBuilder;
+	
+	public OperationFilter(QueryBuilder baseQueryBuilder) {
+		this.queryBuilder = baseQueryBuilder;
+	}
 	
 	public OperationFilter() {
 		queryBuilder = getBaseQuery();
 	}
 	
 	public QueryBuilder getQueryBuilder() {
+		// Adding categories
+		if(categoryIds.size() > 0) {
+			String sIn = "(-1";
+			for(Integer id : categoryIds) {
+				sIn += ","+id;
+			}
+			sIn += ")";
+			
+			addFilter(FUNCTION_IN, OperationData.KEY_ID_CATEGORY, sIn);
+		}
+		
 		return queryBuilder;
 	}
 
@@ -59,16 +78,16 @@ public class OperationFilter extends AFilter implements IFilter {
 		String strFunc = "";
 		switch(function) {
 		case AFilter.FUNCTION_EQUAL:
-			strFunc = "=";
+			strFunc = " = ";
 			break;
 		case AFilter.FUNCTION_NOTEQUAL:
-			strFunc = "!=";
+			strFunc = " != ";
 			break;
 		case AFilter.FUNCTION_IN:
-			strFunc = "IN";
+			strFunc = " IN ";
 			break;
 		case AFilter.FUNCTION_NOTIN:
-			strFunc = "NOT IN";
+			strFunc = " NOT IN ";
 			break;
 		default:
 			return qb;
@@ -92,10 +111,21 @@ public class OperationFilter extends AFilter implements IFilter {
 		
 		return qb.append(" ");
 	}
+	
+	public void filterCategory(int id) {
+		categoryIds.add(id);
+	}
 
 	@Override
 	public QueryBuilder resetFilter() {
+		categoryIds.clear();
 		queryBuilder = getBaseQuery();
 		return queryBuilder;
+	}
+	
+	@Override
+	public OperationFilter clone() {
+		String sqb = queryBuilder.toString();
+		return new OperationFilter(new QueryBuilder(new StringBuilder(sqb)));
 	}
 }

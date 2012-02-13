@@ -46,7 +46,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private Button editButton;
 	private Button deleteButton;
 	private ListView listView;
-	private Operation obj = new Operation();
 	private LayoutInflater inflater;
 	private ImageView imageViewIcon;
 	private TextView textViewAccountName;
@@ -172,6 +171,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
 	@Override
 	public void onClick(View v) {
+		final Operation obj = new Operation();
 		Intent intent = null;
 		final Integer[] posChecked = ((CheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
 

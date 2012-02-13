@@ -30,6 +30,15 @@ public class Operation extends BaseObject {
 	private Float currencyValueOnCreation;
 	private String type;
 	private OperationFilter filter = new OperationFilter();
+	
+	public Operation() {
+		super();
+	}
+	
+	public Operation(OperationFilter filter) {
+		this();
+		this.filter = filter;
+	}
 
 	public OperationFilter getFilter() {
 		return filter;
