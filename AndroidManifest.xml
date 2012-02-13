@@ -30,6 +30,7 @@
         <activity android:name=".StatsActivity" />
         <activity android:name=".ViewPagerOperationActivity" />
         <activity android:name=".PreferencesActivity" />
+        <activity android:name=".WithdrawalActivity" />
     </application>
 
 </manifest>

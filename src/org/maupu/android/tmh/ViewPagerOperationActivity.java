@@ -14,7 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
-	private static final int menuItemFilterId = 1234;
+	private static final int menuItemWidthdrawalId = 1234;
 	private ViewPagerOperationAdapter adapter;
 	private int currentPosition;
 
@@ -34,19 +34,22 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Recreate menu to add filter icon
+		// Recreate menu to add withdrawal entry
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
-		menu.add(Menu.NONE, menuItemFilterId, Menu.NONE, R.string.menu_item_filter).setIcon(R.drawable.ic_menu_view);
+		menu.add(Menu.NONE, menuItemWidthdrawalId, Menu.NONE, R.string.menu_item_withdrawal).setIcon(R.drawable.ic_menu_set_as);
 		return super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		if(item.getItemId() == menuItemFilterId) {
-			Log.d("ViewPagerOperationAdapter", "Filter menu item clicked");
+		if(item.getItemId() == menuItemWidthdrawalId) {
+			Log.d("ViewPagerOperationAdapter", "Starting withdrawal activity");
+			Intent intent = new Intent(this, WithdrawalActivity.class);
+			startActivity(intent);
 		}
+		
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
