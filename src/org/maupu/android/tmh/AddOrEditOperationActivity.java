@@ -65,7 +65,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Cursor c = null;
 
 		Account dummyAccount = new Account();
-		c = dummyAccount.fetchAll(super.dbHelper);
+		c = dummyAccount.fetchAll();
 		smAccount.setAdapter(c, AccountData.KEY_NAME);
 		
 		// Set spinner to current account given by extras
@@ -75,7 +75,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smAccount.setSpinnerPositionCursor(dbHelper, currentAccount.toString(), new Account());
 
 		Category dummyCategory = new Category();
-		c = dummyCategory.fetchAll(super.dbHelper);
+		c = dummyCategory.fetchAll();
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
 		Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
@@ -83,7 +83,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
 
 		Currency dummyCurrency = new Currency();
-		c = dummyCurrency.fetchAll(super.dbHelper);
+		c = dummyCurrency.fetchAll();
 		smCurrency.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		if(currentAccount != null && currentAccount.getCurrency() != null)
 			smCurrency.setSpinnerPositionCursor(dbHelper, currentAccount.getCurrency().toString(), new Currency());
@@ -94,7 +94,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		// Called when persisting data, we store current category for next insertion before validating data
 		Category cat = new Category();
 		Cursor c = smCategory.getSelectedItem();
-		cat.toDTO(dbHelper, c);
+		cat.toDTO(c);
 		StaticData.setCurrentSelectedCategory(this, dbHelper, cat);
 		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
@@ -141,17 +141,17 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 			c = smAccount.getSelectedItem();
 			Account u = new Account();
-			u.toDTO(super.dbHelper, c);
+			u.toDTO(c);
 			obj.setAccount(u);
 
 			c = smCategory.getSelectedItem();
 			Category cat = new Category();
-			cat.toDTO(super.dbHelper, c);
+			cat.toDTO(c);
 			obj.setCategory(cat);
 
 			c = smCurrency.getSelectedItem();
 			Currency cur = new Currency();
-			cur.toDTO(super.dbHelper, c);
+			cur.toDTO(c);
 			obj.setCurrency(cur);
 
 			obj.setAmount(Float.valueOf(amount.getText().toString().trim()));

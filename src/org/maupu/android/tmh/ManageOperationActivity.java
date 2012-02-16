@@ -47,7 +47,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 				new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		spinnerAccountManager = new SpinnerManager(this, spinnerAccount);
 		Account dummy = new Account();
-		Cursor c = dummy.fetchAll(dbHelper);
+		Cursor c = dummy.fetchAll();
 		spinnerAccountManager.setAdapter(c, AccountData.KEY_NAME);
 		
 		ViewGroup header = (ViewGroup)findViewById(R.id.header);
@@ -65,7 +65,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		int id = c.getInt(idxId);
 		
 		dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
-		c = dummyOperation.fetchByMonth(dbHelper, new Date());
+		c = dummyOperation.fetchByMonth(new Date());
 
 		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,

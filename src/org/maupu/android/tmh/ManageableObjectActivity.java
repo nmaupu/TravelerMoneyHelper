@@ -126,7 +126,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 			if(posChecked.length == 1) {
 				int p = posChecked[0];
 				Cursor cursor = (Cursor)listView.getItemAtPosition(p);
-				obj.toDTO(dbHelper, cursor);
+				obj.toDTO(cursor);
 
 				intent = new Intent(this, addOrEditActivity);
 				intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
@@ -147,9 +147,9 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 						Integer pos = posChecked[i];
 						//Request deletion
 						Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
-						obj.toDTO(dbHelper, cursor);
+						obj.toDTO(cursor);
 						if(validateConstraintsForDeletion(dbHelper, obj))
-							obj.delete(dbHelper);
+							obj.delete();
 						else
 							err = true;
 					}

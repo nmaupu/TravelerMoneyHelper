@@ -66,7 +66,7 @@ public class Currency extends BaseObject {
 	}
 	
 	@Override
-	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ID);
 		int idxLongName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LONG_NAME);

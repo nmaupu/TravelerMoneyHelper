@@ -116,9 +116,9 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			fieldsToBaseObject(obj);
 
 			if(obj.getId() != null)
-				obj.update(dbHelper);
+				obj.update();
 			else
-				obj.insert(dbHelper);
+				obj.insert();
 
 			// Dispose this activity
 			if(disposeActivity)

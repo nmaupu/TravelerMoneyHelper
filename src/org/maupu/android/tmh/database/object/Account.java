@@ -1,6 +1,5 @@
 package org.maupu.android.tmh.database.object;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.ui.StaticData;
 
@@ -49,14 +48,14 @@ public class Account extends BaseObject {
 	}
 	
 	@Override
-	public boolean update(DatabaseHelper dbHelper) {
+	public boolean update() {
 		// Force current account to be fetch again if needed
 		StaticData.invalidateCurrentAccount();
-		return super.update(dbHelper);
+		return super.update();
 	}
 
 	@Override
-	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
@@ -69,8 +68,8 @@ public class Account extends BaseObject {
 			this.setIcon(cursor.getString(idxIcon));
 
 			Currency c = new Currency();
-			Cursor cursorCurrency = c.fetch(dbHelper, cursor.getInt(idxCurrency));
-			c.toDTO(dbHelper, cursorCurrency);
+			Cursor cursorCurrency = c.fetch(cursor.getInt(idxCurrency));
+			c.toDTO(cursorCurrency);
 			this.setCurrency(c);
 		}
 

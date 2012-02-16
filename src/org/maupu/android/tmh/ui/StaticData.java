@@ -44,8 +44,8 @@ public abstract class StaticData {
 		Integer id = prefs.getInt("account", getDefaultAccount(dbHelper));
 		
 		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
-			Cursor c = currentAccount.fetch(dbHelper, id);
-			currentAccount.toDTO(dbHelper, c);
+			Cursor c = currentAccount.fetch(id);
+			currentAccount.toDTO(c);
 			isValidCurrentAccount = true;
 		} else if (id == null) {
 			return null;
@@ -56,7 +56,7 @@ public abstract class StaticData {
 	
 	private static Integer getDefaultAccount(final DatabaseHelper dbHelper) {
 		if(defaultAccountId == null) {
-			Cursor cursor = currentAccount.fetchAll(dbHelper);
+			Cursor cursor = currentAccount.fetchAll();
 			if(cursor.getCount() == 0)
 				return null;
 			
@@ -75,12 +75,12 @@ public abstract class StaticData {
 		if(id == null || id == -1) {
 			return null;
 		} else {
-			 Cursor result = currentSelectedCategory.fetch(dbHelper, id);
+			 Cursor result = currentSelectedCategory.fetch(id);
 			 
 			 if(result == null)
 				 return null;
 			 
-			 currentSelectedCategory.toDTO(dbHelper, result);
+			 currentSelectedCategory.toDTO(result);
 			 return currentSelectedCategory;
 		}
 	}

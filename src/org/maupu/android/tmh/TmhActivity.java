@@ -1,5 +1,6 @@
 package org.maupu.android.tmh;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.app.Activity;
@@ -10,12 +11,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public abstract class TmhActivity extends Activity {
-	protected DatabaseHelper dbHelper = new DatabaseHelper(this);
+	protected DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbHelper.openWritable();
 		//dbHelper.createSampleData();
 	}
 	

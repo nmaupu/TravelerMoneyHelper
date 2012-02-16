@@ -1,5 +1,6 @@
 package org.maupu.android.tmh;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Operation;
@@ -13,14 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class StatsActivity extends TmhActivity {
-	DatabaseHelper dbHelper = new DatabaseHelper(this);
+	DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// No custom title bar because activity used in a TabHost
 		super.onCreate(savedInstanceState);
-		
-		dbHelper.openReadable();
 		
 		
 		//Operation dummyOperation = new Operation();

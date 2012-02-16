@@ -15,7 +15,7 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	@Override
 	public void refreshDisplay(DatabaseHelper dbHelper) {
 		Currency currency = new Currency();
-		Cursor c = currency.fetchAll(dbHelper);
+		Cursor c = currency.fetchAll();
 
 		super.setAdapter(
 				R.layout.currency_item,

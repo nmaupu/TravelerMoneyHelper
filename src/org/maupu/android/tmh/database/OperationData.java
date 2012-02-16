@@ -26,7 +26,7 @@ public class OperationData extends APersistedData {
 			KEY_CURRENCY_VALUE + " REAL" +
 			")";
 	
-	public OperationData(Context ctx) {
-		super(ctx, TABLE_NAME, CREATE_TABLE);
+	public OperationData() {
+		super(TABLE_NAME, CREATE_TABLE);
 	}
 }

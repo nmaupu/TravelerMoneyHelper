@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.Date;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
@@ -9,18 +10,15 @@ import org.maupu.android.tmh.database.object.Currency;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Window;
 import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
 	//private static String PREF_KEY_APP_INIT;
 	
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	//private Account selectedAccount;
 
 	@Override
@@ -31,8 +29,6 @@ public class HomeActivity extends TabActivity {
 		setContentView(R.layout.main);
 		//customTB.setName("Operation");
 		//customTB.setIcon(R.drawable.ic_stat_categories);
-
-		dbHelper.openWritable();
 		
 		// initialize if needed
 		init();
@@ -63,7 +59,7 @@ public class HomeActivity extends TabActivity {
 		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//boolean isAlreadyInit = prefs.getBoolean(PREF_KEY_APP_INIT, false);
 		Account account = new Account();
-		int nb = account.getCount(dbHelper);
+		int nb = account.getCount();
 		
 		//if(! isAlreadyInit || nb == 0) {
 		if(nb == 0) {
@@ -71,7 +67,7 @@ public class HomeActivity extends TabActivity {
 			// Create default category
 			Category category = new Category();
 			category.setName(getString(R.string.withdrawal));
-			category.insert(dbHelper);
+			category.insert();
 			
 			// Adding default currency (euro)
 			Currency currency = new Currency();
@@ -81,12 +77,12 @@ public class HomeActivity extends TabActivity {
 			java.util.Currency c = java.util.Currency.getInstance("EUR");
 			currency.setShortName(c.getSymbol());
 			currency.setTauxEuro(1.0f);
-			currency.insert(dbHelper);
+			currency.insert();
 			
 			// Creating a default account in euro
 			account.setCurrency(currency);
 			account.setName(getString(R.string.default_account_name));
-			account.insert(dbHelper);
+			account.insert();
 			
 			/*
 			Editor editor = prefs.edit();

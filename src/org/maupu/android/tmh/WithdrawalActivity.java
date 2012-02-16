@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.Date;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -31,7 +32,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener {
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	private Spinner spinnerFrom;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
@@ -47,8 +48,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.withdrawal);
-
-		dbHelper.openWritable();
 
 		spinnerFrom = (Spinner)findViewById(R.id.spinner_from);
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
@@ -70,18 +69,18 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerManagerCategory = new SpinnerManager(this, spinnerCategory);
 
 		Account account = new Account();
-		Cursor cursor = account.fetchAll(dbHelper);
+		Cursor cursor = account.fetchAll();
 		spinnerManagerFrom.setAdapter(cursor, AccountData.KEY_NAME);
 
-		cursor = account.fetchAll(dbHelper);
+		cursor = account.fetchAll();
 		spinnerManagerTo.setAdapter(cursor, AccountData.KEY_NAME);
 
 		Currency currency = new Currency();
-		cursor = currency.fetchAll(dbHelper);
+		cursor = currency.fetchAll();
 		spinnerManagerCurrency.setAdapter(cursor, CurrencyData.KEY_LONG_NAME);
 
 		Category category = new Category();
-		cursor = category.fetchAll(dbHelper);
+		cursor = category.fetchAll();
 		spinnerManagerCategory.setAdapter(cursor, CategoryData.KEY_NAME);
 
 		// Getting default category for withdrawal from preferences
@@ -89,8 +88,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		try {
 			int idCategory = Integer.parseInt(prefs.getString("category", null));
 			if(idCategory != -1) {
-				Cursor c = category.fetch(dbHelper, idCategory);
-				category.toDTO(dbHelper, c);
+				Cursor c = category.fetch(idCategory);
+				category.toDTO(c);
 				spinnerManagerCategory.setSpinnerPositionCursor(dbHelper, category.getName(), new Category());
 			}
 		} catch (NumberFormatException nfe) {
@@ -131,8 +130,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			int currencyId = item.getInt(idxCurrencyId);
 
 			Currency currency = new Currency();
-			Cursor c = currency.fetch(dbHelper, currencyId);
-			currency.toDTO(dbHelper, c);
+			Cursor c = currency.fetch(currencyId);
+			currency.toDTO(c);
 
 			spinnerManagerCurrency.setSpinnerPositionCursor(dbHelper, currency.getLongName(), new Currency());
 		}
@@ -149,21 +148,21 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			} else {
 				Account accountFrom = new Account();
 				Cursor cursor = spinnerManagerFrom.getSelectedItem();
-				accountFrom.toDTO(dbHelper, cursor);
+				accountFrom.toDTO(cursor);
 
 				Account accountTo = new Account();
 				cursor = spinnerManagerTo.getSelectedItem();
-				accountTo.toDTO(dbHelper, cursor);
+				accountTo.toDTO(cursor);
 
 				Category category = new Category();
 				cursor = spinnerManagerCategory.getSelectedItem();
-				category.toDTO(dbHelper, cursor);
+				category.toDTO(cursor);
 
 				Float amount = Float.valueOf(amountEditText.getText().toString().trim());
 
 				Currency currency = new Currency();
 				cursor = spinnerManagerCurrency.getSelectedItem();
-				currency.toDTO(dbHelper, cursor);
+				currency.toDTO(cursor);
 
 				Date now = new Date();
 				// First, we debit from account
@@ -174,7 +173,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationFrom.setCurrency(currency);
 				operationFrom.setDate(now);
 				operationFrom.setCurrencyValueOnCreated(currency.getTauxEuro());
-				operationFrom.insert(dbHelper);
+				operationFrom.insert();
 
 				// Second, we credit 'to' account
 				Operation operationTo = new Operation();
@@ -184,7 +183,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationTo.setCurrency(currency);
 				operationTo.setDate(now);
 				operationTo.setCurrencyValueOnCreated(currency.getTauxEuro());
-				operationTo.insert(dbHelper);
+				operationTo.insert();
 
 				// Dispose activity
 				finish();

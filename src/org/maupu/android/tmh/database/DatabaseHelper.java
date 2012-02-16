@@ -6,33 +6,30 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.database.object.Account;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public final class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
 	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
 	protected static final int DATABASE_VERSION = 7;
 	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
-	private Context context;
-	private SQLiteDatabase db;
 	
-	public DatabaseHelper(Context ctx) {
-		super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
-		this.context = ctx;
+	public DatabaseHelper() {
+		super(TmhApplication.getAppContext(), DATABASE_NAME, null, DATABASE_VERSION);
 		
-		persistedData.add(new CategoryData(ctx));
-		persistedData.add(new CurrencyData(ctx));
-		persistedData.add(new OperationData(ctx));
-		persistedData.add(new AccountData(ctx));
+		persistedData.add(new CategoryData());
+		persistedData.add(new CurrencyData());
+		persistedData.add(new OperationData());
+		persistedData.add(new AccountData());
 	}
 
 	@Override
@@ -48,25 +45,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			data.onUpgrade(db, oldVersion, newVersion);
 		}
 	}
-
-	public Context getContext() {
-		return context;
-	}
-	
-	public void openWritable() {
-		db = this.getWritableDatabase();
-	}
-	
-	public void openReadable() {
-		db = this.getReadableDatabase();
-	}
 	
 	public void close() {
 		super.close();
 	}
 	
 	public SQLiteDatabase getDb() {
-		return db;
+		return super.getWritableDatabase();
 	}
 	
 	public static String formatDateForSQL(Date date) {
@@ -88,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void createSampleData() {
 		// If something in accounts, don't do anything
 		Account dummy = new Account();
-		Cursor c = dummy.fetchAll(this);
+		Cursor c = dummy.fetchAll();
 		if(c.getCount() > 0)
 			return;
 		
@@ -98,37 +83,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		currency.setShortName("e");
 		currency.setTauxEuro(1f);
 		currency.setIsoCode("EUR");
-		currency.insert(this);
+		currency.insert();
 		
 		currency.setLongName("Dollar");
 		currency.setShortName("$");
 		currency.setIsoCode("USD");
 		currency.setTauxEuro(1.4f);
-		currency.insert(this);
+		currency.insert();
 		
-		Cursor cCurrency = currency.fetch(this, 1);
-		currency.toDTO(this, cCurrency);
+		Cursor cCurrency = currency.fetch(1);
+		currency.toDTO(cCurrency);
 		
 		Account account = new Account();
 		account.setName("Nicolas");
 		account.setCurrency(currency);
-		account.insert(this);
+		account.insert();
 		
 		account.setName("Marianne");
-		account.insert(this);
+		account.insert();
 		
 		Category category = new Category();
 		category.setName("Courses");
-		category.insert(this);
+		category.insert();
 		
 		category.setName("Alimentation");
-		category.insert(this);
+		category.insert();
 		
 		
 		
-		category.toDTO(this, category.fetch(this, 1));
-		account.toDTO(this, account.fetch(this, 1));
-		currency.toDTO(this, currency.fetch(this, 1));
+		category.toDTO(category.fetch(1));
+		account.toDTO(account.fetch(1));
+		currency.toDTO(currency.fetch(1));
 		Operation op = new Operation();
 		op.setAmount(10f);
 		op.setAccount(account);
@@ -136,12 +121,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		op.setCurrency(currency);
 		op.setCurrencyValueOnCreated(1f);
 		op.setDate(new Date());
-		op.insert(this);
+		op.insert();
 		
 		op.setAmount(15f);
-		op.insert(this);
+		op.insert();
 		
 		op.setAmount(22f);
-		op.insert(this);
+		op.insert();
 	}
 }

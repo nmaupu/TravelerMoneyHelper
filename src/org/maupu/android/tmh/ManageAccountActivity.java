@@ -24,7 +24,7 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	@Override
 	public void refreshDisplay(DatabaseHelper dbHelper) {
 		Account account = new Account();
-		Cursor cursor = account.fetchAll(dbHelper);
+		Cursor cursor = account.fetchAll();
 		
 		// custom custom cursor adapter lol :D
 		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, R.layout.icon_name_item, cursor, 

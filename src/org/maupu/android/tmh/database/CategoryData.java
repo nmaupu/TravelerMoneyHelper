@@ -12,7 +12,7 @@ public class CategoryData extends APersistedData {
 			KEY_NAME + " TEXT NOT NULL" +
 			")";
 	
-	public CategoryData(Context ctx) {
-		super(ctx, TABLE_NAME, CREATE_TABLE);
+	public CategoryData() {
+		super(TABLE_NAME, CREATE_TABLE);
 	}
 }

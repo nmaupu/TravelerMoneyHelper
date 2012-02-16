@@ -1,7 +1,6 @@
 package org.maupu.android.tmh.database.object;
 
 import org.maupu.android.tmh.database.CategoryData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -31,7 +30,7 @@ public class Category extends BaseObject {
 	}
 	
 	@Override
-	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CategoryData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(CategoryData.KEY_NAME);

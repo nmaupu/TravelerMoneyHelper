@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Account;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -16,8 +15,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * A ViewPagerAdapter to display operations by month

@@ -1,5 +1,6 @@
 package org.maupu.android.tmh;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -14,14 +15,12 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener {
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.layout.preferences);
-		
-		dbHelper.openReadable();
 		
 		ListPreference listAccount = (ListPreference)findPreference("account");
 		listAccount.setOnPreferenceClickListener(this);
@@ -37,7 +36,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	private CharSequence[] getAllAccountsEntryValues() {
 		CharSequence[] ret;
 		Account dummy = new Account();
-		Cursor cursor = dummy.fetchAll(dbHelper);
+		Cursor cursor = dummy.fetchAll();
 		cursor.moveToFirst();
 		
 		ret = new CharSequence[cursor.getCount()];
@@ -54,7 +53,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	private CharSequence[] getAllAccountEntries() {
 		CharSequence[] ret;
 		Account dummy = new Account();
-		Cursor cursor = dummy.fetchAll(dbHelper);
+		Cursor cursor = dummy.fetchAll();
 		cursor.moveToFirst();
 		
 		ret = new CharSequence[cursor.getCount()];
@@ -72,7 +71,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		CharSequence[] ret;
 		
 		Category dummy = new Category();
-		Cursor cursor = dummy.fetchAll(dbHelper);
+		Cursor cursor = dummy.fetchAll();
 		cursor.moveToFirst();
 		
 		ret = new CharSequence[cursor.getCount()];
@@ -90,7 +89,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		CharSequence[] ret;
 		
 		Category dummy = new Category();
-		Cursor cursor = dummy.fetchAll(dbHelper);
+		Cursor cursor = dummy.fetchAll();
 		cursor.moveToFirst();
 		
 		ret = new CharSequence[cursor.getCount()];

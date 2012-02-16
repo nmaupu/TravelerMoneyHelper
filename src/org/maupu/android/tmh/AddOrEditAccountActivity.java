@@ -72,7 +72,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		
 		// Setting spinner currency values
 		Currency dummyCurrency = new Currency();
-		Cursor c = dummyCurrency.fetchAll(super.dbHelper);
+		Cursor c = dummyCurrency.fetchAll();
 		//spinnerCurrency.setAdapter(SpinnerManager.createSpinnerCursorAdapter(this, c, CurrencyData.KEY_LONG_NAME));
 		spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		
@@ -257,7 +257,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			
 			Cursor c = spinnerCurrencyManager.getSelectedItem();
 			Currency cur = new Currency();
-			cur.toDTO(super.dbHelper, c);
+			cur.toDTO(c);
 			obj.setCurrency(cur);
 		}
 	}

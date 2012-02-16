@@ -22,7 +22,7 @@ public class CurrencyData extends APersistedData {
 			KEY_ISO_CODE    + " TEXT NOT NULL" +
 			")";
 	
-	public CurrencyData(Context ctx) {
-		super(ctx, TABLE_NAME, CREATE_TABLE);
+	public CurrencyData() {
+		super(TABLE_NAME, CREATE_TABLE);
 	}
 }

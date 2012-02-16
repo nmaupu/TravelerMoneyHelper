@@ -2,8 +2,8 @@ package org.maupu.android.tmh.database.object;
 
 import java.io.Serializable;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.APersistedData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.cache.SimpleObjectCache;
 
 import android.content.ContentValues;
@@ -11,7 +11,7 @@ import android.database.Cursor;
 
 public abstract class BaseObject implements Validator, Serializable {
 	private static final long serialVersionUID = 1L;
-	static SimpleObjectCache cache;
+	protected static SimpleObjectCache cache;
 	protected Integer _id;
 
 	/**
@@ -33,7 +33,7 @@ public abstract class BaseObject implements Validator, Serializable {
 	 * Convert database cursor to dto and set all attributes to local instance
 	 * @param cursor
 	 */
-	public abstract BaseObject toDTO(final DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException;
+	public abstract BaseObject toDTO(Cursor cursor) throws IllegalArgumentException;
 	
 	/**
 	 * Method returning name of object (used in spinners for instance)
@@ -57,51 +57,51 @@ public abstract class BaseObject implements Validator, Serializable {
 		}
 	}
 
-	public boolean insert(final DatabaseHelper dbHelper) {
+	public boolean insert() {
 		if(! validate())
 			return false;
 		
-		long id = dbHelper.getDb().insert(getTableName(), null, createContentValues());
+		long id = TmhApplication.getDatabaseHelper().getDb().insert(getTableName(), null, createContentValues());
 		boolean b = id > 0;
 		
 		if(b) {
 			// Refetch it to store all fields
-			Cursor c = this.fetch(dbHelper, (int)id);
-			this.toDTO(dbHelper, c);
+			Cursor c = this.fetch((int)id);
+			this.toDTO(c);
 		}
 		
 		return b;
 	}
 
-	public boolean update(final DatabaseHelper dbHelper) {
+	public boolean update() {
 		if(! validate() || getId() == null)
 			return false;
 		
-		return dbHelper.getDb().update(getTableName(), createContentValues(), APersistedData.KEY_ID+"="+getId(), null) > 0;
+		return TmhApplication.getDatabaseHelper().getDb().update(getTableName(), createContentValues(), APersistedData.KEY_ID+"="+getId(), null) > 0;
 	}
 
-	public boolean delete(final DatabaseHelper dbHelper) {
-		return dbHelper.getDb().delete(getTableName(), APersistedData.KEY_ID+"="+getId(), null) > 0;
+	public boolean delete() {
+		return TmhApplication.getDatabaseHelper().getDb().delete(getTableName(), APersistedData.KEY_ID+"="+getId(), null) > 0;
 	}
 
-	public Cursor fetch(final DatabaseHelper dbHelper, Integer id) {
-		Cursor c = dbHelper.getDb().query(getTableName(), null, APersistedData.KEY_ID+"="+id, null, null, null, null);
+	public Cursor fetch(Integer id) {
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, APersistedData.KEY_ID+"="+id, null, null, null, null);
 		if(c != null)
 			c.moveToFirst();
 
 		return c;
 	}
 
-	public Cursor fetchAll(final DatabaseHelper dbHelper) {
-		return dbHelper.getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
+	public Cursor fetchAll() {
+		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
 	}
 	
-	public int getCount(final DatabaseHelper dbHelper) {
+	public int getCount() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT count("+APersistedData.KEY_ID+") count FROM ");
 		builder.append(getTableName());
 		
-		Cursor c = dbHelper.getDb().rawQuery(builder.toString(), null);
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(builder.toString(), null);
 		if(c == null) {
 			return 0;
 		} else {

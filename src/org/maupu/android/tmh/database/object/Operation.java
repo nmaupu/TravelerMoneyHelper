@@ -3,6 +3,7 @@ package org.maupu.android.tmh.database.object;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -117,7 +118,7 @@ public class Operation extends BaseObject {
 	}
 
 	@Override
-	public BaseObject toDTO(DatabaseHelper dbHelper, Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(OperationData.KEY_ID);
 		int idxAmount = cursor.getColumnIndexOrThrow(OperationData.KEY_AMOUNT);
@@ -141,9 +142,9 @@ public class Operation extends BaseObject {
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
-			account = (Account)account.toDTO(dbHelper, account.fetch(dbHelper, cursor.getInt(idxAccount)));
-			category = (Category)category.toDTO(dbHelper, category.fetch(dbHelper, cursor.getInt(idxCategory)));
-			currency = (Currency)currency.toDTO(dbHelper, currency.fetch(dbHelper, cursor.getInt(idxCurrency)));
+			account = (Account)account.toDTO(account.fetch(cursor.getInt(idxAccount)));
+			category = (Category)category.toDTO(category.fetch(cursor.getInt(idxCategory)));
+			currency = (Currency)currency.toDTO(currency.fetch(cursor.getInt(idxCurrency)));
 
 			this.setAccount(account);
 			this.setCategory(category);
@@ -155,12 +156,12 @@ public class Operation extends BaseObject {
 		return super.getFromCache();
 	}
 
-	public Cursor fetchAll(final DatabaseHelper dbHelper) {
+	public Cursor fetchAll() {
 		QueryBuilder qsb = filter.getQueryBuilder();
-		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
+		return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	public Cursor fetchByPeriod(final DatabaseHelper dbHelper, Date dateBegin, Date dateEnd) {
+	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
 		QueryBuilder qsb = filter.getQueryBuilder();
 
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
@@ -172,14 +173,14 @@ public class Operation extends BaseObject {
 		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
 		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
 		
-		return dbHelper.getDb().rawQuery(qsb.getStringBuilder().toString(), null);
+		return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	public Cursor fetchByMonth(final DatabaseHelper dbHelper, Date date) {
+	public Cursor fetchByMonth(Date date) {
 		Date dateBegin = DateUtil.getFirstDayOfMonth(date);
 		Date dateEnd = DateUtil.getLastDayOfMonth(date);
 
-		return fetchByPeriod(dbHelper, dateBegin, dateEnd);
+		return fetchByPeriod(dateBegin, dateEnd);
 	}
 	
 	/**
@@ -189,8 +190,8 @@ public class Operation extends BaseObject {
 	 * @param date
 	 * @return Sum of all operations for given parameters
 	 */
-	public Cursor sumOperationsByMonth(final DatabaseHelper dbHelper, Account account, Date date) {
-		return sumOperationsByPeriod(dbHelper, account, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date));
+	public Cursor sumOperationsByMonth(Account account, Date date) {
+		return sumOperationsByPeriod(account, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date));
 	}
 	
 	/**
@@ -201,7 +202,7 @@ public class Operation extends BaseObject {
 	 * @param operationType
 	 * @return Sum of all operations for given parameters
 	 */
-	public Cursor sumOperationsByPeriod(final DatabaseHelper dbHelper, Account account, Date dateBegin, Date dateEnd) {
+	public Cursor sumOperationsByPeriod(Account account, Date dateBegin, Date dateEnd) {
 		if(account == null || account.getId() == null)
 			return null;
 		
@@ -219,7 +220,7 @@ public class Operation extends BaseObject {
 		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY);
 		
-		Cursor c = dbHelper.getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		return c;
 	}

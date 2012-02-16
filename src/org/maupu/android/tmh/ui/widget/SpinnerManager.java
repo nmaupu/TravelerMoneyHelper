@@ -52,7 +52,7 @@ public class SpinnerManager {
 
 		for(int i=0; i<count; i++) {
 			Cursor c = (Cursor)adapter.getItem(i);
-			dummy.toDTO(dbHelper, c);
+			dummy.toDTO(c);
 			if(isSpinnerValueEqualsToBaseObject(dummy, value)) {
 				spinner.setSelection(i, true);
 				break;

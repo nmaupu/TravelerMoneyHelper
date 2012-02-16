@@ -24,7 +24,7 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	@Override
 	public void refreshDisplay(DatabaseHelper dbHelper) {
 		Category category = new Category();
-		Cursor cursor = category.fetchAll(dbHelper);
+		Cursor cursor = category.fetchAll();
 		
 		super.setAdapter(R.layout.category_item, 
 				cursor, 

@@ -114,7 +114,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			// Process list
 			Operation dummy = new Operation();
 			dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
-			Cursor c = dummy.fetchByMonth(dbHelper, date);
+			Cursor c = dummy.fetchByMonth(date);
 			OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
 					viewPagerOperationActivity, 
 					R.layout.operation_item, 
@@ -125,7 +125,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView.setAdapter(cca);
 			
 			// Process total
-			c = dummy.sumOperationsByMonth(dbHelper, currentAccount, date);
+			c = dummy.sumOperationsByMonth(currentAccount, date);
 			float total = 0f;
 			int nbRes = c.getCount();
 			boolean sameCurrency = (nbRes == 1);
@@ -186,7 +186,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
 			ListView listAccount = (ListView)dialog.findViewById(R.id.list);
 			Account dummyAccount = new Account();
-			final Cursor cursorAllAccounts = dummyAccount.fetchAll(dbHelper);
+			final Cursor cursorAllAccounts = dummyAccount.fetchAll();
 			
 			final IconCursorAdapter adapter = new IconCursorAdapter(viewPagerOperationActivity, 
 					R.layout.icon_name_item_no_checkbox, 
@@ -200,7 +200,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							cursorAllAccounts.moveToPosition(position);
 							
 							Account account = new Account();
-							account.toDTO(dbHelper, cursorAllAccounts);
+							account.toDTO(cursorAllAccounts);
 							
 							cursorAllAccounts.moveToPosition(oldPosition);
 							
@@ -222,7 +222,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			if(posChecked.length == 1) {
 				int p = posChecked[0];
 				Cursor cursor = (Cursor)listView.getItemAtPosition(p);
-				obj.toDTO(dbHelper, cursor);
+				obj.toDTO(cursor);
 
 				intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
 				intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
@@ -243,8 +243,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 						Integer pos = posChecked[i];
 						//Request deletion
 						Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
-						obj.toDTO(dbHelper, cursor);
-						obj.delete(dbHelper);
+						obj.toDTO(cursor);
+						obj.delete();
 					}
 
 					if(err)

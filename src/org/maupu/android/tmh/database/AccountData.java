@@ -16,7 +16,7 @@ public class AccountData extends APersistedData {
 			KEY_ID_CURRENCY + " INTEGER NOT NULL " +
 			")";
 	
-	public AccountData(Context ctx) {
-		super(ctx, TABLE_NAME, CREATE_TABLE);
+	public AccountData() {
+		super(TABLE_NAME, CREATE_TABLE);
 	}
 }
