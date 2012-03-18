@@ -13,13 +13,17 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +36,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private EditText amount;
 	private RadioButton radioButtonDebit;
 	private RadioButton radioButtonCredit;
+	private CheckBox checkboxUpdateRate;
+	private LinearLayout linearLayoutRateUpdater;
 	private TextView textViewSign;
 	private static final String PLUS="+";
 	private static final String MINUS="-";
@@ -53,6 +59,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
 		amount = (EditText)findViewById(R.id.amount);
+		linearLayoutRateUpdater = (LinearLayout)findViewById(R.id.ll_exchange_rate);
+		checkboxUpdateRate = (CheckBox)findViewById(R.id.checkbox_update_rate);
 		smCurrency = new SpinnerManager(this, (Spinner)findViewById(R.id.currency));
 
 		radioButtonCredit = (RadioButton)findViewById(R.id.credit);
@@ -103,6 +111,13 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void baseObjectToFields(Operation obj) {
 		if(obj != null) {
+			
+			if(obj.getId() != null) {
+				// Updating
+				linearLayoutRateUpdater.setVisibility(View.VISIBLE);
+				checkboxUpdateRate.setChecked(false);
+			}
+			
 			initDatePicker(obj.getDate());
 			if(obj.getAccount() !=null)
 				smAccount.setSpinnerPositionCursor(dbHelper, obj.getAccount().getName(), new Account());
@@ -158,8 +173,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			if(radioButtonDebit.isChecked())
 				obj.setAmount(obj.getAmount()*-1);
 
-			// Store currency value for this addition
-			obj.setCurrencyValueOnCreated(cur.getTauxEuro());
+			// Store currency value for this addition if exchange rate checkbox is selected
+			if(linearLayoutRateUpdater.getVisibility() == View.GONE || checkboxUpdateRate.isChecked())
+				obj.setCurrencyValueOnCreated(cur.getTauxEuro());
 		}
 	}
 

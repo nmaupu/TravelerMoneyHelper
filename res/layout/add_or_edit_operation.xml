@@ -116,8 +116,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="2"
                     android:gravity="right|center_vertical"
-                    android:text="-"
                     android:paddingRight="5dip"
+                    android:text="-"
                     android:textColor="@color/red"
                     android:textSize="30dip"
                     android:textStyle="bold" />
@@ -128,6 +128,27 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:numeric="integer|decimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_exchange_rate"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="3dip"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:paddingTop="3dip" >
+
+                <CheckBox
+                    android:id="@+id/checkbox_update_rate"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/update_exchange_rate"
+                    android:textStyle="italic" />
             </LinearLayout>
 
             <LinearLayout
