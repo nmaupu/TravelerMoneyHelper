@@ -5,6 +5,7 @@ import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -82,8 +83,10 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			Intent intent = this.getIntent();
 			Bundle bundle = intent.getExtras();
 			T objnew = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
-			if(objnew != null)
+			if(objnew != null) {
+				buttonContinueAndAdd.setEnabled(false);
 				obj = objnew;
+			}
 		} catch (NullPointerException e) {
 			// Here, nothing is allocated, we keep default obj
 		} catch (ClassCastException cce) {
@@ -111,18 +114,29 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		}
 	}
 
-	private boolean onContinue(boolean disposeActivity) {
+	private boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {
 			fieldsToBaseObject(obj);
-
-			if(obj.getId() != null)
-				obj.update();
-			else
+			
+			if(obj.getId() != null) {
+				// Show a confirm dialog when updating
+				final TmhActivity current = this; // WAT the heck I have just done ?
+				SimpleDialog.confirmDialog(this, getString(R.string.confirm_modification), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						obj.update();
+						
+						// Dispose this activity
+						if(disposeActivity)
+							current.finish();
+					}
+				}).show();
+			} else {
 				obj.insert();
-
-			// Dispose this activity
-			if(disposeActivity)
-				super.finish();
+				
+				if(disposeActivity)
+					super.finish();
+			}
 			
 			return true;
 		} else {
