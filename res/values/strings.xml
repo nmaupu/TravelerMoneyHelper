@@ -67,5 +67,6 @@
     <string name="default_account_name">Account1</string>
     <string name="menu_item_withdrawal">Widthdrawal</string>
     <string name="confirm_modification">Do you confirm modification ?</string>
+    <string name="total">Total:</string>
 
 </resources>

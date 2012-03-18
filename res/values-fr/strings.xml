@@ -67,5 +67,6 @@
     <string name="default_account_name">Compte1</string>
     <string name="menu_item_withdrawal">Retrait</string>
     <string name="confirm_modification">Confirmez-vous la modification ?</string>
+    <string name="total">Total:</string>
 
 </resources>
