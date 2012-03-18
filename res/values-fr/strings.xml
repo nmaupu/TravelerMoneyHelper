@@ -69,5 +69,6 @@
     <string name="confirm_modification">Confirmez-vous la modification ?</string>
     <string name="total">Total:</string>
     <string name="update_exchange_rate">Mettre à jour le taux de change</string>
+    <string name="date">Date</string>
 
 </resources>

@@ -132,14 +132,14 @@
 
             <LinearLayout
                 android:id="@+id/ll_exchange_rate"
-                android:visibility="gone"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingBottom="3dip"
                 android:paddingLeft="5dip"
                 android:paddingRight="5dip"
-                android:paddingTop="3dip" >
+                android:paddingTop="3dip"
+                android:visibility="gone" >
 
                 <CheckBox
                     android:id="@+id/checkbox_update_rate"
@@ -174,7 +174,30 @@
                     android:layout_weight="1" />
             </LinearLayout>
 
-            <DatePicker
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="3dip"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:paddingTop="3dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2"
+                    android:text="@string/date" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+            <!--
+                 DatePicker
                 android:id="@+id/date"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -184,7 +207,8 @@
                 android:paddingLeft="5dip"
                 android:paddingRight="5dip"
                 android:paddingTop="3dip"
-                android:startYear="2000" />
+                android:startYear="2000" /
+            -->
         </LinearLayout>
     </ScrollView>
 

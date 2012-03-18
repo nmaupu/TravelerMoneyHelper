@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -13,11 +14,14 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
-import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -28,8 +32,13 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener {
-	private DatePicker datePicker;
+public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener {
+	private static final int DATE_DIALOG_ID = 0;
+	//private DatePicker datePicker;
+	private int mYear;
+    private int mMonth;
+    private int mDay;
+
 	private SpinnerManager smAccount;
 	private SpinnerManager smCategory;
 	private SpinnerManager smCurrency;
@@ -39,6 +48,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private CheckBox checkboxUpdateRate;
 	private LinearLayout linearLayoutRateUpdater;
 	private TextView textViewSign;
+	private TextView textViewDate;
 	private static final String PLUS="+";
 	private static final String MINUS="-";
 
@@ -48,13 +58,18 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	protected void initResources() {
-		datePicker = (DatePicker)findViewById(R.id.date);
+		//datePicker = (DatePicker)findViewById(R.id.date);
 
+		/*
 		Calendar cal = Calendar.getInstance();
 		int maxYear = cal.get(Calendar.YEAR);
 		int maxMonth = cal.get(Calendar.MONTH);
 		int maxDay = cal.get(Calendar.DAY_OF_MONTH);
-		datePicker.init(maxYear, maxMonth, maxDay, null);
+		mYear = maxYear;
+		mMonth = maxMonth;
+		mDay = maxDay;
+		*/
+		//datePicker.init(maxYear, maxMonth, maxDay, null);
 
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
@@ -68,6 +83,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		radioButtonCredit.setOnCheckedChangeListener(this);
 		radioButtonDebit.setOnCheckedChangeListener(this);
 		textViewSign = (TextView)findViewById(R.id.sign);
+		textViewDate = (TextView)findViewById(R.id.date);
+		textViewDate.setOnClickListener(this);
 
 		// Set spinners content
 		Cursor c = null;
@@ -118,7 +135,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 				checkboxUpdateRate.setChecked(false);
 			}
 			
-			initDatePicker(obj.getDate());
+			initDatePickerTextView(obj.getDate());
 			if(obj.getAccount() !=null)
 				smAccount.setSpinnerPositionCursor(dbHelper, obj.getAccount().getName(), new Account());
 			if(obj.getCategory() != null)
@@ -136,7 +153,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			}
 		} else {
 			// Reset all fields
-			initDatePicker(null);
+			initDatePickerTextView(null);
 			amount.setText("");
 			// Set spinner category to current selected one if exists
 			Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
@@ -147,10 +164,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void fieldsToBaseObject(Operation obj) {
 		if(obj != null) {
-			int year = datePicker.getYear()-1900;
+			/*int year = datePicker.getYear()-1900;
 			int month = datePicker.getMonth();
-			int day = datePicker.getDayOfMonth();
-			obj.setDate(new Date(year, month, day));
+			int day = datePicker.getDayOfMonth();*/
+			obj.setDate(new GregorianCalendar(mYear, mMonth, mDay).getTime());
 
 			Cursor c = null;
 
@@ -179,13 +196,25 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		}
 	}
 
-	private void initDatePicker(Date d) {
+	private void initDatePickerTextView(Date d) {
+		/*
 		Calendar cal = Calendar.getInstance();
 		if(d != null)
 			cal.setTime(d);
 
 		// init instead of update seems to work as expected and set a good value ...
 		datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
+		*/
+		
+		Calendar cal = Calendar.getInstance();
+		if(d != null)
+			cal.setTime(d);
+		
+		mYear = cal.get(Calendar.YEAR);
+		mMonth = cal.get(Calendar.MONTH);
+		mDay = cal.get(Calendar.DAY_OF_MONTH);
+		
+		updateDatePickerTextView();
 	}
 
 	@Override
@@ -198,5 +227,40 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			textViewSign.setText(MINUS);
 			textViewSign.setTextColor(Operation.COLOR_NEGATIVE_AMOUNT);
 		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		super.onClick(v);
+		
+		if(v.getId() == R.id.date) {
+			showDialog(DATE_DIALOG_ID);
+		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DATE_DIALOG_ID:
+			return new DatePickerDialog(this, this, mYear, mMonth, mDay);
+		}
+		
+		return null;
+	}
+	
+	public void updateDatePickerTextView() {
+		textViewDate.setText(
+				new StringBuilder()
+				.append(mDay).append("-")
+				.append(mMonth+1).append("-")
+				.append(mYear));
+	}
+
+	@Override
+	public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+		mYear = year;
+		mMonth = monthOfYear;
+		mDay = dayOfMonth;
+		updateDatePickerTextView();
 	}
 }

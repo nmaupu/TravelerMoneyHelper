@@ -2,6 +2,7 @@ package org.maupu.android.tmh.ui.widget;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 		
 		if(opi == null) {
 			Calendar cal = Calendar.getInstance();
-			cal.setTime(new Date());
+			cal.setTime(new GregorianCalendar().getTime());
 			cal.add(Calendar.MONTH, offset+position);
 			Date date = cal.getTime();
 

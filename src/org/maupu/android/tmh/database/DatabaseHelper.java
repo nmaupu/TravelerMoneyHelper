@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -78,7 +79,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 			return;
 		
 		Currency currency = new Currency();
-		currency.setLastUpdate(new Date());
+		currency.setLastUpdate(new GregorianCalendar().getTime());
 		currency.setLongName("Euro");
 		currency.setShortName("e");
 		currency.setTauxEuro(1f);
@@ -120,7 +121,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		op.setCategory(category);
 		op.setCurrency(currency);
 		op.setCurrencyValueOnCreated(1f);
-		op.setDate(new Date());
+		op.setDate(new GregorianCalendar().getTime());
 		op.insert();
 		
 		op.setAmount(15f);

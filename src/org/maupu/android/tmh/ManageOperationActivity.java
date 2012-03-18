@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -65,7 +66,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		int id = c.getInt(idxId);
 		
 		dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
-		c = dummyOperation.fetchByMonth(new Date());
+		c = dummyOperation.fetchByMonth(new GregorianCalendar().getTime());
 
 		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,

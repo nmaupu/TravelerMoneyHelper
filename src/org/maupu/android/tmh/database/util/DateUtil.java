@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public abstract class DateUtil {
 	
@@ -32,21 +33,23 @@ public abstract class DateUtil {
 	}
 	
 	public static Date getFirstDayOfMonth(Date date) {
-		int year = date.getYear();
-		int month = date.getMonth();
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, 1);
+		cal.setTime(date);
+		
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
 
-		return new Date(year, month, 1, 0, 0, 0);
+		return new GregorianCalendar(year, month, 1, 0, 0, 0).getTime();
 	}
 	
 	public static Date getLastDayOfMonth(Date date) {
-		int year = date.getYear();
-		int month = date.getMonth();
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, 1);
+		cal.setTime(date);
+		
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
 		int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-		return new Date(year, month, maxDay, 23, 59, 59);
+		return new GregorianCalendar(year, month, maxDay, 23, 59, 59).getTime();
 	}
 }

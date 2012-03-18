@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyHelper;
@@ -98,7 +99,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			obj.setTauxEuro(Float.parseFloat(editTextValue.getText().toString().trim()));
 
 			if(obj.getLastUpdate() == null || checkBoxUpdate.isChecked())
-				obj.setLastUpdate(new Date());
+				obj.setLastUpdate(new GregorianCalendar().getTime());
 
 			obj.setIsoCode(((CurrencyISO4217)spinnerCurrencyCode.getSelectedItem()).getCode());
 		}

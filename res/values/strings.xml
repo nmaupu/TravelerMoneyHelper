@@ -69,5 +69,6 @@
     <string name="confirm_modification">Do you confirm modification ?</string>
     <string name="total">Total:</string>
     <string name="update_exchange_rate">Update exchange rate to current</string>
+    <string name="date">Date</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -72,7 +73,7 @@ public class HomeActivity extends TabActivity {
 			// Adding default currency (euro)
 			Currency currency = new Currency();
 			currency.setIsoCode("EUR");
-			currency.setLastUpdate(new Date());
+			currency.setLastUpdate(new GregorianCalendar().getTime());
 			currency.setLongName("Euro");
 			java.util.Currency c = java.util.Currency.getInstance("EUR");
 			currency.setShortName(c.getSymbol());

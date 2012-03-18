@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -164,7 +165,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				cursor = spinnerManagerCurrency.getSelectedItem();
 				currency.toDTO(cursor);
 
-				Date now = new Date();
+				Date now = new GregorianCalendar().getTime();
 				// First, we debit from account
 				Operation operationFrom = new Operation();
 				operationFrom.setAccount(accountFrom);
