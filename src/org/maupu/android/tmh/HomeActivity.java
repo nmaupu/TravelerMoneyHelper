@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.core.TmhApplication;
