@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
@@ -23,7 +22,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main2);
 
-		adapter = new ViewPagerOperationAdapter(this, dbHelper);
+		adapter = new ViewPagerOperationAdapter(this);
 		ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
 		vp.setAdapter(adapter);
 		currentPosition = adapter.getCount()/2;
@@ -56,11 +55,11 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("onActivityResult", "message="+resultCode);
-		refreshDisplay(dbHelper);
+		refreshDisplay();
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		adapter.refreshItemView(currentPosition);
 	}
 
@@ -68,7 +67,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	protected Intent onAddClicked() {
 		// Add operation
 		Intent intent = new Intent(this, AddOrEditOperationActivity.class);
-		intent.putExtra("account", StaticData.getCurrentAccount(this, dbHelper));
+		intent.putExtra("account", StaticData.getCurrentAccount(this));
 		this.startActivityForResult(intent, 0);
 		
 		return intent;

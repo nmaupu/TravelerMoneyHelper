@@ -1,7 +1,7 @@
 package org.maupu.android.tmh;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Category;
 
@@ -13,8 +13,8 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	}
 	
 	@Override
-	protected boolean validateConstraintsForDeletion(DatabaseHelper dbHelper, Category obj) {
-		int nb = dbHelper.getDb().query(OperationData.TABLE_NAME,
+	protected boolean validateConstraintsForDeletion(Category obj) {
+		int nb = TmhApplication.getDatabaseHelper().getDb().query(OperationData.TABLE_NAME,
 				new String[]{OperationData.KEY_ID}, 
 				OperationData.KEY_ID_CATEGORY+"="+obj.getId(), null, null, null, null).getCount();
 		
@@ -22,7 +22,7 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		Category category = new Category();
 		Cursor cursor = category.fetchAll();
 		

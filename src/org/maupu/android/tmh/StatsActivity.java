@@ -1,12 +1,6 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.AccountData;
-import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Operation;
-
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +8,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class StatsActivity extends TmhActivity {
-	DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +16,8 @@ public class StatsActivity extends TmhActivity {
 		
 		
 		//Operation dummyOperation = new Operation();
-		//Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
-		//Cursor sumCreditCard = dummyOperation.sumOperationByMonth(dbHelper, new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
+		//Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
+		//Cursor sumCreditCard = dummyOperation.sumOperationByMonth(new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
 		
 		//String sWithdrawalBalance = getStringBalance(sumWithdrawal);
 		//String sCreditCardBalance = getStringBalance(sumCreditCard);
@@ -43,6 +36,7 @@ public class StatsActivity extends TmhActivity {
 		setContentView(ll);
 	}
 	
+	/*
 	private String getStringBalance(Cursor c) {
 		StringBuilder sb = new StringBuilder();
 		for(int i=0; i<c.getCount(); i++) {
@@ -56,7 +50,7 @@ public class StatsActivity extends TmhActivity {
 		}
 		
 		return sb.toString();
-	}
+	}*/
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -67,7 +61,7 @@ public class StatsActivity extends TmhActivity {
 	}
 	
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {}
+	public void refreshDisplay() {}
 	
 	@Override
 	protected Intent onAddClicked() {

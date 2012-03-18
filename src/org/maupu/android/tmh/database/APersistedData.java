@@ -2,7 +2,6 @@ package org.maupu.android.tmh.database;
 
 import org.maupu.android.tmh.core.TmhApplication;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -12,7 +11,7 @@ public abstract class APersistedData extends SQLiteOpenHelper {
 	protected String tableName;
 	
 	public APersistedData(String tableName, String createQuery) {
-		super(TmhApplication.getAppContext(), DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION);
+		super(TmhApplication.getAppContext(), DatabaseHelper.getPreferredDatabaseName(), null, DatabaseHelper.DATABASE_VERSION);
 		this.createQuery = createQuery;
 		this.tableName = tableName;
 	}

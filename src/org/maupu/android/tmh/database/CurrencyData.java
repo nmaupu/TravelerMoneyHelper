@@ -1,6 +1,5 @@
 package org.maupu.android.tmh.database;
 
-import android.content.Context;
 
 public class CurrencyData extends APersistedData {
 	public static final String KEY_LONG_NAME="longName";

@@ -70,5 +70,11 @@
     <string name="total">Total:</string>
     <string name="update_exchange_rate">Mettre à jour le taux de change</string>
     <string name="date">Date</string>
+    <string name="database_created_successfuly">Base de données créée et selectionnée</string>
+    <string name="database">Base de données</string>
+    <string name="new_database">Nouvelle base de données</string>
+    <string name="select_database">Selectionner la base de données à utiliser</string>
+    <string name="enter_database_name">Entrer un nom pour la base de données</string>
+    <string name="new_database_summary">Ajouter une nouvelle base de données</string>
 
 </resources>

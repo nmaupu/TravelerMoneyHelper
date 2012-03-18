@@ -1,7 +1,6 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,24 +10,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public abstract class TmhActivity extends Activity {
-	protected DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//dbHelper.createSampleData();
+		//TmhApplication.getDatabaseHelper().createSampleData();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		if(dbHelper != null && dbHelper.getDb() != null)
-			dbHelper.close();
+		TmhApplication.getDatabaseHelper().close();
 		super.onDestroy();
 	}
 	
 	@Override
 	protected void onResume() {
-		refreshDisplay(dbHelper);
+		refreshDisplay();
 		super.onResume();
 	}
 	
@@ -52,7 +49,7 @@ public abstract class TmhActivity extends Activity {
 			startActivityFromMenu(ManageAccountActivity.class);
 			break;
 		case R.id.item_refresh:
-			refreshDisplay(dbHelper);
+			refreshDisplay();
 			break;
 		case R.id.item_home:
 			startActivityFromMenu(HomeActivity.class);
@@ -75,9 +72,8 @@ public abstract class TmhActivity extends Activity {
 	
 	/**
 	 * Called when click refresh button on menu
-	 * @param dbHelper
 	 */
-	public abstract void refreshDisplay(final DatabaseHelper dbHelper);
+	public abstract void refreshDisplay();
 	/**
 	 * Called when add item menu is clicked
 	 * @return intent used to call corresponding activity

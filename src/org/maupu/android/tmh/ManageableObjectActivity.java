@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -80,7 +79,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 			this.deleteButton.setOnClickListener(this);
 		
 		initButtons();
-		//refreshDisplay(dbHelper);
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
@@ -148,7 +146,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 						//Request deletion
 						Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
 						obj.toDTO(cursor);
-						if(validateConstraintsForDeletion(dbHelper, obj))
+						if(validateConstraintsForDeletion(obj))
 							obj.delete();
 						else
 							err = true;
@@ -158,7 +156,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 						SimpleDialog.errorDialog(finalContext, getString(R.string.error), errMessage).show();
 
 					dialog.dismiss();
-					refreshDisplay(dbHelper);
+					refreshDisplay();
 				}
 			}).show();
 			break;
@@ -217,7 +215,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		refreshDisplay(dbHelper);
+		refreshDisplay();
 	}
 
 	/**
@@ -225,7 +223,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 * @param obj
 	 * @return true if object can be deleted, false otherwise
 	 */
-	protected abstract boolean validateConstraintsForDeletion(final DatabaseHelper dbHelper, final T obj);
+	protected abstract boolean validateConstraintsForDeletion(final T obj);
 	
 	protected Intent onAddClicked() {
 		Intent intent = new Intent(this, addOrEditActivity);

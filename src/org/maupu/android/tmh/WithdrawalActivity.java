@@ -3,11 +3,9 @@ package org.maupu.android.tmh;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
@@ -33,7 +31,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener {
-	private DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
 	private Spinner spinnerFrom;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
@@ -91,7 +88,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			if(idCategory != -1) {
 				Cursor c = category.fetch(idCategory);
 				category.toDTO(c);
-				spinnerManagerCategory.setSpinnerPositionCursor(dbHelper, category.getName(), new Category());
+				spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
 			}
 		} catch (NumberFormatException nfe) {
 			Log.e("WithdrawalActivity", "Problem parsing preferences category for withdrawal, not set ?");
@@ -99,8 +96,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
 
 		// From
-		Account current = StaticData.getCurrentAccount(this, dbHelper);
-		spinnerManagerFrom.setSpinnerPositionCursor(dbHelper, current.getName(), new Account());
+		Account current = StaticData.getCurrentAccount(this);
+		spinnerManagerFrom.setSpinnerPositionCursor(current.getName(), new Account());
 	}
 
 	@Override
@@ -113,7 +110,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {}
+	public void refreshDisplay() {}
 
 	@Override
 	protected Intent onAddClicked() {
@@ -134,7 +131,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			Cursor c = currency.fetch(currencyId);
 			currency.toDTO(c);
 
-			spinnerManagerCurrency.setSpinnerPositionCursor(dbHelper, currency.getLongName(), new Currency());
+			spinnerManagerCurrency.setSpinnerPositionCursor(currency.getLongName(), new Currency());
 		}
 	}
 

@@ -10,7 +10,6 @@ import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
@@ -42,7 +41,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private ViewPagerOperationActivity viewPagerOperationActivity;
 	private View view;
 	private Date date;
-	private DatabaseHelper dbHelper;
 	private Button editButton;
 	private Button deleteButton;
 	private ListView listView;
@@ -53,10 +51,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private View footerOperationTotal;
 	private TextView textViewTotal;
 
-	public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, DatabaseHelper dbHelper, Date date) {
+	public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, Date date) {
 		this.viewPagerOperationActivity = ctx;
 		this.date = date;
-		this.dbHelper = dbHelper;
 		this.inflater = inflater;
 
 		view = inflater.inflate(R.layout.manageable_object, null);
@@ -109,7 +106,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView = (ListView)view.findViewById(R.id.list);
 		
 		// Getting current account
-		Account currentAccount = StaticData.getCurrentAccount(viewPagerOperationActivity, dbHelper);
+		Account currentAccount = StaticData.getCurrentAccount(viewPagerOperationActivity);
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
@@ -206,8 +203,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							
 							
 							// Replacing preferences account
-							StaticData.setCurrentAccount(viewPagerOperationActivity, dbHelper, account);
-							viewPagerOperationActivity.refreshDisplay(dbHelper);
+							StaticData.setCurrentAccount(viewPagerOperationActivity, account);
+							viewPagerOperationActivity.refreshDisplay();
 							Log.d("OperationPagerItem", "Callback called");
 							dialog.dismiss();
 							
@@ -305,7 +302,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshHeader() {
-		Account account = StaticData.getCurrentAccount(viewPagerOperationActivity, dbHelper);
+		Account account = StaticData.getCurrentAccount(viewPagerOperationActivity);
 
 		// Setting parameters - account should not be null
 		if(account != null) {

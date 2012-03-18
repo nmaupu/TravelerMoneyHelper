@@ -232,7 +232,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			ImageViewHelper.setIcon(this, imageViewIcon, filename);
 			
 			if(obj.getCurrency() !=null)
-				spinnerCurrencyManager.setSpinnerPositionCursor(dbHelper, obj.getCurrency().getLongName(), new Currency());
+				spinnerCurrencyManager.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
 		}
 	}
 

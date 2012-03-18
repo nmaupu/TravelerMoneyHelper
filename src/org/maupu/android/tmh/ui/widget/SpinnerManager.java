@@ -1,6 +1,5 @@
 package org.maupu.android.tmh.ui.widget;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.BaseObject;
 
 import android.content.Context;
@@ -45,7 +44,7 @@ public class SpinnerManager {
 	 * @param spinner
 	 * @param value
 	 */
-	public void setSpinnerPositionCursor(DatabaseHelper dbHelper, String value, BaseObject dummy) {
+	public void setSpinnerPositionCursor(String value, BaseObject dummy) {
 		// Finding value's position
 		int count = spinner.getCount();
 		SimpleCursorAdapter adapter = (SimpleCursorAdapter)spinner.getAdapter();

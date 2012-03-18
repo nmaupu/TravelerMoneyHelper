@@ -97,21 +97,21 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Bundle b = this.getIntent().getExtras();
 		Account currentAccount = (Account)b.get("account");
 		if(currentAccount != null)
-			smAccount.setSpinnerPositionCursor(dbHelper, currentAccount.toString(), new Account());
+			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
 
 		Category dummyCategory = new Category();
 		c = dummyCategory.fetchAll();
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
-		Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
+		Category cat = StaticData.getCurrentSelectedCategory(this);
 		if(cat != null && cat.getName() != null)
-			smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
+			smCategory.setSpinnerPositionCursor(cat.getName(), new Category());
 
 		Currency dummyCurrency = new Currency();
 		c = dummyCurrency.fetchAll();
 		smCurrency.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		if(currentAccount != null && currentAccount.getCurrency() != null)
-			smCurrency.setSpinnerPositionCursor(dbHelper, currentAccount.getCurrency().toString(), new Currency());
+			smCurrency.setSpinnerPositionCursor(currentAccount.getCurrency().toString(), new Currency());
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Category cat = new Category();
 		Cursor c = smCategory.getSelectedItem();
 		cat.toDTO(c);
-		StaticData.setCurrentSelectedCategory(this, dbHelper, cat);
+		StaticData.setCurrentSelectedCategory(this, cat);
 		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
 	}
@@ -137,11 +137,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			
 			initDatePickerTextView(obj.getDate());
 			if(obj.getAccount() !=null)
-				smAccount.setSpinnerPositionCursor(dbHelper, obj.getAccount().getName(), new Account());
+				smAccount.setSpinnerPositionCursor(obj.getAccount().getName(), new Account());
 			if(obj.getCategory() != null)
-				smCategory.setSpinnerPositionCursor(dbHelper, obj.getCategory().getName(), new Category());
+				smCategory.setSpinnerPositionCursor(obj.getCategory().getName(), new Category());
 			if(obj.getCurrency() != null)
-				smCurrency.setSpinnerPositionCursor(dbHelper, obj.getCurrency().getLongName(), new Currency());
+				smCurrency.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
 			if(obj.getAmount() != null) {
 				amount.setText(""+Math.abs(obj.getAmount()));
 				if(obj.getAmount() >= 0.0f)
@@ -156,8 +156,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			initDatePickerTextView(null);
 			amount.setText("");
 			// Set spinner category to current selected one if exists
-			Category cat = StaticData.getCurrentSelectedCategory(this, dbHelper);
-			smCategory.setSpinnerPositionCursor(dbHelper, cat.getName(), new Category());
+			Category cat = StaticData.getCurrentSelectedCategory(this);
+			smCategory.setSpinnerPositionCursor(cat.getName(), new Category());
 		}
 	}
 

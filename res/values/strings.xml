@@ -70,5 +70,11 @@
     <string name="total">Total:</string>
     <string name="update_exchange_rate">Update exchange rate to current</string>
     <string name="date">Date</string>
+    <string name="database_created_successfuly">Database created and selected</string>
+    <string name="database">Database</string>
+    <string name="new_database">New database</string>
+    <string name="select_database">Select database to use</string>
+    <string name="enter_database_name">Enter a database name</string>
+    <string name="new_database_summary">Add a new Database</string>
 
 </resources>

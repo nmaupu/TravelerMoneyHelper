@@ -1,7 +1,6 @@
 package org.maupu.android.tmh.ui;
 
 import org.maupu.android.tmh.database.AccountData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 
@@ -18,18 +17,17 @@ public abstract class StaticData {
 	private static Category currentSelectedCategory = new Category();
 	public static final String STATIC_DATA_PREFS_FILENAME = "staticPreferences";
 	
-	public static void setCurrentAccount(Context context, final DatabaseHelper dbHelper, Account account) {
+	public static void setCurrentAccount(Context context, Account account) {
 		if(account == null || account.getId() == null)
 			return;
 		
-		//getCurrentAccount(context, dbHelper);
 		SharedPreferences prefs = getPrefs(context);
 		Editor editor = prefs.edit();
 		editor.putInt("account", account.getId());
 		editor.commit();
 		
 		// Fetch and fill currentAccount
-		getCurrentAccount(context, dbHelper);
+		getCurrentAccount(context);
 	}
 	
 	/**
@@ -39,9 +37,9 @@ public abstract class StaticData {
 		isValidCurrentAccount = false;
 	}
 	
-	public static Account getCurrentAccount(Context context, final DatabaseHelper dbHelper) {
+	public static Account getCurrentAccount(Context context) {
 		SharedPreferences prefs = getPrefs(context);
-		Integer id = prefs.getInt("account", getDefaultAccount(dbHelper));
+		Integer id = prefs.getInt("account", getDefaultAccount());
 		
 		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
 			Cursor c = currentAccount.fetch(id);
@@ -54,7 +52,7 @@ public abstract class StaticData {
 		return currentAccount;
 	}
 	
-	private static Integer getDefaultAccount(final DatabaseHelper dbHelper) {
+	private static Integer getDefaultAccount() {
 		if(defaultAccountId == null) {
 			Cursor cursor = currentAccount.fetchAll();
 			if(cursor.getCount() == 0)
@@ -68,7 +66,7 @@ public abstract class StaticData {
 		return defaultAccountId;
 	}
 	
-	public static Category getCurrentSelectedCategory(Context context, final DatabaseHelper dbHelper) {
+	public static Category getCurrentSelectedCategory(Context context) {
 		SharedPreferences prefs = getPrefs(context);
 		Integer id = prefs.getInt("currentCategory", -1);
 		
@@ -85,18 +83,17 @@ public abstract class StaticData {
 		}
 	}
 	
-	public static void setCurrentSelectedCategory(Context context, final DatabaseHelper dbHelper, Category category) {
+	public static void setCurrentSelectedCategory(Context context, Category category) {
 		if(category == null || category.getId() == null)
 			return;
 		
-		//getCurrentSelectedCategory(context, dbHelper);
 		SharedPreferences prefs = getPrefs(context);
 		Editor editor = prefs.edit();
 		editor.putInt("currentCategory", category.getId());
 		editor.commit();
 		
 		// Fetch and fill currentCategory
-		getCurrentSelectedCategory(context, dbHelper);
+		getCurrentSelectedCategory(context);
 	}
 	
 	private static SharedPreferences getPrefs(Context context) {

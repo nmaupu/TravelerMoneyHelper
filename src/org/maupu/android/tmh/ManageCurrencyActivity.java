@@ -1,7 +1,7 @@
 package org.maupu.android.tmh;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CurrencyData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
 
@@ -13,7 +13,7 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		Currency currency = new Currency();
 		Cursor c = currency.fetchAll();
 
@@ -25,8 +25,8 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	}
 
 	@Override
-	protected boolean validateConstraintsForDeletion(DatabaseHelper dbHelper, Currency obj) {
-		int nb = dbHelper.getDb().query(OperationData.TABLE_NAME, 
+	protected boolean validateConstraintsForDeletion(Currency obj) {
+		int nb = TmhApplication.getDatabaseHelper().getDb().query(OperationData.TABLE_NAME, 
 				new String[] {OperationData.KEY_ID}, 
 				OperationData.KEY_ID_CURRENCY+"="+obj.getId(), 
 				null, null, null, null).getCount();

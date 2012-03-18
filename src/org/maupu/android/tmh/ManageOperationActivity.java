@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.database.AccountData;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
@@ -33,7 +32,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	}
 
 	@Override
-	protected boolean validateConstraintsForDeletion(DatabaseHelper dbHelper, Operation obj) {
+	protected boolean validateConstraintsForDeletion(Operation obj) {
 		return true;
 	}
 	
@@ -56,7 +55,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		if(spinnerAccountManager == null)
 			return;
 		
@@ -77,7 +76,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		refreshDisplay(dbHelper);
+		refreshDisplay();
 	}
 
 	@Override

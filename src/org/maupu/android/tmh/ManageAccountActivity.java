@@ -1,8 +1,8 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
@@ -14,15 +14,15 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	}
 	
 	@Override
-	protected boolean validateConstraintsForDeletion(DatabaseHelper dbHelper, Account obj) {
-		int nb = dbHelper.getDb().query(OperationData.TABLE_NAME, 
+	protected boolean validateConstraintsForDeletion(Account obj) {
+		int nb = TmhApplication.getDatabaseHelper().getDb().query(OperationData.TABLE_NAME, 
 				new String[]{OperationData.KEY_ID},
 				OperationData.KEY_ID_ACCOUNT+"="+obj.getId(), null, null, null, null).getCount();
 		return nb == 0;
 	}
 
 	@Override
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		Account account = new Account();
 		Cursor cursor = account.fetchAll();
 		

@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomTitleBar;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -105,7 +104,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			if(onContinue(false)) {
 				Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
 				obj.reset();
-				refreshDisplay(dbHelper);
+				refreshDisplay();
 			}
 			break;
 		case R.id.button_reset:
@@ -166,7 +165,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	 */
 	protected abstract void fieldsToBaseObject(T obj);
 
-	public void refreshDisplay(DatabaseHelper dbHelper) {
+	public void refreshDisplay() {
 		// Restore from begining
 		baseObjectToFields(obj);
 	}

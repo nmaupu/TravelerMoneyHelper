@@ -2,8 +2,6 @@ package org.maupu.android.tmh;
 
 import java.util.GregorianCalendar;
 
-import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
@@ -16,11 +14,6 @@ import android.view.Window;
 import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
-	//private static String PREF_KEY_APP_INIT;
-	
-	private DatabaseHelper dbHelper = TmhApplication.getDatabaseHelper();
-	//private Account selectedAccount;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

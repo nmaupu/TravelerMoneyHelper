@@ -185,7 +185,6 @@ public class Operation extends BaseObject {
 	
 	/**
 	 * Select and sum all amounts grouping by currency for a given account and for a given month
-	 * @param dbHelper
 	 * @param account
 	 * @param date
 	 * @return Sum of all operations for given parameters
@@ -196,7 +195,6 @@ public class Operation extends BaseObject {
 	
 	/**
 	 * Select and sum all amounts grouping by currency for a given account and for a given period
-	 * @param dbHelper
 	 * @param dateBegin
 	 * @param dateEnd
 	 * @param operationType

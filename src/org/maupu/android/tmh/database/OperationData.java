@@ -1,6 +1,5 @@
 package org.maupu.android.tmh.database;
 
-import android.content.Context;
 
 public class OperationData extends APersistedData {
 	public static final String KEY_AMOUNT="amount";

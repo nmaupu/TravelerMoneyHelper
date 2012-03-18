@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.maupu.android.tmh.ViewPagerOperationActivity;
-import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -24,14 +23,12 @@ import android.view.View;
  */
 public class ViewPagerOperationAdapter extends PagerAdapter {
 	private ViewPagerOperationActivity ctx;
-	private DatabaseHelper dbHelper;
 	private final static int count = 25;
 	private final static int offset = -1 * (count/2);
 	private Map<Integer, OperationPagerItem> items = new HashMap<Integer, OperationPagerItem>();
 	
-	public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx, DatabaseHelper dbHelper) {
+	public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx) {
 		this.ctx = ctx;
-		this.dbHelper = dbHelper;
 	}
 
 	@Override
@@ -45,7 +42,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 			Date date = cal.getTime();
 
 			LayoutInflater inflater = (LayoutInflater)pager.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			opi = new OperationPagerItem(ctx, inflater, dbHelper, date);
+			opi = new OperationPagerItem(ctx, inflater, date);
 			items.put(position, opi);
 		}
 		

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.maupu.android.tmh.PreferencesActivity;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
@@ -20,12 +21,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public final class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
-	protected static final String DATABASE_NAME = "TravelerMoneyHelper_appdata";
+	public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
+	protected static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX+"default";
 	protected static final int DATABASE_VERSION = 7;
-	private static List<APersistedData> persistedData = new ArrayList<APersistedData>();
+	private List<APersistedData> persistedData = new ArrayList<APersistedData>();
 	
-	public DatabaseHelper() {
-		super(TmhApplication.getAppContext(), DATABASE_NAME, null, DATABASE_VERSION);
+	public DatabaseHelper(String dbName) {
+		super(TmhApplication.getAppContext(), dbName, null, DATABASE_VERSION);
 		
 		persistedData.add(new CategoryData());
 		persistedData.add(new CurrencyData());
@@ -129,5 +131,15 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		
 		op.setAmount(22f);
 		op.insert();
+	}
+	
+	public static String getPreferredDatabaseName() {
+		String db = PreferencesActivity.getStringValue(PreferencesActivity.PREF_DATABASE);
+		if(db == null || "".equals(db)) {
+			// Return default db name
+			return DEFAULT_DATABASE_NAME;
+		} else {
+			return db;
+		}
 	}
 }
