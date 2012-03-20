@@ -103,7 +103,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		c = dummyCategory.fetchAll();
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
-		Category cat = StaticData.getCurrentSelectedCategory(this);
+		Category cat = StaticData.getCurrentSelectedCategory();
 		if(cat != null && cat.getName() != null)
 			smCategory.setSpinnerPositionCursor(cat.getName(), new Category());
 
@@ -120,7 +120,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Category cat = new Category();
 		Cursor c = smCategory.getSelectedItem();
 		cat.toDTO(c);
-		StaticData.setCurrentSelectedCategory(this, cat);
+		StaticData.setCurrentSelectedCategory(cat);
 		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
 	}
@@ -156,7 +156,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			initDatePickerTextView(null);
 			amount.setText("");
 			// Set spinner category to current selected one if exists
-			Category cat = StaticData.getCurrentSelectedCategory(this);
+			Category cat = StaticData.getCurrentSelectedCategory();
 			smCategory.setSpinnerPositionCursor(cat.getName(), new Category());
 		}
 	}

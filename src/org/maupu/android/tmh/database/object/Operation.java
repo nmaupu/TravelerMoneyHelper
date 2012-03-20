@@ -222,6 +222,31 @@ public class Operation extends BaseObject {
 		c.moveToFirst();
 		return c;
 	}
+	
+	public Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd) {
+		if(account == null || account.getId() == null)
+			return null;
+		
+		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("o."+OperationData.KEY_ID+", ");
+		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
+		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
+		qb.append("o."+OperationData.KEY_DATE+" dateString ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
+		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
+		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", o."+OperationData.KEY_DATE);
+		
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		return c;
+	}
 
 	@Override
 	public boolean validate() {

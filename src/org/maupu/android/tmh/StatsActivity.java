@@ -1,39 +1,33 @@
 package org.maupu.android.tmh;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.database.util.DateUtil;
+import org.maupu.android.tmh.ui.StaticData;
+
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 public class StatsActivity extends TmhActivity {
+	private ListView listView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// No custom title bar because activity used in a TabHost
 		super.onCreate(savedInstanceState);
+		super.setContentView(R.layout.stats_activity);
 		
-		
-		//Operation dummyOperation = new Operation();
-		//Cursor sumWithdrawal = dummyOperation.sumOperationByMonth(new Date(), OperationData.OPERATION_TYPE_WITHDRAWAL);
-		//Cursor sumCreditCard = dummyOperation.sumOperationByMonth(new Date(), OperationData.OPERATION_TYPE_CREDITCARD);
-		
-		//String sWithdrawalBalance = getStringBalance(sumWithdrawal);
-		//String sCreditCardBalance = getStringBalance(sumCreditCard);
-		
-		
-		LinearLayout ll = new LinearLayout(this);
-		ll.setOrientation(LinearLayout.VERTICAL);
-		TextView tvWithdrawal = new TextView(this);
-		tvWithdrawal.setText("Withdrawal : ");
-		TextView tvCredit = new TextView(this);
-		tvCredit.setText("Credit : ");
-		
-		
-		ll.addView(tvWithdrawal);
-		ll.addView(tvCredit);
-		setContentView(ll);
+		listView = (ListView)findViewById(R.id.list);
+		refreshDisplay();
 	}
 	
 	/*
@@ -61,7 +55,20 @@ public class StatsActivity extends TmhActivity {
 	}
 	
 	@Override
-	public void refreshDisplay() {}
+	public void refreshDisplay() {
+		Account account = StaticData.getCurrentAccount();
+		
+		Date now = new GregorianCalendar().getTime();
+		Operation dummyOp = new Operation();
+		Cursor cursor = dummyOp.sumOperationsGroupByDay(account, DateUtil.getFirstDayOfMonth(now), DateUtil.getLastDayOfMonth(now));
+		
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+				R.layout.stats_item,
+				cursor,
+				new String[]{"dateString", "amountString", CurrencyData.KEY_TAUX_EURO},
+				new int[]{R.id.date, R.id.amount, R.id.amount_converted});
+		listView.setAdapter(adapter);
+	}
 	
 	@Override
 	protected Intent onAddClicked() {

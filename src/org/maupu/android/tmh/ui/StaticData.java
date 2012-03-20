@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.ui;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
@@ -17,17 +18,17 @@ public abstract class StaticData {
 	private static Category currentSelectedCategory = new Category();
 	public static final String STATIC_DATA_PREFS_FILENAME = "staticPreferences";
 	
-	public static void setCurrentAccount(Context context, Account account) {
+	public static void setCurrentAccount(Account account) {
 		if(account == null || account.getId() == null)
 			return;
 		
-		SharedPreferences prefs = getPrefs(context);
+		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
 		editor.putInt("account", account.getId());
 		editor.commit();
 		
 		// Fetch and fill currentAccount
-		getCurrentAccount(context);
+		getCurrentAccount();
 	}
 	
 	/**
@@ -37,8 +38,8 @@ public abstract class StaticData {
 		isValidCurrentAccount = false;
 	}
 	
-	public static Account getCurrentAccount(Context context) {
-		SharedPreferences prefs = getPrefs(context);
+	public static Account getCurrentAccount() {
+		SharedPreferences prefs = getPrefs();
 		Integer id = prefs.getInt("account", getDefaultAccount());
 		
 		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
@@ -66,8 +67,8 @@ public abstract class StaticData {
 		return defaultAccountId;
 	}
 	
-	public static Category getCurrentSelectedCategory(Context context) {
-		SharedPreferences prefs = getPrefs(context);
+	public static Category getCurrentSelectedCategory() {
+		SharedPreferences prefs = getPrefs();
 		Integer id = prefs.getInt("currentCategory", -1);
 		
 		if(id == null || id == -1) {
@@ -83,20 +84,20 @@ public abstract class StaticData {
 		}
 	}
 	
-	public static void setCurrentSelectedCategory(Context context, Category category) {
+	public static void setCurrentSelectedCategory(Category category) {
 		if(category == null || category.getId() == null)
 			return;
 		
-		SharedPreferences prefs = getPrefs(context);
+		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
 		editor.putInt("currentCategory", category.getId());
 		editor.commit();
 		
 		// Fetch and fill currentCategory
-		getCurrentSelectedCategory(context);
+		getCurrentSelectedCategory();
 	}
 	
-	private static SharedPreferences getPrefs(Context context) {
-		return context.getSharedPreferences(STATIC_DATA_PREFS_FILENAME, Context.MODE_PRIVATE);
+	private static SharedPreferences getPrefs() {
+		return TmhApplication.getAppContext().getSharedPreferences(STATIC_DATA_PREFS_FILENAME, Context.MODE_PRIVATE);
 	}
 }
