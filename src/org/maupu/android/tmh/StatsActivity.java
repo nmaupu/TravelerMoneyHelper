@@ -3,19 +3,20 @@ package org.maupu.android.tmh;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.database.util.DateUtil;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class StatsActivity extends TmhActivity {
 	private ListView listView;
@@ -47,10 +48,23 @@ public class StatsActivity extends TmhActivity {
 	}*/
 	
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem mi = menu.findItem(R.id.item_add);
-		if(mi != null)
-			mi.setEnabled(false);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.stats_menu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case R.id.item_period:
+			//startActivityFromMenu(ManageCategoryActivity.class);
+			Toast.makeText(this, "Poping up period settings", Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
 		return true;
 	}
 	
@@ -62,11 +76,11 @@ public class StatsActivity extends TmhActivity {
 		Operation dummyOp = new Operation();
 		Cursor cursor = dummyOp.sumOperationsGroupByDay(account, DateUtil.getFirstDayOfMonth(now), DateUtil.getLastDayOfMonth(now));
 		
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+		StatsCursorAdapter adapter = new StatsCursorAdapter(this,
 				R.layout.stats_item,
 				cursor,
-				new String[]{"dateString", "amountString", CurrencyData.KEY_TAUX_EURO},
-				new int[]{R.id.date, R.id.amount, R.id.amount_converted});
+				new String[]{"dateString", "amountString"},
+				new int[]{R.id.date, R.id.amount});
 		listView.setAdapter(adapter);
 	}
 	

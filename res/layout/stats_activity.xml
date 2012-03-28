@@ -32,6 +32,6 @@
         android:text=""
         android:visibility="gone" />
 
-    <include layout="@layout/manageable_operation_total"/>
+    <!-- include layout="@layout/manageable_operation_total"/-->
 
 </LinearLayout>

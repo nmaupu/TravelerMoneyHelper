@@ -235,7 +235,7 @@ public class Operation extends BaseObject {
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
 		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
-		qb.append("o."+OperationData.KEY_DATE+" dateString ");
+		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
 		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
 		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");

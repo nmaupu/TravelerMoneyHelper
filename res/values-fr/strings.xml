@@ -76,5 +76,7 @@
     <string name="select_database">Selectionner la base de données à utiliser</string>
     <string name="enter_database_name">Entrer un nom pour la base de données</string>
     <string name="new_database_summary">Ajouter une nouvelle base de données</string>
+    <string name="menu_item_more">Plus</string>
+    <string name="menu_item_period">Période</string>
 
 </resources>
