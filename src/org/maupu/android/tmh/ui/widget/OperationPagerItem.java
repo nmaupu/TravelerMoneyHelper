@@ -122,7 +122,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView.setAdapter(cca);
 			
 			// Process total
-			c = dummy.sumOperationsByMonth(currentAccount, date);
+			c = dummy.sumOperationsByMonth(currentAccount, date, null);
 			float total = 0f;
 			int nbRes = c.getCount();
 			boolean sameCurrency = (nbRes == 1);

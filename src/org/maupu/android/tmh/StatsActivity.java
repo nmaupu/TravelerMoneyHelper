@@ -10,10 +10,12 @@ import java.util.List;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.database.util.DateUtil;
+import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private Gallery galleryDateBegin;
 	private Gallery galleryDateEnd;
 	private LinearLayout layoutAdvancedGallery;
+	private AlertDialog alertDialogWithdrawalCategory;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -55,6 +58,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
+		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).create();
+		
 		initHeaderGalleries();
 		refreshHeaderGallery();
 		refreshDisplay();
@@ -177,6 +182,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			break;
 		case R.id.item_now:
 			galleryDate.setSelection(galleryDate.getAdapter().getCount()/2, true);
+			((DateGalleryAdapter)galleryDate.getAdapter()).notifyDataSetChanged();
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -191,7 +197,21 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		//Date now = new GregorianCalendar().getTime();
 		Operation dummyOp = new Operation();
-		Cursor cursor = dummyOp.sumOperationsGroupByDay(account, StaticData.getStatsDateBeg(), StaticData.getStatsDateEnd());
+		
+		Integer withdrawalCat = StaticData.getWithdrawalCategory();
+		Integer[] cats = null;
+		if(withdrawalCat == null) {
+			if(! alertDialogWithdrawalCategory.isShowing())
+				alertDialogWithdrawalCategory.show();
+		} else {
+			cats = new Integer[1];
+			cats[0] = withdrawalCat;
+		}
+		
+		Cursor cursor = dummyOp.sumOperationsGroupByDay(account,
+				StaticData.getStatsDateBeg(),
+				StaticData.getStatsDateEnd(),
+				cats);
 
 		// Set cursor from selected period
 		StatsCursorAdapter adapter = new StatsCursorAdapter(this,

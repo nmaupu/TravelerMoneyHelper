@@ -26,17 +26,16 @@
             android:id="@+id/def_account"
             android:defaultValue="0"
             android:enabled="false"
-            android:key="account"
+            android:key="def_account"
             android:summary="Select default account to use"
             android:title="Default account" />
 
         <ListPreference
             android:id="@+id/category_withdrawal"
             android:defaultValue="0"
-            android:enabled="false"
-            android:key="category"
-            android:summary="Select default category for withdrawal"
-            android:title="Default category" />
+            android:key="category_withdrawal"
+            android:summary="@string/default_category_withdrawal_summary"
+            android:title="@string/default_category_withdrawal" />
     </PreferenceCategory>
 
 </PreferenceScreen>

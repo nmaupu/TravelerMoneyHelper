@@ -79,5 +79,9 @@
     <string name="menu_item_more">More</string>
     <string name="menu_item_period">Period</string>
     <string name="menu_item_now">Today</string>
+    <string name="default_category_withdrawal_summary">Select default category for withdrawal</string>
+    <string name="default_category_withdrawal">Withdrawal category</string>
+    <string name="warning">Warning</string>
+    <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
 
 </resources>
