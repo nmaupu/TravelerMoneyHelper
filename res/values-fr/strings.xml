@@ -77,7 +77,7 @@
     <string name="enter_database_name">Entrer un nom pour la base de données</string>
     <string name="new_database_summary">Ajouter une nouvelle base de données</string>
     <string name="menu_item_more">Plus</string>
-    <string name="menu_item_period">Période</string>
+    <string name="menu_item_period">Période / Mois</string>
     <string name="menu_item_now">Aujourd\'hui</string>
     <string name="default_category_withdrawal_summary">Catégorie par défaut pour les retraits</string>
     <string name="default_category_withdrawal">Catégorie (retrait)</string>
