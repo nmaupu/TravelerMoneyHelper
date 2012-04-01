@@ -1,5 +1,7 @@
 package org.maupu.android.tmh.ui;
 
+import java.util.Date;
+
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.object.Account;
@@ -16,6 +18,9 @@ public abstract class StaticData {
 	private static boolean isValidCurrentAccount = false;
 	private static Integer defaultAccountId;
 	private static Category currentSelectedCategory = new Category();
+	private static Date statsDateBeg = null;
+	private static Date statsDateEnd = null;
+	private static boolean statsAdvancedFilter = false;
 	public static final String STATIC_DATA_PREFS_FILENAME = "staticPreferences";
 	
 	public static void setCurrentAccount(Account account) {
@@ -36,6 +41,62 @@ public abstract class StaticData {
 	 */
 	public static void invalidateCurrentAccount() {
 		isValidCurrentAccount = false;
+	}
+	
+	public static void setStatsDateBeg(Date statsDateBeg) {
+		if(statsDateBeg == null)
+			return;
+		
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putLong("statsDateBeg", statsDateBeg.getTime());
+		editor.commit();
+		
+		getStatsDateBeg();
+	}
+	
+	public static void setStatsDateEnd(Date statsDateEnd) {
+		if(statsDateEnd == null)
+			return;
+		
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putLong("statsDateEnd", statsDateEnd.getTime());
+		editor.commit();
+		
+		getStatsDateEnd();
+	}
+	
+	public static boolean isStatsAdvancedFilter() {
+		return statsAdvancedFilter;
+	}
+	
+	public static void setStatsAdvancedFilter(boolean statsAdvancedFilter) {
+		StaticData.statsAdvancedFilter = statsAdvancedFilter;
+	}
+	
+	public static Date getStatsDateBeg() {
+		SharedPreferences prefs = getPrefs();
+		Long dateBeg = prefs.getLong("statsDateBeg", -1);
+		
+		if(dateBeg == -1)
+			return null;
+		
+		statsDateBeg = new Date(dateBeg);
+		
+		return statsDateBeg;
+	}
+	
+	public static Date getStatsDateEnd() {
+		SharedPreferences prefs = getPrefs();
+		Long dateEnd = prefs.getLong("statsDateEnd", -1);
+		
+		if(dateEnd == -1)
+			return null;
+		
+		statsDateEnd = new Date(dateEnd);
+		
+		return statsDateEnd;
 	}
 	
 	public static Account getCurrentAccount() {

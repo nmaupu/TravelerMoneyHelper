@@ -4,5 +4,9 @@
         android:id="@+id/item_period"
         android:icon="@drawable/ic_menu_agenda"
         android:title="@string/menu_item_period" />
+    <item
+        android:id="@+id/item_now"
+        android:icon="@drawable/ic_menu_revert"
+        android:title="@string/menu_item_now" />
 
 </menu>

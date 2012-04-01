@@ -5,5 +5,7 @@
     <color name="green">#00FF00</color>
     <color name="foreground_dark">#000000</color>
     <color name="red">#FF0000</color>
+    <color name="gallery_date_first_color">#0077bb</color>
+    
 
 </resources>
