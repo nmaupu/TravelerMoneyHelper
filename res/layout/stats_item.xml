@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="4dip" >
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:text="dd-mm-yyyy"
+        android:textSize="15dp" />
+
+    <LinearLayout 
+        android:layout_toRightOf="@id/date"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/amount"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="right|center_vertical"
+            android:text="12$"
+            android:textSize="15dp" />
+
+        <!-- TextView
+            android:id="@+id/amount_converted"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_below="@id/amount"
+            android:gravity="right|center_vertical"
+            android:text="12€"
+            android:textSize="10dp"
+            android:textStyle="italic" /-->
+    </LinearLayout>
+
+</RelativeLayout>

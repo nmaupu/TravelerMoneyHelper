@@ -201,8 +201,8 @@ public class Operation extends BaseObject {
 	 * @param date
 	 * @return Sum of all operations for given parameters
 	 */
-	public Cursor sumOperationsByMonth(Account account, Date date) {
-		return sumOperationsByPeriod(account, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date));
+	public Cursor sumOperationsByMonth(Account account, Date date, Integer[] exceptCategories) {
+		return sumOperationsByPeriod(account, DateUtil.getFirstDayOfMonth(date), DateUtil.getLastDayOfMonth(date), exceptCategories);
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class Operation extends BaseObject {
 	 * @param operationType
 	 * @return Sum of all operations for given parameters
 	 */
-	public Cursor sumOperationsByPeriod(Account account, Date dateBegin, Date dateEnd) {
+	public Cursor sumOperationsByPeriod(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
 		if(account == null || account.getId() == null)
 			return null;
 		
@@ -228,7 +228,56 @@ public class Operation extends BaseObject {
 		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
 		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		
+		if(exceptCategories != null && exceptCategories.length > 0) {
+			StringBuilder b = new StringBuilder();
+			for(int i=0; i<exceptCategories.length; i++) {
+				int catId = exceptCategories[i];
+				b.append(catId);
+				if(i<exceptCategories.length-1)
+					b.append(",");
+			}
+			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
+		}
+		
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY);
+		
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		return c;
+	}
+	
+	public Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
+		if(account == null || account.getId() == null)
+			return null;
+		
+		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("o."+OperationData.KEY_ID+", ");
+		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
+		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
+		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
+		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
+		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		
+		if(exceptCategories != null && exceptCategories.length > 0) {
+			StringBuilder b = new StringBuilder();
+			for(int i=0; i<exceptCategories.length; i++) {
+				int catId = exceptCategories[i];
+				b.append(catId);
+				if(i<exceptCategories.length-1)
+					b.append(",");
+			}
+			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
+		}
+		
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", o."+OperationData.KEY_DATE);
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();

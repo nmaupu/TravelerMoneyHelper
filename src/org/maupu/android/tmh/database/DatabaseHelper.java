@@ -13,6 +13,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -134,7 +135,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public static String getPreferredDatabaseName() {
-		String db = PreferencesActivity.getStringValue(PreferencesActivity.PREF_DATABASE);
+		String db = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
 		if(db == null || "".equals(db)) {
 			// Return default db name
 			return DEFAULT_DATABASE_NAME;

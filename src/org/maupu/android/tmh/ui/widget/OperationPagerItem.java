@@ -106,7 +106,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView = (ListView)view.findViewById(R.id.list);
 		
 		// Getting current account
-		Account currentAccount = StaticData.getCurrentAccount(viewPagerOperationActivity);
+		Account currentAccount = StaticData.getCurrentAccount();
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
@@ -122,7 +122,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			listView.setAdapter(cca);
 			
 			// Process total
-			c = dummy.sumOperationsByMonth(currentAccount, date);
+			c = dummy.sumOperationsByMonth(currentAccount, date, null);
 			float total = 0f;
 			int nbRes = c.getCount();
 			boolean sameCurrency = (nbRes == 1);
@@ -203,7 +203,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 							
 							
 							// Replacing preferences account
-							StaticData.setCurrentAccount(viewPagerOperationActivity, account);
+							StaticData.setCurrentAccount(account);
 							viewPagerOperationActivity.refreshDisplay();
 							Log.d("OperationPagerItem", "Callback called");
 							dialog.dismiss();
@@ -302,7 +302,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshHeader() {
-		Account account = StaticData.getCurrentAccount(viewPagerOperationActivity);
+		Account account = StaticData.getCurrentAccount();
 
 		// Setting parameters - account should not be null
 		if(account != null) {
