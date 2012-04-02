@@ -120,7 +120,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if(parent.getId() == R.id.spinner_to) {
-			Log.d("WithdrawalActivity", "to account item selected");
 			// Select corresponding currency to 'to' account
 
 			Cursor item = spinnerManagerTo.getSelectedItem();
@@ -182,6 +181,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationTo.setDate(now);
 				operationTo.setCurrencyValueOnCreated(currency.getTauxEuro());
 				operationTo.insert();
+				
+				Operation.linkTwoOperations(operationFrom, operationTo);
 
 				// Dispose activity
 				finish();

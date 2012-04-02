@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 public abstract class DateUtil {
 	
 	/**
-	 * Transform a date string from format %Y-%m-%d %H:%M:%S to a Date object 
+	 * Transform a date string from format %d-%M-%y %H:%M:%S to a Date object 
 	 * @param date
 	 * @return a Date object or throw a ParseException
 	 */
@@ -19,6 +19,20 @@ public abstract class DateUtil {
 		
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		return sdf.parse(date);
+	}
+	
+	/**
+	 * Transform a SQL date string from format %y-%M-%d %H:%M:%S to a Date object 
+	 * @param date
+	 * @return a Date object or throw a ParseException
+	 */
+	public static Date StringSQLToDate(String date) throws ParseException {
+		if(date == null || "".equals(date))
+			throw new ParseException("Date "+date+" is impossible to parse", 0);
+		
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.parse(date);
 	}
 	

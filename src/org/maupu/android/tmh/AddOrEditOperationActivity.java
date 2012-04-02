@@ -58,19 +58,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	protected void initResources() {
-		//datePicker = (DatePicker)findViewById(R.id.date);
-
-		/*
-		Calendar cal = Calendar.getInstance();
-		int maxYear = cal.get(Calendar.YEAR);
-		int maxMonth = cal.get(Calendar.MONTH);
-		int maxDay = cal.get(Calendar.DAY_OF_MONTH);
-		mYear = maxYear;
-		mMonth = maxMonth;
-		mDay = maxDay;
-		*/
-		//datePicker.init(maxYear, maxMonth, maxDay, null);
-
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
 		amount = (EditText)findViewById(R.id.amount);
@@ -100,6 +87,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
 
 		Category dummyCategory = new Category();
+		// TODO get all categories except withdrawal
 		c = dummyCategory.fetchAll();
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
@@ -164,9 +152,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void fieldsToBaseObject(Operation obj) {
 		if(obj != null) {
-			/*int year = datePicker.getYear()-1900;
-			int month = datePicker.getMonth();
-			int day = datePicker.getDayOfMonth();*/
 			obj.setDate(new GregorianCalendar(mYear, mMonth, mDay).getTime());
 
 			Cursor c = null;
@@ -197,15 +182,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	}
 
 	private void initDatePickerTextView(Date d) {
-		/*
-		Calendar cal = Calendar.getInstance();
-		if(d != null)
-			cal.setTime(d);
-
-		// init instead of update seems to work as expected and set a good value ...
-		datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
-		*/
-		
 		Calendar cal = Calendar.getInstance();
 		if(d != null)
 			cal.setTime(d);

@@ -96,6 +96,22 @@ public abstract class BaseObject implements Validator, Serializable {
 		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
 	}
 	
+	public Cursor fetchAllExcept(Integer[] ids) {
+		if(ids == null || ids.length == 0)
+			return fetchAll();
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append(APersistedData.KEY_ID);
+		buf.append(" IN(");
+		for(int i=0; i<ids.length; i++) {
+			buf.append(ids[i]);
+			if(i<ids.length-1)
+				buf.append(",");
+		}
+		buf.append(")");
+		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, buf.toString(), null, null, null, getDefaultOrderColumn());
+	}
+	
 	public int getCount() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT count("+APersistedData.KEY_ID+") count FROM ");

@@ -48,9 +48,11 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 		.addSelectToQuery(OperationData.KEY_ID_ACCOUNT).append(",")
 		.addSelectToQuery(OperationData.KEY_ID_CATEGORY).append(",")
 		.addSelectToQuery(OperationData.KEY_ID_CURRENCY).append(",")
-		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",");
+		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",")
+		.addSelectToQuery(OperationData.KEY_DATE).append(",")
+		.addSelectToQuery(OperationData.KEY_LINK_TO).append(",");
 
-		qsb.append("strftime('%d-%m-%Y %H:%M:%S', o.date) date, ");
+		//qsb.append("strftime('%d-%m-%Y %H:%M:%S', o.date) dateString, ");
 
 		qsb.setCurrentTableAlias("a");
 		qsb.addSelectToQuery(AccountData.KEY_ICON).append(",")

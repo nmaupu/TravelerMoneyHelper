@@ -1,5 +1,7 @@
 package org.maupu.android.tmh.database;
 
+import android.database.sqlite.SQLiteDatabase;
+
 
 public class AccountData extends APersistedData {
 	public static final String KEY_NAME="name";
@@ -17,5 +19,9 @@ public class AccountData extends APersistedData {
 	
 	public AccountData() {
 		super(TABLE_NAME, CREATE_TABLE);
+	}
+	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {	
 	}
 }

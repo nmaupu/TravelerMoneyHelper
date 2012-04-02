@@ -30,6 +30,7 @@ public class Operation extends BaseObject {
 	private Currency currency;
 	private Float currencyValueOnCreation;
 	private String type;
+	private Integer linkToOperation;
 	private OperationFilter filter = new OperationFilter();
 	
 	public Operation() {
@@ -54,6 +55,10 @@ public class Operation extends BaseObject {
 	public Date getDate() {
 		return date;
 	}
+	public Integer getLinkToOperation() {
+		return linkToOperation;
+	}
+
 	public void setAmount(Float amount) {
 		this.amount = amount;
 	}
@@ -93,6 +98,9 @@ public class Operation extends BaseObject {
 	public void setType(String type) {
 		this.type = type;
 	}
+	public void setLinkToOperation(Integer linkToOperation) {
+		this.linkToOperation = linkToOperation;
+	}
 
 
 	public ContentValues createContentValues() {
@@ -108,6 +116,7 @@ public class Operation extends BaseObject {
 		if(this.getCurrency() != null)
 			cv.put(OperationData.KEY_ID_CURRENCY, this.getCurrency().getId());
 		cv.put(OperationData.KEY_CURRENCY_VALUE, this.getCurrencyValueOnCreated());
+		cv.put(OperationData.KEY_LINK_TO, this.getLinkToOperation());
 
 		return cv;
 	}
@@ -128,6 +137,7 @@ public class Operation extends BaseObject {
 		int idxCategory = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
 		int idxCurrency = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_CURRENCY);
 		int idxCurrencyValueOnCreated = cursor.getColumnIndexOrThrow(OperationData.KEY_CURRENCY_VALUE);
+		int idxLinkToOperation = cursor.getColumnIndexOrThrow(OperationData.KEY_LINK_TO);
 
 		Account account = new Account();
 		Category category = new Category();
@@ -138,7 +148,7 @@ public class Operation extends BaseObject {
 			this.setAmount(cursor.getFloat(idxAmount));
 			this.setDescription(cursor.getString(idxDesctipion));
 			try {
-				this.setDate(DateUtil.StringToDate(cursor.getString(idxDate)));
+				this.setDate(DateUtil.StringSQLToDate(cursor.getString(idxDate)));
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
@@ -151,6 +161,8 @@ public class Operation extends BaseObject {
 			this.setCurrency(currency);
 
 			this.setCurrencyValueOnCreated(cursor.getFloat(idxCurrencyValueOnCreated));
+			if(idxLinkToOperation != -1)
+				this.setLinkToOperation(cursor.getInt(idxLinkToOperation));
 		}
 
 		return super.getFromCache();
@@ -237,6 +249,7 @@ public class Operation extends BaseObject {
 		this.description = null;
 		this.account = null;
 		this.currencyValueOnCreation = null;
+		this.linkToOperation = null;
 	}
 	
 	@Override
@@ -246,5 +259,50 @@ public class Operation extends BaseObject {
 	@Override
 	public String getDefaultOrderColumn() {
 		return OperationData.KEY_DATE;
+	}
+	
+	public static boolean linkTwoOperations(Operation op1, Operation op2) {
+		op1.setLinkToOperation(op2.getId());
+		return op1.update();
+	}
+	
+	@Override
+	public boolean update() {
+		Integer linkTo = getLinkToOperation();
+		
+		if(linkTo != null) {
+			// Fetching linked operation
+			Operation opLinked = new Operation();
+			Cursor c = opLinked.fetch(linkTo);
+			opLinked.toDTO(c);
+			opLinked.setLinkToOperation(getId());
+			opLinked.setAmount(getAmount()*(-1));
+			opLinked.setDate(getDate());
+			opLinked.updateWithoutLink();
+		}
+	
+		return super.update();
+	}
+	
+	private boolean updateWithoutLink() {
+		return super.update();
+	}
+	
+	@Override
+	public boolean delete() {
+		Integer linkTo = getLinkToOperation();
+		
+		if(linkTo != null) {
+			Operation opLinked = new Operation();
+			Cursor c = opLinked.fetch(linkTo);
+			opLinked.toDTO(c);
+			opLinked.deleteWithoutLink();
+		}
+		
+		return super.delete();
+	}
+	
+	private boolean deleteWithoutLink() {
+		return super.delete();
 	}
 }

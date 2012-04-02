@@ -20,10 +20,4 @@ public abstract class APersistedData extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(createQuery);
 	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS "+tableName);
-		this.onCreate(db);
-	}
 }
