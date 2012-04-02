@@ -102,7 +102,7 @@ public abstract class BaseObject implements Validator, Serializable {
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append(APersistedData.KEY_ID);
-		buf.append(" IN(");
+		buf.append(" NOT IN(");
 		for(int i=0; i<ids.length; i++) {
 			buf.append(ids[i]);
 			if(i<ids.length-1)

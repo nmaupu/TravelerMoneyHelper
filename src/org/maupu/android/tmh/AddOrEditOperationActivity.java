@@ -87,8 +87,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
 
 		Category dummyCategory = new Category();
-		// TODO get all categories except withdrawal
-		c = dummyCategory.fetchAll();
+		Integer withdrawalCat = StaticData.getWithdrawalCategory();
+		if(withdrawalCat == null)
+			c = dummyCategory.fetchAll();
+		else
+			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat});
+			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
 		Category cat = StaticData.getCurrentSelectedCategory();
