@@ -327,6 +327,7 @@ public class Operation extends BaseObject {
 			opLinked.setLinkToOperation(getId());
 			opLinked.setAmount(getAmount()*(-1));
 			opLinked.setDate(getDate());
+			opLinked.setCurrencyValueOnCreated(getCurrencyValueOnCreated());
 			opLinked.updateWithoutLink();
 		}
 	
