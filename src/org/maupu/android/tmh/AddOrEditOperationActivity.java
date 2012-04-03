@@ -88,10 +88,13 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 		Category dummyCategory = new Category();
 		Integer withdrawalCat = StaticData.getWithdrawalCategory();
-		if(withdrawalCat == null)
+		if(withdrawalCat == null || (super.getObj() != null && super.getObj().getCategory() != null && super.getObj().getCategory().getId() != null)) {
 			c = dummyCategory.fetchAll();
-		else
+			if(withdrawalCat != null && withdrawalCat.equals(super.getObj().getCategory().getId()))
+				smCategory.getSpinner().setEnabled(false);
+		} else {
 			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat});
+		}
 			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
@@ -111,8 +114,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		// Called when persisting data, we store current category for next insertion before validating data
 		Category cat = new Category();
 		Cursor c = smCategory.getSelectedItem();
-		cat.toDTO(c);
-		StaticData.setCurrentSelectedCategory(cat);
+		if(c != null) {
+			cat.toDTO(c);
+			StaticData.setCurrentSelectedCategory(cat);
+		} else {
+			return false;
+		}
 		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
 	}

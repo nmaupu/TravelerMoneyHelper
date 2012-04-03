@@ -68,10 +68,10 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			textInfo.setVisibility(View.VISIBLE);
 		}*/
 
-		// Init all widgets
-		initResources();
 		// Retrieve extra parameter
 		retrieveItemFromExtra();
+		// Init all widgets
+		initResources();
 		// Fill form fields
 		baseObjectToFields(obj);
 	}
@@ -173,5 +173,9 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	// Menu item is disabled, so do nothing here
 	protected Intent onAddClicked() {
 		return null;
+	}
+	
+	protected T getObj() {
+		return obj;
 	}
 }
