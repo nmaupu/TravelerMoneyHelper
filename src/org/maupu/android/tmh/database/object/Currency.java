@@ -12,7 +12,7 @@ public class Currency extends BaseObject {
 	private static final long serialVersionUID = 1L;
 	private String longName;
 	private String shortName;
-	private Float tauxEuro;
+	private Double tauxEuro;
 	private Date lastUpdate;
 	private String isoCode;
 	
@@ -22,7 +22,7 @@ public class Currency extends BaseObject {
 	public String getShortName() {
 		return shortName;
 	}
-	public Float getTauxEuro() {
+	public Double getTauxEuro() {
 		return tauxEuro;
 	}
 	public Date getLastUpdate() {
@@ -37,7 +37,7 @@ public class Currency extends BaseObject {
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
-	public void setTauxEuro(Float tauxEuro) {
+	public void setTauxEuro(Double tauxEuro) {
 		this.tauxEuro = tauxEuro;
 	}
 	public void setLastUpdate(Date lastUpdate) {
@@ -79,7 +79,7 @@ public class Currency extends BaseObject {
 			this._id = cursor.getInt(idxId);
 			this.setLongName(cursor.getString(idxLongName));
 			this.setShortName(cursor.getString(idxShortName));
-			this.setTauxEuro(cursor.getFloat(idxTauxEuro));
+			this.setTauxEuro(cursor.getDouble(idxTauxEuro));
 			String sDate = cursor.getString(idxLastUpdate);
 			if(sDate != null) {
 				this.setLastUpdate(DatabaseHelper.toDate(sDate));

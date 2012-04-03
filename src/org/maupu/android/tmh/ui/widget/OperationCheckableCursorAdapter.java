@@ -1,8 +1,13 @@
 package org.maupu.android.tmh.ui.widget;
 
+import java.util.Currency;
+import java.util.Locale;
+
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -21,11 +26,22 @@ public class OperationCheckableCursorAdapter extends CheckableCursorAdapter {
 		super.bindView(view, context, cursor);
 		
 		TextView tvAmount = (TextView)view.findViewById(R.id.amount);
-		int idxAmount = cursor.getColumnIndexOrThrow(OperationData.KEY_AMOUNT);
-		float amount = cursor.getFloat(idxAmount);
+		int idxAmount = cursor.getColumnIndex(OperationData.KEY_AMOUNT);
+		Double amount = cursor.getDouble(idxAmount);
+		
+		int idxCurrencySymbol = cursor.getColumnIndex(CurrencyData.KEY_SHORT_NAME);
+		String currencySymbol = cursor.getString(idxCurrencySymbol);
+		
+		TextView tvConvAmount = (TextView)view.findViewById(R.id.euroAmount);
+		int idxConvAmount = cursor.getColumnIndex("euroAmount");
+		Double convAmount = Double.parseDouble(cursor.getString(idxConvAmount));
+		
+		// format amount
+		tvAmount.setText(NumberUtil.formatDecimalLocale(amount) + " " + currencySymbol);
+		tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " + Currency.getInstance(Locale.FRANCE).getSymbol());
 		
 		// Set color for amount
-		if(amount >= 0)
+		if(amount >= 0d)
 			tvAmount.setTextColor(Operation.COLOR_POSITIVE_AMOUNT);
 		else
 			tvAmount.setTextColor(Operation.COLOR_NEGATIVE_AMOUNT);

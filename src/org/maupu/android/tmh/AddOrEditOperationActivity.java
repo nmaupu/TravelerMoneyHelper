@@ -11,9 +11,10 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.database.util.DateUtil;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
+import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -23,10 +24,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -104,6 +105,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			} else {
 				c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat}); // ... non withdrawal operation
 			}
+		} else {
+			// Adding an operation
+			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat});
 		}
 			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
@@ -136,7 +140,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			StaticData.setCurrentOperationDatePickerDate(d);
 		}
 		
-		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
+		boolean res = amount != null && 
+				amount.getText() != null && 
+				!"".equals(amount.getText().toString().trim()) &&
+				NumberUtil.parseDecimal(amount.getText().toString()) != null;
+		
+		return res;
 	}
 
 	@Override
@@ -157,7 +166,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			if(obj.getCurrency() != null)
 				smCurrency.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
 			if(obj.getAmount() != null) {
-				amount.setText(""+Math.abs(obj.getAmount()));
+				amount.setText(""+NumberUtil.formatDecimal(Math.abs(obj.getAmount())));
 				if(obj.getAmount() >= 0.0f)
 					radioButtonCredit.setChecked(true);
 				else
@@ -197,7 +206,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			cur.toDTO(c);
 			obj.setCurrency(cur);
 
-			obj.setAmount(Float.valueOf(amount.getText().toString().trim()));
+			obj.setAmount(NumberUtil.parseDecimal(amount.getText().toString()));
 			if(radioButtonDebit.isChecked())
 				obj.setAmount(obj.getAmount()*-1);
 

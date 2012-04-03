@@ -8,9 +8,9 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.util.DateUtil;
-import org.maupu.android.tmh.database.util.QueryBuilder;
-import org.maupu.android.tmh.database.util.filter.OperationFilter;
+import org.maupu.android.tmh.database.filter.OperationFilter;
+import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -22,13 +22,13 @@ public class Operation extends BaseObject {
 	public static final String KEY_SUM="sum";
 	public static final int COLOR_POSITIVE_AMOUNT = Color.parseColor("#3fab37");
 	public static final int COLOR_NEGATIVE_AMOUNT = Color.parseColor("#d03636");
-	private Float amount;
+	private Double amount;
 	private String description;
 	private Date date;
 	private Account account;
 	private Category category;
 	private Currency currency;
-	private Float currencyValueOnCreation;
+	private Double currencyValueOnCreation;
 	private String type;
 	private Integer linkToOperation;
 	private OperationFilter filter = new OperationFilter();
@@ -46,7 +46,7 @@ public class Operation extends BaseObject {
 		return filter;
 	}
 	
-	public Float getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 	public String getDescription() {
@@ -59,7 +59,7 @@ public class Operation extends BaseObject {
 		return linkToOperation;
 	}
 
-	public void setAmount(Float amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 	public void setDescription(String description) {
@@ -77,10 +77,10 @@ public class Operation extends BaseObject {
 	public Currency getCurrency() {
 		return currency;
 	}
-	public Float getCurrencyValueOnCreated() {
+	public Double getCurrencyValueOnCreated() {
 		return currencyValueOnCreation;
 	}
-	public void setCurrencyValueOnCreated(Float value) {
+	public void setCurrencyValueOnCreated(Double value) {
 		currencyValueOnCreation = value;
 	}
 	public void setAccount(Account account) {
@@ -145,7 +145,7 @@ public class Operation extends BaseObject {
 
 		if(! cursor.isClosed() && ! cursor.isBeforeFirst() && ! cursor.isAfterLast()) {
 			this._id = cursor.getInt(idxId);
-			this.setAmount(cursor.getFloat(idxAmount));
+			this.setAmount(cursor.getDouble(idxAmount));
 			this.setDescription(cursor.getString(idxDesctipion));
 			try {
 				this.setDate(DateUtil.StringSQLToDate(cursor.getString(idxDate)));
@@ -160,7 +160,7 @@ public class Operation extends BaseObject {
 			this.setCategory(category);
 			this.setCurrency(currency);
 
-			this.setCurrencyValueOnCreated(cursor.getFloat(idxCurrencyValueOnCreated));
+			this.setCurrencyValueOnCreated(cursor.getDouble(idxCurrencyValueOnCreated));
 			if(idxLinkToOperation != -1)
 				this.setLinkToOperation(cursor.getInt(idxLinkToOperation));
 		}

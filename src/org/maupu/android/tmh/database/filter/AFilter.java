@@ -1,6 +1,6 @@
-package org.maupu.android.tmh.database.util.filter;
+package org.maupu.android.tmh.database.filter;
 
-import org.maupu.android.tmh.database.util.QueryBuilder;
+import org.maupu.android.tmh.util.QueryBuilder;
 
 public abstract class AFilter {
 	public static final int FUNCTION_EQUAL=0;

@@ -4,9 +4,9 @@ import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.database.util.filter.AFilter;
 import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;

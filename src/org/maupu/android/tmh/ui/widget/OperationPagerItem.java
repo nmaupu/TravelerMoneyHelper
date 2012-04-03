@@ -11,13 +11,14 @@ import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.database.util.filter.AFilter;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -123,7 +124,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			
 			// Process total
 			c = dummy.sumOperationsByMonth(currentAccount, date, null);
-			float total = 0f;
+			Double total = 0d;
 			int nbRes = c.getCount();
 			boolean sameCurrency = (nbRes == 1);
 			String symbolCurrency = Currency.getInstance("EUR").getSymbol();
@@ -148,7 +149,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 				c.moveToNext();
 			} //for
 			
-			StringBuffer strTotal = new StringBuffer(String.valueOf(total));
+			StringBuffer strTotal = new StringBuffer(NumberUtil.formatDecimalLocale(total));
 			strTotal.append(" ");
 			strTotal.append(symbolCurrency);
 			

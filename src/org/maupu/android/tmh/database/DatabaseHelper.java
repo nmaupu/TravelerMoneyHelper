@@ -85,14 +85,14 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		currency.setLastUpdate(new GregorianCalendar().getTime());
 		currency.setLongName("Euro");
 		currency.setShortName("e");
-		currency.setTauxEuro(1f);
+		currency.setTauxEuro(1d);
 		currency.setIsoCode("EUR");
 		currency.insert();
 		
 		currency.setLongName("Dollar");
 		currency.setShortName("$");
 		currency.setIsoCode("USD");
-		currency.setTauxEuro(1.4f);
+		currency.setTauxEuro(1.4d);
 		currency.insert();
 		
 		Cursor cCurrency = currency.fetch(1);
@@ -119,18 +119,18 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		account.toDTO(account.fetch(1));
 		currency.toDTO(currency.fetch(1));
 		Operation op = new Operation();
-		op.setAmount(10f);
+		op.setAmount(10d);
 		op.setAccount(account);
 		op.setCategory(category);
 		op.setCurrency(currency);
-		op.setCurrencyValueOnCreated(1f);
+		op.setCurrencyValueOnCreated(1d);
 		op.setDate(new GregorianCalendar().getTime());
 		op.insert();
 		
-		op.setAmount(15f);
+		op.setAmount(15d);
 		op.insert();
 		
-		op.setAmount(22f);
+		op.setAmount(22d);
 		op.insert();
 	}
 	

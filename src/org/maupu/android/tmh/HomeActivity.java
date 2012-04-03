@@ -69,7 +69,7 @@ public class HomeActivity extends TabActivity {
 			currency.setLongName("Euro");
 			java.util.Currency c = java.util.Currency.getInstance("EUR");
 			currency.setShortName(c.getSymbol());
-			currency.setTauxEuro(1.0f);
+			currency.setTauxEuro(1.0d);
 			currency.insert();
 			
 			// Creating a default account in euro

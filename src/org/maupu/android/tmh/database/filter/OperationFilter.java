@@ -1,4 +1,4 @@
-package org.maupu.android.tmh.database.util.filter;
+package org.maupu.android.tmh.database.filter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.util.QueryBuilder;
+import org.maupu.android.tmh.util.QueryBuilder;
 
 public class OperationFilter extends AFilter implements IFilter, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -51,8 +51,9 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 		.addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",")
 		.addSelectToQuery(OperationData.KEY_DATE).append(",")
 		.addSelectToQuery(OperationData.KEY_LINK_TO).append(",");
-
-		//qsb.append("strftime('%d-%m-%Y %H:%M:%S', o.date) dateString, ");
+		
+		qsb.setCurrentTableAlias("c");
+		qsb.addSelectToQuery(CurrencyData.KEY_SHORT_NAME).append(",");
 
 		qsb.setCurrentTableAlias("a");
 		qsb.addSelectToQuery(AccountData.KEY_ICON).append(",")

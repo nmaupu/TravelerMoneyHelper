@@ -155,7 +155,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				cursor = spinnerManagerCategory.getSelectedItem();
 				category.toDTO(cursor);
 
-				Float amount = Float.valueOf(amountEditText.getText().toString().trim());
+				Double amount = Double.valueOf(amountEditText.getText().toString().trim());
 
 				Currency currency = new Currency();
 				cursor = spinnerManagerCurrency.getSelectedItem();
@@ -165,7 +165,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				// First, we debit from account
 				Operation operationFrom = new Operation();
 				operationFrom.setAccount(accountFrom);
-				operationFrom.setAmount(-1f * amount);
+				operationFrom.setAmount(-1d * amount);
 				operationFrom.setCategory(category);
 				operationFrom.setCurrency(currency);
 				operationFrom.setDate(now);

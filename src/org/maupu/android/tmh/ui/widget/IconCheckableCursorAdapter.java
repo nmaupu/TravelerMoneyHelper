@@ -38,4 +38,8 @@ public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
 		
 		return v;
 	}
+		
+	protected Context getContext() {
+		return context;
+	}
 }

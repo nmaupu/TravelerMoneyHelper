@@ -1,8 +1,8 @@
-package org.maupu.android.tmh.database.util.filter;
+package org.maupu.android.tmh.database.filter;
 
 import java.io.Serializable;
 
-import org.maupu.android.tmh.database.util.QueryBuilder;
+import org.maupu.android.tmh.util.QueryBuilder;
 
 public interface IFilter extends Serializable {
 	

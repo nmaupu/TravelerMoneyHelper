@@ -95,7 +95,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		if(obj != null) {
 			obj.setLongName(editTextLongName.getText().toString().trim());
 			obj.setShortName(editTextShortName.getText().toString().trim());
-			obj.setTauxEuro(Float.parseFloat(editTextValue.getText().toString().trim()));
+			obj.setTauxEuro(Double.parseDouble(editTextValue.getText().toString().trim()));
 
 			if(obj.getLastUpdate() == null || checkBoxUpdate.isChecked())
 				obj.setLastUpdate(new GregorianCalendar().getTime());
