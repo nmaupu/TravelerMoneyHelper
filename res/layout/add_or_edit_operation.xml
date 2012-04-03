@@ -190,25 +190,30 @@
                     android:layout_weight="2"
                     android:text="@string/date" />
 
-                <TextView
-                    android:id="@+id/date"
+                <RelativeLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1" >
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/blue"
+                        android:textSize="18dp" />
+
+                    <Button
+                        android:id="@+id/button_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignRight="@id/date"
+                        android:layout_centerVertical="true"
+                        android:text="@string/set_to_today_button" />
+                </RelativeLayout>
             </LinearLayout>
-            <!--
-                 DatePicker
-                android:id="@+id/date"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:endYear="2030"
-                android:paddingBottom="8dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="3dip"
-                android:startYear="2000" /
-            -->
         </LinearLayout>
     </ScrollView>
 

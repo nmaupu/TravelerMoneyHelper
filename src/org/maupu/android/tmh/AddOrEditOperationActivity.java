@@ -11,6 +11,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.database.util.DateUtil;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
@@ -25,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -49,6 +51,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private LinearLayout linearLayoutRateUpdater;
 	private TextView textViewSign;
 	private TextView textViewDate;
+	private Button buttonToday;
 	private static final String PLUS="+";
 	private static final String MINUS="-";
 
@@ -72,6 +75,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		textViewSign = (TextView)findViewById(R.id.sign);
 		textViewDate = (TextView)findViewById(R.id.date);
 		textViewDate.setOnClickListener(this);
+		buttonToday = (Button)findViewById(R.id.button_today);
+		buttonToday.setOnClickListener(this);
+		
 
 		// Set spinners content
 		Cursor c = null;
@@ -235,6 +241,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		
 		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);
+		} else if(v.getId() == R.id.button_today) {
+			initDatePickerTextView(Calendar.getInstance().getTime());
 		}
 	}
 	
@@ -250,10 +258,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	
 	public void updateDatePickerTextView() {
 		textViewDate.setText(
-				new StringBuilder()
-				.append(mDay).append("-")
-				.append(mMonth+1).append("-")
-				.append(mYear));
+				DateUtil.dateToStringNoHour(new GregorianCalendar(mYear, mMonth, mDay).getTime()));
 	}
 
 	@Override
