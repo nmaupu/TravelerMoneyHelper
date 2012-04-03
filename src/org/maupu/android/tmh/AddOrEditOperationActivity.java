@@ -88,12 +88,16 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 		Category dummyCategory = new Category();
 		Integer withdrawalCat = StaticData.getWithdrawalCategory();
-		if(withdrawalCat == null || (super.getObj() != null && super.getObj().getCategory() != null && super.getObj().getCategory().getId() != null)) {
+		if(withdrawalCat == null) {
 			c = dummyCategory.fetchAll();
-			if(withdrawalCat != null && withdrawalCat.equals(super.getObj().getCategory().getId()))
+		} else if(getObj() != null && getObj().getCategory() != null && getObj().getCategory().getId() != null) {
+			// We are currently editing ...
+			if(withdrawalCat.equals(super.getObj().getCategory().getId())) {
+				c = dummyCategory.fetchAll(); // ... a withdrawal
 				smCategory.getSpinner().setEnabled(false);
-		} else {
-			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat});
+			} else {
+				c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat}); // ... non withdrawal operation
+			}
 		}
 			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
@@ -119,6 +123,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			StaticData.setCurrentSelectedCategory(cat);
 		} else {
 			return false;
+		}
+		
+		if(! isEditing()) {
+			Date d = new GregorianCalendar(mYear, mMonth, mDay).getTime();
+			StaticData.setCurrentOperationDatePickerDate(d);
 		}
 		
 		return amount != null && amount.getText() != null && !"".equals(amount.getText().toString().trim());
@@ -193,9 +202,13 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	}
 
 	private void initDatePickerTextView(Date d) {
+		Date previousDate = StaticData.getCurrentOperationDatePickerDate();
 		Calendar cal = Calendar.getInstance();
+		
 		if(d != null)
 			cal.setTime(d);
+		else if(previousDate != null)
+			cal.setTime(previousDate);
 		
 		mYear = cal.get(Calendar.YEAR);
 		mMonth = cal.get(Calendar.MONTH);

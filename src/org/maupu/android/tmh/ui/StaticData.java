@@ -21,12 +21,13 @@ public abstract class StaticData {
 	private static Date statsDateBeg = null;
 	private static Date statsDateEnd = null;
 	private static boolean statsAdvancedFilter = false;
-	//public static final String STATIC_DATA_PREFS_FILENAME = "staticPreferences";
+	private static Date currentOperationDatePickerDate = null;
 	public static final String PREF_CURRENT_ACCOUNT = "current_account";
 	public static final String PREF_NEW_DATABASE = "new_database";
 	public static final String PREF_DATABASE = "database";
 	public static final String PREF_DEF_ACCOUNT = "def_account";
 	public static final String PREF_WITHDRAWAL_CATEGORY = "category_withdrawal";
+	public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
 	
 	public static void setCurrentAccount(Account account) {
 		if(account == null || account.getId() == null)
@@ -70,6 +71,30 @@ public abstract class StaticData {
 		editor.commit();
 		
 		getStatsDateEnd();
+	}
+	
+	public static void setCurrentOperationDatePickerDate(Date currentOperationDatePickerDate) {
+		if(currentOperationDatePickerDate == null)
+			return;
+		
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
+		editor.commit();
+		
+		
+	}
+	
+	public static Date getCurrentOperationDatePickerDate() {
+		SharedPreferences prefs = getPrefs();
+		Long date = prefs.getLong(PREF_CURRENT_OPERATION_DATE_PICKER, -1);
+		
+		if(date == -1)
+			return null;
+		
+		currentOperationDatePickerDate = new Date(date);
+		
+		return currentOperationDatePickerDate;
 	}
 	
 	public static boolean isStatsAdvancedFilter() {

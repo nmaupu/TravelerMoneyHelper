@@ -178,4 +178,12 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	protected T getObj() {
 		return obj;
 	}
+	
+	/**
+	 * Method to know edition mode
+	 * @return true if we are editing an obj or false otherwise (i.e. adding an obj)
+	 */
+	public boolean isEditing() {
+		return obj != null && obj.getId() != null;
+	}
 }
