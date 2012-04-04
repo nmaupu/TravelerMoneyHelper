@@ -85,5 +85,6 @@
     <string name="warning">Warning</string>
     <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
     <string name="set_to_today_button">Today\'s date</string>
+    <string name="balance">Balance:</string>
 
 </resources>

@@ -15,6 +15,31 @@ public abstract class TmhActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//TmhApplication.getDatabaseHelper().createSampleData();
+		
+		/*
+		Account account = new Account();
+		Cursor cursor = account.fetch(2);
+		account.toDTO(cursor);
+		
+		Category cat = new Category();
+		cursor = cat.fetch(2);
+		cat.toDTO(cursor);
+		
+		Currency cur = new Currency();
+		cursor = cur.fetch(1);
+		cur.toDTO(cursor);
+		
+		for(int i=1; i<=500; i++) {
+			Operation op = new Operation();
+			op.setAccount(account);
+			op.setAmount(Double.valueOf(i));
+			op.setCategory(cat);
+			op.setCurrency(cur);
+			op.setCurrencyValueOnCreated(cur.getTauxEuro());
+			op.setDate(new GregorianCalendar().getTime());
+			op.insert();
+		}
+		*/
 	}
 	
 	@Override

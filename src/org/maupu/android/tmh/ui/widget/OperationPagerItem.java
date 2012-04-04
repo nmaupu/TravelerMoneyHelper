@@ -1,8 +1,9 @@
 package org.maupu.android.tmh.ui.widget;
 
 import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.maupu.android.tmh.AddOrEditActivity;
 import org.maupu.android.tmh.AddOrEditOperationActivity;
@@ -13,7 +14,9 @@ import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.AccountBalance;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -49,8 +52,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private ImageView imageViewIcon;
 	private TextView textViewAccountName;
 	private TextView textViewTitle;
-	private View footerOperationTotal;
+	private View footerOperationBalance;
 	private TextView textViewTotal;
+	private TextView textViewBalance;
 
 	public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, Date date) {
 		this.viewPagerOperationActivity = ctx;
@@ -88,24 +92,25 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		textViewAccountName = (TextView)headerContent.findViewById(R.id.account_name); 
 		imageViewIcon = (ImageView)headerContent.findViewById(R.id.account_icon);
 		imageViewIcon.setOnClickListener(this);
-		
+
 		// Adding content to viewpager header
 		header.setVisibility(View.VISIBLE);
 		header.addView(headerContent, 0);
 	}
-	
+
 	private void createFooterTotal() {
-		footerOperationTotal = inflater.inflate(R.layout.manageable_operation_total, null);
+		footerOperationBalance = inflater.inflate(R.layout.manageable_operation_total, null);
 		LinearLayout content = (LinearLayout)view.findViewById(R.id.layout_root);
-		
-		textViewTotal = (TextView)footerOperationTotal.findViewById(R.id.total);
-		content.addView(footerOperationTotal, content.getChildCount()-2);
+
+		textViewTotal = (TextView)footerOperationBalance.findViewById(R.id.total);
+		textViewBalance = (TextView)footerOperationBalance.findViewById(R.id.balance);
+		content.addView(footerOperationBalance, content.getChildCount()-2);
 	}
 
 	public void refreshDisplay() {
 		if(listView == null)
 			listView = (ListView)view.findViewById(R.id.list);
-		
+
 		// Getting current account
 		Account currentAccount = StaticData.getCurrentAccount();
 		if(currentAccount != null && currentAccount.getId() != null) {
@@ -121,22 +126,49 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
 			cca.setOnNumberCheckedListener(this);
 			listView.setAdapter(cca);
-			
-			// Process total
+
+
 			c = dummy.sumOperationsByMonth(currentAccount, date, null);
+			String symbolCurrency = java.util.Currency.getInstance("EUR").getSymbol();
+
+			// Process balance
+			AccountBalance balance = currentAccount.getBalance();
+			StringBuilder sBuilder = new StringBuilder();
+			if(balance.size() == 1) {
+				Set<Integer> s = balance.keySet();
+				Iterator<Integer> it = s.iterator();
+				Integer curId = it.next();
+
+				Double b = balance.get(curId);
+
+				Currency cur = new Currency();
+				Cursor cursor = cur.fetch(curId);
+				cur.toDTO(cursor);
+
+				sBuilder.append(NumberUtil.formatDecimalLocale(b))
+				.append(" ")
+				.append(cur.getShortName())
+				.append(" / ");
+			}
+
+			sBuilder.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
+			.append(" ")
+			.append(symbolCurrency);
+
+			textViewBalance.setText(sBuilder.toString());
+
+
 			Double total = 0d;
 			int nbRes = c.getCount();
 			boolean sameCurrency = (nbRes == 1);
-			String symbolCurrency = Currency.getInstance("EUR").getSymbol();
-			
 			for(int i=0; i<nbRes; i++) {
 				int idxSum = c.getColumnIndexOrThrow(Operation.KEY_SUM);
 				int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_TAUX_EURO);
 				int idxCurrencyShortName = c.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
-				
+
 				float amount = c.getFloat(idxSum);
 				float rate = c.getFloat(idxRate);
-				
+
 				// If not sameCurrency, convert to euro
 				if(! sameCurrency) {
 					total += amount/rate;
@@ -145,20 +177,20 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 					total += amount;
 					symbolCurrency = c.getString(idxCurrencyShortName);
 				}
-				
+
 				c.moveToNext();
 			} //for
-			
+
 			StringBuffer strTotal = new StringBuffer(NumberUtil.formatDecimalLocale(total));
 			strTotal.append(" ");
 			strTotal.append(symbolCurrency);
-			
+
 			textViewTotal.setText(strTotal);
 		}
-		
+
 		// refresh header if needed
 		refreshHeader();
-		
+
 		// Disable buttons if needed
 		initButtons();
 	}
@@ -176,7 +208,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		switch(v.getId()) {
 		case R.id.account_icon:
 			Log.d("OperationPagerItem", "Icon clicked");
-			
+
 			final Dialog dialog = new Dialog(viewPagerOperationActivity);
 
 			dialog.setContentView(R.layout.dialog_choose_account);
@@ -185,35 +217,35 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			ListView listAccount = (ListView)dialog.findViewById(R.id.list);
 			Account dummyAccount = new Account();
 			final Cursor cursorAllAccounts = dummyAccount.fetchAll();
-			
+
 			final IconCursorAdapter adapter = new IconCursorAdapter(viewPagerOperationActivity, 
 					R.layout.icon_name_item_no_checkbox, 
 					cursorAllAccounts,
 					new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
 					new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
-						@Override
-						public View callback(Object item) {
-							int position = (Integer)((View)item).getTag();
-							int oldPosition = cursorAllAccounts.getPosition();
-							cursorAllAccounts.moveToPosition(position);
-							
-							Account account = new Account();
-							account.toDTO(cursorAllAccounts);
-							
-							cursorAllAccounts.moveToPosition(oldPosition);
-							
-							
-							// Replacing preferences account
-							StaticData.setCurrentAccount(account);
-							viewPagerOperationActivity.refreshDisplay();
-							Log.d("OperationPagerItem", "Callback called");
-							dialog.dismiss();
-							
-							return (View)item;
-						}
-					});
+				@Override
+				public View callback(Object item) {
+					int position = (Integer)((View)item).getTag();
+					int oldPosition = cursorAllAccounts.getPosition();
+					cursorAllAccounts.moveToPosition(position);
+
+					Account account = new Account();
+					account.toDTO(cursorAllAccounts);
+
+					cursorAllAccounts.moveToPosition(oldPosition);
+
+
+					// Replacing preferences account
+					StaticData.setCurrentAccount(account);
+					viewPagerOperationActivity.refreshDisplay();
+					Log.d("OperationPagerItem", "Callback called");
+					dialog.dismiss();
+
+					return (View)item;
+				}
+			});
 			listAccount.setAdapter(adapter);
-			
+
 			dialog.show();
 			break;
 		case R.id.button_edit:
@@ -292,13 +324,13 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		} else {
 			v.setVisibility(View.GONE);
 		}
-		
+
 		Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
 		if(anim == R.anim.pushup)
 			animation.setInterpolator(new DecelerateInterpolator());
 		else
 			animation.setInterpolator(new AccelerateInterpolator());
-		
+
 		v.startAnimation(animation);
 	}
 

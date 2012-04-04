@@ -1,33 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_root_operation_total"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content" >
 
-    <!-- LinearLayout
+    <LinearLayout
+        android:id="@+id/layout_root_operation_total"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:paddingBottom="2dip"
-        android:paddingTop="2dip"
-        android:visibility="gone" /-->
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal" >
 
-    <TextView
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="right|center_vertical"
+            android:text="@string/total"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right|center_vertical"
+            android:textSize="20dp"
+            android:textStyle="italic|bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_root_operation_balance"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:textSize="15dp"
-        android:gravity="right|center_vertical"
-        android:text="@string/total" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/layout_root_operation_total"
+        android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/total"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:textSize="20dp"
-        android:gravity="right|center_vertical"
-        android:textStyle="italic|bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="right|center_vertical"
+            android:text="@string/balance"
+            android:textSize="15dp" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/balance"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right|center_vertical"
+            android:textSize="15dp"
+            android:textStyle="italic" />
+    </LinearLayout>
+
+</RelativeLayout>

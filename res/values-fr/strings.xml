@@ -83,5 +83,6 @@
     <string name="warning">Attention</string>
     <string name="default_category_warning">Sélectionnez une catégorie pour les retraits (dans les préférences)</string>
     <string name="set_to_today_button">Aujourd\'hui</string>
+    <string name="balance">Solde:</string>
 
 </resources>
