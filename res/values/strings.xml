@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="minus_symbol">-</string>
+    <string name="plus_symbol">+</string>
     <string name="currency_code">Code</string>
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Error</string>
@@ -9,7 +11,7 @@
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>
     <string name="activity_title_edition_account">Account edition</string>
-    <string name="account_icon_edit_dialog_title">Choose an icon from ...</string>
+    <string name="account_icon_edit_dialog_title">Choose an icon from …</string>
     <string name="manageable_obj_del_confirm_question">Are you sure you want to delete these objects ?</string>
     <string name="manageable_obj_del_error">One or more objects could not be deleted</string>
     <string name="activity_title_manage_category">Category</string>
@@ -31,7 +33,6 @@
     <string name="amount">Amount</string>
     <string name="currency">Currency</string>
     <string name="icon">Icon</string>
-    <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="close">X</string>
     <string name="dialog_choose_icon">Choose an icon</string>
