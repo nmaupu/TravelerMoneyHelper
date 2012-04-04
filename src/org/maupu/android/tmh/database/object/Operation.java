@@ -277,7 +277,7 @@ public class Operation extends BaseObject {
 			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
 		}
 		
-		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", o."+OperationData.KEY_DATE).append(" ");
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString").append(" "); // group by dateString instead of date because of hours and minutes
 		qb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
