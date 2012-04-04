@@ -2,6 +2,7 @@ package org.maupu.android.tmh.ui.widget;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -25,8 +26,13 @@ public class StatsCursorAdapter extends SimpleCursorAdapter {
 		TextView tvAmount = (TextView)row.findViewById(R.id.amount);
 		int oldPosition = cursor.getPosition();
 		cursor.moveToPosition(position);
-		int idx = cursor.getColumnIndex(CurrencyData.KEY_SHORT_NAME);
-		tvAmount.setText(tvAmount.getText()+" "+cursor.getString(idx));
+		
+		int idxShortName = cursor.getColumnIndex(CurrencyData.KEY_SHORT_NAME);
+		int idxAmount = cursor.getColumnIndex("amountString");
+		
+		Double amount = cursor.getDouble(idxAmount);
+		tvAmount.setText(NumberUtil.formatDecimalLocale(amount)+" "+cursor.getString(idxShortName));
+		
 		cursor.moveToPosition(oldPosition);
 		
 		return row;
