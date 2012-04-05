@@ -2,5 +2,8 @@
 .classpath
 .project
 proguard.cfg
+lint.xml
+.settings/
 bin/
 gen/
+target/
