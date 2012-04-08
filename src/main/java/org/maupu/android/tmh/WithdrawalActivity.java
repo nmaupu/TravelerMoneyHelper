@@ -19,6 +19,8 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -95,8 +97,17 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			category.toDTO(c);
 			spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
 		} else {
-			SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
-			spinnerCategory.setEnabled(true);
+			final Activity activity = this;
+			SimpleDialog.errorDialog(
+					this, 
+					getString(R.string.warning), 
+					getString(R.string.default_category_warning),
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							activity.finish();
+						}
+					}).show();
 		}
 
 		// From
