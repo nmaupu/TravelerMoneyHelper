@@ -12,6 +12,10 @@ import android.view.View.OnClickListener;
 
 public class DashboardActivity extends GDActivity implements OnClickListener {
 	
+	public DashboardActivity() {
+		super(greendroid.widget.ActionBar.Type.Dashboard);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
