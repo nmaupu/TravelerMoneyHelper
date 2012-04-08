@@ -21,10 +21,7 @@
     <string name="activity_title_manage_currency">Currency</string>
     <string name="activity_title_manage_operation">Operation</string>
     <string name="activity_title_manage_account">Account</string>
-    <string name="tab_operation">Operations</string>
-    <string name="tab_withdrawal">Withdrawal</string>
-    <string name="tab_credit">Credit</string>
-    <string name="tab_stats">Stats</string>
+    <string name="activity_title_statistics">Statistics</string>
     <string name="name">Name</string>
     <string name="long_name">Long name</string>
     <string name="short_name">Short name</string>
@@ -89,5 +86,7 @@
     <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
     <string name="set_to_today_button">Today\'s date</string>
     <string name="balance">Balance:</string>
+    <string name="dashboard_operation">Operations</string>
+    <string name="dashboard_stats">Statistics</string>
 
 </resources>

@@ -18,10 +18,7 @@
     <string name="activity_title_manage_currency">Devise</string>
     <string name="activity_title_manage_operation">Opération</string>
     <string name="activity_title_manage_account">Compte</string>
-    <string name="tab_operation">Opération</string>
-    <string name="tab_withdrawal">Retrait</string>
-    <string name="tab_credit">Carte</string>
-    <string name="tab_stats">Stats</string>
+    <string name="activity_title_statistics">Statistiques</string>
     <string name="name">Nom</string>
     <string name="long_name">Nom long</string>
     <string name="short_name">Nom court</string>
@@ -87,5 +84,7 @@
     <string name="default_category_warning">Sélectionnez une catégorie pour les retraits (dans les préférences)</string>
     <string name="set_to_today_button">Aujourd\'hui</string>
     <string name="balance">Solde:</string>
+    <string name="dashboard_operation">Opérations</string>
+    <string name="dashboard_stats">Statistiques</string>
 
 </resources>

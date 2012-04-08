@@ -50,6 +50,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		super.setActionBarContentView(R.layout.stats_activity);
+		setTitle(R.string.activity_title_statistics);
 
 		listView = (ListView)findViewById(R.id.list);
 		galleryDate = (Gallery)findViewById(R.id.gallery_date);

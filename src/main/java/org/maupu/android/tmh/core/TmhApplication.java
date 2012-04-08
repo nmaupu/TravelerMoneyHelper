@@ -1,11 +1,11 @@
 package org.maupu.android.tmh.core;
 
-import java.util.GregorianCalendar;
-
 import greendroid.app.GDApplication;
 
+import java.util.GregorianCalendar;
+
+import org.maupu.android.tmh.DashboardActivity;
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
@@ -23,9 +23,10 @@ public class TmhApplication extends GDApplication {
 	public static final int ACTION_BAR_SAVE = 3;
 	public static final int ACTION_BAR_SAVE_AND_ADD = 4;
 	public static final int ACTION_BAR_CANCEL = 5;
+	public static final int ACTION_BAR_INFO = 6;
 	
 	
-	public static final Class<?> HOME_ACTIVITY_CLASS = ViewPagerOperationActivity.class;
+	public static final Class<?> HOME_ACTIVITY_CLASS = DashboardActivity.class;
 	
 	@Override
 	public Class<?> getHomeActivityClass() {
