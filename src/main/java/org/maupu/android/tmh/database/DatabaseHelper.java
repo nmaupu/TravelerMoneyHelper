@@ -17,6 +17,7 @@ import org.maupu.android.tmh.ui.StaticData;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public final class DatabaseHelper extends SQLiteOpenHelper {
@@ -51,7 +52,11 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public void close() {
-		super.close();
+		try {
+			super.close();
+		} catch (SQLiteException sqle) {
+			// unfinalized statements ?
+		}
 	}
 	
 	public SQLiteDatabase getDb() {
