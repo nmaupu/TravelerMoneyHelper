@@ -76,7 +76,7 @@ public class SpinnerManager {
 	}
 	
 	private boolean isSpinnerValueEqualsToBaseObject(BaseObject bo, String value) {
-		return value.equals(bo.toString());
+		return bo != null && value != null && value.equals(bo.toString());
 	}
 	
 	public Cursor getSelectedItem() {
