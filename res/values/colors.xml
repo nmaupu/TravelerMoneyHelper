@@ -6,6 +6,7 @@
     <color name="foreground_dark">#000000</color>
     <color name="red">#FF0000</color>
     <color name="gallery_date_first_color">#0077bb</color>
-    
+    <color name="actionbar_backround">#0066bb</color>
+    <color name="actionbar_backround_disable">#87C8FF</color>
 
 </resources>

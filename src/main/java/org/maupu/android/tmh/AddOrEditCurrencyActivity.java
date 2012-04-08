@@ -23,7 +23,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private boolean viewCreated = false;
 
 	public AddOrEditCurrencyActivity() {
-		super(R.string.activity_title_edition_currency, R.drawable.ic_stat_categories, R.layout.add_or_edit_currency, new Currency());
+		super(R.string.activity_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
 	}
 
 	@Override

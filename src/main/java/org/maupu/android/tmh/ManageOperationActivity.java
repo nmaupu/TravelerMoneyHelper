@@ -28,7 +28,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 
 	public ManageOperationActivity() {
 		// No custom title bar because this activity is used in a TabHost
-		super(R.string.activity_title_manage_operation, R.drawable.ic_stat_categories, AddOrEditOperationActivity.class, new Operation(), false);
+		super(R.string.activity_title_manage_operation, AddOrEditOperationActivity.class, new Operation());
 	}
 
 	@Override

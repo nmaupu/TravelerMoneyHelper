@@ -10,7 +10,7 @@ import android.database.Cursor;
 
 public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	public ManageAccountActivity() {
-		super(R.string.activity_title_manage_account, R.drawable.ic_stat_categories, AddOrEditAccountActivity.class, new Account(), true);
+		super(R.string.activity_title_manage_account, AddOrEditAccountActivity.class, new Account());
 	}
 	
 	@Override

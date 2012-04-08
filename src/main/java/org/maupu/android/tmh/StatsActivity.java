@@ -48,9 +48,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// No custom title bar because activity used in a TabHost
 		super.onCreate(savedInstanceState);
-		super.setContentView(R.layout.stats_activity);
+		super.setActionBarContentView(R.layout.stats_activity);
 
 		listView = (ListView)findViewById(R.id.list);
 		galleryDate = (Gallery)findViewById(R.id.gallery_date);

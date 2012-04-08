@@ -57,7 +57,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private static final String MINUS="-";
 
 	public AddOrEditOperationActivity() {
-		super(R.string.activity_title_edition_operation, R.drawable.ic_stat_categories, R.layout.add_or_edit_operation, new Operation());
+		super(R.string.activity_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	
 	@Override
 	public void onClick(View v) {
-		super.onClick(v);
+		//super.onClick(v);
 		
 		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);

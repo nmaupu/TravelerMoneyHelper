@@ -1,8 +1,11 @@
 package org.maupu.android.tmh;
 
+import greendroid.widget.ActionBarItem;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -10,27 +13,24 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.CustomActionBarItem;
+import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener {
+public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener {
 	private Spinner spinnerFrom;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
@@ -39,23 +39,27 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	private SpinnerManager spinnerManagerTo;
 	private SpinnerManager spinnerManagerCurrency;
 	private SpinnerManager spinnerManagerCategory;
-	private Button buttonValidate;
+	//private Button buttonValidate;
 	private EditText amountEditText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.withdrawal);
+		setActionBarContentView(R.layout.withdrawal);
+		setTitle(R.string.activity_title_edition_withdrawal);
+
+		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
 
 		spinnerFrom = (Spinner)findViewById(R.id.spinner_from);
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
 		spinnerCurrency = (Spinner)findViewById(R.id.spinner_currency);
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
-		buttonValidate = (Button)findViewById(R.id.button_validate);
+		spinnerCategory.setEnabled(false);
+		//buttonValidate = (Button)findViewById(R.id.button_validate);
 		amountEditText = (EditText)findViewById(R.id.amount);
 
 		spinnerTo.setOnItemSelectedListener(this);
-		buttonValidate.setOnClickListener(this);
+		//buttonValidate.setOnClickListener(this);
 
 		initSpinnerManagers();
 	}
@@ -82,18 +86,18 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerManagerCategory.setAdapter(cursor, CategoryData.KEY_NAME);
 
 		// Getting default category for withdrawal from preferences
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		try {
-			int idCategory = Integer.parseInt(prefs.getString("category", null));
-			if(idCategory != -1) {
-				Cursor c = category.fetch(idCategory);
-				category.toDTO(c);
-				spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
-			}
-		} catch (NumberFormatException nfe) {
-			Log.e("WithdrawalActivity", "Problem parsing preferences category for withdrawal, not set ?");
+		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		
+		//int idCategory = Integer.parseInt(prefs.getString("category", null));
+		Integer idCategory = StaticData.getWithdrawalCategory();
+		if(idCategory != null && idCategory >= 0) {
+			Cursor c = category.fetch(idCategory);
+			category.toDTO(c);
+			spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
+		} else {
+			SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
+			spinnerCategory.setEnabled(true);
 		}
-
 
 		// From
 		Account current = StaticData.getCurrentAccount();
@@ -138,8 +142,9 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	public void onNothingSelected(AdapterView<?> parent) {}
 
 	@Override
-	public void onClick(View v) {
-		if(v.getId() == buttonValidate.getId()) {
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch(item.getItemId()) {
+		case TmhApplication.ACTION_BAR_SAVE:
 			if(!validate()) {
 				SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
 			} else {
@@ -181,15 +186,20 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationTo.setDate(now);
 				operationTo.setCurrencyValueOnCreated(currency.getTauxEuro());
 				operationTo.insert();
-				
+
 				Operation.linkTwoOperations(operationFrom, operationTo);
 
 				// Dispose activity
 				finish();
 			}
+			break;
+		default:
+			return super.onHandleActionBarItemClick(item, position);		
 		}
+
+		return true;
 	}
-	
+
 	protected boolean validate() {
 		return amountEditText.getText() != null && ! "".equals(amountEditText.getText().toString().trim());
 	}

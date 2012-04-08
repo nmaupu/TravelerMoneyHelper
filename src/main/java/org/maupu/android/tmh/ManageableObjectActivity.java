@@ -1,7 +1,12 @@
 package org.maupu.android.tmh;
 
+import greendroid.widget.ActionBarItem;
+import greendroid.widget.QuickActionGrid;
+
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.BaseObject;
-import org.maupu.android.tmh.ui.CustomTitleBar;
+import org.maupu.android.tmh.ui.CustomActionBarItem;
+import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
@@ -29,38 +34,35 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private Button editButton;
 	private Button deleteButton;
 	private int title;
-	private Integer drawableIcon;
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
 	private T obj;
-	private boolean customTitleEnabled;
+	private QuickActionGrid quickActionGrid;
 
-	public ManageableObjectActivity(int title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle) {
-		this(title, drawableIcon, addOrEditActivity, obj, enableCustomTitle, R.layout.manageable_object);
+	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj) {
+		this(title, addOrEditActivity, obj, R.layout.manageable_object);
 	}
 
-	public ManageableObjectActivity(int title, Integer drawableIcon, Class<?> addOrEditActivity, T obj, boolean enableCustomTitle, Integer layoutList) {
+	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList) {
 		this.title = title;
-		this.drawableIcon = drawableIcon;
 		this.addOrEditActivity = addOrEditActivity;
 		this.layoutList = layoutList;
 		this.obj = obj;
-		this.customTitleEnabled = enableCustomTitle;
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		CustomTitleBar customTB = null;
-		if(customTitleEnabled)
-			customTB = new CustomTitleBar(this);
-		setContentView(layoutList);
 		super.onCreate(savedInstanceState);
+		setActionBarContentView(layoutList);
+		super.setTitle(title);
 
-		if(customTB != null) {
-			setTitle(getString(title));
-			customTB.setName(getString(title));
-			customTB.setIcon(drawableIcon);
-		}
+
+		// actionbar items
+		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
+		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
+
+		quickActionGrid = createQuickActionGridEdition();
+
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
 
@@ -77,8 +79,27 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 		if(this.deleteButton != null)
 			this.deleteButton.setOnClickListener(this);
+
+		setListViewAnimation(listView);
 		
+        //
 		initButtons();
+	}
+
+	@Override
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch(item.getItemId()) {
+		case TmhApplication.ACTION_BAR_ADD:
+			onAddClicked();
+			break;
+		case TmhApplication.ACTION_BAR_EDIT:
+			quickActionGrid.show(item.getItemView());
+			break;
+		default:
+			return super.onHandleActionBarItemClick(item, position);
+		}
+
+		return true;
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
@@ -178,15 +199,15 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		setEnabledEditButton(false);
 		buttonsBarGone();
 	}
-	
+
 	private void buttonsBarVisible() {
 		setVisibilityButtonsBar(R.anim.pushup, true);
 	}
-	
+
 	private void buttonsBarGone() {
 		setVisibilityButtonsBar(R.anim.pushdown, false);
 	}
-	
+
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
 		View v = (View)findViewById(R.id.layout_root_footer);
 
@@ -199,13 +220,13 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		} else {
 			v.setVisibility(View.GONE);
 		}
-		
+
 		Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
 		if(anim == R.anim.pushup)
 			animation.setInterpolator(new DecelerateInterpolator());
 		else
 			animation.setInterpolator(new AccelerateInterpolator());
-		
+
 		v.startAnimation(animation);
 	}
 
@@ -224,11 +245,11 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 * @return true if object can be deleted, false otherwise
 	 */
 	protected abstract boolean validateConstraintsForDeletion(final T obj);
-	
+
 	protected Intent onAddClicked() {
 		Intent intent = new Intent(this, addOrEditActivity);
 		startActivityForResult(intent, ACTIVITY_ADD);
-		
+
 		return intent;
 	}
 }

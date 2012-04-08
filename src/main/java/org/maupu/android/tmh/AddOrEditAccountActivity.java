@@ -52,7 +52,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private static final int MENU_ITEM_FLAGS = 3;
 
 	public AddOrEditAccountActivity() {
-		super(R.string.activity_title_edition_account, R.drawable.ic_stat_categories, R.layout.add_or_edit_account, new Account());
+		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
 	}
 
 	@Override

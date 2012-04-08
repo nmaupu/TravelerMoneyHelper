@@ -1,7 +1,11 @@
 package org.maupu.android.tmh;
 
+import greendroid.widget.ActionBarItem;
+
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.BaseObject;
-import org.maupu.android.tmh.ui.CustomTitleBar;
+import org.maupu.android.tmh.ui.CustomActionBarItem;
+import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
 import android.content.DialogInterface;
@@ -9,9 +13,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.Toast;
 
 /**
@@ -19,49 +20,43 @@ import android.widget.Toast;
  * @author nmaupu
  *
  */
-public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity implements OnClickListener {
+public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity {
 	public static final String EXTRA_OBJECT_ID = "base_object";
-	private Button buttonContinue;
-	private Button buttonContinueAndAdd;
-	private Button buttonReset;
+	//private Button buttonContinue;
+	//private Button buttonContinueAndAdd;
+	//private Button buttonReset;
 	//private TextView textInfo;
 	private int contentView;
 	private T obj;
 	private int title;
+	private ActionBarItem saveAndAddItem;
 
-	private Integer icon;
-
-	public AddOrEditActivity(int title, Integer icon, int contentView, T obj) {
+	public AddOrEditActivity(int title, int contentView, T obj) {
 		this.contentView = contentView;
 		this.obj = obj;
 		this.title = title;
-		this.icon = icon;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Disable add button for addOrEdit activities
-		MenuItem mi = menu.findItem(R.id.item_add);
-		if(mi != null)
-			mi.setEnabled(false);
-		return true;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		CustomTitleBar ctb = new CustomTitleBar(this);
-		setContentView(contentView);
+		setActionBarContentView(contentView);
 		super.setTitle(getString(title));
-		ctb.setName(getString(title));
-		ctb.setIcon(icon);
-
+		
+		// actionbar items
+		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
+		
+		saveAndAddItem = CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.SaveAndAdd);
+		addActionBarItem(saveAndAddItem, TmhApplication.ACTION_BAR_SAVE_AND_ADD);
+		
+		/*
 		buttonContinue = (Button)findViewById(R.id.button_continue);
 		buttonContinueAndAdd = (Button)findViewById(R.id.button_continue_and_add);
 		buttonReset = (Button)findViewById(R.id.button_reset);
 		buttonContinue.setOnClickListener(this);
 		buttonContinueAndAdd.setOnClickListener(this);
 		buttonReset.setOnClickListener(this);
+		*/
 		/*textInfo = (TextView)findViewById(R.id.text_info);
 		if(textInfo != null) {
 			textInfo.setText("Please fill this form");
@@ -72,8 +67,21 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		retrieveItemFromExtra();
 		// Init all widgets
 		initResources();
+		
+		if(isEditing())
+			CustomActionBarItem.setEnableItem(false, saveAndAddItem);
+		
 		// Fill form fields
 		baseObjectToFields(obj);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// Disable add button for addOrEdit activities
+		MenuItem mi = menu.findItem(R.id.item_add);
+		if(mi != null)
+			mi.setEnabled(false);
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,7 +91,8 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			Bundle bundle = intent.getExtras();
 			T objnew = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
 			if(objnew != null) {
-				buttonContinueAndAdd.setEnabled(false);
+				//buttonContinueAndAdd.setEnabled(false);
+				CustomActionBarItem.setEnableItem(false, saveAndAddItem);
 				obj = objnew;
 			}
 		} catch (NullPointerException e) {
@@ -93,7 +102,28 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			throw cce;
 		}
 	}
+	
+	@Override
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch(item.getItemId()) {
+		case TmhApplication.ACTION_BAR_SAVE:
+			onContinue(true);
+			break;
+		case TmhApplication.ACTION_BAR_SAVE_AND_ADD:
+			if(onContinue(false)) {
+				Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
+				obj.reset();
+				refreshDisplay();
+			}
+			break;
+		default:
+			return super.onHandleActionBarItemClick(item, position);
+		}
+		
+		return true;
+	}
 
+	/*
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -112,6 +142,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			break;
 		}
 	}
+	*/
 
 	private boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {

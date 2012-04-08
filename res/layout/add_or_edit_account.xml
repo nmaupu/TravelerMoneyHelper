@@ -4,8 +4,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/add_or_edit_info" />
-
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -79,6 +77,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <include layout="@layout/add_or_edit_buttons" />
+    <!-- include layout="@layout/add_or_edit_buttons" /-->
 
 </LinearLayout>

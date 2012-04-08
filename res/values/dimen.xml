@@ -2,5 +2,6 @@
 
     <dimen name="list_divider_height">2px</dimen>
     <dimen name="header_operation_height">50dip</dimen>
+    <dimen name="drawable_button_padding">5dip</dimen>
 
 </resources>

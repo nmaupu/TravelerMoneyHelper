@@ -2,6 +2,8 @@
 .classpath
 .project
 proguard.cfg
+default.properties
+project.properties
 lint.xml
 .settings/
 bin/

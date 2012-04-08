@@ -8,6 +8,7 @@ import java.util.Set;
 import org.maupu.android.tmh.AddOrEditActivity;
 import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -108,8 +109,10 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshDisplay() {
-		if(listView == null)
+		if(listView == null) {
 			listView = (ListView)view.findViewById(R.id.list);
+			TmhActivity.setListViewAnimation(listView);
+		}
 
 		// Getting current account
 		Account currentAccount = StaticData.getCurrentAccount();

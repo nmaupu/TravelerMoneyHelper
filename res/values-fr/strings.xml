@@ -8,6 +8,7 @@
     <string name="activity_title_edition_currency">Edition de devise</string>
     <string name="activity_title_edition_operation">Edition d\'opération</string>
     <string name="activity_title_edition_account">Edition de compte</string>
+    <string name="activity_title_edition_withdrawal">Edition de retrait</string>
     <string name="account_icon_edit_dialog_title">Choisir l\'icone depuis &#8230;</string>
     <string name="manageable_obj_del_confirm_question">Etes-vous sûr(e) de vouloir supprimer ces objets ?</string>
     <string name="manageable_obj_del_error">Un ou plusieurs objets ne peuvent pas être supprimés</string>

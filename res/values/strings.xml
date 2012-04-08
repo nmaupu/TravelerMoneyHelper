@@ -11,6 +11,7 @@
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>
     <string name="activity_title_edition_account">Account edition</string>
+    <string name="activity_title_edition_withdrawal">Withdrawal edition</string>
     <string name="account_icon_edit_dialog_title">Choose an icon from …</string>
     <string name="manageable_obj_del_confirm_question">Are you sure you want to delete these objects ?</string>
     <string name="manageable_obj_del_error">One or more objects could not be deleted</string>
