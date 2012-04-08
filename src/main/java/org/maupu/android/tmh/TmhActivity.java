@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import greendroid.app.GDActivity;
+import greendroid.widget.ActionBar.Type;
 import greendroid.widget.QuickAction;
 import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
@@ -23,10 +24,18 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 public abstract class TmhActivity extends GDActivity {
-
+	public TmhActivity() {
+		super(Type.Normal);
+	}
+	
+	public TmhActivity(Type type) {
+		super(type);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,6 +130,13 @@ public abstract class TmhActivity extends GDActivity {
 	 * @return intent used to call corresponding activity
 	 */
 	protected abstract Intent onAddClicked();
+	
+	public void setActionBarHomeDrawable(int drawable) {
+		ImageButton ib = (ImageButton)getActionBar().findViewById(R.id.gd_action_bar_home_item);
+		if(ib != null) {
+			ib.setImageResource(drawable);
+		}
+	}
 
 	public static void setListViewAnimation(ListView listView) {
 		// Setting animation
