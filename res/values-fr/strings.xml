@@ -61,7 +61,6 @@
     <string name="hint_flag_autocompletion">Utilisez ce champ afin de choisir le drapeau d\'un pays</string>
     <string name="country">Pays</string>
     <string name="country_not_found">Ce pays n\'existe pas !</string>
-    <string name="hint_star_for_all">\'*\' pour tout montrer</string>
     <string name="withdrawal">Retrait</string>
     <string name="default_account_name">Compte1</string>
     <string name="menu_item_withdrawal">Retrait</string>

@@ -63,7 +63,6 @@
     <string name="hint_flag_autocompletion">Use this autocompletion field to choose a country flag</string>
     <string name="country">Country</string>
     <string name="country_not_found">Country not found !</string>
-    <string name="hint_star_for_all">\'*\' to show all</string>
     <string name="withdrawal">Withdrawal</string>
     <string name="default_account_name">Account1</string>
     <string name="menu_item_withdrawal">Widthdrawal</string>

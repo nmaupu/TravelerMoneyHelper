@@ -50,7 +50,6 @@
                 android:id="@+id/edit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:completionHint="@string/hint_star_for_all"
                 android:completionThreshold="1"
                 android:inputType="text|textAutoCorrect|textAutoComplete"
                 android:maxLines="1" />
