@@ -44,6 +44,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		retrieveBoolsFromDbs();
 		categoryIsOk = StaticData.getPreferenceValueBoolean(CATEGORY_IS_OK);
 		currencyIsOk = StaticData.getPreferenceValueBoolean(CURRENCY_IS_OK);
 		accountIsOk = StaticData.getPreferenceValueBoolean(ACCOUNT_IS_OK);
@@ -63,7 +64,24 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		TmhApplication.getDatabaseHelper().close();
+		super.onDestroy();
+	}
+	
+	@Override
 	protected void onResume() {
+		// Set booleans inside prefs
+		retrieveBoolsFromDbs();
+		
+		if(isApplicationInit() && goButton != null) {
+			goButton.setText(R.string.welcome_letsgo_button);
+		}
+		
+		super.onResume();
+	}
+	
+	private void retrieveBoolsFromDbs() {
 		//Toast.makeText(this, "This is onResume method", Toast.LENGTH_LONG).show();
 		Category category = new Category();
 		StaticData.setPreferenceValueBoolean(CATEGORY_IS_OK, category.fetchAll().getCount()>0);
@@ -74,12 +92,6 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		
 		Account account = new Account();
 		StaticData.setPreferenceValueBoolean(ACCOUNT_IS_OK, account.fetchAll().getCount()>0);
-		
-		if(isApplicationInit() && goButton != null) {
-			goButton.setText(R.string.welcome_letsgo_button);
-		}
-		
-		super.onResume();
 	}
 	
 	private boolean isApplicationInit() {
