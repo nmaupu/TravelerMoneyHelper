@@ -52,7 +52,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private LayoutInflater inflater;
 	private ImageView imageViewIcon;
 	private TextView textViewAccountName;
-	private TextView textViewTitle;
+	private TextView textViewTitleMonth;
+	private TextView textViewTitleYear;
 	private View footerOperationBalance;
 	private TextView textViewTotal;
 	private TextView textViewBalance;
@@ -89,7 +90,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		LinearLayout header = (LinearLayout)view.findViewById(R.id.header);
 
 		// Getting resources
-		textViewTitle = (TextView)headerContent.findViewById(R.id.title);
+		textViewTitleMonth = (TextView)headerContent.findViewById(R.id.title_month);
+		textViewTitleYear = (TextView)headerContent.findViewById(R.id.title_year);
 		textViewAccountName = (TextView)headerContent.findViewById(R.id.account_name); 
 		imageViewIcon = (ImageView)headerContent.findViewById(R.id.account_icon);
 		imageViewIcon.setOnClickListener(this);
@@ -351,9 +353,13 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			textViewAccountName.setText(account.getName());
 		}
 
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM yyyy");
-		String dateString = sdf.format(date);
-		textViewTitle.setText(dateString);
+		SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMMM");
+		String dateString = sdfMonth.format(date);
+		textViewTitleMonth.setText(dateString);
+		
+		SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+		dateString = sdfYear.format(date);
+		textViewTitleYear.setText(dateString);
 	}
 
 	@Override

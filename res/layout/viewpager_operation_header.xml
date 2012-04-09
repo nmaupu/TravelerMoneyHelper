@@ -3,15 +3,31 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/title_layout"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/header_operation_height"
-        android:layout_alignParentLeft="true"
-        android:gravity="center_vertical"
-        android:paddingLeft="5dip"
-        android:text="text"
-        android:textStyle="italic" />
+        android:layout_marginLeft="5dip" >
+
+        <TextView
+            android:id="@+id/title_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:gravity="center_vertical"
+            android:textSize="20dip"
+            android:textColor="@color/blue"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/title_year"
+            android:layout_below="@id/title_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textSize="12dip"
+            android:textStyle="italic" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ll_account"
