@@ -21,6 +21,7 @@ import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -102,6 +103,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							startActivity(new Intent(activity, PreferencesActivity.class));
 							activity.finish();
 						}
 					}).show();

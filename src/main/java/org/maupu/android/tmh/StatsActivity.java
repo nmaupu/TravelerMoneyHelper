@@ -16,6 +16,9 @@ import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -57,7 +60,22 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
-		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).create();
+		
+		final TmhActivity activity = this;
+		OnClickListener listener = new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				startActivity(new Intent(activity, PreferencesActivity.class));
+				activity.finish();
+			}
+		};
+		
+		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
+				this, 
+				getString(R.string.warning), 
+				getString(R.string.default_category_warning),
+				listener).create();
+		
 		
 		initHeaderGalleries();
 		refreshHeaderGallery();
