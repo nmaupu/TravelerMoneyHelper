@@ -10,8 +10,10 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.content.Context;
+import android.content.Intent;
 
 public class TmhApplication extends GDApplication {
 	private static Context applicationContext;
@@ -38,7 +40,7 @@ public class TmhApplication extends GDApplication {
 		super.onCreate();
 		TmhApplication.applicationContext = this.getApplicationContext();
 		dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
-		init();
+		//init();
 	}
 	
 	/**
@@ -89,7 +91,7 @@ public class TmhApplication extends GDApplication {
 		return dbHelper;
 	}
 	
-	public static void changeOrCreateDatabase(String dbName) {
+	public static void changeOrCreateDatabase(Context ctx, String dbName) {
 		String name = dbName;
 		if(dbName != null && !"".equals(dbName) && ! dbName.startsWith(DatabaseHelper.DATABASE_PREFIX)) {
 			name = DatabaseHelper.DATABASE_PREFIX+dbName;
@@ -98,5 +100,10 @@ public class TmhApplication extends GDApplication {
 		dbHelper.close();
 		dbHelper = new DatabaseHelper(name);
 		dbHelper.getDb();
+		
+		// Invalidate StaticData
+		StaticData.setCurrentAccount(null);
+		StaticData.setCurrentSelectedCategory(null);
+		ctx.startActivity(new Intent(ctx, HOME_ACTIVITY_CLASS));
 	}
 }

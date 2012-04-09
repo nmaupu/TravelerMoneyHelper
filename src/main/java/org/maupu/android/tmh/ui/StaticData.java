@@ -39,6 +39,7 @@ public abstract class StaticData {
 		editor.commit();
 		
 		// Fetch and fill currentAccount
+		invalidateCurrentAccount();
 		getCurrentAccount();
 	}
 	
@@ -227,5 +228,12 @@ public abstract class StaticData {
 	public static Long getPreferenceValueLong(String key) {
 		SharedPreferences prefs = getPrefs();
 		return prefs.getLong(key, -1);
+	}
+	
+	public static void setPreferenceValueBoolean(String key, boolean value) {
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
 	}
 }

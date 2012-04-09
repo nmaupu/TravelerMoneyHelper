@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/category_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/category_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/puce" />
+
+        <TextView
+            android:id="@+id/category_title"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Create a category" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/currency_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/category_layout"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/currency_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/puce" />
+
+        <TextView
+            android:id="@+id/currency_title"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Create a currency" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/account_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/currency_layout"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/account_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/puce" />
+
+        <TextView
+            android:id="@+id/account_title"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Create an account" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/account_layout"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:drawableTop="@drawable/ic_action_send"
+        android:gravity="center"
+        android:paddingLeft="45dp"
+        android:paddingRight="45dp"
+        android:text="Go" />
+
+</RelativeLayout>

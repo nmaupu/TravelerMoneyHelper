@@ -206,7 +206,12 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	public void onClick(View v) {
 		final Operation obj = new Operation();
 		Intent intent = null;
-		final Integer[] posChecked = ((CheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
+		CheckableCursorAdapter checkableCursorAdapter = (CheckableCursorAdapter)listView.getAdapter();
+		final Integer[] posChecked;
+		if(checkableCursorAdapter != null)
+			posChecked = checkableCursorAdapter.getCheckedPositions();
+		else
+			return;
 
 		switch(v.getId()) {
 		case R.id.account_icon:

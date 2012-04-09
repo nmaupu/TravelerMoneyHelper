@@ -177,7 +177,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if(StaticData.PREF_DATABASE.equals(preference.getKey())) {
 			Log.d(PreferencesActivity.class.getName(), "Opening database "+newValue);
-			TmhApplication.changeOrCreateDatabase((String)newValue);
+			TmhApplication.changeOrCreateDatabase(this, (String)newValue);
 		} else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			if(! "".equals((String)newValue)) {
 				Log.d(PreferencesActivity.class.getName(), "Creating new database "+newValue);
@@ -185,7 +185,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 				String dbName = DatabaseHelper.DATABASE_PREFIX+((String)newValue);
 
 				// creating a new DB
-				TmhApplication.changeOrCreateDatabase(dbName);
+				TmhApplication.changeOrCreateDatabase(this, dbName);
 
 				// Resetting edit text to emtpy string
 				ListPreference dbPref = (ListPreference)findPreference(StaticData.PREF_DATABASE);
