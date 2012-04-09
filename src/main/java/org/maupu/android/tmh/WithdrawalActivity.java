@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import greendroid.widget.ActionBarItem;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -18,19 +19,28 @@ import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
+import org.maupu.android.tmh.util.DateUtil;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
-public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener {
+public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener {
+	private static final int DATE_DIALOG_ID = 0;
 	private Spinner spinnerFrom;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
@@ -41,6 +51,9 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	private SpinnerManager spinnerManagerCategory;
 	//private Button buttonValidate;
 	private EditText amountEditText;
+	private TextView textViewDate;
+	private Button buttonToday;
+	private int mYear, mMonth, mDay;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +70,64 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerCategory.setEnabled(false);
 		//buttonValidate = (Button)findViewById(R.id.button_validate);
 		amountEditText = (EditText)findViewById(R.id.amount);
+		textViewDate = (TextView)findViewById(R.id.date);
+		textViewDate.setOnClickListener(this);
+		buttonToday = (Button)findViewById(R.id.button_today);
+		buttonToday.setOnClickListener(this);
 
 		spinnerTo.setOnItemSelectedListener(this);
 		//buttonValidate.setOnClickListener(this);
 
 		initSpinnerManagers();
+		initDatePickerTextView(null);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		if(v.getId() == R.id.date) {
+			showDialog(DATE_DIALOG_ID);
+		} else if(v.getId() == R.id.button_today) {
+			initDatePickerTextView(Calendar.getInstance().getTime());
+		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DATE_DIALOG_ID:
+			return new DatePickerDialog(this, this, mYear, mMonth, mDay);
+		}
+		
+		return null;
+	}
+	
+	private void initDatePickerTextView(Date d) {
+		Date previousDate = StaticData.getCurrentOperationDatePickerDate();
+		Calendar cal = Calendar.getInstance();
+		
+		if(d != null)
+			cal.setTime(d);
+		else if(previousDate != null)
+			cal.setTime(previousDate);
+		
+		mYear = cal.get(Calendar.YEAR);
+		mMonth = cal.get(Calendar.MONTH);
+		mDay = cal.get(Calendar.DAY_OF_MONTH);
+		
+		updateDatePickerTextView();
+	}
+	
+	public void updateDatePickerTextView() {
+		textViewDate.setText(
+				DateUtil.dateToStringNoHour(new GregorianCalendar(mYear, mMonth, mDay).getTime()));
+	}
+	
+	@Override
+	public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+		mYear = year;
+		mMonth = monthOfYear;
+		mDay = dayOfMonth;
+		updateDatePickerTextView();
 	}
 
 	private void initSpinnerManagers() {
@@ -162,14 +228,15 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				cursor = spinnerManagerCurrency.getSelectedItem();
 				currency.toDTO(cursor);
 
-				Date now = new GregorianCalendar().getTime();
+				Date date = new GregorianCalendar(mYear, mMonth, mDay).getTime();
+				
 				// First, we debit from account
 				Operation operationFrom = new Operation();
 				operationFrom.setAccount(accountFrom);
 				operationFrom.setAmount(-1d * amount);
 				operationFrom.setCategory(category);
 				operationFrom.setCurrency(currency);
-				operationFrom.setDate(now);
+				operationFrom.setDate(date);
 				operationFrom.setCurrencyValueOnCreated(currency.getTauxEuro());
 				operationFrom.insert();
 
@@ -179,7 +246,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationTo.setAmount(amount);
 				operationTo.setCategory(category);
 				operationTo.setCurrency(currency);
-				operationTo.setDate(now);
+				operationTo.setDate(date);
 				operationTo.setCurrencyValueOnCreated(currency.getTauxEuro());
 				operationTo.insert();
 
@@ -197,6 +264,9 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	}
 
 	protected boolean validate() {
+		Date d = new GregorianCalendar(mYear, mMonth, mDay).getTime();
+		StaticData.setCurrentOperationDatePickerDate(d);
+		
 		return amountEditText.getText() != null && ! "".equals(amountEditText.getText().toString().trim());
 	}
 }
