@@ -20,14 +20,12 @@ import android.widget.Toast;
  */
 public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity {
 	public static final String EXTRA_OBJECT_ID = "base_object";
-	//private Button buttonContinue;
-	//private Button buttonContinueAndAdd;
-	//private Button buttonReset;
-	//private TextView textInfo;
+	public static final String EXTRA_APP_INIT = "app_init";
 	private int contentView;
 	private T obj;
 	private int title;
 	private ActionBarItem saveAndAddItem;
+	private boolean appInit = false;
 
 	public AddOrEditActivity(int title, int contentView, T obj) {
 		this.contentView = contentView;
@@ -46,27 +44,14 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		
 		saveAndAddItem = CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.SaveAndAdd);
 		addActionBarItem(saveAndAddItem, TmhApplication.ACTION_BAR_SAVE_AND_ADD);
-		
-		/*
-		buttonContinue = (Button)findViewById(R.id.button_continue);
-		buttonContinueAndAdd = (Button)findViewById(R.id.button_continue_and_add);
-		buttonReset = (Button)findViewById(R.id.button_reset);
-		buttonContinue.setOnClickListener(this);
-		buttonContinueAndAdd.setOnClickListener(this);
-		buttonReset.setOnClickListener(this);
-		*/
-		/*textInfo = (TextView)findViewById(R.id.text_info);
-		if(textInfo != null) {
-			textInfo.setText("Please fill this form");
-			textInfo.setVisibility(View.VISIBLE);
-		}*/
 
 		// Retrieve extra parameter
 		retrieveItemFromExtra();
+		
 		// Init all widgets
 		initResources();
 		
-		if(isEditing())
+		if(isEditing() || appInit)
 			CustomActionBarItem.setEnableItem(false, saveAndAddItem);
 		
 		// Fill form fields
@@ -84,6 +69,10 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 				CustomActionBarItem.setEnableItem(false, saveAndAddItem);
 				obj = objnew;
 			}
+			
+			// Set this when initializing app from WelcomeActivity (we deactivate 'save and add' button)
+			appInit = (Boolean) bundle.get(AddOrEditActivity.EXTRA_APP_INIT);
+			
 		} catch (NullPointerException e) {
 			// Here, nothing is allocated, we keep default obj
 		} catch (ClassCastException cce) {

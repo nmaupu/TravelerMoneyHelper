@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import greendroid.app.GDActivity;
+import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -12,6 +13,9 @@ import org.maupu.android.tmh.ui.StaticData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,6 +31,11 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	private boolean currencyIsOk = false;
 	private boolean accountIsOk = false;
 	
+	private static final String CATEGORY_IS_OK = "categoryIsOk";
+	private static final String CURRENCY_IS_OK = "currencyIsOk";
+	private static final String ACCOUNT_IS_OK = "accountIsOk";
+	
+	
 	public DashboardActivity() {
 		super(greendroid.widget.ActionBar.Type.Empty);
 	}
@@ -35,9 +44,9 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		categoryIsOk = StaticData.getPreferenceValueBoolean("categoryIsOk");
-		currencyIsOk = StaticData.getPreferenceValueBoolean("currencyIsOk");
-		accountIsOk = StaticData.getPreferenceValueBoolean("accountIsOk");
+		categoryIsOk = StaticData.getPreferenceValueBoolean(CATEGORY_IS_OK);
+		currencyIsOk = StaticData.getPreferenceValueBoolean(CURRENCY_IS_OK);
+		accountIsOk = StaticData.getPreferenceValueBoolean(ACCOUNT_IS_OK);
 		
 		if(! categoryIsOk || ! currencyIsOk || ! accountIsOk) {
 			setActionBarContentView(R.layout.welcome_activity);
@@ -57,26 +66,26 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	protected void onResume() {
 		//Toast.makeText(this, "This is onResume method", Toast.LENGTH_LONG).show();
 		Category category = new Category();
-		StaticData.setPreferenceValueBoolean("categoryIsOk", category.fetchAll().getCount()>0);
+		StaticData.setPreferenceValueBoolean(CATEGORY_IS_OK, category.fetchAll().getCount()>0);
 		
 		// There is already a currency (default one, created on startup)
 		Currency currency = new Currency();
-		StaticData.setPreferenceValueBoolean("currencyIsOk", currency.fetchAll().getCount()>0);
+		StaticData.setPreferenceValueBoolean(CURRENCY_IS_OK, currency.fetchAll().getCount()>0);
 		
 		Account account = new Account();
-		StaticData.setPreferenceValueBoolean("accountIsOk", account.fetchAll().getCount()>0);
+		StaticData.setPreferenceValueBoolean(ACCOUNT_IS_OK, account.fetchAll().getCount()>0);
 		
 		if(isApplicationInit() && goButton != null) {
-			goButton.setText("Let's go !");
+			goButton.setText(R.string.welcome_letsgo_button);
 		}
 		
 		super.onResume();
 	}
 	
 	private boolean isApplicationInit() {
-		categoryIsOk = StaticData.getPreferenceValueBoolean("categoryIsOk");
-		currencyIsOk = StaticData.getPreferenceValueBoolean("currencyIsOk");
-		accountIsOk = StaticData.getPreferenceValueBoolean("accountIsOk");
+		categoryIsOk = StaticData.getPreferenceValueBoolean(CATEGORY_IS_OK);
+		currencyIsOk = StaticData.getPreferenceValueBoolean(CURRENCY_IS_OK);
+		accountIsOk = StaticData.getPreferenceValueBoolean(ACCOUNT_IS_OK);
 	    
 		//categoryIsOk = currencyIsOk = accountIsOk = true;
 		
@@ -144,6 +153,19 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	    
 	    return categoryIsOk && currencyIsOk && accountIsOk;
 	}
+	
+	@Override
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch(item.getItemId()) {
+		case TmhApplication.ACTION_BAR_INFO:
+			// TODO About dialog
+			break;
+		default:
+			return super.onHandleActionBarItemClick(item, position);
+		}
+		
+		return true;
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -159,6 +181,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		case R.id.button:
 			if(! isApplicationInit()) {
 				intent = new Intent(DashboardActivity.this, addOrEditActivity);
+				intent.putExtra(AddOrEditActivity.EXTRA_APP_INIT, true);
 			} else {
 				startActivity(new Intent(DashboardActivity.this, DashboardActivity.class));
 				finish();
@@ -168,5 +191,25 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		
 		if(intent != null)
 			startActivity(intent);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.dashboard_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case R.id.item_preferences:
+			startActivity(new Intent(this, PreferencesActivity.class));
+			break;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
+		return true;
 	}
 }
