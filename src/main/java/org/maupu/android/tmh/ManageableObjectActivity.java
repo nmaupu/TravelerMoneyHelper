@@ -38,16 +38,18 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private Integer layoutList;
 	private T obj;
 	private QuickActionGrid quickActionGrid;
+	private boolean animList = false;
 
-	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj) {
-		this(title, addOrEditActivity, obj, R.layout.manageable_object);
+	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, boolean animList) {
+		this(title, addOrEditActivity, obj, R.layout.manageable_object, animList);
 	}
 
-	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList) {
+	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList, boolean animList) {
 		this.title = title;
 		this.addOrEditActivity = addOrEditActivity;
 		this.layoutList = layoutList;
 		this.obj = obj;
+		this.animList = animList;
 	}
 
 	@Override
@@ -80,7 +82,8 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		if(this.deleteButton != null)
 			this.deleteButton.setOnClickListener(this);
 
-		setListViewAnimation(listView);
+		if(animList)
+			setListViewAnimation(listView);
 		
         //
 		initButtons();
