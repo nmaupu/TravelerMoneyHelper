@@ -55,7 +55,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		try {
 			super.close();
 		} catch (SQLiteException sqle) {
-			// unfinalized statements ?
+			sqle.printStackTrace();
 		}
 	}
 	
