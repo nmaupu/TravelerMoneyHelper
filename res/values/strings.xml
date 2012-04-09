@@ -88,5 +88,12 @@
     <string name="balance">Balance:</string>
     <string name="dashboard_operation">Operations</string>
     <string name="dashboard_stats">Statistics</string>
+    <string name="welcome_title">Some elements must be created in order to use this application :</string>
+    <string name="welcome_letsgo_button">Let\'s go !</string>
+    <string name="welcome_button">Go</string>
+    <string name="welcome_category">Create a category</string>
+    <string name="welcome_currency">Create a currency</string>
+    <string name="welcome_account">Create an account</string>
+    
 
 </resources>

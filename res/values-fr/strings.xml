@@ -86,5 +86,11 @@
     <string name="balance">Solde:</string>
     <string name="dashboard_operation">Opérations</string>
     <string name="dashboard_stats">Statistiques</string>
+    <string name="welcome_title">Certains éléments doivent être précisés afin d\'utiliser cette application :</string>
+    <string name="welcome_letsgo_button">C\'est parti !</string>
+    <string name="welcome_button">Go</string>
+    <string name="welcome_category">Créer une catégorie</string>
+    <string name="welcome_currency">Créer une devise</string>
+    <string name="welcome_account">Créer un compte</string>
 
 </resources>
