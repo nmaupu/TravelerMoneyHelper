@@ -173,12 +173,11 @@ public abstract class StaticData {
 	}
 	
 	public static void setCurrentSelectedCategory(Category category) {
-		if(category == null || category.getId() == null)
-			return;
+		Integer catId = category == null ? null : category.getId();
 		
 		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
-		editor.putInt(PREF_CURRENT_SELECTED_CATEGORY, category.getId());
+		editor.putInt(PREF_CURRENT_SELECTED_CATEGORY, catId);
 		editor.commit();
 		
 		// Fetch and fill currentCategory
@@ -206,12 +205,11 @@ public abstract class StaticData {
 	}
 	
 	public static void setWithdrawalCategory(Category category) {
-		if(category == null || category.getId() == null)
-			return;
+		String catId = category == null ? null : String.valueOf(category.getId());
 		
 		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
-		editor.putInt(PREF_WITHDRAWAL_CATEGORY, category.getId());
+		editor.putString(PREF_WITHDRAWAL_CATEGORY, catId);
 		editor.commit();
 	}
 	

@@ -154,7 +154,28 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	}
 
 	private CharSequence[] getAllDatabasesListEntryValues() {
-		return TmhApplication.getAppContext().databaseList();
+		// For an obscure reason, databaseList() returns strange results on some device 
+		// such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
+		// instead of [TravelerMoneyHelper_appdata_default]
+		// What is 0 ? What is TravelerMoneyHelper_appdata ? who knows ! 
+		CharSequence[] list = TmhApplication.getAppContext().databaseList();
+		//CharSequence[] ret = new CharSequence[list.length];
+		List<CharSequence> listEntries = new ArrayList<CharSequence>();
+
+		for(int i=0; i<list.length; i++) {
+			String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
+			// If database name is not correct (no prefix), array is wrong so we denied this DB
+			if(vals.length == 2)
+				listEntries.add(list[i]); // Get the entire db name
+		}
+
+		CharSequence[] ret = new CharSequence[listEntries.size()];
+		int nb = listEntries.size();
+		for(int i=0; i<nb; i++) {
+			ret[i] = listEntries.get(i);
+		}
+		
+		return ret;
 	}
 
 	@Override
