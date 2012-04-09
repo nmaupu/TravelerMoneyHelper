@@ -11,6 +11,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.GDMainTheme" >
+
         <!-- Main Activity -->
         <activity
             android:name=".DashboardActivity"
@@ -22,10 +23,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".ViewPagerOperationActivity" />
-        <activity android:name=".ManageCategoryActivity" />
-        <activity android:name=".ManageCurrencyActivity" />
+        <activity
+            android:name=".ManageCategoryActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".ManageCurrencyActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".ManageAccountActivity"
+            android:noHistory="true" />
         <activity android:name=".ManageOperationActivity" />
-        <activity android:name=".ManageAccountActivity" />
         <activity android:name=".AddOrEditCurrencyActivity" />
         <activity android:name=".AddOrEditCategoryActivity" />
         <activity android:name=".AddOrEditOperationActivity" />
