@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
@@ -215,14 +216,14 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		//Date now = new GregorianCalendar().getTime();
 		Operation dummyOp = new Operation();
 		
-		Integer withdrawalCat = StaticData.getWithdrawalCategory();
+		Category withdrawalCat = StaticData.getWithdrawalCategory();
 		Integer[] cats = null;
 		if(withdrawalCat == null) {
 			if(! alertDialogWithdrawalCategory.isShowing())
 				alertDialogWithdrawalCategory.show();
 		} else {
 			cats = new Integer[1];
-			cats[0] = withdrawalCat;
+			cats[0] = withdrawalCat.getId();
 		}
 		
 		Cursor cursor = dummyOp.sumOperationsGroupByDay(account,

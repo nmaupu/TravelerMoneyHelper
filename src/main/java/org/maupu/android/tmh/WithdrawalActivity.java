@@ -155,10 +155,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		
 		//int idCategory = Integer.parseInt(prefs.getString("category", null));
-		Integer idCategory = StaticData.getWithdrawalCategory();
-		if(idCategory != null && idCategory >= 0) {
-			Cursor c = category.fetch(idCategory);
-			category.toDTO(c);
+		Category cat = StaticData.getWithdrawalCategory();
+		if(cat != null) {
 			spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
 		} else {
 			final Activity activity = this;

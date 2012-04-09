@@ -91,7 +91,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
 
 		Category dummyCategory = new Category();
-		Integer withdrawalCat = StaticData.getWithdrawalCategory();
+		Category withdrawalCat = StaticData.getWithdrawalCategory();
 		if(withdrawalCat == null) {
 			c = dummyCategory.fetchAll();
 		} else if(getObj() != null && getObj().getCategory() != null && getObj().getCategory().getId() != null) {
@@ -100,11 +100,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 				c = dummyCategory.fetchAll(); // ... a withdrawal
 				smCategory.getSpinner().setEnabled(false);
 			} else {
-				c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat}); // ... non withdrawal operation
+				c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()}); // ... non withdrawal operation
 			}
 		} else {
 			// Adding an operation
-			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat});
+			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()});
 		}
 			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);

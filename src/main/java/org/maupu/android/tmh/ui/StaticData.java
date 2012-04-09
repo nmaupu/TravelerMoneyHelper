@@ -30,20 +30,6 @@ public abstract class StaticData {
 	public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
 	public static final String PREF_CURRENT_SELECTED_CATEGORY = "current_category";
 	
-	public static void setCurrentAccount(Account account) {
-		if(account == null || account.getId() == null)
-			return;
-		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putInt(PREF_CURRENT_ACCOUNT, account.getId());
-		editor.commit();
-		
-		// Fetch and fill currentAccount
-		invalidateCurrentAccount();
-		getCurrentAccount();
-	}
-	
 	/**
 	 * Allow current account to be invalidated
 	 */
@@ -126,26 +112,42 @@ public abstract class StaticData {
 		return statsDateEnd;
 	}
 	
-	public static Account getCurrentAccount() {
+	public static void setCurrentAccount(Account account) {
+		int id = account == null || account.getId() == null ? -1 : account.getId();
+		
 		SharedPreferences prefs = getPrefs();
-		Integer id = prefs.getInt(PREF_CURRENT_ACCOUNT, getDefaultAccount());
+		Editor editor = prefs.edit();
+		editor.putInt(PREF_CURRENT_ACCOUNT, id);
+		editor.commit();
+		
+		// Fetch and fill currentAccount
+		invalidateCurrentAccount();
+		getCurrentAccount();
+	}
+	
+	public static Account getCurrentAccount() {
+		int id = getPreferenceValueInt(PREF_CURRENT_ACCOUNT);
+		if (id < 0) {
+			id = getDefaultAccountId();
+		}
 		
 		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
 			Cursor c = currentAccount.fetch(id);
 			currentAccount.toDTO(c);
 			isValidCurrentAccount = true;
-		} else if (id == null) {
+		} else if (id < 0) {
 			return null;
 		}
 		
 		return currentAccount;
 	}
 	
-	private static Integer getDefaultAccount() {
-		if(defaultAccountId == null) {
+	private static Integer getDefaultAccountId() {
+		if(defaultAccountId == null || defaultAccountId == -1 || !isValidCurrentAccount) {
+			// Default is first one
 			Cursor cursor = currentAccount.fetchAll();
 			if(cursor.getCount() == 0)
-				return null;
+				return -1;
 			
 			cursor.moveToFirst();
 			int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
@@ -156,16 +158,17 @@ public abstract class StaticData {
 	}
 	
 	public static Category getCurrentSelectedCategory() {
-		SharedPreferences prefs = getPrefs();
-		Integer id = prefs.getInt(PREF_CURRENT_SELECTED_CATEGORY, -1);
+		Integer id = getPreferenceValueInt(PREF_CURRENT_SELECTED_CATEGORY);
 		
-		if(id == null || id == -1) {
+		if(id < 0) {
 			return null;
 		} else {
 			 Cursor result = currentSelectedCategory.fetch(id);
 			 
-			 if(result == null)
+			 if(result == null || result.getCount() != 1) {
+				 setCurrentSelectedCategory(null);
 				 return null;
+			 }
 			 
 			 currentSelectedCategory.toDTO(result);
 			 return currentSelectedCategory;
@@ -173,7 +176,7 @@ public abstract class StaticData {
 	}
 	
 	public static void setCurrentSelectedCategory(Category category) {
-		Integer catId = category == null ? null : category.getId();
+		int catId = category == null ? -1 : category.getId();
 		
 		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
@@ -188,20 +191,32 @@ public abstract class StaticData {
 		return PreferenceManager.getDefaultSharedPreferences(TmhApplication.getAppContext());
 	}
 	
-	public static Integer getWithdrawalCategory() {
-		String result = getPreferenceValueString(StaticData.PREF_WITHDRAWAL_CATEGORY);
-		Integer ret;
+	// Here, we store a String because PreferenceActivity use string as entryValues
+	public static Category getWithdrawalCategory() {
+		String result = getPreferenceValueString(StaticData.PREF_WITHDRAWAL_CATEGORY); 
 		
-		if(result == null)
+		if(result == null || Integer.parseInt(result) < 0)
 			return null;
 		
+		Category category = null;
 		try {
-			ret = Integer.parseInt(result);
-		} catch(NumberFormatException nfe) {
+			int id = Integer.parseInt(result);
+			category = new Category();
+			Cursor cursor = category.fetch(id);
+			category.toDTO(cursor);
+			if(cursor == null || cursor.getCount() != 1) {
+				// Invalidate current one
+				setWithdrawalCategory(null);
+				return null;
+			}
+		} catch (NumberFormatException nfe) {
+			// not an integer
+			setWithdrawalCategory(null);
 			return null;
 		}
 		
-		return ret;
+		
+		return category;
 	}
 	
 	public static void setWithdrawalCategory(Category category) {
