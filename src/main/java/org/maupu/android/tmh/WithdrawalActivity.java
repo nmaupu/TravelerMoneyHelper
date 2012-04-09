@@ -67,7 +67,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
 		spinnerCurrency = (Spinner)findViewById(R.id.spinner_currency);
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
-		spinnerCategory.setEnabled(false);
 		//buttonValidate = (Button)findViewById(R.id.button_validate);
 		amountEditText = (EditText)findViewById(R.id.amount);
 		textViewDate = (TextView)findViewById(R.id.date);
@@ -150,13 +149,14 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		Category category = new Category();
 		cursor = category.fetchAll();
 		spinnerManagerCategory.setAdapter(cursor, CategoryData.KEY_NAME);
+		spinnerCategory.setEnabled(false);
 
 		// Getting default category for withdrawal from preferences
 		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		
 		//int idCategory = Integer.parseInt(prefs.getString("category", null));
-		Category cat = StaticData.getWithdrawalCategory();
-		if(cat != null) {
+		category = StaticData.getWithdrawalCategory();
+		if(category != null) {
 			spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
 		} else {
 			final Activity activity = this;
