@@ -37,6 +37,7 @@ public class SpinnerManager {
 	
 	public void setAdapter(Cursor c, String from) {
 		spinner.setAdapter(createSpinnerCursorAdapter(c, from));
+		spinner.setEnabled(c != null && c.getCount() > 1);
 	}
 	
 	/**
