@@ -11,6 +11,7 @@ import org.maupu.android.tmh.ui.StaticData;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 
 public class TmhApplication extends GDApplication {
 	private static Context applicationContext;
@@ -37,13 +38,17 @@ public class TmhApplication extends GDApplication {
 		super.onCreate();
 		TmhApplication.applicationContext = this.getApplicationContext();
 		dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
-		//init();
-		createDefaultCurrency();
+		initDefaultCurrency();
 	}
 	
-	private Currency createDefaultCurrency() {
-		// Adding default currency (euro)
+	private Currency initDefaultCurrency() {
+		// Adding default currency (euro) if needed
 		Currency currency = new Currency();
+		Cursor cursor = currency.fetchAll();
+		if(cursor.getCount() > 0)
+			return null;
+		
+		
 		currency.setIsoCode("EUR");
 		currency.setLastUpdate(new GregorianCalendar().getTime());
 		currency.setLongName("Euro");
