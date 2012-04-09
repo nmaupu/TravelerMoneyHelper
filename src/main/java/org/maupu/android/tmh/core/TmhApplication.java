@@ -5,10 +5,7 @@ import greendroid.app.GDApplication;
 import java.util.GregorianCalendar;
 
 import org.maupu.android.tmh.DashboardActivity;
-import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 
@@ -41,46 +38,21 @@ public class TmhApplication extends GDApplication {
 		TmhApplication.applicationContext = this.getApplicationContext();
 		dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
 		//init();
+		createDefaultCurrency();
 	}
 	
-	/**
-	 * Called when app init. Creates required database objects and show first launch activity
-	 */
-	private void init() {
-		//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		//boolean isAlreadyInit = prefs.getBoolean(PREF_KEY_APP_INIT, false);
-		Account account = new Account();
-		int nb = account.getCount();
+	private Currency createDefaultCurrency() {
+		// Adding default currency (euro)
+		Currency currency = new Currency();
+		currency.setIsoCode("EUR");
+		currency.setLastUpdate(new GregorianCalendar().getTime());
+		currency.setLongName("Euro");
+		java.util.Currency c = java.util.Currency.getInstance("EUR");
+		currency.setShortName(c.getSymbol());
+		currency.setTauxEuro(1.0d);
+		currency.insert();
 		
-		//if(! isAlreadyInit || nb == 0) {
-		if(nb == 0) {
-			// initialization
-			// Create default category
-			Category category = new Category();
-			category.setName(getString(R.string.withdrawal));
-			category.insert();
-			
-			// Adding default currency (euro)
-			Currency currency = new Currency();
-			currency.setIsoCode("EUR");
-			currency.setLastUpdate(new GregorianCalendar().getTime());
-			currency.setLongName("Euro");
-			java.util.Currency c = java.util.Currency.getInstance("EUR");
-			currency.setShortName(c.getSymbol());
-			currency.setTauxEuro(1.0d);
-			currency.insert();
-			
-			// Creating a default account in euro
-			account.setCurrency(currency);
-			account.setName(getString(R.string.default_account_name));
-			account.insert();
-			
-			/*
-			Editor editor = prefs.edit();
-			editor.putBoolean(PREF_KEY_APP_INIT, true);
-			editor.commit();
-			*/
-		}
+		return currency;
 	}
 	
 	public static Context getAppContext() {
@@ -104,6 +76,7 @@ public class TmhApplication extends GDApplication {
 		// Invalidate StaticData
 		StaticData.setCurrentAccount(null);
 		StaticData.setCurrentSelectedCategory(null);
+		StaticData.setWithdrawalCategory(null);
 		ctx.startActivity(new Intent(ctx, HOME_ACTIVITY_CLASS));
 	}
 }

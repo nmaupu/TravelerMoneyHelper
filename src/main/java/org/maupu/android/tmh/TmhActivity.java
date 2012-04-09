@@ -64,25 +64,10 @@ public abstract class TmhActivity extends GDActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-		case R.id.item_categories:
-			startActivityFromMenu(ManageCategoryActivity.class);
-			break;
-		case R.id.item_currencies:
-			startActivityFromMenu(ManageCurrencyActivity.class);
-			break;
-		case R.id.item_account:
-			startActivityFromMenu(ManageAccountActivity.class);
-			break;
 		case R.id.item_refresh:
 			refreshDisplay();
 			break;
-		case R.id.item_home:
-			startActivityFromMenu(TmhApplication.HOME_ACTIVITY_CLASS);
-			break;
-		case R.id.item_add:
-			onAddClicked();
-			break;
-		case R.id.item_options:
+		case R.id.item_preferences:
 			startActivityFromMenu(PreferencesActivity.class);
 		default:
 			return super.onOptionsItemSelected(item);
@@ -125,11 +110,6 @@ public abstract class TmhActivity extends GDActivity {
 	 * Called when click refresh button on menu
 	 */
 	public abstract void refreshDisplay();
-	/**
-	 * Called when add item menu is clicked
-	 * @return intent used to call corresponding activity
-	 */
-	protected abstract Intent onAddClicked();
 	
 	public void setActionBarHomeDrawable(int drawable) {
 		ImageButton ib = (ImageButton)getActionBar().findViewById(R.id.gd_action_bar_home_item);

@@ -8,5 +8,9 @@
         android:id="@+id/item_now"
         android:icon="@drawable/ic_menu_revert"
         android:title="@string/menu_item_now" />
+    <item
+        android:id="@+id/item_preferences"
+        android:icon="@drawable/ic_menu_preferences"
+        android:title="@string/parameters"/>
 
 </menu>

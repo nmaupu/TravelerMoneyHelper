@@ -20,7 +20,6 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -87,9 +86,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		c = dummyAccount.fetchAll();
 		smAccount.setAdapter(c, AccountData.KEY_NAME);
 		
-		// Set spinner to current account given by extras
-		Bundle b = this.getIntent().getExtras();
-		Account currentAccount = (Account)b.get("account");
+		Account currentAccount = StaticData.getCurrentAccount();
 		if(currentAccount != null)
 			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
 

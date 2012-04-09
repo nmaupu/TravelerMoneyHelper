@@ -4,9 +4,5 @@
         android:id="@+id/item_preferences"
         android:icon="@drawable/ic_menu_preferences"
         android:title="@string/parameters"/>
-    <item
-        android:id="@+id/item_refresh"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="@string/refresh"/>
 
 </menu>

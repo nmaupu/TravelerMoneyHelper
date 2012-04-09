@@ -28,6 +28,7 @@ public abstract class StaticData {
 	public static final String PREF_DEF_ACCOUNT = "def_account";
 	public static final String PREF_WITHDRAWAL_CATEGORY = "category_withdrawal";
 	public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
+	public static final String PREF_CURRENT_SELECTED_CATEGORY = "current_category";
 	
 	public static void setCurrentAccount(Account account) {
 		if(account == null || account.getId() == null)
@@ -82,8 +83,6 @@ public abstract class StaticData {
 		Editor editor = prefs.edit();
 		editor.putLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
 		editor.commit();
-		
-		
 	}
 	
 	public static Date getCurrentOperationDatePickerDate() {
@@ -94,7 +93,6 @@ public abstract class StaticData {
 			return null;
 		
 		currentOperationDatePickerDate = new Date(date);
-		
 		return currentOperationDatePickerDate;
 	}
 	
@@ -114,7 +112,6 @@ public abstract class StaticData {
 			return null;
 		
 		statsDateBeg = new Date(dateBeg);
-		
 		return statsDateBeg;
 	}
 	
@@ -126,7 +123,6 @@ public abstract class StaticData {
 			return null;
 		
 		statsDateEnd = new Date(dateEnd);
-		
 		return statsDateEnd;
 	}
 	
@@ -161,7 +157,7 @@ public abstract class StaticData {
 	
 	public static Category getCurrentSelectedCategory() {
 		SharedPreferences prefs = getPrefs();
-		Integer id = prefs.getInt("currentCategory", -1);
+		Integer id = prefs.getInt(PREF_CURRENT_SELECTED_CATEGORY, -1);
 		
 		if(id == null || id == -1) {
 			return null;
@@ -182,7 +178,7 @@ public abstract class StaticData {
 		
 		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
-		editor.putInt("currentCategory", category.getId());
+		editor.putInt(PREF_CURRENT_SELECTED_CATEGORY, category.getId());
 		editor.commit();
 		
 		// Fetch and fill currentCategory
@@ -191,7 +187,6 @@ public abstract class StaticData {
 	
 	private static SharedPreferences getPrefs() {
 		return PreferenceManager.getDefaultSharedPreferences(TmhApplication.getAppContext());
-		//return TmhApplication.getAppContext().getSharedPreferences(STATIC_DATA_PREFS_FILENAME, Context.MODE_PRIVATE);
 	}
 	
 	public static Integer getWithdrawalCategory() {
@@ -208,6 +203,16 @@ public abstract class StaticData {
 		}
 		
 		return ret;
+	}
+	
+	public static void setWithdrawalCategory(Category category) {
+		if(category == null || category.getId() == null)
+			return;
+		
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putInt(PREF_WITHDRAWAL_CATEGORY, category.getId());
+		editor.commit();
 	}
 	
 	public static String getPreferenceValueString(String key) {

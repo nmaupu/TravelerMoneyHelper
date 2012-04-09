@@ -11,8 +11,6 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 /**
@@ -74,15 +72,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		// Fill form fields
 		baseObjectToFields(obj);
 	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Disable add button for addOrEdit activities
-		MenuItem mi = menu.findItem(R.id.item_add);
-		if(mi != null)
-			mi.setEnabled(false);
-		return true;
-	}
 
 	@SuppressWarnings("unchecked")
 	private void retrieveItemFromExtra() {
@@ -122,27 +111,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		
 		return true;
 	}
-
-	/*
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()) {
-		case R.id.button_continue:
-			onContinue(true);
-			break;
-		case R.id.button_continue_and_add:
-			if(onContinue(false)) {
-				Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
-				obj.reset();
-				refreshDisplay();
-			}
-			break;
-		case R.id.button_reset:
-			baseObjectToFields(null);
-			break;
-		}
-	}
-	*/
 
 	private boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {

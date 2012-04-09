@@ -21,11 +21,8 @@ import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -116,21 +113,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Disable add button for this activity
-		MenuItem mi = menu.findItem(R.id.item_add);
-		if(mi != null)
-			mi.setEnabled(false);
-		return true;
-	}
-
-	@Override
 	public void refreshDisplay() {}
-
-	@Override
-	protected Intent onAddClicked() {
-		return null;
-	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

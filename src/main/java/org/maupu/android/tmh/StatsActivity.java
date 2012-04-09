@@ -16,7 +16,6 @@ import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -220,11 +219,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				new String[]{"dateString", "amountString"},
 				new int[]{R.id.date, R.id.amount});
 		listView.setAdapter(adapter);
-	}
-
-	@Override
-	protected Intent onAddClicked() {
-		return null; 
 	}
 
 	@Override

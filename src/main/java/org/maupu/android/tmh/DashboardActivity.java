@@ -59,6 +59,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		Category category = new Category();
 		StaticData.setPreferenceValueBoolean("categoryIsOk", category.fetchAll().getCount()>0);
 		
+		// There is already a currency (default one, created on startup)
 		Currency currency = new Currency();
 		StaticData.setPreferenceValueBoolean("currencyIsOk", currency.fetchAll().getCount()>0);
 		
@@ -80,7 +81,6 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		//categoryIsOk = currencyIsOk = accountIsOk = true;
 		
 	    if(! categoryIsOk || ! currencyIsOk || ! accountIsOk) {
-	    	
 	    	goButton = (Button) findViewById(R.id.button);
 	    	
 	    	if(goButton == null) {
@@ -96,23 +96,39 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 			imageCurrency = (ImageView)findViewById(R.id.currency_image);
 			imageAccount  = (ImageView)findViewById(R.id.account_image);
 			
-			// determine what we have to create
 			if(! categoryIsOk) {
+				imageCategory.setVisibility(View.VISIBLE);
 				imageCategory.setImageResource(R.drawable.puce);
-				imageCurrency.setVisibility(View.INVISIBLE);
-				imageAccount.setVisibility(View.INVISIBLE);
 				addOrEditActivity = AddOrEditCategoryActivity.class;
-			} else if(categoryIsOk && ! currencyIsOk) {
+			} else {
+				imageCategory.setVisibility(View.VISIBLE);
 				imageCategory.setImageResource(R.drawable.validate);
-				imageCurrency.setImageResource(R.drawable.puce);
+			}
+			
+			if(! currencyIsOk) {
+				if(categoryIsOk) {
+					imageCurrency.setVisibility(View.VISIBLE);
+					imageCurrency.setImageResource(R.drawable.puce);
+					addOrEditActivity = AddOrEditCurrencyActivity.class;
+				} else {
+					imageCurrency.setVisibility(View.INVISIBLE);
+				}
+			} else {
 				imageCurrency.setVisibility(View.VISIBLE);
-				addOrEditActivity = AddOrEditCurrencyActivity.class;
-			} else if(categoryIsOk && currencyIsOk && ! accountIsOk) {
-				imageCategory.setImageResource(R.drawable.validate);
 				imageCurrency.setImageResource(R.drawable.validate);
-				imageAccount.setImageResource(R.drawable.puce);
+			}
+			
+			if(! accountIsOk) {
+				if(categoryIsOk && currencyIsOk) {
+					imageAccount.setVisibility(View.VISIBLE);
+					imageAccount.setImageResource(R.drawable.puce);
+					addOrEditActivity = AddOrEditAccountActivity.class;
+				} else {
+					imageAccount.setVisibility(View.INVISIBLE);
+				}
+			} else {
 				imageAccount.setVisibility(View.VISIBLE);
-				addOrEditActivity = AddOrEditAccountActivity.class;
+				imageAccount.setImageResource(R.drawable.validate);
 			}
 	    } else if (imageCategory != null) {
 	    	// Account created !
