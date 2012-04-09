@@ -12,6 +12,7 @@ import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
 	//private static final String FILENAME = "mainPrefs";
+	private boolean dbChanged = false;
 	
 
 	@Override
@@ -54,6 +56,22 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		listCategory.setOnPreferenceClickListener(this);
 		listCategory.setEntries(getAllCategoriesEntries());
 		listCategory.setEntryValues(getAllCategoriesEntryValues());
+	}
+	
+	@Override
+	protected void onDestroy() {
+		TmhApplication.getDatabaseHelper().close();
+		super.onDestroy();
+	}
+	
+	@Override
+	protected void onPause() {
+		if(dbChanged) {
+			// if db changed, restart from dashboard
+			startActivity(new Intent(this, DashboardActivity.class));
+		}
+		
+		super.onPause();
 	}
 
 	private CharSequence[] getAllAccountsEntryValues() {
@@ -179,12 +197,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	}
 
 	@Override
-	protected void onDestroy() {
-		TmhApplication.getDatabaseHelper().close();
-		super.onDestroy();
-	}
-
-	@Override
 	public boolean onPreferenceClick(Preference preference) {
 		if(StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			((EditTextPreference)preference).setText("");
@@ -222,6 +234,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		}
 
 		if(StaticData.PREF_DATABASE.equals(preference.getKey()) || StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
+			dbChanged = true;
 			// Update categories for this db 
 			ListPreference catPref = (ListPreference)findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
 			catPref.setEntries(getAllCategoriesEntries());

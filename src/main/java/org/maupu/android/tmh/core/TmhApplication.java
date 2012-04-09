@@ -10,7 +10,6 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 
 public class TmhApplication extends GDApplication {
@@ -82,6 +81,5 @@ public class TmhApplication extends GDApplication {
 		StaticData.setCurrentAccount(null);
 		StaticData.setCurrentSelectedCategory(null);
 		StaticData.setWithdrawalCategory(null);
-		ctx.startActivity(new Intent(ctx, HOME_ACTIVITY_CLASS));
 	}
 }
