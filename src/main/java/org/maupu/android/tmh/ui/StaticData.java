@@ -254,4 +254,11 @@ public abstract class StaticData {
 		editor.putBoolean(key, value);
 		editor.commit();
 	}
+	
+	public static void setPreferenceValueInt(String key, int value) {
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putInt(key, value);
+		editor.commit();
+	}
 }

@@ -39,6 +39,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private Gallery galleryDateEnd;
 	private LinearLayout layoutAdvancedGallery;
 	private AlertDialog alertDialogWithdrawalCategory;
+	private final static String LAST_MONTH_SELECTED = "lastMonthSelectedItemPosition";
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -147,7 +148,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		DateGalleryAdapter adapter2 = new DateGalleryAdapter(this, datesAdvanced);
 		adapter2.setFirstDateFormat(dateFirst);
 		adapter2.setSecondDateFormat(null);
-
+		
 		galleryDateBegin.setAdapter(adapter1);
 		galleryDateBegin.setSelection(defaultPosition);
 
@@ -166,8 +167,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			dates.add(cal.getTime());
 		}
 		
+		defaultPosition = dates.size()/2;
+		StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, defaultPosition);
 		galleryDate.setAdapter(new DateGalleryAdapter(this, dates));
-		galleryDate.setSelection(dates.size()/2);
+		galleryDate.setSelection(defaultPosition);
 		galleryDate.setOnItemSelectedListener(this);
 	}
 
@@ -197,10 +200,12 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		case R.id.item_period:
 			StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
 			refreshHeaderGallery();
+			refreshDisplay();
 			break;
 		case R.id.item_now:
 			galleryDate.setSelection(galleryDate.getAdapter().getCount()/2, true);
 			((DateGalleryAdapter)galleryDate.getAdapter()).notifyDataSetChanged();
+			refreshDisplay();
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -226,9 +231,23 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			cats[0] = withdrawalCat.getId();
 		}
 		
+		
+		Date beg = null, end = null;
+		if(! StaticData.isStatsAdvancedFilter()) {
+			int oldPos = StaticData.getPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED);
+			if(oldPos != -1) {
+				Date dateSelected = (Date)galleryDate.getAdapter().getItem(oldPos);
+				beg = DateUtil.getFirstDayOfMonth(dateSelected);
+				end = DateUtil.getLastDayOfMonth(dateSelected);
+			}
+		} else {
+			beg = StaticData.getStatsDateBeg();
+			end = StaticData.getStatsDateEnd();
+		}
+		
 		Cursor cursor = dummyOp.sumOperationsGroupByDay(account,
-				StaticData.getStatsDateBeg(),
-				StaticData.getStatsDateEnd(),
+				beg,
+				end,
 				cats);
 
 		// Set cursor from selected period
@@ -260,9 +279,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			// Update display for this period
 			DateGalleryAdapter adapter = (DateGalleryAdapter)gallery.getAdapter();
 			adapter.notifyDataSetChanged();
-			Date dateSelected = (Date)adapter.getItem(position);
-			StaticData.setStatsDateBeg(DateUtil.getFirstDayOfMonth(dateSelected));
-			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(dateSelected));
+			StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, position);
 		}
 
 		refreshDisplay();
