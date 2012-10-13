@@ -96,7 +96,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			c = dummyCategory.fetchAll();
 		} else if(getObj() != null && getObj().getCategory() != null && getObj().getCategory().getId() != null) {
 			// We are currently editing ...
-			if(withdrawalCat.equals(super.getObj().getCategory().getId())) {
+			if(withdrawalCat.getId().equals(super.getObj().getCategory().getId())) {
 				c = dummyCategory.fetchAll(); // ... a withdrawal
 				smCategory.getSpinner().setEnabled(false);
 			} else {
