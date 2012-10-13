@@ -93,6 +93,6 @@
     <string name="welcome_category">Create a category</string>
     <string name="welcome_currency">Create a currency</string>
     <string name="welcome_account">Create an account</string>
-    
+    <string name="update">Update</string>
 
 </resources>

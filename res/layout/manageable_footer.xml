@@ -23,6 +23,21 @@
         android:text="@string/edit" />
 
     <Button
+        android:id="@+id/button_update"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dip"
+        android:layout_marginLeft="2dip"
+        android:layout_marginRight="2dip"
+        android:layout_marginTop="4dip"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/content_edit"
+        android:enabled="false"
+        android:visibility="gone"
+        android:padding="5dip"
+        android:text="@string/update" />
+    
+    <Button
         android:id="@+id/button_delete"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

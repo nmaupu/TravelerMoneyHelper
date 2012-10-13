@@ -91,5 +91,6 @@
     <string name="welcome_category">Créer une catégorie</string>
     <string name="welcome_currency">Créer une devise</string>
     <string name="welcome_account">Créer un compte</string>
+    <string name="update">Màj</string>
 
 </resources>

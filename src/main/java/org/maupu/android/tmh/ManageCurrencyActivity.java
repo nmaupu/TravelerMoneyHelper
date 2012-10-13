@@ -4,6 +4,7 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.database.object.Currency;
 
 import android.database.Cursor;
@@ -17,6 +18,8 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public void refreshDisplay() {
 		Currency currency = new Currency();
 		Cursor c = currency.fetchAll();
+		
+		super.activateUpdateButton();
 
 		super.setAdapter(
 				R.layout.currency_item,
@@ -37,5 +40,10 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 				null, null, null, null).getCount();
 		
 		return nb == 0;
+	}
+
+	@Override
+	protected void onClickUpdate(BaseObject[] objs) {
+		// TODO : Update rates for all currencies ids
 	}
 }

@@ -33,6 +33,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private TextView tvEmpty;
 	private Button editButton;
 	private Button deleteButton;
+	private Button updateButton;
 	private int title;
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
@@ -75,18 +76,23 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 		this.editButton = (Button)findViewById(R.id.button_edit);
 		this.deleteButton = (Button)findViewById(R.id.button_delete);
+		this.updateButton = (Button)findViewById(R.id.button_update);
 
 		if(this.editButton != null)
 			this.editButton.setOnClickListener(this);
 
 		if(this.deleteButton != null)
 			this.deleteButton.setOnClickListener(this);
+		
+		if(this.updateButton != null)
+			this.updateButton.setOnClickListener(this);
 
 		if(animList)
 			setListViewAnimation(listView);
 		
         //
 		initButtons();
+		refreshDisplay();
 	}
 
 	@Override
@@ -129,11 +135,13 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		case 1:
 			setEnabledDeleteButton(true);
 			setEnabledEditButton(true);
+			setEnabledUpdateButton(true);
 			buttonsBarVisible();
 			break;
 		default:
 			deleteButton.setEnabled(true);
 			editButton.setEnabled(false);
+			updateButton.setEnabled(true);
 		}
 	}
 
@@ -144,6 +152,17 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		final Integer[] posChecked = ((CheckableCursorAdapter)listView.getAdapter()).getCheckedPositions();
 
 		switch(v.getId()) {
+		case R.id.button_update:
+			BaseObject[] objsChecked = new BaseObject[posChecked.length];
+			for(int i=0; i<posChecked.length; i++) {
+				Integer pos = posChecked[i];
+				//Request deletion
+				Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
+				obj.toDTO(cursor);
+				objsChecked[i] = obj;
+				onClickUpdate(objsChecked);
+			}
+			break;
 		case R.id.button_edit:
 			if(posChecked.length == 1) {
 				int p = posChecked[0];
@@ -196,10 +215,21 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		if(this.editButton != null)
 			this.editButton.setEnabled(enabled);
 	}
+	
+	private void setEnabledUpdateButton(boolean enabled) {
+		if(this.updateButton != null)
+			this.updateButton.setEnabled(enabled);
+	}
+	
+	public void activateUpdateButton() {
+		if(this.updateButton != null)
+			this.updateButton.setVisibility(View.VISIBLE);
+	}
 
 	private void initButtons() {
 		setEnabledDeleteButton(false);
 		setEnabledEditButton(false);
+		setEnabledUpdateButton(false);
 		buttonsBarGone();
 	}
 
@@ -248,6 +278,12 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 * @return true if object can be deleted, false otherwise
 	 */
 	protected abstract boolean validateConstraintsForDeletion(final T obj);
+	
+	/**
+	 * Callback when clicking a button
+	 * @param the button clicked
+	 */
+	protected abstract void onClickUpdate(BaseObject[] objs);
 
 	protected Intent onAddClicked() {
 		Intent intent = new Intent(this, addOrEditActivity);

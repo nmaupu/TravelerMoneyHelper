@@ -4,6 +4,7 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
 import android.database.Cursor;
@@ -32,4 +33,7 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 				new int[]{R.id.icon, R.id.name});
 		super.setAdapter(adapter);
 	}
+
+	@Override
+	protected void onClickUpdate(BaseObject[] objs) {}
 }
