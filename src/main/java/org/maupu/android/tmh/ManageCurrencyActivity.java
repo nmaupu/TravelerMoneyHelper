@@ -4,7 +4,6 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.database.object.Currency;
 
 import android.database.Cursor;
@@ -43,7 +42,19 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	}
 
 	@Override
-	protected void onClickUpdate(BaseObject[] objs) {
-		// TODO : Update rates for all currencies ids
+	protected void onClickUpdate(Integer[] objs) {
+		Currency cur = new Currency();
+		
+		for(int i=0; i<objs.length; i++) {
+			Cursor c = cur.fetch(objs[i]);
+			cur.toDTO(c);
+			
+			try {
+				cur.updateRateFromGoogle();
+				cur.update();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

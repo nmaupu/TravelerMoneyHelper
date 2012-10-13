@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.StaticData;
 
@@ -44,5 +43,5 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	}
 
 	@Override
-	protected void onClickUpdate(BaseObject[] objs) {}
+	protected void onClickUpdate(Integer[] objs) {}
 }

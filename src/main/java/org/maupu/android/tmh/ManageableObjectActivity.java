@@ -153,15 +153,14 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 		switch(v.getId()) {
 		case R.id.button_update:
-			BaseObject[] objsChecked = new BaseObject[posChecked.length];
+			Integer[] objsIds = new Integer[posChecked.length];
 			for(int i=0; i<posChecked.length; i++) {
 				Integer pos = posChecked[i];
-				//Request deletion
 				Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
 				obj.toDTO(cursor);
-				objsChecked[i] = obj;
-				onClickUpdate(objsChecked);
+				objsIds[i] = obj.getId();
 			}
+			onClickUpdate(objsIds);
 			break;
 		case R.id.button_edit:
 			if(posChecked.length == 1) {
@@ -283,7 +282,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	 * Callback when clicking a button
 	 * @param the button clicked
 	 */
-	protected abstract void onClickUpdate(BaseObject[] objs);
+	protected abstract void onClickUpdate(Integer[] objs);
 
 	protected Intent onAddClicked() {
 		Intent intent = new Intent(this, addOrEditActivity);

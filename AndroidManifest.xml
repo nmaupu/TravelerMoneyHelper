@@ -6,6 +6,9 @@
 
     <uses-sdk android:minSdkVersion="10" />
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="org.maupu.android.tmh.core.TmhApplication"
         android:icon="@drawable/ic_launcher"

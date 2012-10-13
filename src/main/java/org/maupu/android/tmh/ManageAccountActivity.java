@@ -4,7 +4,6 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
 import android.database.Cursor;
@@ -35,5 +34,5 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	}
 
 	@Override
-	protected void onClickUpdate(BaseObject[] objs) {}
+	protected void onClickUpdate(Integer[] objs) {}
 }

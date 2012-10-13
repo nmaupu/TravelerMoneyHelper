@@ -6,7 +6,6 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
@@ -89,5 +88,5 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	}
 	
 	@Override
-	protected void onClickUpdate(BaseObject[] objs) {}
+	protected void onClickUpdate(Integer[] objs) {}
 }
