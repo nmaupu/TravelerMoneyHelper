@@ -6,6 +6,7 @@
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Erreur</string>
     <string name="error_add_object">Impossible d\'ajouter cet objet, il y a des erreurs de saisie !</string>
+    <string name="error_no_category">Il n\'y a aucune catégorie définie, merci d\'en créer une !</string>
     <string name="activity_title_edition_category">Edition de categorie</string>
     <string name="activity_title_edition_currency">Edition de devise</string>
     <string name="activity_title_edition_operation">Edition d\'opération</string>
@@ -45,6 +46,7 @@
     <string name="home">Accueil</string>
     <string name="parameters">Paramètres</string>
     <string name="refresh">Rafraichir</string>
+    <string name="popup_default_icon">Icône par défaut</string>
     <string name="popup_app_icon">Icône d\'application</string>
     <string name="popup_flag_icon">Bibliothèque de drapeaux</string>
     <string name="popup_url">URL</string>

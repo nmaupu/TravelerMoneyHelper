@@ -45,6 +45,7 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	protected void onClickUpdate(Integer[] objs) {
 		Currency cur = new Currency();
 		
+		// TODO Display a popup with a progress
 		for(int i=0; i<objs.length; i++) {
 			Cursor c = cur.fetch(objs[i]);
 			cur.toDTO(c);
@@ -56,5 +57,8 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 				e.printStackTrace();
 			}
 		}
+		
+		// Refresh list when finished
+		refreshDisplay();
 	}
 }

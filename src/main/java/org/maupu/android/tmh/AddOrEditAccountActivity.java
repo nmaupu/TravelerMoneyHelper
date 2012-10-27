@@ -50,6 +50,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private static final int MENU_ITEM_URL = 1;
 	private static final int MENU_ITEM_CAMERA = 2;
 	private static final int MENU_ITEM_FLAGS = 3;
+	private static final int MENU_ITEM_DEFAULT = 4;
 
 	public AddOrEditAccountActivity() {
 		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
@@ -80,7 +81,8 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 				getString(R.string.popup_app_icon),
 				getString(R.string.popup_url), 
 				getString(R.string.popup_camera),
-				getString(R.string.popup_flag_icon)};
+				getString(R.string.popup_flag_icon),
+				getString(R.string.popup_default_icon)};
 
 		loadApps();
 	}
@@ -124,6 +126,10 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			return null;
 		case MENU_ITEM_FLAGS:
 			return createDialogFromFlags();
+		case MENU_ITEM_DEFAULT:
+			imageViewIcon.setImageResource(R.drawable.icon_default);
+			imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
+			return null;
 		default:
 			return null;
 		}

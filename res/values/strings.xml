@@ -9,6 +9,7 @@
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Error</string>
     <string name="error_add_object">Impossible to add object, error in fields !</string>
+    <string name="error_no_category">No category is defined, please create one !</string>
     <string name="activity_title_edition_category">Category edition</string>
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>
@@ -47,6 +48,7 @@
     <string name="home">Home</string>
     <string name="parameters">Parameters</string>
     <string name="refresh">Refresh</string>
+    <string name="popup_default_icon">Default icon</string>
     <string name="popup_app_icon">App icon</string>
     <string name="popup_flag_icon">Flags library</string>
     <string name="popup_url">URL</string>

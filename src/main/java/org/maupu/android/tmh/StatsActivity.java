@@ -161,13 +161,15 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		// Normal selection (by entire month)
 		cal = Calendar.getInstance();
-		cal.add(Calendar.MONTH, -7);
-		for(int i=0; i<12; i++) {
+		//cal.add(Calendar.MONTH, -7);
+		cal.add(Calendar.MONTH, -24);
+		for(int i=0; i<25; i++) {
 			cal.add(Calendar.MONTH, 1);
 			dates.add(cal.getTime());
 		}
 		
-		defaultPosition = dates.size()/2;
+		//defaultPosition = dates.size()/2;
+		defaultPosition = dates.size()-2;
 		StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, defaultPosition);
 		galleryDate.setAdapter(new DateGalleryAdapter(this, dates));
 		galleryDate.setSelection(defaultPosition);

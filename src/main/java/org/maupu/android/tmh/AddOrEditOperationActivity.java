@@ -11,14 +11,18 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
@@ -105,6 +109,17 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		} else {
 			// Adding an operation
 			c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()});
+			final Activity activity = this;
+			if(c.getCount() == 0) {
+				// No category created yet, cannot continue !
+				SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_no_category), new android.content.DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						startActivity(new Intent(activity, AddOrEditCategoryActivity.class));
+						activity.finish();
+					}
+				}).show();
+			}
 		}
 			
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);

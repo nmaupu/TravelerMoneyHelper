@@ -13,7 +13,6 @@ public abstract class CustomActionBarItem extends ActionBarItem {
 	public enum CustomType {
 		Save,
 		SaveAndAdd,
-		Cancel,
 		Add,
 		Edit,
 		Delete,
@@ -27,27 +26,23 @@ public abstract class CustomActionBarItem extends ActionBarItem {
 
 		switch (type) {
 		case Save:
-			drawableId = R.drawable.ic_action_save;
+			drawableId = R.drawable.gd_action_bar_compose;
 			descriptionId = R.string.save;
 			break;
 		case SaveAndAdd:
-			drawableId = R.drawable.ic_action_send;
+			drawableId = R.drawable.gd_action_bar_add;
 			descriptionId = R.string.save_and_add;
-			break;
-		case Cancel:
-			drawableId = R.drawable.ic_action_cancel;
-			descriptionId = R.string.cancel;
 			break;
 		case Add:
 			drawableId = R.drawable.gd_action_bar_add;
 			descriptionId = R.string.add;
 			break;
 		case Edit:
-			drawableId = R.drawable.ic_action_edit;
+			drawableId = R.drawable.gd_action_bar_edit;
 			descriptionId = R.string.edit;
 			break;
 		case Withdrawal:
-			drawableId = R.drawable.ic_action_share;
+			drawableId = R.drawable.gd_action_bar_export;
 			descriptionId = R.string.withdrawal;
 			break;
 		default:
