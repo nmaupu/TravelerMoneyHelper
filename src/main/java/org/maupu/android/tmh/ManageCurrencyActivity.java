@@ -5,8 +5,10 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.util.GoogleRateAsyncUpdater;
 
 import android.database.Cursor;
+import android.util.Log;
 
 public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
@@ -15,6 +17,7 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 
 	@Override
 	public void refreshDisplay() {
+		Log.d(ManageCurrencyActivity.class.getName(), "Enter refresh display");
 		Currency currency = new Currency();
 		Cursor c = currency.fetchAll();
 		
@@ -43,22 +46,22 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 
 	@Override
 	protected void onClickUpdate(Integer[] objs) {
-		Currency cur = new Currency();
+		Currency[] currencies = new Currency[objs.length];
+		GoogleRateAsyncUpdater rateUpdater = new GoogleRateAsyncUpdater(this);
 		
-		// TODO Display a popup with a progress
+		// Loading currencies list from objs
 		for(int i=0; i<objs.length; i++) {
+			Currency cur = new Currency();
 			Cursor c = cur.fetch(objs[i]);
 			cur.toDTO(c);
 			
-			try {
-				cur.updateRateFromGoogle();
-				cur.update();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			currencies[i] = cur;
 		}
 		
-		// Refresh list when finished
-		refreshDisplay();
+		try {
+			rateUpdater.execute(currencies);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
