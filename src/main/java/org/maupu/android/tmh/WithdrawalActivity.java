@@ -235,7 +235,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationFrom.setCategory(category);
 				operationFrom.setCurrency(currency);
 				operationFrom.setDate(date);
-				operationFrom.setCurrencyValueOnCreated(currency.getTauxEuro());
+				operationFrom.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
 				operationFrom.insert();
 
 				// Second, we credit 'to' account
@@ -245,7 +245,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				operationTo.setCategory(category);
 				operationTo.setCurrency(currency);
 				operationTo.setDate(date);
-				operationTo.setCurrencyValueOnCreated(currency.getTauxEuro());
+				operationTo.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
 				operationTo.insert();
 
 				Operation.linkTwoOperations(operationFrom, operationTo);

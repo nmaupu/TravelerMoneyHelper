@@ -1,12 +1,12 @@
 package org.maupu.android.tmh.ui.widget;
 
 import java.util.Currency;
-import java.util.Locale;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.NumberUtil;
 
 import android.content.Context;
@@ -32,13 +32,14 @@ public class OperationCheckableCursorAdapter extends CheckableCursorAdapter {
 		int idxCurrencySymbol = cursor.getColumnIndex(CurrencyData.KEY_SHORT_NAME);
 		String currencySymbol = cursor.getString(idxCurrencySymbol);
 		
-		TextView tvConvAmount = (TextView)view.findViewById(R.id.euroAmount);
-		int idxConvAmount = cursor.getColumnIndex("euroAmount");
+		TextView tvConvAmount = (TextView)view.findViewById(R.id.convAmount);
+		int idxConvAmount = cursor.getColumnIndex(CurrencyData.KEY_CURRENCY_LINKED);
 		Double convAmount = Double.parseDouble(cursor.getString(idxConvAmount));
 		
 		// format amount
 		tvAmount.setText(NumberUtil.formatDecimalLocale(amount) + " " + currencySymbol);
-		tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " + Currency.getInstance(Locale.FRANCE).getSymbol());
+		tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " + 
+				Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
 		
 		// Set color for amount
 		if(amount >= 0d)

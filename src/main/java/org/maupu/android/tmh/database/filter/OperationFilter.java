@@ -62,7 +62,7 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 		qsb.setCurrentTableAlias("ca");
 		qsb.addSelectToQuery(CategoryData.KEY_NAME, "category").append(",");
 
-		qsb.append("ROUND(o."+OperationData.KEY_AMOUNT+"/o."+OperationData.KEY_CURRENCY_VALUE+",2) euroAmount, ");
+		qsb.append("ROUND(o."+OperationData.KEY_AMOUNT+"/o."+OperationData.KEY_CURRENCY_VALUE+",2) convertedAmount, ");
 		qsb.append("ROUND(o.amount,2)||' '||c.shortName amountString, ");
 		qsb.append("strftime('%d-%m-%Y', o.date) dateString ");
 		qsb.append("from "+CategoryData.TABLE_NAME+" as ca, "+AccountData.TABLE_NAME+" as a, "+OperationData.TABLE_NAME+" as o, "+CurrencyData.TABLE_NAME+" as c ");

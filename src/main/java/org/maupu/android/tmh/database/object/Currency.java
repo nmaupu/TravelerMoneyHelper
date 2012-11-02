@@ -13,7 +13,7 @@ public class Currency extends BaseObject {
 
 	private String longName;
 	private String shortName;
-	private Double tauxEuro;
+	private Double rateCurrencyLinked;
 	private Date lastUpdate;
 	private String isoCode;
 	
@@ -23,8 +23,8 @@ public class Currency extends BaseObject {
 	public String getShortName() {
 		return shortName;
 	}
-	public Double getTauxEuro() {
-		return tauxEuro;
+	public Double getRateCurrencyLinked() {
+		return rateCurrencyLinked;
 	}
 	public Date getLastUpdate() {
 		return lastUpdate;
@@ -38,8 +38,8 @@ public class Currency extends BaseObject {
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
-	public void setTauxEuro(Double tauxEuro) {
-		this.tauxEuro = tauxEuro;
+	public void setRateCurrencyLinked(Double rate) {
+		this.rateCurrencyLinked = rate;
 	}
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
@@ -52,7 +52,7 @@ public class Currency extends BaseObject {
 		ContentValues cv = new ContentValues();
 		cv.put(CurrencyData.KEY_LONG_NAME, this.getLongName());
 		cv.put(CurrencyData.KEY_SHORT_NAME, this.getShortName());
-		cv.put(CurrencyData.KEY_TAUX_EURO, this.getTauxEuro());
+		cv.put(CurrencyData.KEY_CURRENCY_LINKED, this.getRateCurrencyLinked());
 		if(this.getLastUpdate() != null) {
 			cv.put(CurrencyData.KEY_LAST_UPDATE, DatabaseHelper.formatDateForSQL(this.getLastUpdate()));
 		}
@@ -72,7 +72,7 @@ public class Currency extends BaseObject {
 		int idxId = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ID);
 		int idxLongName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LONG_NAME);
 		int idxShortName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
-		int idxTauxEuro = cursor.getColumnIndexOrThrow(CurrencyData.KEY_TAUX_EURO);
+		int idxRateCurrencyLinked = cursor.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
 		int idxLastUpdate = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LAST_UPDATE);
 		int idxIsoCode = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ISO_CODE);
 		
@@ -80,7 +80,7 @@ public class Currency extends BaseObject {
 			this._id = cursor.getInt(idxId);
 			this.setLongName(cursor.getString(idxLongName));
 			this.setShortName(cursor.getString(idxShortName));
-			this.setTauxEuro(cursor.getDouble(idxTauxEuro));
+			this.setRateCurrencyLinked(cursor.getDouble(idxRateCurrencyLinked));
 			String sDate = cursor.getString(idxLastUpdate);
 			if(sDate != null) {
 				this.setLastUpdate(DatabaseHelper.toDate(sDate));
@@ -102,7 +102,7 @@ public class Currency extends BaseObject {
 		this.lastUpdate = null;
 		this.longName = null;
 		this.shortName = null;
-		this.tauxEuro = null;
+		this.rateCurrencyLinked = null;
 		this.isoCode = null;
 	}
 	

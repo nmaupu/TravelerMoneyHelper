@@ -86,7 +86,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 		Category category = new Category();
 		StaticData.setPreferenceValueBoolean(CATEGORY_IS_OK, category.fetchAll().getCount()>0);
 		
-		// There is already a currency (default one, created on startup)
+		// There is already a currency (default one, used as a main currency for rate conversion)
 		Currency currency = new Currency();
 		StaticData.setPreferenceValueBoolean(CURRENCY_IS_OK, currency.fetchAll().getCount()>0);
 		
@@ -158,6 +158,16 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	    	c.moveToFirst();
 	    	account.toDTO(c);
 	    	StaticData.setCurrentAccount(account);
+	    	
+	    	// Setting main currency to the one created earlier
+	    	if(StaticData.getMainCurrency() == null) {
+				Currency cur = new Currency();
+				c = cur.fetchAll();
+				c.moveToFirst();
+				cur.toDTO(c);
+				StaticData.setMainCurrency(cur.getId());
+			}
+	    	
 	    	imageCategory.setImageResource(R.drawable.validate);
 	    	imageCurrency.setImageResource(R.drawable.validate);
 	    	imageAccount.setImageResource(R.drawable.validate);

@@ -126,14 +126,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 					viewPagerOperationActivity, 
 					R.layout.operation_item, 
 					c, 
-					new String[]{"icon", "account", "category", "dateString", "amountString", "euroAmount"},
-					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
+					new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
+					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 			cca.setOnNumberCheckedListener(this);
 			listView.setAdapter(cca);
 
 
 			c = dummy.sumOperationsByMonth(currentAccount, date, null);
-			String symbolCurrency = java.util.Currency.getInstance("EUR").getSymbol();
+			String symbolCurrency = java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol();
 
 			// Process balance
 			AccountBalance balance = currentAccount.getBalance();
@@ -167,13 +167,13 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			boolean sameCurrency = (nbRes == 1);
 			for(int i=0; i<nbRes; i++) {
 				int idxSum = c.getColumnIndexOrThrow(Operation.KEY_SUM);
-				int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_TAUX_EURO);
+				int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
 				int idxCurrencyShortName = c.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
 
 				float amount = c.getFloat(idxSum);
 				float rate = c.getFloat(idxRate);
 
-				// If not sameCurrency, convert to euro
+				// If not sameCurrency, convert it from rate
 				if(! sameCurrency) {
 					total += amount/rate;
 				}

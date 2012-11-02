@@ -224,7 +224,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 			// Store currency value for this addition if exchange rate checkbox is selected
 			if(linearLayoutRateUpdater.getVisibility() == View.GONE || checkboxUpdateRate.isChecked())
-				obj.setCurrencyValueOnCreated(cur.getTauxEuro());
+				obj.setCurrencyValueOnCreated(cur.getRateCurrencyLinked());
 		}
 	}
 

@@ -26,7 +26,7 @@
     <string name="name">Name</string>
     <string name="long_name">Long name</string>
     <string name="short_name">Short name</string>
-    <string name="form_addedit_value">Value for 1€</string>
+    <string name="form_addedit_value">Value for 1</string>
     <string name="form_addedit_update">Set last update to now</string>
     <string name="type">Type</string>
     <string name="account">Account</string>

@@ -23,7 +23,7 @@
     <string name="name">Nom</string>
     <string name="long_name">Nom long</string>
     <string name="short_name">Nom court</string>
-    <string name="form_addedit_value">Valeur pour 1€</string>
+    <string name="form_addedit_value">Valeur pour 1</string>
     <string name="form_addedit_update">Date de mise à jour actualisée</string>
     <string name="type">Type</string>
     <string name="account">Compte</string>

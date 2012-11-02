@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyHelper;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements OnItemSelectedListener {
 	private EditText editTextLongName = null;
@@ -21,6 +23,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private CheckBox checkBoxUpdate = null;
 	private Spinner spinnerCurrencyCode = null;
 	private boolean viewCreated = false;
+	private TextView textViewRateValue = null;
 
 	public AddOrEditCurrencyActivity() {
 		super(R.string.activity_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
@@ -31,9 +34,12 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		// Get resource instances
 		editTextLongName = (EditText)findViewById(R.id.long_name);
 		editTextShortName = (EditText)findViewById(R.id.short_name);
-		editTextValue = (EditText)findViewById(R.id.euro_value);
+		editTextValue = (EditText)findViewById(R.id.rate_value);
 		checkBoxUpdate = (CheckBox)findViewById(R.id.checkbox_last_update);
 		spinnerCurrencyCode = (Spinner)findViewById(R.id.currency_code);
+		textViewRateValue = (TextView)findViewById(R.id.text_rate_value);
+		
+		updateTextViewRate();
 
 		// init locales
 		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
@@ -43,6 +49,18 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		spinnerCurrencyCode.setAdapter(adapter);
 
 		spinnerCurrencyCode.setOnItemSelectedListener(this);
+	}
+	
+	private void updateTextViewRate() {
+		textViewRateValue.setText(getString(R.string.form_addedit_value));
+		
+		if(textViewRateValue != null && StaticData.getMainCurrency() != null) {
+			textViewRateValue.setText(textViewRateValue.getText() + 
+					java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
+		} else if (StaticData.getMainCurrency() == null) {
+			if(editTextShortName.getText() != null)
+			textViewRateValue.setText(textViewRateValue.getText() + editTextShortName.getText().toString());
+		}
 	}
 
 	protected boolean validate() {
@@ -70,8 +88,8 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			editTextLongName.setText(obj.getLongName());
 			editTextShortName.setText(obj.getShortName());
 
-			if(obj.getTauxEuro() != null)
-				editTextValue.setText(""+obj.getTauxEuro());
+			if(obj.getRateCurrencyLinked() != null)
+				editTextValue.setText(""+obj.getRateCurrencyLinked());
 
 			if(obj.getLastUpdate() == null) {
 				checkBoxUpdate.setChecked(true);
@@ -95,7 +113,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		if(obj != null) {
 			obj.setLongName(editTextLongName.getText().toString().trim());
 			obj.setShortName(editTextShortName.getText().toString().trim());
-			obj.setTauxEuro(Double.parseDouble(editTextValue.getText().toString().trim()));
+			obj.setRateCurrencyLinked(Double.parseDouble(editTextValue.getText().toString().trim()));
 
 			if(obj.getLastUpdate() == null || checkBoxUpdate.isChecked())
 				obj.setLastUpdate(new GregorianCalendar().getTime());
@@ -117,6 +135,9 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			java.util.Currency currency = java.util.Currency.getInstance(c.getCode());
 			editTextShortName.setText(currency.getSymbol());
 			editTextLongName.setText(c.getName());
+			if(StaticData.getMainCurrency() == null) {
+				updateTextViewRate();
+			}
 		}
 	}
 

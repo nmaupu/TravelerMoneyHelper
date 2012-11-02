@@ -93,7 +93,10 @@ public abstract class BaseObject implements Validator, Serializable {
 	}
 
 	public Cursor fetchAll() {
-		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, getDefaultOrderColumn());
+		return fetchAllOrderBy(getDefaultOrderColumn());
+	}
+	public Cursor fetchAllOrderBy(String columnName) {
+		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, columnName);
 	}
 	
 	public Cursor fetchAllExcept(Integer[] ids) {

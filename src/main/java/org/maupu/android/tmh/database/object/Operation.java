@@ -221,7 +221,7 @@ public class Operation extends BaseObject {
 		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("sum("+OperationData.KEY_AMOUNT+") "+Operation.KEY_SUM+", ");
-		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
+		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+" ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
 		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
@@ -257,7 +257,7 @@ public class Operation extends BaseObject {
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("o."+OperationData.KEY_ID+", ");
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
-		qb.append("c."+CurrencyData.KEY_TAUX_EURO+", ");
+		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
 		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");

@@ -25,7 +25,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
 	public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
 	protected static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX+"default";
-	protected static final int DATABASE_VERSION = 9;
+	protected static final int DATABASE_VERSION = 10;
 	private List<APersistedData> persistedData = new ArrayList<APersistedData>();
 	
 	public DatabaseHelper(String dbName) {
@@ -90,25 +90,25 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 		currency.setLastUpdate(new GregorianCalendar().getTime());
 		currency.setLongName("Euro");
 		currency.setShortName("e");
-		currency.setTauxEuro(1d);
+		currency.setRateCurrencyLinked(1d);
 		currency.setIsoCode("EUR");
 		currency.insert();
 		
 		currency.setLongName("Dollar");
 		currency.setShortName("$");
 		currency.setIsoCode("USD");
-		currency.setTauxEuro(1.4d);
+		currency.setRateCurrencyLinked(1.4d);
 		currency.insert();
 		
 		Cursor cCurrency = currency.fetch(1);
 		currency.toDTO(cCurrency);
 		
 		Account account = new Account();
-		account.setName("Nicolas");
+		account.setName("Nico");
 		account.setCurrency(currency);
 		account.insert();
 		
-		account.setName("Marianne");
+		account.setName("Bicou");
 		account.insert();
 		
 		Category category = new Category();

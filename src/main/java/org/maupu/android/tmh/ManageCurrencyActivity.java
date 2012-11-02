@@ -26,8 +26,8 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 		super.setAdapter(
 				R.layout.currency_item,
 				c,
-				new String[]{CurrencyData.KEY_LONG_NAME, CurrencyData.KEY_SHORT_NAME, CurrencyData.KEY_TAUX_EURO, CurrencyData.KEY_LAST_UPDATE},
-				new int[]{R.id.longName, R.id.shortName, R.id.tauxEuro, R.id.lastUpdate});
+				new String[]{CurrencyData.KEY_LONG_NAME, CurrencyData.KEY_SHORT_NAME, CurrencyData.KEY_CURRENCY_LINKED, CurrencyData.KEY_LAST_UPDATE},
+				new int[]{R.id.longName, R.id.shortName, R.id.rateCurrencyLinked, R.id.lastUpdate});
 	}
 
 	@Override

@@ -2,15 +2,11 @@ package org.maupu.android.tmh.core;
 
 import greendroid.app.GDApplication;
 
-import java.util.GregorianCalendar;
-
 import org.maupu.android.tmh.DashboardActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 
 import android.content.Context;
-import android.database.Cursor;
 
 public class TmhApplication extends GDApplication {
 	private static Context applicationContext;
@@ -37,9 +33,10 @@ public class TmhApplication extends GDApplication {
 		super.onCreate();
 		TmhApplication.applicationContext = this.getApplicationContext();
 		dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
-		initDefaultCurrency();
+		//initDefaultCurrency();
 	}
 	
+	/*
 	private Currency initDefaultCurrency() {
 		// Adding default currency (euro) if needed
 		Currency currency = new Currency();
@@ -53,11 +50,11 @@ public class TmhApplication extends GDApplication {
 		currency.setLongName("Euro");
 		java.util.Currency c = java.util.Currency.getInstance("EUR");
 		currency.setShortName(c.getSymbol());
-		currency.setTauxEuro(1.0d);
+		currency.setRateCurrencyLinked(1.0d);
 		currency.insert();
 		
 		return currency;
-	}
+	}*/
 	
 	public static Context getAppContext() {
 		return applicationContext;
@@ -81,5 +78,6 @@ public class TmhApplication extends GDApplication {
 		StaticData.setCurrentAccount(null);
 		StaticData.setCurrentSelectedCategory(null);
 		StaticData.setWithdrawalCategory(null);
+		StaticData.setMainCurrency(null);
 	}
 }
