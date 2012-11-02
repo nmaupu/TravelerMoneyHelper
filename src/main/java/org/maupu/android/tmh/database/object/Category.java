@@ -45,7 +45,7 @@ public class Category extends BaseObject {
 
 	@Override
 	public boolean validate() {
-		return ! getName().trim().equals("");
+		return getName() != null && ! "".equals(getName().trim());
 	}
 
 	@Override

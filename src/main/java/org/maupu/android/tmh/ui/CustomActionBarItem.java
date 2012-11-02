@@ -16,7 +16,8 @@ public abstract class CustomActionBarItem extends ActionBarItem {
 		Add,
 		Edit,
 		Delete,
-		Withdrawal
+		Withdrawal,
+		Cancel
 	}
 
 	public static ActionBarItem createActionBarItemFromType(ActionBar actionBar, CustomType type) {
@@ -44,6 +45,10 @@ public abstract class CustomActionBarItem extends ActionBarItem {
 		case Withdrawal:
 			drawableId = R.drawable.gd_action_bar_export;
 			descriptionId = R.string.withdrawal;
+			break;
+		case Cancel:
+			drawableId = R.drawable.gd_action_bar_list;
+			descriptionId = R.string.back;
 			break;
 		default:
 			return null;

@@ -175,6 +175,7 @@ public class Operation extends BaseObject {
 
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
 		QueryBuilder qsb = filter.getQueryBuilder();
+		//QueryBuilder myQsb = new QueryBuilder(qsb.getStringBuilder());
 
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);

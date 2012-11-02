@@ -113,6 +113,8 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 					public void onClick(DialogInterface dialog, int which) {
 						obj.update();
 						
+						dialog.dismiss();
+						
 						// Dispose this activity
 						if(disposeActivity)
 							current.finish();
@@ -122,7 +124,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 				obj.insert();
 				
 				if(disposeActivity)
-					super.finish();
+					this.finish();
 			}
 			
 			return true;

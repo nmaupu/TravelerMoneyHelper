@@ -9,7 +9,7 @@ public class QueryBuilder implements Serializable {
 	private StringBuilder sb = null;
 	
 	public QueryBuilder(StringBuilder builder) {
-		setStringBuilder(builder);
+		setStringBuilder(new StringBuilder(builder.toString()));
 	}
 	
 	public void setCurrentTableAlias(String currentTableAlias) {

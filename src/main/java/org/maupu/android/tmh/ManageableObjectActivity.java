@@ -61,6 +61,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 
 		// actionbar items
+		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Cancel), TmhApplication.ACTION_BAR_CANCEL);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
 
@@ -103,6 +104,9 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 			break;
 		case TmhApplication.ACTION_BAR_EDIT:
 			quickActionGrid.show(item.getItemView());
+			break;
+		case TmhApplication.ACTION_BAR_CANCEL:
+			startActivity(new Intent(this, ViewPagerOperationActivity.class));
 			break;
 		default:
 			return super.onHandleActionBarItemClick(item, position);
