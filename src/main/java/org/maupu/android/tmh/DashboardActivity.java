@@ -5,12 +5,18 @@ import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
 
 import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -170,7 +176,37 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
 		case TmhApplication.ACTION_BAR_INFO:
-			// TODO About dialog
+			Builder builder = new AlertDialog.Builder(this);
+
+			PackageInfo pInfo = null;
+			try {
+				pInfo = TmhApplication.getAppContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+			} catch (NameNotFoundException nnfe) {
+				nnfe.printStackTrace();
+			}
+			
+			String appVersion = pInfo.versionName;
+			int appCode = pInfo.versionCode;
+			StringBuilder sb = new StringBuilder();
+			sb.append(getString(R.string.about))
+			.append("\n")
+			.append("App ver: ").append(appVersion)
+			.append("\n")
+			.append("Code ver: ").append(appCode)
+			.append("\n")
+			.append("DB ver: ").append(DatabaseHelper.DATABASE_VERSION);
+			
+			builder.setMessage(sb.toString())
+			.setTitle(getString(R.string.about_title))
+			.setIcon(R.drawable.tmh_icon_small)
+			.setCancelable(false)
+			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+
+			builder.create().show();
 			break;
 		default:
 			return super.onHandleActionBarItemClick(item, position);
