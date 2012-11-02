@@ -19,13 +19,14 @@ import org.json.JSONObject;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer> {
-	private final static String googleUpdateRateURL = "http://www.google.com/ig/calculator?hl=en&q=1EUR%3D%3F";
+	private final static StringBuilder googleUpdateRateURL = new StringBuilder();
 	private TmhActivity context;
 	private ProgressDialog waitSpinner;
 	
@@ -35,6 +36,11 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 		waitSpinner.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		waitSpinner.setTitle(R.string.currency);
 		waitSpinner.setMax(100);
+		
+		// Setting url
+		googleUpdateRateURL.append("http://www.google.com/ig/calculator?hl=en&q=1")
+			.append(StaticData.getMainCurrency().getIsoCode())
+			.append("%3D%3F");
 	}
 
 	protected Integer doInBackground(Currency... currencies) {
@@ -136,7 +142,7 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 				DecimalFormat twoDForm = new DecimalFormat("#.##");
 				String sRate = twoDForm.format(rate);
 				sRate = sRate.replace(',', '.');
-				cur.setTauxEuro(Double.parseDouble(sRate));
+				cur.setRateCurrencyLinked(Double.parseDouble(sRate));
 				cur.update();
 				
 				Log.d(Currency.class.toString(), "Rate for "+isoCode+" = "+sRate);

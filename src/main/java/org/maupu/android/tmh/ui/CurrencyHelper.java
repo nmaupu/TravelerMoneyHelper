@@ -35,7 +35,7 @@ public abstract class CurrencyHelper {
 		return currencyISO4217List;
 	}
 
-	public static String convertToEuro(Double value, Double rate) {
+	public static String currencyConversion(Double value, Double rate) {
 		numberFormat.setMinimumFractionDigits(2);
 		return numberFormat.format(value / rate);
 	}

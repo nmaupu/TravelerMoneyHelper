@@ -69,8 +69,8 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,
 				c,
-				new String[]{"icon", "account", "category", "dateString", "amountString", "euroAmount"},
-				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.euroAmount});
+				new String[]{"icon", "account", "category", "dateString", "amountString", "convAmount"},
+				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 		super.setAdapter(adapter);
 	}
 

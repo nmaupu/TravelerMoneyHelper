@@ -4,8 +4,10 @@ import java.util.Date;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -22,6 +24,8 @@ public abstract class StaticData {
 	private static Date statsDateEnd = null;
 	private static boolean statsAdvancedFilter = false;
 	private static Date currentOperationDatePickerDate = null;
+	private static Currency mainCurrency = null;
+	
 	public static final String PREF_CURRENT_ACCOUNT = "current_account";
 	public static final String PREF_NEW_DATABASE = "new_database";
 	public static final String PREF_DATABASE = "database";
@@ -29,6 +33,10 @@ public abstract class StaticData {
 	public static final String PREF_WITHDRAWAL_CATEGORY = "category_withdrawal";
 	public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
 	public static final String PREF_CURRENT_SELECTED_CATEGORY = "current_category";
+	public static final String PREF_MAIN_CURRENCY = "main_currency";
+	public static final String PREF_STATS_DATE_BEG = "statsDateBeg";
+	public static final String PREF_STATS_DATE_END = "statsDateEnd";
+	
 	
 	/**
 	 * Allow current account to be invalidated
@@ -41,11 +49,7 @@ public abstract class StaticData {
 		if(statsDateBeg == null)
 			return;
 		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putLong("statsDateBeg", statsDateBeg.getTime());
-		editor.commit();
-		
+		setPreferenceValueLong(PREF_STATS_DATE_BEG, statsDateBeg.getTime());
 		getStatsDateBeg();
 	}
 	
@@ -53,11 +57,7 @@ public abstract class StaticData {
 		if(statsDateEnd == null)
 			return;
 		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putLong("statsDateEnd", statsDateEnd.getTime());
-		editor.commit();
-		
+		setPreferenceValueLong(PREF_STATS_DATE_END, statsDateEnd.getTime());
 		getStatsDateEnd();
 	}
 	
@@ -65,10 +65,7 @@ public abstract class StaticData {
 		if(currentOperationDatePickerDate == null)
 			return;
 		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
-		editor.commit();
+		setPreferenceValueLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
 	}
 	
 	public static Date getCurrentOperationDatePickerDate() {
@@ -92,7 +89,7 @@ public abstract class StaticData {
 	
 	public static Date getStatsDateBeg() {
 		SharedPreferences prefs = getPrefs();
-		Long dateBeg = prefs.getLong("statsDateBeg", -1);
+		Long dateBeg = prefs.getLong(PREF_STATS_DATE_BEG, -1);
 		
 		if(dateBeg == -1)
 			return null;
@@ -103,7 +100,7 @@ public abstract class StaticData {
 	
 	public static Date getStatsDateEnd() {
 		SharedPreferences prefs = getPrefs();
-		Long dateEnd = prefs.getLong("statsDateEnd", -1);
+		Long dateEnd = prefs.getLong(PREF_STATS_DATE_END, -1);
 		
 		if(dateEnd == -1)
 			return null;
@@ -115,10 +112,7 @@ public abstract class StaticData {
 	public static void setCurrentAccount(Account account) {
 		int id = account == null || account.getId() == null ? -1 : account.getId();
 		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putInt(PREF_CURRENT_ACCOUNT, id);
-		editor.commit();
+		setPreferenceValueInt(PREF_CURRENT_ACCOUNT, id);
 		
 		// Fetch and fill currentAccount
 		invalidateCurrentAccount();
@@ -178,10 +172,7 @@ public abstract class StaticData {
 	public static void setCurrentSelectedCategory(Category category) {
 		int catId = category == null ? -1 : category.getId();
 		
-		SharedPreferences prefs = getPrefs();
-		Editor editor = prefs.edit();
-		editor.putInt(PREF_CURRENT_SELECTED_CATEGORY, catId);
-		editor.commit();
+		setPreferenceValueInt(PREF_CURRENT_SELECTED_CATEGORY, catId);
 		
 		// Fetch and fill currentCategory
 		getCurrentSelectedCategory();
@@ -228,6 +219,54 @@ public abstract class StaticData {
 		editor.commit();
 	}
 	
+	public static Currency getMainCurrency() {
+		int id = getPreferenceValueInt(PREF_MAIN_CURRENCY);
+		if (id < 0) {
+			Currency c = getDefaultMainCurrency();
+			id = c == null ? -1 : c.getId();
+		}
+		
+		if(id >= 0 && (mainCurrency == null || mainCurrency.getId() == null || mainCurrency.getId() != id)) {
+			if(mainCurrency == null)
+				mainCurrency = new Currency();
+			Cursor c = mainCurrency.fetch(id);
+			mainCurrency.toDTO(c);
+		} else if (id < 0) {
+			mainCurrency = null;
+		}
+		
+		return mainCurrency;
+	}
+	
+	private static Currency getDefaultMainCurrency() {
+		Currency cur = new Currency();
+		Cursor c = cur.fetchAllOrderBy(CurrencyData.KEY_ID);
+		
+		if(c == null || c.getCount() == 0)
+			return null;
+		
+		c.moveToFirst();
+		cur.toDTO(c);
+		
+		return cur;
+	}
+	
+	public static void setMainCurrency(Integer idCurrency) {
+		if(idCurrency == null)
+			return;
+		
+		Currency cur = new Currency();
+		Cursor c = cur.fetch(idCurrency);
+		
+		if(c == null)
+			return;
+		
+		cur.toDTO(c);
+		mainCurrency = cur;
+		
+		setPreferenceValueInt(PREF_MAIN_CURRENCY, cur.getId());
+	}
+	
 	public static String getPreferenceValueString(String key) {
 		SharedPreferences prefs = getPrefs();
 		return prefs.getString(key, null);
@@ -259,6 +298,20 @@ public abstract class StaticData {
 		SharedPreferences prefs = getPrefs();
 		Editor editor = prefs.edit();
 		editor.putInt(key, value);
+		editor.commit();
+	}
+	
+	public static void setPreferenceValueString(String key, String value) {
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putString(key, value);
+		editor.commit();
+	}
+	
+	public static void setPreferenceValueLong(String key, Long value) {
+		SharedPreferences prefs = getPrefs();
+		Editor editor = prefs.edit();
+		editor.putLong(key, value);
 		editor.commit();
 	}
 }
