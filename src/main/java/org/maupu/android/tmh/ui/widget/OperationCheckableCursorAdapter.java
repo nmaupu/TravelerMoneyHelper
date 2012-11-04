@@ -33,7 +33,7 @@ public class OperationCheckableCursorAdapter extends CheckableCursorAdapter {
 		String currencySymbol = cursor.getString(idxCurrencySymbol);
 		
 		TextView tvConvAmount = (TextView)view.findViewById(R.id.convAmount);
-		int idxConvAmount = cursor.getColumnIndex(CurrencyData.KEY_CURRENCY_LINKED);
+		int idxConvAmount = cursor.getColumnIndex("convertedAmount");
 		Double convAmount = Double.parseDouble(cursor.getString(idxConvAmount));
 		
 		// format amount

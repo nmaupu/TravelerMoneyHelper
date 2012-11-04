@@ -53,7 +53,8 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 		.addSelectToQuery(OperationData.KEY_LINK_TO).append(",");
 		
 		qsb.setCurrentTableAlias("c");
-		qsb.addSelectToQuery(CurrencyData.KEY_SHORT_NAME).append(",");
+		qsb.addSelectToQuery(CurrencyData.KEY_SHORT_NAME).append(",")
+		.addSelectToQuery(CurrencyData.KEY_CURRENCY_LINKED).append(",");
 
 		qsb.setCurrentTableAlias("a");
 		qsb.addSelectToQuery(AccountData.KEY_ICON).append(",")
