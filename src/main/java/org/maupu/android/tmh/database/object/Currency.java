@@ -7,6 +7,7 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public class Currency extends BaseObject {
 	private static final long serialVersionUID = 1L;
@@ -67,7 +68,7 @@ public class Currency extends BaseObject {
 	}
 	
 	@Override
-	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTOWithDb(SQLiteDatabase db, Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ID);
 		int idxLongName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LONG_NAME);

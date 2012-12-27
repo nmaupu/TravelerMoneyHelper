@@ -10,6 +10,7 @@ import org.maupu.android.tmh.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class Account extends BaseObject {
@@ -17,6 +18,7 @@ public class Account extends BaseObject {
 	private String name;
 	private String icon;
 	private Currency currency;
+	public Double balance;
 
 	public String getName() {
 		return name;
@@ -27,6 +29,9 @@ public class Account extends BaseObject {
 	public Currency getCurrency() {
 		return currency;
 	}
+	public Double getBalance() {
+		return balance;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -35,6 +40,12 @@ public class Account extends BaseObject {
 	}
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
+	}
+	public void setBalance(Double b) {
+		balance = b;
+	}
+	public void addToBalance(Double b) {
+		balance += b;
 	}
 
 	public ContentValues createContentValues() {
@@ -59,23 +70,24 @@ public class Account extends BaseObject {
 		StaticData.invalidateCurrentAccount();
 		return super.update();
 	}
-
-	@Override
-	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
+	
+	public BaseObject toDTOWithDb(SQLiteDatabase db, Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
 		int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
 		int idxCurrency = cursor.getColumnIndexOrThrow(AccountData.KEY_ID_CURRENCY);
+		int idxBalance = cursor.getColumnIndexOrThrow(AccountData.KEY_BALANCE);
 
 		if(! cursor.isClosed() && ! cursor.isBeforeFirst() && ! cursor.isAfterLast()) {
 			super._id = cursor.getInt(idxId);
 			this.setName(cursor.getString(idxName));
 			this.setIcon(cursor.getString(idxIcon));
+			this.setBalance(cursor.getDouble(idxBalance));
 
 			Currency c = new Currency();
-			Cursor cursorCurrency = c.fetch(cursor.getInt(idxCurrency));
-			c.toDTO(cursorCurrency);
+			Cursor cursorCurrency = c.fetchWithDB(db, cursor.getInt(idxCurrency));
+			c.toDTOWithDb(db, cursorCurrency);
 			this.setCurrency(c);
 		}
 
@@ -85,7 +97,7 @@ public class Account extends BaseObject {
 	/*
 	 * Get current account balance
 	 */
-	public Cursor getBalanceCursor() {
+	public Cursor getComputedBalanceCursor() {
 		if(getId() == null || getId() < 0)
 			return null;
 		
@@ -116,8 +128,8 @@ public class Account extends BaseObject {
 		return c;
 	}
 	
-	public AccountBalance getBalance() {
-		Cursor cursor = getBalanceCursor();
+	public AccountBalance getComputedBalance() {
+		Cursor cursor = getComputedBalanceCursor();
 		AccountBalance accountBalance = new AccountBalance(this);
 		
 		if(cursor != null) {
@@ -141,6 +153,68 @@ public class Account extends BaseObject {
 		
 		return accountBalance;
 	}
+	
+	public static boolean forceUpdateBalance (Integer ... ids) {
+		boolean res = false;
+		
+		for(Integer id : ids) {
+			Account dummy = new Account();
+			dummy.fetch(id);
+			
+			res = dummy.forceUpdateBalance() && res;
+		}
+		
+		return res;
+	}
+	
+	public boolean forceUpdateBalance() {
+		if(this._id == null || this._id < 0)
+			return false;
+		
+		boolean res = false;
+		
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT ")
+		.append("a._id, case when o.amount IS NULL then 0 else ")
+		.append("case when o.idCurrency=a.idCurrency then sum(o.amount) ")
+		.append("else sum(o.amount/o.currencyValue) end) end as balance ")
+		.append("from account a ")
+		.append("LEFT JOIN operation o ON a._id=o.idAccount ")
+		.append("WHERE a._id=? ")
+		.append("GROUP BY o.idAccount;");
+
+		
+		try {
+			TmhApplication.getDatabaseHelper().getDb().beginTransaction();
+			Cursor c = TmhApplication.getDatabaseHelper().getDb()
+					.rawQuery(query.toString(), new String[]{String.valueOf(this._id)});
+			
+			if(c == null || c.getCount() == 0)
+				return false;
+			
+			c.moveToFirst();
+			
+			// Getting computed balance and update account balance
+			int idxBalance = c.getColumnIndexOrThrow("balance");
+			Double bal = c.getDouble(idxBalance);
+			
+			// Refetch entire object if only id is filled
+			//c = this.fetch(this._id);
+			//this.toDTO(c);
+			
+			this.setBalance(bal);
+			this.update();
+			
+			TmhApplication.getDatabaseHelper().getDb().setTransactionSuccessful();
+			res = true;
+		} finally {
+			TmhApplication.getDatabaseHelper().getDb().endTransaction();
+		}
+		
+		return res;
+	}
+	
+	
 
 	@Override
 	public boolean validate() {

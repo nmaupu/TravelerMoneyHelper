@@ -8,6 +8,7 @@ import org.maupu.android.tmh.database.cache.SimpleObjectCache;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public abstract class BaseObject implements Validator, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +34,10 @@ public abstract class BaseObject implements Validator, Serializable {
 	 * Convert database cursor to dto and set all attributes to local instance
 	 * @param cursor
 	 */
-	public abstract BaseObject toDTO(Cursor cursor) throws IllegalArgumentException;
+	public abstract BaseObject toDTOWithDb(SQLiteDatabase db, Cursor cursor) throws IllegalArgumentException;
+	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
+		return toDTOWithDb(TmhApplication.getDatabaseHelper().getDb(), cursor);
+	}
 	
 	/**
 	 * Method returning name of object (used in spinners for instance)
@@ -74,18 +78,30 @@ public abstract class BaseObject implements Validator, Serializable {
 	}
 
 	public boolean update() {
+		return updateWithDb(TmhApplication.getDatabaseHelper().getDb());
+	}
+	
+	public boolean updateWithDb(SQLiteDatabase db) {
 		if(! validate() || getId() == null)
 			return false;
 		
-		return TmhApplication.getDatabaseHelper().getDb().update(getTableName(), createContentValues(), APersistedData.KEY_ID+"="+getId(), null) > 0;
+		return db.update(getTableName(), createContentValues(), APersistedData.KEY_ID+"="+getId(), null) > 0;
 	}
 
 	public boolean delete() {
-		return TmhApplication.getDatabaseHelper().getDb().delete(getTableName(), APersistedData.KEY_ID+"="+getId(), null) > 0;
+		return deleteWithDb(TmhApplication.getDatabaseHelper().getDb());
+	}
+	
+	public boolean deleteWithDb(SQLiteDatabase db) {
+		return db.delete(getTableName(), APersistedData.KEY_ID+"="+getId(), null) > 0;
 	}
 
 	public Cursor fetch(Integer id) {
-		Cursor c = TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, APersistedData.KEY_ID+"="+id, null, null, null, null);
+		return fetchWithDB(TmhApplication.getDatabaseHelper().getDb(), id);
+	}
+	
+	public Cursor fetchWithDB(SQLiteDatabase db, Integer id) {
+		Cursor c = db.query(getTableName(), null, APersistedData.KEY_ID+"="+id, null, null, null, null);
 		if(c != null)
 			c.moveToFirst();
 

@@ -136,7 +136,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			String symbolCurrency = java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol();
 
 			// Process balance
-			AccountBalance balance = currentAccount.getBalance();
+			AccountBalance balance = currentAccount.getComputedBalance();
 			StringBuilder sBuilder = new StringBuilder();
 			if(balance.size() == 1) {
 				Set<Integer> s = balance.keySet();

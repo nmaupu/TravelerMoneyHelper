@@ -14,6 +14,7 @@ import org.maupu.android.tmh.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
 
@@ -127,7 +128,7 @@ public class Operation extends BaseObject {
 	}
 
 	@Override
-	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTOWithDb(SQLiteDatabase db, Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(OperationData.KEY_ID);
 		int idxAmount = cursor.getColumnIndexOrThrow(OperationData.KEY_AMOUNT);
@@ -152,9 +153,9 @@ public class Operation extends BaseObject {
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
-			account = (Account)account.toDTO(account.fetch(cursor.getInt(idxAccount)));
-			category = (Category)category.toDTO(category.fetch(cursor.getInt(idxCategory)));
-			currency = (Currency)currency.toDTO(currency.fetch(cursor.getInt(idxCurrency)));
+			account = (Account)account.toDTOWithDb(db, account.fetch(cursor.getInt(idxAccount)));
+			category = (Category)category.toDTOWithDb(db, category.fetch(cursor.getInt(idxCategory)));
+			currency = (Currency)currency.toDTOWithDb(db, currency.fetch(cursor.getInt(idxCurrency)));
 
 			this.setAccount(account);
 			this.setCategory(category);

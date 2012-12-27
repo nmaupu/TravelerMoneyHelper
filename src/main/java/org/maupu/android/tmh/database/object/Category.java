@@ -4,6 +4,7 @@ import org.maupu.android.tmh.database.CategoryData;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public class Category extends BaseObject {
 	private static final long serialVersionUID = 1L;
@@ -30,7 +31,7 @@ public class Category extends BaseObject {
 	}
 	
 	@Override
-	public BaseObject toDTO(Cursor cursor) throws IllegalArgumentException {
+	public BaseObject toDTOWithDb(SQLiteDatabase db, Cursor cursor) throws IllegalArgumentException {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(CategoryData.KEY_ID);
 		int idxName = cursor.getColumnIndexOrThrow(CategoryData.KEY_NAME);

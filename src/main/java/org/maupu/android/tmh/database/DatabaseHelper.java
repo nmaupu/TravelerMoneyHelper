@@ -25,7 +25,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
 	public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
 	protected static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX+"default";
-	public static final int DATABASE_VERSION = 10;
+	public static final int DATABASE_VERSION = 11;
 	private List<APersistedData> persistedData = new ArrayList<APersistedData>();
 	
 	public DatabaseHelper(String dbName) {
