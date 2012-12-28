@@ -43,6 +43,7 @@
         <activity android:name=".StatsActivity" />
         <activity android:name=".PreferencesActivity" />
         <activity android:name=".WithdrawalActivity" />
+        <activity android:name=".CategoryChooserActivity" />
     </application>
 
 </manifest>

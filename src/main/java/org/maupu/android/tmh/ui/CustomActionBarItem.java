@@ -1,5 +1,7 @@
 package org.maupu.android.tmh.ui;
 
+import org.maupu.android.tmh.R;
+
 import greendroid.graphics.drawable.ActionBarDrawable;
 import greendroid.widget.ActionBar;
 import greendroid.widget.ActionBarItem;
@@ -7,7 +9,6 @@ import greendroid.widget.NormalActionBarItem;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
-import com.cyrilmottier.android.greendroid.R;
 
 public abstract class CustomActionBarItem extends ActionBarItem {
 	public enum CustomType {

@@ -12,5 +12,9 @@
         android:id="@+id/item_preferences"
         android:icon="@drawable/ic_menu_preferences"
         android:title="@string/parameters"/>
+    <item
+        android:id="@+id/item_categories"
+        android:icon="@drawable/ic_action_send"
+        android:title="@string/categories"/>
 
 </menu>

@@ -155,7 +155,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 				imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(getPackageManager())); 
 				dialog.dismiss();
 			}
-		});		
+		});
 
 		Button close = (Button)layout.findViewById(R.id.close);
 		close.setOnClickListener(new OnClickListener() {
