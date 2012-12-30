@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.database.object;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 
 import android.content.ContentValues;
@@ -42,6 +43,17 @@ public class Category extends BaseObject {
 		}
 		
 		return super.getFromCache();
+	}
+	
+	public Cursor fetchAllCategoiesUsedByAccountOperations(int accountId) {
+		StringBuffer query = new StringBuffer("SELECT DISTINCT cat._id, cat.name ")
+				.append("FROM category cat ")
+				.append("LEFT JOIN operation o ON o.idCategory=cat._id ")
+				.append("LEFT JOIN account acc ON acc._id=o.idAccount ")
+				.append("WHERE acc._id=? ")
+				.append("ORDER BY cat."+CategoryData.KEY_NAME);
+		
+		return TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), new String[]{String.valueOf(accountId)});
 	}
 
 	@Override

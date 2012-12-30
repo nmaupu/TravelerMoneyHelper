@@ -1,6 +1,8 @@
 package org.maupu.android.tmh.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -22,6 +24,7 @@ public abstract class StaticData {
 	private static Category currentSelectedCategory = new Category();
 	private static Date statsDateBeg = null;
 	private static Date statsDateEnd = null;
+	private static List<Integer> statsExceptedCategories = new ArrayList<Integer>();
 	private static boolean statsAdvancedFilter = false;
 	private static Date currentOperationDatePickerDate = null;
 	private static Currency mainCurrency = null;
@@ -66,6 +69,24 @@ public abstract class StaticData {
 			return;
 		
 		setPreferenceValueLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
+	}
+	
+	public static void setStatsExpectedCategories(List<Integer> ints) {
+		if(ints == null)
+			return;
+		
+		statsExceptedCategories = ints;
+	}
+	
+	public static List<Integer> getStatsExpectedCategories() {
+		return statsExceptedCategories;
+	}
+	
+	public static Integer[] getStatsExpectedCategoriesToArray() {
+		if(statsExceptedCategories == null || statsExceptedCategories.size() == 0)
+			return new Integer[0];
+		
+		return statsExceptedCategories.toArray(new Integer[statsExceptedCategories.size()]);
 	}
 	
 	public static Date getCurrentOperationDatePickerDate() {
@@ -113,6 +134,9 @@ public abstract class StaticData {
 		int id = account == null || account.getId() == null ? -1 : account.getId();
 		
 		setPreferenceValueInt(PREF_CURRENT_ACCOUNT, id);
+		
+		// Reset stats's expected categories list
+		statsExceptedCategories.clear();
 		
 		// Fetch and fill currentAccount
 		invalidateCurrentAccount();

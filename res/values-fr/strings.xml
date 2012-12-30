@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="about">Par @NicoMop</string>
+    <string name="about">Par @bicnicfr</string>
     <string name="about_title">A propos de TMH</string>
+    <string name="stats_filter_cat_title">Exception de catégories</string>
     <string name="back">Retour</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -98,5 +99,7 @@
     <string name="welcome_currency">Créer une devise</string>
     <string name="welcome_account">Créer un compte</string>
     <string name="update">Màj</string>
+    <string name="graph">Graph</string>
+    <string name="stats_graph_error_series">Toutes les valeurs ne sont pas du même signe, impossible de tracer un camembert !</string>
 
 </resources>

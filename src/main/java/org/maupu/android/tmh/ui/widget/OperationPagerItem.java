@@ -9,7 +9,6 @@ import org.maupu.android.tmh.AddOrEditActivity;
 import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.ViewPagerOperationActivity;
-import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
@@ -17,13 +16,12 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.AccountBalance;
-import org.maupu.android.tmh.ui.ICallback;
+import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.NumberUtil;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -217,45 +215,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		switch(v.getId()) {
 		case R.id.account_icon:
 			Log.d("OperationPagerItem", "Icon clicked");
-
-			final Dialog dialog = new Dialog(viewPagerOperationActivity);
-
-			dialog.setContentView(R.layout.dialog_choose_account);
-			dialog.setTitle(viewPagerOperationActivity.getString(R.string.pick_account));
-
-			ListView listAccount = (ListView)dialog.findViewById(R.id.list);
-			Account dummyAccount = new Account();
-			final Cursor cursorAllAccounts = dummyAccount.fetchAll();
-
-			final IconCursorAdapter adapter = new IconCursorAdapter(viewPagerOperationActivity, 
-					R.layout.icon_name_item_no_checkbox, 
-					cursorAllAccounts,
-					new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
-					new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
-				@Override
-				public View callback(Object item) {
-					int position = (Integer)((View)item).getTag();
-					int oldPosition = cursorAllAccounts.getPosition();
-					cursorAllAccounts.moveToPosition(position);
-
-					Account account = new Account();
-					account.toDTO(cursorAllAccounts);
-
-					cursorAllAccounts.moveToPosition(oldPosition);
-
-
-					// Replacing preferences account
-					StaticData.setCurrentAccount(account);
-					viewPagerOperationActivity.refreshDisplay();
-					Log.d("OperationPagerItem", "Callback called");
-					dialog.dismiss();
-
-					return (View)item;
-				}
-			});
-			listAccount.setAdapter(adapter);
-
-			dialog.show();
+			DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
 			break;
 		case R.id.button_edit:
 			if(posChecked.length == 1) {

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
@@ -271,7 +272,8 @@ public class Operation extends BaseObject {
 		if(exceptCategories != null && exceptCategories.length > 0) {
 			StringBuilder b = new StringBuilder();
 			for(int i=0; i<exceptCategories.length; i++) {
-				int catId = exceptCategories[i];
+				// If a cat is deleted, some items may be null. So we put -1 which does not exist in db
+				int catId = exceptCategories[i] == null ? -1 : exceptCategories[i];
 				b.append(catId);
 				if(i<exceptCategories.length-1)
 					b.append(",");
@@ -281,6 +283,50 @@ public class Operation extends BaseObject {
 		
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString").append(" "); // group by dateString instead of date because of hours and minutes
 		qb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
+		
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		return c;
+	}
+	
+	public Cursor sumOperationsGroupByCategory(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
+		if(account == null || account.getId() == null)
+			return null;
+		
+		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+		
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("o."+OperationData.KEY_ID+", ");
+		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
+		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
+		qb.append("cat."+CategoryData.KEY_NAME+", ");
+		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c, "+CategoryData.TABLE_NAME+" cat ");
+		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
+		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		qb.append("AND cat."+CategoryData.KEY_ID+"=o."+OperationData.KEY_ID_CATEGORY+" ");
+		
+		if(exceptCategories != null && exceptCategories.length > 0) {
+			StringBuilder b = new StringBuilder();
+			for(int i=0; i<exceptCategories.length; i++) {
+				Integer catId = exceptCategories[i];
+				if(catId == null) // Verify that nothing is null in array passed
+					catId = -1;
+				
+				b.append(catId);
+				
+				if(i<exceptCategories.length-1)
+					b.append(",");
+			}
+			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
+		}
+		
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CATEGORY+", o."+OperationData.KEY_ID_CURRENCY).append(" ");
+		qb.append("ORDER BY cat."+CategoryData.KEY_NAME+" ASC ");
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();

@@ -9,6 +9,7 @@ import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
 import org.maupu.android.tmh.core.TmhApplication;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -50,8 +51,8 @@ public abstract class TmhActivity extends GDActivity {
 
 	@Override
 	protected void onResume() {
-		refreshDisplay();
 		super.onResume();
+		refreshDisplay();
 	}
 
 	@Override
@@ -111,6 +112,7 @@ public abstract class TmhActivity extends GDActivity {
 	 */
 	public abstract void refreshDisplay();
 	
+	@SuppressLint("NewApi")
 	public void setActionBarHomeDrawable(int drawable) {
 		ImageButton ib = (ImageButton)getActionBar().findViewById(R.id.gd_action_bar_home_item);
 		if(ib != null) {
@@ -137,7 +139,7 @@ public abstract class TmhActivity extends GDActivity {
 		listView.setLayoutAnimation(controller);
 	}
 
-	private static class MyQuickAction extends QuickAction {
+	protected static class MyQuickAction extends QuickAction {
 		private static final ColorFilter BLACK_CF = new LightingColorFilter(Color.BLACK, Color.BLACK);
 
 		public MyQuickAction(Context ctx, int drawableId, int titleId) {

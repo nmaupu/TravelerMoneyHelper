@@ -14,7 +14,7 @@ public class CategoryChooserActivity extends TmhActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		super.setActionBarContentView(R.layout.category_chooser);
+		super.setActionBarContentView(R.layout.category_chooser_activity);
 		setTitle(R.string.activity_title_category_chooser);
 		
 		populateWithData();

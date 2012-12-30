@@ -19,6 +19,9 @@ public class TmhApplication extends GDApplication {
 	public static final int ACTION_BAR_SAVE_AND_ADD = 4;
 	public static final int ACTION_BAR_CANCEL = 5;
 	public static final int ACTION_BAR_INFO = 6;
+	public static final int ACTION_BAR_GROUPBY = 7;
+	public static final int ACTION_BAR_ACCOUNT = 8;
+	public static final int ACTION_BAR_GRAPH = 9;
 	
 	
 	public static final Class<?> HOME_ACTIVITY_CLASS = DashboardActivity.class;

@@ -1,5 +1,13 @@
 package org.maupu.android.tmh;
 
+import greendroid.graphics.drawable.ActionBarDrawable;
+import greendroid.widget.ActionBarItem;
+import greendroid.widget.ActionBarItem.Type;
+import greendroid.widget.NormalActionBarItem;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
+import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,43 +15,33 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.maupu.android.tmh.AddOrEditAccountActivity.AppsAdapter;
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 
-import android.app.AlertDialog;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager.LayoutParams;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.Gallery;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
+import android.widget.Toast;
 
 public class StatsActivity extends TmhActivity implements OnItemSelectedListener {
 	private ListView listView;
@@ -51,11 +49,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private Gallery galleryDateBegin;
 	private Gallery galleryDateEnd;
 	private LinearLayout layoutAdvancedGallery;
-	private AlertDialog alertDialogWithdrawalCategory;
+	//private AlertDialog alertDialogWithdrawalCategory;
 	private final static String LAST_MONTH_SELECTED = "lastMonthSelectedItemPosition";
-	private CheckableCursorAdapter categoryChooserAdapter = null;
-	private AlertDialog dialogCategoryChooser = null;
-	private List<Integer> exceptedCategories = new ArrayList<Integer>();
+	//private CheckableCursorAdapter categoryChooserAdapter = null;
+	//private AlertDialog dialogCategoryChooser = null;
+	private boolean resetDialogCategoryChooser = false;
+	private final static int GROUP_BY_DATE=0;
+	private final static int GROUP_BY_CATEGORY=1;
+	private int currentGroupBy = GROUP_BY_DATE;
+	private QuickActionGrid quickActionGridFilter = null;
+	private StatsCursorAdapter statsCursorAdapter = null;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -66,12 +69,40 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		super.setActionBarContentView(R.layout.stats_activity);
 		setTitle(R.string.activity_title_statistics);
 
+		/* Display a custom icon as action bar item */
+		int drawableId = R.drawable.action_bar_graph;
+		int descriptionId = R.string.graph;
+        
+        final Drawable d = new ActionBarDrawable(getActionBar().getContext(), drawableId);
+        ActionBarItem abiGraph = getActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
+        addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
+		/* End of displaying a custom icon in action bar item */
+		// Change list type (sum by category or by date)
+		addActionBarItem(Type.Settings, TmhApplication.ACTION_BAR_GROUPBY);
+		// Possibility to change between accounts
+		addActionBarItem(Type.Group, TmhApplication.ACTION_BAR_ACCOUNT);
+		//
+		quickActionGridFilter = new QuickActionGrid(this);
+		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.date));
+		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_sort_by_size, R.string.category));
+
+		quickActionGridFilter.setOnQuickActionClickListener(new OnQuickActionClickListener() {
+			@Override
+			public void onQuickActionClicked(QuickActionWidget widget, int position) {
+				currentGroupBy = position;
+				refreshDisplay();
+			}
+		});
+		
+		
+		//
 		listView = (ListView)findViewById(R.id.list);
 		galleryDate = (Gallery)findViewById(R.id.gallery_date);
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
@@ -88,16 +119,72 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			}
 		};
 
+		/*
 		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
 				this, 
 				getString(R.string.warning), 
 				getString(R.string.default_category_warning),
 				listener).create();
-
+		 */
 
 		initHeaderGalleries();
 		refreshHeaderGallery();
 		refreshDisplay();
+	}
+
+	@Override
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch(item.getItemId()) {
+		case TmhApplication.ACTION_BAR_GROUPBY:
+			quickActionGridFilter.show(item.getItemView());
+			break;
+		case TmhApplication.ACTION_BAR_ACCOUNT:
+			DialogHelper.popupDialogAccountChooser(this);
+			resetDialogCategoryChooser = true;
+			break;
+		case TmhApplication.ACTION_BAR_GRAPH:
+			// All values must be the same sign (all + or all - not a mix)
+			// Creating view
+			int cptValuesPlus = 0;
+			Intent intent = new Intent(this, StatsGraphActivity.class);
+			String[] names = new String[statsCursorAdapter.getCount()];
+			int[] colors = new int[statsCursorAdapter.getCount()];
+			double[] values = new double[statsCursorAdapter.getCount()];
+			
+			String colName = currentGroupBy == GROUP_BY_CATEGORY ? CategoryData.KEY_NAME : "dateString";
+			String colValue = "amountString";
+			for (int i = 0; i < statsCursorAdapter.getCount(); i++) {
+				Cursor c = (Cursor)statsCursorAdapter.getItem(i);
+				
+				int idxColName = c.getColumnIndexOrThrow(colName);
+				int idxColValue = c.getColumnIndexOrThrow(colValue);
+				
+				String name = c.getString(idxColName);
+				double value = c.getDouble(idxColValue);
+				if(value>=0)
+					cptValuesPlus++;
+				
+				
+				// Random colors for now
+				colors[i] = Color.rgb((int)(Math.random()*100%255), (int)(Math.random()*100%255), (int)(Math.random()*100%255));
+				names[i] = name;
+				values[i] = value;
+			}
+			
+			if(cptValuesPlus == 0 || cptValuesPlus == statsCursorAdapter.getCount()) {
+				intent.putExtra("colors", colors);
+				intent.putExtra("names", names);
+				intent.putExtra("values", values);
+				startActivity(intent);
+			} else {
+				Toast.makeText(this, R.string.stats_graph_error_series, Toast.LENGTH_SHORT).show();
+			}
+			break;
+		default:
+			return super.onHandleActionBarItemClick(item, position);
+		}
+
+		return true;
 	}
 
 	private void initHeaderGalleries() {
@@ -227,61 +314,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 			break;
 		case R.id.item_categories:
-			//Intent intent = new Intent(this, CategoryChooserActivity.class);
-			//startActivity(intent);
-			LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-			/*View popupView = inflater.inflate(R.layout.category_chooser, null, false);
-			final PopupWindow popupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-
-			popupWindow.showAtLocation(this.getContentView(), Gravity.TOP, 50, 50);
-			 */
-
-			if(dialogCategoryChooser == null) {
-				AlertDialog.Builder builder;
-				View layout = inflater.inflate(R.layout.category_chooser, (ViewGroup) findViewById(R.id.layout_root));
-				builder = new AlertDialog.Builder(this);
-				builder.setView(layout);
-
-				final ListView list = (ListView)layout.findViewById(R.id.list);
-				if(categoryChooserAdapter == null) {
-					Category cat = new Category();
-					Cursor cursor = cat.fetchAll();
-					categoryChooserAdapter = new CheckableCursorAdapter(this, 
-							R.layout.category_item,
-							cursor, 
-							new String[]{CategoryData.KEY_NAME}, 
-							new int[]{R.id.name});
-					list.setAdapter(categoryChooserAdapter);
-				}
-
-				dialogCategoryChooser = builder.create();
-				dialogCategoryChooser.setCancelable(false);
-				Button btnValidate = (Button)layout.findViewById(R.id.btn_validate);
-				Button.OnClickListener listener = new Button.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (v.getId() == R.id.btn_validate) {
-							exceptedCategories.clear();
-							CheckableCursorAdapter adapter = (CheckableCursorAdapter)list.getAdapter(); 
-							Integer[] ints = adapter.getCheckedPositions();
-							for(int i : ints) {
-								Cursor c = (Cursor)adapter.getItem(i);
-								Category cat = new Category();
-								cat.toDTO(c);
-								exceptedCategories.add(cat.getId());
-								Log.d(StatsActivity.class.getName(), "category "+cat+" is checked");
-							}
-							refreshDisplay();
-							dialogCategoryChooser.dismiss();
-						}
-					}
-				};
-
-				btnValidate.setOnClickListener(listener);
-			}
-			
-			dialogCategoryChooser.show();
+			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser);
+			resetDialogCategoryChooser = false;
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -297,20 +331,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		//Date now = new GregorianCalendar().getTime();
 		Operation dummyOp = new Operation();
 
-		//Category withdrawalCat = StaticData.getWithdrawalCategory();
-		Integer[] cats = new Integer[exceptedCategories.size()];
-		for(int i=0; i<cats.length; i++) {
-			cats[i] = exceptedCategories.get(i);
-		}
-		/*if(withdrawalCat == null) {
-			if(! alertDialogWithdrawalCategory.isShowing())
-				alertDialogWithdrawalCategory.show();
-		} else {
-			cats = new Integer[1];
-			cats[0] = withdrawalCat.getId();
-		}*/
-
-
 		Date beg = null, end = null;
 		if(! StaticData.isStatsAdvancedFilter()) {
 			int oldPos = StaticData.getPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED);
@@ -324,18 +344,27 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			end = StaticData.getStatsDateEnd();
 		}
 
-		Cursor cursor = dummyOp.sumOperationsGroupByDay(account,
-				beg,
-				end,
-				cats);
-
+		Cursor cursor = null;
+		String[] from = null;
+		
+		switch(currentGroupBy) {
+			case GROUP_BY_DATE:
+				cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+				from = new String[]{"dateString", "amountString"};
+				break;
+			case GROUP_BY_CATEGORY:
+				cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+				from = new String[]{CategoryData.KEY_NAME, "amountString"};
+				break;
+		}
+		
 		// Set cursor from selected period
-		StatsCursorAdapter adapter = new StatsCursorAdapter(this,
+		statsCursorAdapter = new StatsCursorAdapter(this,
 				R.layout.stats_item,
 				cursor,
-				new String[]{"dateString", "amountString"},
-				new int[]{R.id.date, R.id.amount});
-		listView.setAdapter(adapter);
+				from,
+				new int[]{R.id.text, R.id.amount});
+		listView.setAdapter(statsCursorAdapter);
 	}
 
 	@Override
