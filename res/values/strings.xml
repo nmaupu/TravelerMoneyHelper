@@ -102,6 +102,6 @@
     <string name="welcome_account">Create an account</string>
     <string name="update">Update</string>
     <string name="graph">Graph</string>
-    <string name="stats_graph_error_series">All values are not the same sign, cannot graph a pie !</string>
+    <string name="refreshing">Refreshing#8230;</string>
 
 </resources>

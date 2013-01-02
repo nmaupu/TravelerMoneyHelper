@@ -8,12 +8,15 @@ import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
@@ -26,8 +29,7 @@ import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -41,7 +43,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Gallery;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class StatsActivity extends TmhActivity implements OnItemSelectedListener {
 	private ListView listView;
@@ -58,7 +59,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private final static int GROUP_BY_CATEGORY=1;
 	private int currentGroupBy = GROUP_BY_DATE;
 	private QuickActionGrid quickActionGridFilter = null;
-	private StatsCursorAdapter statsCursorAdapter = null;
+	private StatsGraphView statGraphView = null;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -75,6 +76,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		super.onCreate(savedInstanceState);
 		super.setActionBarContentView(R.layout.stats_activity);
 		setTitle(R.string.activity_title_statistics);
+		super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
 		/* Display a custom icon as action bar item */
 		int drawableId = R.drawable.action_bar_graph;
@@ -108,9 +110,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
+		
 
 
-		final TmhActivity activity = this;
+		/*final TmhActivity activity = this;
 		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -119,7 +122,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			}
 		};
 
-		/*
+		
 		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
 				this, 
 				getString(R.string.warning), 
@@ -130,6 +133,22 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		initHeaderGalleries();
 		refreshHeaderGallery();
 		refreshDisplay();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if(statGraphView == null) {
+			LinearLayout graphLayout = (LinearLayout)findViewById(R.id.graph);
+			statGraphView = new StatsGraphView(this, graphLayout);
+		} else {
+			refreshDisplay();
+		}
+	}
+	
+	public StatsGraphView getStatsGraphView() {
+		return statGraphView;
 	}
 
 	@Override
@@ -143,42 +162,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			resetDialogCategoryChooser = true;
 			break;
 		case TmhApplication.ACTION_BAR_GRAPH:
-			// All values must be the same sign (all + or all - not a mix)
-			// Creating view
-			int cptValuesPlus = 0;
-			Intent intent = new Intent(this, StatsGraphActivity.class);
-			String[] names = new String[statsCursorAdapter.getCount()];
-			int[] colors = new int[statsCursorAdapter.getCount()];
-			double[] values = new double[statsCursorAdapter.getCount()];
-			
-			String colName = currentGroupBy == GROUP_BY_CATEGORY ? CategoryData.KEY_NAME : "dateString";
-			String colValue = "amountString";
-			for (int i = 0; i < statsCursorAdapter.getCount(); i++) {
-				Cursor c = (Cursor)statsCursorAdapter.getItem(i);
-				
-				int idxColName = c.getColumnIndexOrThrow(colName);
-				int idxColValue = c.getColumnIndexOrThrow(colValue);
-				
-				String name = c.getString(idxColName);
-				double value = c.getDouble(idxColValue);
-				if(value>=0)
-					cptValuesPlus++;
-				
-				
-				// Random colors for now
-				colors[i] = Color.rgb((int)(Math.random()*100%255), (int)(Math.random()*100%255), (int)(Math.random()*100%255));
-				names[i] = name;
-				values[i] = value;
-			}
-			
-			if(cptValuesPlus == 0 || cptValuesPlus == statsCursorAdapter.getCount()) {
-				intent.putExtra("colors", colors);
-				intent.putExtra("names", names);
-				intent.putExtra("values", values);
-				startActivity(intent);
-			} else {
-				Toast.makeText(this, R.string.stats_graph_error_series, Toast.LENGTH_SHORT).show();
-			}
 			break;
 		default:
 			return super.onHandleActionBarItemClick(item, position);
@@ -244,7 +227,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 
 		DateGalleryAdapter adapter1 = new DateGalleryAdapter(this, datesAdvanced);
-		SimpleDateFormat dateFirst = new SimpleDateFormat("dd/MM/yyyy");
+		//SimpleDateFormat dateFirst = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat dateFirst = SimpleDateFormat.getDateInstance();
 		adapter1.setFirstDateFormat(dateFirst);
 		adapter1.setSecondDateFormat(null);
 
@@ -325,49 +309,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	}
 
 	@Override
-	public void refreshDisplay() {
-		Account account = StaticData.getCurrentAccount();
-
-		//Date now = new GregorianCalendar().getTime();
-		Operation dummyOp = new Operation();
-
-		Date beg = null, end = null;
-		if(! StaticData.isStatsAdvancedFilter()) {
-			int oldPos = StaticData.getPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED);
-			if(oldPos != -1) {
-				Date dateSelected = (Date)galleryDate.getAdapter().getItem(oldPos);
-				beg = DateUtil.getFirstDayOfMonth(dateSelected);
-				end = DateUtil.getLastDayOfMonth(dateSelected);
-			}
-		} else {
-			beg = StaticData.getStatsDateBeg();
-			end = StaticData.getStatsDateEnd();
-		}
-
-		Cursor cursor = null;
-		String[] from = null;
-		
-		switch(currentGroupBy) {
-			case GROUP_BY_DATE:
-				cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-				from = new String[]{"dateString", "amountString"};
-				break;
-			case GROUP_BY_CATEGORY:
-				cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-				from = new String[]{CategoryData.KEY_NAME, "amountString"};
-				break;
-		}
-		
-		// Set cursor from selected period
-		statsCursorAdapter = new StatsCursorAdapter(this,
-				R.layout.stats_item,
-				cursor,
-				from,
-				new int[]{R.id.text, R.id.amount});
-		listView.setAdapter(statsCursorAdapter);
-	}
-
-	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		// Update items view (background color for selected item)
 		Gallery gallery = (Gallery) parent;
@@ -395,4 +336,83 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {}
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		Map<Integer, Object> results = new HashMap<Integer, Object>();
+		Cursor cursor = null;
+		
+		Account account = StaticData.getCurrentAccount();
+		Operation dummyOp = new Operation();
+
+		Date beg = null, end = null;
+		if(! StaticData.isStatsAdvancedFilter()) {
+			int oldPos = StaticData.getPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED);
+			if(oldPos != -1) {
+				Date dateSelected = (Date)galleryDate.getAdapter().getItem(oldPos);
+				beg = DateUtil.getFirstDayOfMonth(dateSelected);
+				end = DateUtil.getLastDayOfMonth(dateSelected);
+			}
+		} else {
+			beg = StaticData.getStatsDateBeg();
+			end = StaticData.getStatsDateEnd();
+		}
+		
+		switch(currentGroupBy) {
+			case GROUP_BY_DATE:
+				cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+				break;
+			case GROUP_BY_CATEGORY:
+				cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+				break;
+		}
+		
+		results.put(0, cursor);
+		return results;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		String[] from = null;
+		switch(currentGroupBy) {
+			case GROUP_BY_DATE:
+				from = new String[]{"dateString", "amountString"};
+				break;
+			case GROUP_BY_CATEGORY:
+				from = new String[]{CategoryData.KEY_NAME, "amountString"};
+				break;
+		}
+		
+		// Set cursor from selected period
+		StatsCursorAdapter statsCursorAdapter = new StatsCursorAdapter(this,
+				R.layout.stats_item,
+				(Cursor)results.get(0),
+				from,
+				new int[]{R.id.text, R.id.amount});
+		listView.setAdapter(statsCursorAdapter);
+		
+		// refresh graphical view
+		if(statGraphView != null) {
+			statGraphView.clear();
+			String colName = currentGroupBy == GROUP_BY_CATEGORY ? CategoryData.KEY_NAME : "dateString";
+			String colValue = "amountString";
+			
+			int count = statsCursorAdapter.getCount();
+			for (int i = 0; i < count; i++) {
+				Cursor c = (Cursor)statsCursorAdapter.getItem(i);
+				
+				int idxColName = c.getColumnIndex(colName);
+				int idxColValue = c.getColumnIndex(colValue);
+				
+				String name = c.getString(idxColName);
+				double value = c.getDouble(idxColValue);
+				
+				statGraphView.addToSeries(Color.rgb((int)(Math.random()*100%255), (int)(Math.random()*100%255), (int)(Math.random()*100%255)),
+						name, 
+						Math.abs(value));
+			}
+			
+			statGraphView.refresh();
+		}
+	}
 }

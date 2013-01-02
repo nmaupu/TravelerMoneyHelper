@@ -39,26 +39,6 @@ public class TmhApplication extends GDApplication {
 		//initDefaultCurrency();
 	}
 	
-	/*
-	private Currency initDefaultCurrency() {
-		// Adding default currency (euro) if needed
-		Currency currency = new Currency();
-		Cursor cursor = currency.fetchAll();
-		if(cursor.getCount() > 0)
-			return null;
-		
-		
-		currency.setIsoCode("EUR");
-		currency.setLastUpdate(new GregorianCalendar().getTime());
-		currency.setLongName("Euro");
-		java.util.Currency c = java.util.Currency.getInstance("EUR");
-		currency.setShortName(c.getSymbol());
-		currency.setRateCurrencyLinked(1.0d);
-		currency.insert();
-		
-		return currency;
-	}*/
-	
 	public static Context getAppContext() {
 		return applicationContext;
 	}

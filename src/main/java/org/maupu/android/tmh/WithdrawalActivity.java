@@ -5,6 +5,7 @@ import greendroid.widget.ActionBarItem;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -21,6 +22,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -55,6 +57,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	private Button buttonToday;
 	private int mYear, mMonth, mDay;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -179,9 +182,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	}
 
 	@Override
-	public void refreshDisplay() {}
-
-	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if(parent.getId() == R.id.spinner_to) {
 			// Select corresponding currency to 'to' account
@@ -193,6 +193,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			Currency currency = new Currency();
 			Cursor c = currency.fetch(currencyId);
 			currency.toDTO(c);
+			c.close();
 
 			spinnerManagerCurrency.setSpinnerPositionCursor(currency.getLongName(), new Currency());
 		}
@@ -267,4 +268,14 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		
 		return amountEditText.getText() != null && ! "".equals(amountEditText.getText().toString().trim());
 	}
+
+	
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		return null;
+	}
+	
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+	}	
 }

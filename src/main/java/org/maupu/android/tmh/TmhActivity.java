@@ -8,6 +8,8 @@ import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
 import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
+import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,6 +19,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +31,11 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-public abstract class TmhActivity extends GDActivity {
+public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher {	
+	public static LayoutInflater getInflater(Context ctx) {
+		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+	
 	public TmhActivity() {
 		super(Type.Normal);
 	}
@@ -110,7 +117,16 @@ public abstract class TmhActivity extends GDActivity {
 	/**
 	 * Called when click refresh button on menu
 	 */
-	public abstract void refreshDisplay();
+	public void refreshDisplay() {
+		AsyncActivityRefresher refresher = new AsyncActivityRefresher(this, this, true);
+		
+		try {
+			// Execute background task implemented by client class
+			refresher.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@SuppressLint("NewApi")
 	public void setActionBarHomeDrawable(int drawable) {

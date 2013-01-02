@@ -87,7 +87,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			ret[i] = String.valueOf(cursor.getInt(idxId));
 			cursor.moveToNext();
 		}
-
+		
+		cursor.close();
 		return ret;
 	}
 
@@ -105,6 +106,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			cursor.moveToNext();
 		}
 		
+		cursor.close();
 		return ret;
 	}
 
@@ -123,6 +125,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			cursor.moveToNext();
 		}
 
+		cursor.close();
 		return ret;
 	}
 
@@ -141,6 +144,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			cursor.moveToNext();
 		}
 
+		cursor.close();
 		return ret;
 	}
 

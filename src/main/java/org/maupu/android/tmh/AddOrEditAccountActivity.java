@@ -3,6 +3,7 @@ package org.maupu.android.tmh;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
@@ -293,5 +294,14 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		public final long getItemId(int position) {
 			return position;
 		}
+	}
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		return null;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {		
 	}
 }

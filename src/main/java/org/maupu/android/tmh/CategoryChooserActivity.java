@@ -1,5 +1,8 @@
 package org.maupu.android.tmh;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
@@ -17,24 +20,34 @@ public class CategoryChooserActivity extends TmhActivity {
 		super.setActionBarContentView(R.layout.category_chooser_activity);
 		setTitle(R.string.activity_title_category_chooser);
 		
-		populateWithData();
+		refreshDisplay();
 	}
 	
-	public void populateWithData() {
-		if (list == null)
-			list = (ListView)findViewById(R.id.list);
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
 		Category cat = new Category();
 		Cursor cursor = cat.fetchAll();
+		
+		Map<Integer, Object> results = new HashMap<Integer, Object>();
+		results.put(0, cursor);
+		
+		return results;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		if (list == null)
+			list = (ListView)findViewById(R.id.list);
+		
+		Cursor c = (Cursor)results.get(0);
+		
 		CheckableCursorAdapter adapter = new CheckableCursorAdapter(this, 
 				R.layout.category_item,
-				cursor, 
+				c, 
 				new String[]{CategoryData.KEY_NAME}, 
 				new int[]{R.id.name});
 		list.setAdapter(adapter);
 	}
-
-	@Override
-	public void refreshDisplay() {
-		populateWithData();
-	}
+	
+	
 }

@@ -1,33 +1,20 @@
 package org.maupu.android.tmh;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.util.GoogleRateAsyncUpdater;
+import org.maupu.android.tmh.ui.async.GoogleRateAsyncUpdater;
 
 import android.database.Cursor;
-import android.util.Log;
 
 public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
 		super(R.string.activity_title_manage_currency, AddOrEditCurrencyActivity.class, new Currency(), true);
-	}
-
-	@Override
-	public void refreshDisplay() {
-		Log.d(ManageCurrencyActivity.class.getName(), "Enter refresh display");
-		Currency currency = new Currency();
-		Cursor c = currency.fetchAll();
-		
-		super.activateUpdateButton();
-
-		super.setAdapter(
-				R.layout.currency_item,
-				c,
-				new String[]{CurrencyData.KEY_LONG_NAME, CurrencyData.KEY_SHORT_NAME, CurrencyData.KEY_CURRENCY_LINKED, CurrencyData.KEY_LAST_UPDATE},
-				new int[]{R.id.longName, R.id.shortName, R.id.rateCurrencyLinked, R.id.lastUpdate});
 	}
 
 	@Override
@@ -40,7 +27,7 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 				new String[] {AccountData.KEY_ID},
 				AccountData.KEY_ID_CURRENCY+"="+obj.getId(),
 				null, null, null, null).getCount();
-		
+
 		return nb == 0;
 	}
 
@@ -48,20 +35,45 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	protected void onClickUpdate(Integer[] objs) {
 		Currency[] currencies = new Currency[objs.length];
 		GoogleRateAsyncUpdater rateUpdater = new GoogleRateAsyncUpdater(this);
-		
+
 		// Loading currencies list from objs
 		for(int i=0; i<objs.length; i++) {
 			Currency cur = new Currency();
 			Cursor c = cur.fetch(objs[i]);
 			cur.toDTO(c);
-			
+			c.close();
+
 			currencies[i] = cur;
 		}
-		
+
 		try {
 			rateUpdater.execute(currencies);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		Currency currency = new Currency();
+		Cursor c = currency.fetchAll();
+		
+		Map<Integer, Object> results = new HashMap<Integer, Object>();
+		results.put(0, c);
+		
+		return results;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		super.activateUpdateButton();
+		
+		Cursor c = (Cursor)results.get(0);
+
+		super.setAdapter(
+				R.layout.currency_item,
+				c,
+				new String[]{CurrencyData.KEY_LONG_NAME, CurrencyData.KEY_SHORT_NAME, CurrencyData.KEY_CURRENCY_LINKED, CurrencyData.KEY_LAST_UPDATE},
+				new int[]{R.id.longName, R.id.shortName, R.id.rateCurrencyLinked, R.id.lastUpdate});
 	}
 }

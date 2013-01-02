@@ -230,7 +230,6 @@ public abstract class StaticData {
 			return null;
 		}
 		
-		
 		return category;
 	}
 	

@@ -100,6 +100,6 @@
     <string name="welcome_account">Créer un compte</string>
     <string name="update">Màj</string>
     <string name="graph">Graph</string>
-    <string name="stats_graph_error_series">Toutes les valeurs ne sont pas du même signe, impossible de tracer un camembert !</string>
+    <string name="refreshing">Refreshing#8230;</string>
 
 </resources>

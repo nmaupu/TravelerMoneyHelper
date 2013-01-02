@@ -3,12 +3,16 @@ package org.maupu.android.tmh;
 import greendroid.widget.ActionBarItem;
 import greendroid.widget.QuickActionGrid;
 
+import java.util.Map;
+
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.ui.CustomActionBarItem;
 import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -20,12 +24,16 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	private int currentPosition;
 	private QuickActionGrid quickActionGrid;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setActionBarContentView(R.layout.viewpager_operation);
 		setTitle("Operations");
+		
+		// Force portrait
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		quickActionGrid = createQuickActionGridEdition();
 		
@@ -71,19 +79,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	}
 
 	@Override
-	public void refreshDisplay() {
-		adapter.refreshItemView(currentPosition);
-	}
-
-	/*
-	@Override
-	protected Intent onAddClicked() {
-		
-
-		return intent;
-	}*/
-
-	@Override
 	public void onPageScrollStateChanged(int position) {}
 
 	@Override
@@ -92,5 +87,20 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	@Override
 	public void onPageSelected(int position) {
 		currentPosition = position;
+	}
+	
+	@Override
+	public void refreshDisplay() {
+		adapter.refreshItemView(currentPosition);
+	}
+
+	// Not used
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		return null;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> c) {
 	}
 }

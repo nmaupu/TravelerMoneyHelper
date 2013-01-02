@@ -121,7 +121,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 				}).show();
 			}
 		}
-			
+		
 		smCategory.setAdapter(c, CategoryData.KEY_NAME);
 		// Set spinner category to current selected one if exists
 		Category cat = StaticData.getCurrentSelectedCategory();

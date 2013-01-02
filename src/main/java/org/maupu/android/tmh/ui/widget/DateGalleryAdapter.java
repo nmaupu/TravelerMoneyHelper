@@ -1,11 +1,13 @@
 package org.maupu.android.tmh.ui.widget;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.maupu.android.tmh.R;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -17,8 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class DateGalleryAdapter extends BaseAdapter {
-	private SimpleDateFormat simpleDateFormatFirst = new SimpleDateFormat("MMMM");
-	private SimpleDateFormat simpleDateFormatSecond = new SimpleDateFormat("yyyy");
+	@SuppressLint("SimpleDateFormat")
+	private DateFormat dateFormatFirst = new SimpleDateFormat("MMMM");
+	@SuppressLint("SimpleDateFormat")
+	private DateFormat dateFormatSecond = new SimpleDateFormat("yyyy");
 	private List<Date> dates;
 	private Context context;
 
@@ -32,12 +36,12 @@ public class DateGalleryAdapter extends BaseAdapter {
 		setData(list);
 	}
 	
-	public void setFirstDateFormat(SimpleDateFormat sdf) {
-		simpleDateFormatFirst = sdf;
+	public void setFirstDateFormat(DateFormat df) {
+		dateFormatFirst = df;
 	}
 	
-	public void setSecondDateFormat(SimpleDateFormat sdf) {
-		simpleDateFormatSecond = sdf;
+	public void setSecondDateFormat(DateFormat df) {
+		dateFormatSecond = df;
 	}
 
 	public void setData(List<Date> list) {
@@ -55,13 +59,13 @@ public class DateGalleryAdapter extends BaseAdapter {
 		TextView tvFirst = (TextView)convertView.findViewById(R.id.text_view_first);
 		TextView tvSecond = (TextView)convertView.findViewById(R.id.text_view_second);
 
-		if(simpleDateFormatFirst != null)
-			tvFirst.setText(simpleDateFormatFirst.format(getItem(position)));
+		if(dateFormatFirst != null)
+			tvFirst.setText(dateFormatFirst.format(getItem(position)));
 		else
 			tvFirst.setVisibility(View.GONE);
 		
-		if(simpleDateFormatSecond != null)
-			tvSecond.setText(simpleDateFormatSecond.format(getItem(position)));
+		if(dateFormatSecond != null)
+			tvSecond.setText(dateFormatSecond.format(getItem(position)));
 		else
 			tvSecond.setVisibility(View.GONE);
 		

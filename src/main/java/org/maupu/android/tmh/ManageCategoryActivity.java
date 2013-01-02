@@ -1,5 +1,8 @@
 package org.maupu.android.tmh;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
@@ -32,16 +35,26 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	}
 
 	@Override
-	public void refreshDisplay() {
+	protected void onClickUpdate(Integer[] objs) {}
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
 		Category category = new Category();
-		Cursor cursor = category.fetchAll();
+		Cursor c = category.fetchAll();
 		
-		super.setAdapter(R.layout.category_item, 
-				cursor, 
-				new String[]{CategoryData.KEY_NAME}, 
-				new int[]{R.id.name});
+		Map<Integer, Object> results = new HashMap<Integer, Object>();
+		results.put(0, c);
+		
+		return results;
 	}
 
 	@Override
-	protected void onClickUpdate(Integer[] objs) {}
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		Cursor c = (Cursor)results.get(0);
+		
+		super.setAdapter(R.layout.category_item, 
+				c, 
+				new String[]{CategoryData.KEY_NAME}, 
+				new int[]{R.id.name});
+	}
 }

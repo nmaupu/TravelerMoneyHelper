@@ -74,7 +74,6 @@ public abstract class DialogHelper {
 		dialog.setContentView(R.layout.category_chooser_activity);
 		dialog.findViewById(R.id.list);
 		
-		
 		Button btnValidate = (Button)dialog.findViewById(R.id.btn_validate);
 		final ListView list = (ListView)dialog.findViewById(R.id.list);
 		

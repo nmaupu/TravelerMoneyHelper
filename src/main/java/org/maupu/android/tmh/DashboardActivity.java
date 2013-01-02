@@ -163,6 +163,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	    	Cursor c = account.fetchAll();
 	    	c.moveToFirst();
 	    	account.toDTO(c);
+	    	c.close();
 	    	StaticData.setCurrentAccount(account);
 	    	
 	    	// Setting main currency to the one created earlier
@@ -172,6 +173,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 				c.moveToFirst();
 				cur.toDTO(c);
 				StaticData.setMainCurrency(cur.getId());
+				c.close();
 			}
 	    	
 	    	imageCategory.setImageResource(R.drawable.validate);

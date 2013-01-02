@@ -6,67 +6,73 @@ import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 
-import android.content.Intent;
+import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
-public class StatsGraphActivity extends TmhActivity {
+public class StatsGraphView {
 	private DefaultRenderer mRenderer = null;
-	private GraphicalView mChartView;
+	private GraphicalView mGraphicalView = null;
+	private LinearLayout mLayout = null;
+	private Context mCtx;
 
 	// Warning : Even if we may draw categories, nothing related to TMH here ;)
 	private CategorySeries mSeries = new CategorySeries("");
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		super.setActionBarContentView(R.layout.stats_graph_activity);
-		setTitle(R.string.activity_title_statistics);
-
+	
+	public StatsGraphView(Context ctx, LinearLayout layout) {
+		mLayout = layout;
+		mCtx = ctx;
+		
 		initRenderer();
 		
-		/* Getting series from extra
-		 * Series are store as a triple color, name, value inside a arrays named
-		 * respectively colors, names and values
-		 */
-		Intent intent = getIntent();
-		Bundle b = intent.getExtras();
-		
-		String[] names = b.getStringArray("names");
-		int[] colors = b.getIntArray("colors");
-		double[] values = b.getDoubleArray("values");
-		
-		for(int i=0; i<names.length; i++) {
-			addToSeries(colors[i], names[i], values[i]);
-		}
+		//addToSeries(Color.BLACK, "dummy", 0);
+		mGraphicalView = ChartFactory.getPieChartView(mCtx, mSeries, mRenderer);
+		layout.addView(mGraphicalView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
 	
+	public GraphicalView getGraphicalView() {
+		return mGraphicalView;
+	}
+	
+	public LinearLayout getLayout() {
+		return mLayout;
+	}
+	
+	public DefaultRenderer getRenderer() {
+		return mRenderer;
+	}
+	
+	//
 	private void initRenderer() {
-		mRenderer = new DefaultRenderer();
+		if(mRenderer == null) {
+			mRenderer = new DefaultRenderer();
+		} else {
+			SimpleSeriesRenderer[] series = mRenderer.getSeriesRenderers();
+			for(int i=0; i<series.length; i++) {
+				mRenderer.removeSeriesRenderer(series[i]);
+			}
+		}
 		
 		mRenderer.setApplyBackgroundColor(true);
-		mRenderer.setBackgroundColor(Color.argb(100, 0, 0, 0));
+		mRenderer.setBackgroundColor(Color.argb(255, 255, 255, 255));
 		mRenderer.setChartTitleTextSize(20);
 		mRenderer.setLabelsTextSize(15);
 		mRenderer.setLegendTextSize(15);
-		mRenderer.setMargins(new int[] { 20, 30, 15, 0 });
+		mRenderer.setMargins(new int[] { 10, 10, 10, 10});
 		mRenderer.setZoomButtonsVisible(false);
 		mRenderer.setStartAngle(90);
 		mRenderer.setClickEnabled(false);
 		mRenderer.setAntialiasing(true);
 		mRenderer.setPanEnabled(false);
 		mRenderer.setFitLegend(true);
+		mRenderer.setClickEnabled(true);
+		mRenderer.setSelectableBuffer(10);
 	}
+	
 
-	@Override
-	public void refreshDisplay() {
-		if(mChartView != null)
-			mChartView.repaint();
-	}
-
+	/*
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -81,12 +87,10 @@ public class StatsGraphActivity extends TmhActivity {
 		} else {
 			refreshDisplay();
 		}
-	}
+	}*/
 	
 	public void addToSeries(int color, String name, double value) {
-		Log.d(StatsGraphActivity.class.getName(), "Pushing serie : name="+name+", value="+value+", color="+color);
-		if(mRenderer == null)
-			initRenderer();
+		Log.d(StatsGraphView.class.getName(), "Pushing serie : name="+name+", value="+value+", color="+color);
 		
 		mSeries.add(name, value);
 		SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();
@@ -94,8 +98,12 @@ public class StatsGraphActivity extends TmhActivity {
 		mRenderer.addSeriesRenderer(renderer);
 	}
 	
-	public void clearSeries() {
+	public void clear() {
 		mSeries.clear();
 		initRenderer();
+	}
+	
+	public void refresh() {
+		mGraphicalView.repaint();
 	}
 }

@@ -2,12 +2,15 @@ package org.maupu.android.tmh;
 
 import greendroid.widget.ActionBarItem;
 
+import java.util.Map;
+
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomActionBarItem;
 import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +36,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		this.title = title;
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -155,11 +159,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	 */
 	protected abstract void fieldsToBaseObject(T obj);
 
-	public void refreshDisplay() {
-		// Restore from begining
-		baseObjectToFields(obj);
-	}
-
 	// Menu item is disabled, so do nothing here
 	protected Intent onAddClicked() {
 		return null;
@@ -175,5 +174,17 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	 */
 	public boolean isEditing() {
 		return obj != null && obj.getId() != null;
+	}
+	
+	
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		return null;
+	}
+	
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		// Restore from beginning
+		baseObjectToFields(obj);
 	}
 }

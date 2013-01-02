@@ -1,6 +1,8 @@
 package org.maupu.android.tmh;
 
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
@@ -55,26 +57,6 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	}
 
 	@Override
-	public void refreshDisplay() {
-		if(spinnerAccountManager == null)
-			return;
-		
-		Cursor c = spinnerAccountManager.getSelectedItem();
-		int idxId = c.getColumnIndexOrThrow(AccountData.KEY_ID);
-		int id = c.getInt(idxId);
-		
-		dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
-		c = dummyOperation.fetchByMonth(new GregorianCalendar().getTime());
-
-		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
-				R.layout.operation_item,
-				c,
-				new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
-				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
-		super.setAdapter(adapter);
-	}
-
-	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		refreshDisplay();
 	}
@@ -89,4 +71,43 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	
 	@Override
 	protected void onClickUpdate(Integer[] objs) {}
+	
+	@Override
+	public void refreshDisplay() {
+		
+		
+		
+		
+	}
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		Cursor cursor = spinnerAccountManager.getSelectedItem();
+		int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
+		int id = cursor.getInt(idxId);
+		
+		dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
+		Cursor c = dummyOperation.fetchByMonth(new GregorianCalendar().getTime());
+		
+		Map<Integer, Object> results = new HashMap<Integer, Object>();
+		results.put(0, c);
+		
+		return results;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {
+		if(spinnerAccountManager == null)
+			return;
+		
+		Cursor c = (Cursor) results.get(0);
+		
+		// reset adapter
+		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
+				R.layout.operation_item,
+				c,
+				new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
+				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
+		super.setAdapter(adapter);
+	}
 }

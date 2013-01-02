@@ -4,6 +4,8 @@ import org.maupu.android.tmh.database.object.BaseObject;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.sax.StartElementListener;
+import android.support.v4.content.Loader;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
