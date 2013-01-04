@@ -29,7 +29,6 @@ import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 
 import android.annotation.SuppressLint;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -44,6 +43,7 @@ import android.widget.Gallery;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+@SuppressLint("UseSparseArrays")
 public class StatsActivity extends TmhActivity implements OnItemSelectedListener {
 	private ListView listView;
 	private Gallery galleryDate;
@@ -60,6 +60,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private int currentGroupBy = GROUP_BY_DATE;
 	private QuickActionGrid quickActionGridFilter = null;
 	private StatsGraphView statGraphView = null;
+	private StatsCursorAdapter statsCursorAdapter = null;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -76,15 +77,17 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		super.onCreate(savedInstanceState);
 		super.setActionBarContentView(R.layout.stats_activity);
 		setTitle(R.string.activity_title_statistics);
-		super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+		
+		// force portrait
+		//super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		/* Display a custom icon as action bar item */
 		int drawableId = R.drawable.action_bar_graph;
 		int descriptionId = R.string.graph;
-        
-        final Drawable d = new ActionBarDrawable(getActionBar().getContext(), drawableId);
-        ActionBarItem abiGraph = getActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
-        addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
+
+		final Drawable d = new ActionBarDrawable(getActionBar().getContext(), drawableId);
+		ActionBarItem abiGraph = getActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
+		addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
 		/* End of displaying a custom icon in action bar item */
 		// Change list type (sum by category or by date)
 		addActionBarItem(Type.Settings, TmhApplication.ACTION_BAR_GROUPBY);
@@ -102,15 +105,15 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				refreshDisplay();
 			}
 		});
-		
-		
+
+
 		//
 		listView = (ListView)findViewById(R.id.list);
 		galleryDate = (Gallery)findViewById(R.id.gallery_date);
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
-		
+
 
 
 		/*final TmhActivity activity = this;
@@ -122,7 +125,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			}
 		};
 
-		
+
 		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
 				this, 
 				getString(R.string.warning), 
@@ -134,7 +137,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		refreshHeaderGallery();
 		refreshDisplay();
 	}
-	
+
+	@Override
+	protected void onDestroy() {
+		closeStatsCursorAdapterIfNeeded();
+		super.onDestroy();
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -146,7 +155,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 		}
 	}
-	
+
 	public StatsGraphView getStatsGraphView() {
 		return statGraphView;
 	}
@@ -341,7 +350,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	public Map<Integer, Object> handleRefreshBackground() {
 		Map<Integer, Object> results = new HashMap<Integer, Object>();
 		Cursor cursor = null;
-		
+
 		Account account = StaticData.getCurrentAccount();
 		Operation dummyOp = new Operation();
 
@@ -357,16 +366,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			beg = StaticData.getStatsDateBeg();
 			end = StaticData.getStatsDateEnd();
 		}
-		
+
 		switch(currentGroupBy) {
-			case GROUP_BY_DATE:
-				cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-				break;
-			case GROUP_BY_CATEGORY:
-				cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-				break;
+		case GROUP_BY_DATE:
+			cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			break;
+		case GROUP_BY_CATEGORY:
+			cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			break;
 		}
-		
+
 		results.put(0, cursor);
 		return results;
 	}
@@ -375,44 +384,54 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	public void handleRefreshEnding(Map<Integer, Object> results) {
 		String[] from = null;
 		switch(currentGroupBy) {
-			case GROUP_BY_DATE:
-				from = new String[]{"dateString", "amountString"};
-				break;
-			case GROUP_BY_CATEGORY:
-				from = new String[]{CategoryData.KEY_NAME, "amountString"};
-				break;
+		case GROUP_BY_DATE:
+			from = new String[]{"dateString", "amountString"};
+			break;
+		case GROUP_BY_CATEGORY:
+			from = new String[]{CategoryData.KEY_NAME, "amountString"};
+			break;
 		}
-		
+
+		closeStatsCursorAdapterIfNeeded();
+
 		// Set cursor from selected period
-		StatsCursorAdapter statsCursorAdapter = new StatsCursorAdapter(this,
+		statsCursorAdapter = new StatsCursorAdapter(this,
 				R.layout.stats_item,
 				(Cursor)results.get(0),
 				from,
 				new int[]{R.id.text, R.id.amount});
 		listView.setAdapter(statsCursorAdapter);
-		
+
 		// refresh graphical view
 		if(statGraphView != null) {
 			statGraphView.clear();
 			String colName = currentGroupBy == GROUP_BY_CATEGORY ? CategoryData.KEY_NAME : "dateString";
 			String colValue = "amountString";
-			
+
 			int count = statsCursorAdapter.getCount();
 			for (int i = 0; i < count; i++) {
 				Cursor c = (Cursor)statsCursorAdapter.getItem(i);
-				
+
 				int idxColName = c.getColumnIndex(colName);
 				int idxColValue = c.getColumnIndex(colValue);
-				
+
 				String name = c.getString(idxColName);
 				double value = c.getDouble(idxColValue);
-				
+
 				statGraphView.addToSeries(Color.rgb((int)(Math.random()*100%255), (int)(Math.random()*100%255), (int)(Math.random()*100%255)),
 						name, 
 						Math.abs(value));
 			}
-			
+
 			statGraphView.refresh();
+		}
+	}
+
+	private void closeStatsCursorAdapterIfNeeded() {
+		try {
+			statsCursorAdapter.getCursor().close();
+		} catch (NullPointerException npe) {
+			// Nothing to be done
 		}
 	}
 }

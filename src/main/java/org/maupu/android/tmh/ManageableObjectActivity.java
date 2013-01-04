@@ -11,6 +11,7 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+@SuppressLint("NewApi")
 public abstract class ManageableObjectActivity<T extends BaseObject> extends TmhActivity implements NumberCheckedListener, OnClickListener {
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
@@ -40,6 +42,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private T obj;
 	private QuickActionGrid quickActionGrid;
 	private boolean animList = false;
+	private CheckableCursorAdapter checkableCursorAdapter = null;
 
 	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, boolean animList) {
 		this(title, addOrEditActivity, obj, R.layout.manageable_object, animList);
@@ -116,7 +119,12 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	}
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
-		setAdapter(new CheckableCursorAdapter(this, layout, data, from, to));
+		checkableCursorAdapter = new CheckableCursorAdapter(this, layout, data, from, to);
+		setAdapter(checkableCursorAdapter);
+	}
+	
+	public CheckableCursorAdapter getAdapter() {
+		return checkableCursorAdapter;
 	}
 
 	public void setAdapter(CheckableCursorAdapter adapter) {

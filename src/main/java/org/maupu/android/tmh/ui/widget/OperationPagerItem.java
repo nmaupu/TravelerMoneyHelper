@@ -45,10 +45,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+@SuppressLint("UseSparseArrays")
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
 	private final static Integer REFRESH_CURSOR_OPERATIONS = 0;
-	private final static Integer REFRESH_SBUILDER_BALANCE = 2;
-	private final static Integer REFRESH_SBUILDER_TOTAL = 3;
+	private final static Integer REFRESH_SBUILDER_BALANCE = 1;
+	private final static Integer REFRESH_SBUILDER_TOTAL = 2;
 	private ViewPagerOperationActivity viewPagerOperationActivity;
 	private View view;
 	private Date date;
@@ -199,6 +200,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private void buttonsBarGone() {
 		setVisibilityButtonsBar(R.anim.pushdown, false);
 	}
+	
+	public void closeCursors() {
+		try {
+			((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
+		} catch(NullPointerException npe) {
+			// Nothing to close
+		}
+	}
 
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
 		View v = (View)view.findViewById(R.id.layout_root_footer);
@@ -287,10 +296,11 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			// Process balance
 			Currency mainCur = StaticData.getMainCurrency();
 			String symbolCurrency = null;
-			if(mainCur != null)
-				symbolCurrency = java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol();
-			else
+			try {
+				symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
+			} catch(NullPointerException npe) {
 				symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
+			}
 			
 			AccountBalance balance = currentAccount.getComputedBalance();
 			StringBuilder sBuilder = new StringBuilder();
@@ -365,6 +375,13 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			Cursor cursor = (Cursor)results.get(REFRESH_CURSOR_OPERATIONS);
 			
 			if(cursor != null) {
+				// Close previous cursor before new assignation
+				try {
+					((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
+				} catch(NullPointerException npe) {
+					// Something not yet initialized - do nothing
+				}
+				
 				OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
 					viewPagerOperationActivity, 
 					R.layout.operation_item, 

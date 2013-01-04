@@ -85,6 +85,16 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	}
 	
 	@Override
+	protected void onDestroy() {
+		spinnerManagerFrom.closeAdapterCursor();
+		spinnerManagerTo.closeAdapterCursor();
+		spinnerManagerCurrency.closeAdapterCursor();
+		spinnerManagerCategory.closeAdapterCursor();
+		
+		super.onDestroy();
+	}
+	
+	@Override
 	public void onClick(View v) {
 		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);

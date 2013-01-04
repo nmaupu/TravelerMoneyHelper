@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -21,6 +22,7 @@ import android.view.View;
  * @author nmaupu
  *
  */
+@SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
 	private ViewPagerOperationActivity ctx;
 	private final static int count = 25;
@@ -53,6 +55,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 	@Override
 	public void destroyItem(View pager, int position, Object view) {
 		((ViewPager)pager).removeView((View)view);
+		items.get(position).closeCursors();
 		items.remove(position);
 	}
 

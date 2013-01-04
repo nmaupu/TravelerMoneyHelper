@@ -10,8 +10,10 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.async.GoogleRateAsyncUpdater;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 
+@SuppressLint("UseSparseArrays")
 public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
 		super(R.string.activity_title_manage_currency, AddOrEditCurrencyActivity.class, new Currency(), true);
@@ -29,6 +31,13 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 				null, null, null, null).getCount();
 
 		return nb == 0;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		closeCursorAdapterIfNeeded();
+		
+		super.onDestroy();
 	}
 
 	@Override
@@ -69,11 +78,21 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 		super.activateUpdateButton();
 		
 		Cursor c = (Cursor)results.get(0);
+		
+		closeCursorAdapterIfNeeded();
 
 		super.setAdapter(
 				R.layout.currency_item,
 				c,
 				new String[]{CurrencyData.KEY_LONG_NAME, CurrencyData.KEY_SHORT_NAME, CurrencyData.KEY_CURRENCY_LINKED, CurrencyData.KEY_LAST_UPDATE},
 				new int[]{R.id.longName, R.id.shortName, R.id.rateCurrencyLinked, R.id.lastUpdate});
+	}
+	
+	private void closeCursorAdapterIfNeeded() {
+		try {
+			super.getAdapter().getCursor().close();
+		} catch(NullPointerException npe) {
+			// nothing to be done
+		}
 	}
 }

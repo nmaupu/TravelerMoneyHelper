@@ -87,6 +87,12 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 
 		loadApps();
 	}
+	
+	@Override
+	protected void onDestroy() {
+		spinnerCurrencyManager.closeAdapterCursor();
+		super.onDestroy();
+	}
 
 	private void loadApps() {
 		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);

@@ -12,7 +12,6 @@ import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -33,7 +32,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		setTitle("Operations");
 		
 		// Force portrait
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		quickActionGrid = createQuickActionGridEdition();
 		
@@ -51,7 +50,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		vp.setOnPageChangeListener(this);
 	}
-
+	
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {

@@ -13,6 +13,7 @@ import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -23,9 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 
+@SuppressLint("UseSparseArrays")
 public class ManageOperationActivity extends ManageableObjectActivity<Operation> implements OnItemSelectedListener, IViewPagerAdapter{
 	private static Operation dummyOperation = new Operation();
 	private SpinnerManager spinnerAccountManager;
+	private IconCheckableCursorAdapter iconCheckableCursorAdapter = null;
 	//private ViewPagerAdapter vpAdapter;
 
 	public ManageOperationActivity() {
@@ -36,6 +39,14 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	@Override
 	protected boolean validateConstraintsForDeletion(Operation obj) {
 		return true;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		spinnerAccountManager.closeAdapterCursor();
+		closeIconCheckableCursorAdapterIfNeeded();
+		
+		super.onDestroy();
 	}
 	
 	@Override
@@ -71,14 +82,6 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 	
 	@Override
 	protected void onClickUpdate(Integer[] objs) {}
-	
-	@Override
-	public void refreshDisplay() {
-		
-		
-		
-		
-	}
 
 	@Override
 	public Map<Integer, Object> handleRefreshBackground() {
@@ -102,12 +105,22 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		
 		Cursor c = (Cursor) results.get(0);
 		
+		closeIconCheckableCursorAdapterIfNeeded();
+		
 		// reset adapter
-		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(this, 
+		iconCheckableCursorAdapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,
 				c,
 				new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
 				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
-		super.setAdapter(adapter);
+		super.setAdapter(iconCheckableCursorAdapter);
+	}
+	
+	private void closeIconCheckableCursorAdapterIfNeeded() {
+		try {
+			iconCheckableCursorAdapter.getCursor().close();
+		} catch(NullPointerException npe) {
+			// nothing to be done
+		}
 	}
 }

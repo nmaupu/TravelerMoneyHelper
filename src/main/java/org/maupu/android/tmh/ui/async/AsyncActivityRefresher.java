@@ -13,7 +13,6 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
 	private ProgressDialog waitSpinner;
 	private IAsyncActivityRefresher listener;
 	private boolean displayPopup;
-	private Integer contextPreviousOrientation = null;
 	
 	public AsyncActivityRefresher(TmhActivity context, IAsyncActivityRefresher listener, boolean displayPopup) {
 		this.context = context;
@@ -45,7 +44,6 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
 		if(!context.isFinishing() && displayPopup && !waitSpinner.isShowing())
     		waitSpinner.show();
 		
-    	
 		if(waitSpinner != null && !context.isFinishing()) {
 			waitSpinner.incrementProgressBy(newProgresses[0]);
     	

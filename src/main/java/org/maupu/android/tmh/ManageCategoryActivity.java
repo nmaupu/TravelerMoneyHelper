@@ -9,8 +9,10 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.StaticData;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 
+@SuppressLint("UseSparseArrays")
 public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public ManageCategoryActivity() {
 		super(R.string.activity_title_manage_category, AddOrEditCategoryActivity.class, new Category(), true);
@@ -33,6 +35,13 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 		
 		return nb == 0;
 	}
+	
+	@Override
+	protected void onDestroy() {
+		closeCursorIfNeeded();
+		
+		super.onDestroy();
+	}
 
 	@Override
 	protected void onClickUpdate(Integer[] objs) {}
@@ -52,9 +61,19 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public void handleRefreshEnding(Map<Integer, Object> results) {
 		Cursor c = (Cursor)results.get(0);
 		
+		closeCursorIfNeeded();
+		
 		super.setAdapter(R.layout.category_item, 
 				c, 
 				new String[]{CategoryData.KEY_NAME}, 
 				new int[]{R.id.name});
+	}
+	
+	private void closeCursorIfNeeded() {
+		try {
+			super.getAdapter().getCursor().close();
+		} catch (NullPointerException npe) {
+			// Nothing to be done
+		}
 	}
 }

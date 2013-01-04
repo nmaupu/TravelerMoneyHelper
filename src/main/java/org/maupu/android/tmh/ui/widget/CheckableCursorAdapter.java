@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.maupu.android.tmh.R;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.SimpleCursorAdapter;
  * @author nmaupu
  *
  */
+@SuppressLint("UseSparseArrays")
 public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private NumberCheckedListener listener = null;
 	private Map<Integer, Boolean> positionsChecked = new HashMap<Integer, Boolean>();

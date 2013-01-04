@@ -4,8 +4,6 @@ import org.maupu.android.tmh.database.object.BaseObject;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.sax.StartElementListener;
-import android.support.v4.content.Loader;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -38,8 +36,19 @@ public class SpinnerManager {
 	}
 	
 	public void setAdapter(Cursor c, String from) {
+		// Close previous cursor
+		closeAdapterCursor();
+		
 		spinner.setAdapter(createSpinnerCursorAdapter(c, from));
 		spinner.setEnabled(c != null && c.getCount() > 1);
+	}
+	
+	public void closeAdapterCursor() {
+		try {
+			((SimpleCursorAdapter)spinner.getAdapter()).getCursor().close();
+		} catch (NullPointerException npe) {
+			// Nothing to be done
+		}
 	}
 	
 	/**

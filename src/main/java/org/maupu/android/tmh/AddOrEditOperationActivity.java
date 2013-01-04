@@ -134,6 +134,15 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		if(currentAccount != null && currentAccount.getCurrency() != null)
 			smCurrency.setSpinnerPositionCursor(currentAccount.getCurrency().toString(), new Currency());
 	}
+	
+	@Override
+	protected void onDestroy() {
+		smAccount.closeAdapterCursor();
+		smCategory.closeAdapterCursor();
+		smCurrency.closeAdapterCursor();
+		
+		super.onDestroy();
+	}
 
 	@Override
 	protected boolean validate() {

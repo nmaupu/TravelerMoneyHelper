@@ -7,7 +7,6 @@ import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
-import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 
@@ -52,7 +51,6 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 
 	@Override
 	protected void onDestroy() {
-		TmhApplication.getDatabaseHelper().close();
 		super.onDestroy();
 	}
 
@@ -118,7 +116,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	 * Called when click refresh button on menu
 	 */
 	public void refreshDisplay() {
-		AsyncActivityRefresher refresher = new AsyncActivityRefresher(this, this, true);
+		AsyncActivityRefresher refresher = new AsyncActivityRefresher(this, this, false);
 		
 		try {
 			// Execute background task implemented by client class

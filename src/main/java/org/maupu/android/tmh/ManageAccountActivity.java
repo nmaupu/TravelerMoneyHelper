@@ -9,9 +9,13 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 
+@SuppressLint("UseSparseArrays")
 public class ManageAccountActivity extends ManageableObjectActivity<Account>{
+	private IconCheckableCursorAdapter iconCheckableCursorAdapter = null;
+	
 	public ManageAccountActivity() {
 		super(R.string.activity_title_manage_account, AddOrEditAccountActivity.class, new Account(), true);
 	}
@@ -22,6 +26,13 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 				new String[]{OperationData.KEY_ID},
 				OperationData.KEY_ID_ACCOUNT+"="+obj.getId(), null, null, null, null).getCount();
 		return nb == 0;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		closeIconCheckableCursorAdapterIfNeeded();
+		
+		super.onDestroy();
 	}
 
 	@Override
@@ -42,12 +53,22 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	public void handleRefreshEnding(Map<Integer, Object> results) {
 		Cursor c = (Cursor)results.get(0);
 
+		closeIconCheckableCursorAdapterIfNeeded();
+		
 		// custom custom cursor adapter lol :D
-		IconCheckableCursorAdapter adapter = new IconCheckableCursorAdapter(
+		 iconCheckableCursorAdapter = new IconCheckableCursorAdapter(
 				this, R.layout.icon_name_item,
 				c, 
 				new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
 				new int[]{R.id.icon, R.id.name});
-		super.setAdapter(adapter);
+		super.setAdapter(iconCheckableCursorAdapter);
+	}
+	
+	private void closeIconCheckableCursorAdapterIfNeeded() {
+		try {
+			iconCheckableCursorAdapter.getCursor().close();
+		} catch(NullPointerException npe) {
+			// nothing to be done
+		}
 	}
 }

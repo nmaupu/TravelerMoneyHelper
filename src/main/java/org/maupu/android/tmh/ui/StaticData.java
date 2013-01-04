@@ -152,6 +152,7 @@ public abstract class StaticData {
 		if(currentAccount.getId() == null || currentAccount.getId() != id || !isValidCurrentAccount) {
 			Cursor c = currentAccount.fetch(id);
 			currentAccount.toDTO(c);
+			c.close();
 			isValidCurrentAccount = true;
 		} else if (id < 0) {
 			return null;
@@ -164,12 +165,15 @@ public abstract class StaticData {
 		if(defaultAccountId == null || defaultAccountId == -1 || !isValidCurrentAccount) {
 			// Default is first one
 			Cursor cursor = currentAccount.fetchAll();
-			if(cursor.getCount() == 0)
+			if(cursor.getCount() == 0) {
+				cursor.close();
 				return -1;
+			}
 			
 			cursor.moveToFirst();
 			int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
 			defaultAccountId = cursor.getInt(idxId);
+			cursor.close();
 		}
 		
 		return defaultAccountId;
@@ -185,10 +189,13 @@ public abstract class StaticData {
 			 
 			 if(result == null || result.getCount() != 1) {
 				 setCurrentSelectedCategory(null);
+				 if(result != null)
+					 result.close();
 				 return null;
 			 }
 			 
 			 currentSelectedCategory.toDTO(result);
+			 result.close();
 			 return currentSelectedCategory;
 		}
 	}
@@ -214,20 +221,26 @@ public abstract class StaticData {
 			return null;
 		
 		Category category = null;
+		Cursor cursor = null;
 		try {
 			int id = Integer.parseInt(result);
 			category = new Category();
-			Cursor cursor = category.fetch(id);
-			category.toDTO(cursor);
+			cursor = category.fetch(id);
+			
 			if(cursor == null || cursor.getCount() != 1) {
 				// Invalidate current one
 				setWithdrawalCategory(null);
 				return null;
 			}
+			
+			category.toDTO(cursor);
 		} catch (NumberFormatException nfe) {
 			// not an integer
 			setWithdrawalCategory(null);
 			return null;
+		} finally {
+			if(cursor != null)
+				cursor.close();
 		}
 		
 		return category;
@@ -254,6 +267,7 @@ public abstract class StaticData {
 				mainCurrency = new Currency();
 			Cursor c = mainCurrency.fetch(id);
 			mainCurrency.toDTO(c);
+			c.close();
 		} else if (id < 0) {
 			mainCurrency = null;
 		}
@@ -265,11 +279,16 @@ public abstract class StaticData {
 		Currency cur = new Currency();
 		Cursor c = cur.fetchAllOrderBy(CurrencyData.KEY_ID);
 		
-		if(c == null || c.getCount() == 0)
+		if(c == null || c.getCount() == 0) {
+			if(c != null)
+				c.close();
+			
 			return null;
+		}
 		
 		c.moveToFirst();
 		cur.toDTO(c);
+		c.close();
 		
 		return cur;
 	}
@@ -285,6 +304,7 @@ public abstract class StaticData {
 			return;
 		
 		cur.toDTO(c);
+		c.close();
 		mainCurrency = cur;
 		
 		setPreferenceValueInt(PREF_MAIN_CURRENCY, cur.getId());
