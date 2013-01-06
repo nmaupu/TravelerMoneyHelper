@@ -2,7 +2,6 @@ package org.maupu.android.tmh.ui.widget;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -23,7 +22,6 @@ import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.NumberUtil;
 
@@ -200,7 +198,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	private void buttonsBarGone() {
 		setVisibilityButtonsBar(R.anim.pushdown, false);
 	}
-	
+
 	public void closeCursors() {
 		try {
 			((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
@@ -244,7 +242,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMMM");
 		String dateString = sdfMonth.format(date);
 		textViewTitleMonth.setText(dateString);
-		
+
 		SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
 		dateString = sdfYear.format(date);
 		textViewTitleYear.setText(dateString);
@@ -269,30 +267,16 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	public void refreshDisplay() {
-		// No popup for refreshing data
-		AsyncActivityRefresher refresher = new AsyncActivityRefresher(viewPagerOperationActivity, this, false);
-		
-		try {
-			refresher.execute();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public Map<Integer, Object> handleRefreshBackground() {
-		Map<Integer, Object> results = new HashMap<Integer, Object>();
-		
 		// Getting current account
 		Account currentAccount = StaticData.getCurrentAccount();
 		if(currentAccount != null && currentAccount.getId() != null) {
 			// Process list
 			Operation dummy = new Operation();
 			dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
-			results.put(REFRESH_CURSOR_OPERATIONS, dummy.fetchByMonth(date));
-			
-			Cursor c = dummy.sumOperationsByMonth(currentAccount, date, null);
-			
+
+			Cursor cAllOpMonth = dummy.fetchByMonth(date);
+			Cursor cSumOpMonth = dummy.sumOperationsByMonth(currentAccount, date, null);
+
 			// Process balance
 			Currency mainCur = StaticData.getMainCurrency();
 			String symbolCurrency = null;
@@ -301,9 +285,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			} catch(NullPointerException npe) {
 				symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
 			}
-			
+
 			AccountBalance balance = currentAccount.getComputedBalance();
-			StringBuilder sBuilder = new StringBuilder();
+			StringBuilder sbBalance = new StringBuilder();
 			if(balance.size() == 1) {
 				Set<Integer> s = balance.keySet();
 				Iterator<Integer> it = s.iterator();
@@ -314,30 +298,30 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 				Currency cur = new Currency();
 				Cursor cursor = cur.fetch(curId);
 				cur.toDTO(cursor);
+				cursor.close();
 
-				sBuilder.append(NumberUtil.formatDecimalLocale(b))
+				sbBalance.append(NumberUtil.formatDecimalLocale(b))
 				.append(" ")
 				.append(cur.getShortName())
 				.append(" / ");
 			}
 
-			sBuilder.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
+			sbBalance.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
 			.append(" ")
 			.append(symbolCurrency);
-			
-			results.put(REFRESH_SBUILDER_BALANCE, sBuilder);
-			
-			
+
+
+
 			Double total = 0d;
-			int nbRes = c.getCount();
+			int nbRes = cSumOpMonth.getCount();
 			boolean sameCurrency = (nbRes == 1);
 			for(int i=0; i<nbRes; i++) {
-				int idxSum = c.getColumnIndexOrThrow(Operation.KEY_SUM);
-				int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
-				int idxCurrencyShortName = c.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+				int idxSum = cSumOpMonth.getColumnIndexOrThrow(Operation.KEY_SUM);
+				int idxRate = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+				int idxCurrencyShortName = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
 
-				float amount = c.getFloat(idxSum);
-				float rate = c.getFloat(idxRate);
+				float amount = cSumOpMonth.getFloat(idxSum);
+				float rate = cSumOpMonth.getFloat(idxRate);
 
 				// If not sameCurrency, convert it from rate
 				if(! sameCurrency) {
@@ -345,64 +329,60 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 				}
 				else {
 					total += amount;
-					symbolCurrency = c.getString(idxCurrencyShortName);
+					symbolCurrency = cSumOpMonth.getString(idxCurrencyShortName);
 				}
 
-				c.moveToNext();
+				cSumOpMonth.moveToNext();
 			} //for
-			
+
 			// closing useless cursor
-			c.close();
+			cSumOpMonth.close();
 
-			StringBuilder strTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
-			strTotal.append(" ");
-			strTotal.append(symbolCurrency);
+			StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
+			sbTotal.append(" ");
+			sbTotal.append(symbolCurrency);
 
-			results.put(REFRESH_SBUILDER_TOTAL, strTotal);
-			
-			
-		}
-		
-		return results;
-	}
 
-	@Override
-	public void handleRefreshEnding(Map<Integer, Object> results) {
-		if(listView == null)
-			listView = (ListView)view.findViewById(R.id.list);
-		
-		if(results != null && results.size() > 0) {
-			Cursor cursor = (Cursor)results.get(REFRESH_CURSOR_OPERATIONS);
-			
-			if(cursor != null) {
+			// Set and refresh view
+			if(listView == null)
+				listView = (ListView)view.findViewById(R.id.list);
+
+			if(cAllOpMonth != null) {
 				// Close previous cursor before new assignation
 				try {
 					((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
 				} catch(NullPointerException npe) {
-					// Something not yet initialized - do nothing
+					// listview not yet initialized - do nothing
 				}
-				
+
 				OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
-					viewPagerOperationActivity, 
-					R.layout.operation_item, 
-					cursor, 
-					new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
-					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
+						viewPagerOperationActivity, 
+						R.layout.operation_item, 
+						cAllOpMonth, 
+						new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
+						new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 				cca.setOnNumberCheckedListener(this);
 				listView.setAdapter(cca);
-			}
-			
-			StringBuilder sb = (StringBuilder)results.get(REFRESH_SBUILDER_BALANCE);
-			textViewBalance.setText(sb.toString());
-			
-			sb = (StringBuilder)results.get(REFRESH_SBUILDER_TOTAL);
-			textViewTotal.setText(sb.toString());
-		}
-		
-		// refresh header if needed
-		refreshHeader();
 
-		// Disable buttons if needed
-		initButtons();
+				textViewBalance.setText(sbBalance.toString());
+				textViewTotal.setText(sbTotal.toString());
+			}
+
+			// refresh header if needed
+			refreshHeader();
+
+			// Disable buttons if needed
+			initButtons();
+		}
 	}
+
+
+
+	@Override
+	public Map<Integer, Object> handleRefreshBackground() {
+		return null;
+	}
+
+	@Override
+	public void handleRefreshEnding(Map<Integer, Object> results) {}
 }
