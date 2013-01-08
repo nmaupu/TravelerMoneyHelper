@@ -14,6 +14,10 @@
     <string name="error">Error</string>
     <string name="error_add_object">Impossible to add object, error in fields !</string>
     <string name="error_no_category">No category is defined, please create one !</string>
+    <string name="error_currency_update">Error updating currency, code not found</string>
+    <string name="error_no_oer_api_key">To use currencies, please create an account on the following website : http://openexchangerates.org (it is free for personal use) and copy API key you will get on the next screen.</string>
+    <string name="error_network_issue">Network problem or network not available, please retry</string>
+    <string name="error_oer_apikey_invalid">API key is invalid, please correct !</string>
     <string name="activity_title_edition_category">Category edition</string>
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>
@@ -88,6 +92,10 @@
     <string name="menu_item_now">Today</string>
     <string name="default_category_withdrawal_summary">Select default category for withdrawal</string>
     <string name="default_category_withdrawal">Withdrawal category</string>
+    <string name="default_account_summary">Enter the default account</string>
+    <string name="default_account_title">Default account</string>
+    <string name="oer_api_key_summary">Enter Open Exchange Rates API key</string>
+    <string name="oer_api_key_title">Open Exchange Rates API</string>
     <string name="warning">Warning</string>
     <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
     <string name="set_to_today_button">Today\'s date</string>
@@ -102,6 +110,6 @@
     <string name="welcome_account">Create an account</string>
     <string name="update">Update</string>
     <string name="graph">Graph</string>
-    <string name="refreshing">Refreshing#8230;</string>
+    <string name="refreshing">Refreshing</string>
 
 </resources>

@@ -27,8 +27,8 @@
             android:defaultValue="0"
             android:enabled="false"
             android:key="def_account"
-            android:summary="Select default account to use"
-            android:title="Default account" />
+            android:summary="@string/default_account_summary"
+            android:title="@string/default_account_title" />
 
         <ListPreference
             android:id="@+id/category_withdrawal"
@@ -36,6 +36,17 @@
             android:key="category_withdrawal"
             android:summary="@string/default_category_withdrawal_summary"
             android:title="@string/default_category_withdrawal" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="API configuration" >
+
+        <EditTextPreference
+            android:id="@+id/oer_api_key"
+            android:defaultValue=""
+            android:enabled="true"
+            android:key="oer_apikey_edit_text"
+            android:summary="@string/oer_api_key_summary"
+            android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>

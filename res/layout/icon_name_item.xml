@@ -17,9 +17,10 @@
     <ImageView
         android:id="@+id/icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_height="38dip"
+        android:layout_gravity="center_vertical|right"
         android:layout_weight="1"
-        src="@drawable/icon_default" />
+        android:contentDescription="@string/account"
+        android:src="@drawable/icon_default" />
 
 </LinearLayout>

@@ -25,10 +25,12 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
+@Deprecated
 public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer> {
 	private final static StringBuilder googleUpdateRateURL = new StringBuilder();
 	private TmhActivity context;
 	private ProgressDialog waitSpinner;
+	private IAsync asyncListener = null;
 	
 	public GoogleRateAsyncUpdater(TmhActivity context) {
 		this.context = context;
@@ -41,6 +43,10 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 		googleUpdateRateURL.append("http://www.google.com/ig/calculator?hl=en&q=1")
 			.append(StaticData.getMainCurrency().getIsoCode())
 			.append("%3D%3F");
+	}
+	
+	public void setAsyncListener(IAsync listener) {
+		asyncListener = listener;
 	}
 
 	protected Integer doInBackground(Currency... currencies) {
@@ -75,6 +81,8 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
     	if(newProgresses[0] == 100) {
     		waitSpinner.dismiss();
     		context.refreshDisplay();
+    		if(asyncListener != null)
+    			asyncListener.onFinishAsync();
     	}
     }
 
@@ -82,7 +90,10 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
     }
     
     
-    private boolean updateRateFromGoogle(Currency cur) throws Exception {
+    public boolean updateRateFromGoogle(Currency cur) throws Exception {
+    	if(cur == null)
+    		return false;
+    	
 		String isoCode = cur.getIsoCode();
 		if(isoCode == null || "".equals(isoCode))
 			throw new Exception("isoCode is not defined");
@@ -143,7 +154,9 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 				String sRate = twoDForm.format(rate);
 				sRate = sRate.replace(',', '.');
 				cur.setRateCurrencyLinked(Double.parseDouble(sRate));
-				cur.update();
+				// update if cur is from db, otherwise, do nothing
+				if(cur.getId() != null)
+					cur.update();
 				
 				Log.d(Currency.class.toString(), "Rate for "+isoCode+" = "+sRate);
 			} else {

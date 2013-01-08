@@ -1,5 +1,6 @@
 package org.maupu.android.tmh;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -29,7 +32,6 @@ import android.widget.Toast;
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
 	//private static final String FILENAME = "mainPrefs";
 	private boolean dbChanged = false;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		listCategory.setOnPreferenceClickListener(this);
 		listCategory.setEntries(getAllCategoriesEntries());
 		listCategory.setEntryValues(getAllCategoriesEntryValues());
+		
+		EditTextPreference editTextPreference = (EditTextPreference)findPreference(StaticData.PREF_OER_EDIT);
+		editTextPreference.setOnPreferenceChangeListener(this);
+		editTextPreference.setOnPreferenceClickListener(this);
 	}
 	
 	@Override
@@ -205,6 +211,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		if(StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			((EditTextPreference)preference).setText("");
 			((EditTextPreference)preference).getEditText().setText("");
+		} else if(StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
+			((EditTextPreference)preference).getEditText().requestFocus();
 		}
 
 		return true;
@@ -234,6 +242,32 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 						TmhApplication.getAppContext(), 
 						getString(R.string.database_created_successfuly)+" ["+newValue+"]", 
 						Toast.LENGTH_LONG).show();
+			}
+		} else if (StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
+			try {
+					if(! "".equals((String)newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String)newValue)) {
+						// Set value
+						StaticData.setPreferenceValueString(StaticData.PREF_OER_EDIT, (String)newValue);
+						StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, true);
+					} else {
+						// not valid
+						StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+						SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_oer_apikey_invalid), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						}).show();
+					}
+			} catch (IOException ioe) {
+				// Error, cannot verify api key - network issue
+				StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+				SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_network_issue), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).show();
 			}
 		}
 

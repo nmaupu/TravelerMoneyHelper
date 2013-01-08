@@ -8,7 +8,8 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.ui.async.GoogleRateAsyncUpdater;
+import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -43,7 +44,8 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	@Override
 	protected void onClickUpdate(Integer[] objs) {
 		Currency[] currencies = new Currency[objs.length];
-		GoogleRateAsyncUpdater rateUpdater = new GoogleRateAsyncUpdater(this);
+		OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(this, StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
+		//GoogleRateAsyncUpdater rateUpdater = new GoogleRateAsyncUpdater(this);
 
 		// Loading currencies list from objs
 		for(int i=0; i<objs.length; i++) {

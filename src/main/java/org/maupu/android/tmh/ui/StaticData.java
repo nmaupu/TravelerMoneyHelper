@@ -39,6 +39,8 @@ public abstract class StaticData {
 	public static final String PREF_MAIN_CURRENCY = "main_currency";
 	public static final String PREF_STATS_DATE_BEG = "statsDateBeg";
 	public static final String PREF_STATS_DATE_END = "statsDateEnd";
+	public static final String PREF_OER_EDIT = "oer_apikey_edit_text";
+	public static final String PREF_OER_VALID = "oer_apikey_valid";
 	
 	
 	/**
@@ -128,6 +130,23 @@ public abstract class StaticData {
 		
 		statsDateEnd = new Date(dateEnd);
 		return statsDateEnd;
+	}
+	
+	public static Date getCustomDateField(String key) {
+		SharedPreferences prefs = getPrefs();
+		Long date = prefs.getLong(key, -1);
+		
+		if(date == -1)
+			return null;
+		
+		return new Date(date);
+	}
+	
+	public static void setCustomDateField(String key, Date date) {
+		if(date == null)
+			return;
+		
+		setPreferenceValueLong(key, date.getTime());
 	}
 	
 	public static void setCurrentAccount(Account account) {

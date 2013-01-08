@@ -45,9 +45,6 @@ import android.widget.TextView;
 
 @SuppressLint("UseSparseArrays")
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
-	private final static Integer REFRESH_CURSOR_OPERATIONS = 0;
-	private final static Integer REFRESH_SBUILDER_BALANCE = 1;
-	private final static Integer REFRESH_SBUILDER_TOTAL = 2;
 	private ViewPagerOperationActivity viewPagerOperationActivity;
 	private View view;
 	private Date date;

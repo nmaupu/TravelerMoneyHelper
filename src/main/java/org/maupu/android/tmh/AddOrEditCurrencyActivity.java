@@ -1,12 +1,21 @@
 package org.maupu.android.tmh;
 
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.ui.CurrencyHelper;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.IAsync;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -15,8 +24,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements OnItemSelectedListener {
+public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements OnItemSelectedListener, IAsync {
 	private EditText editTextLongName = null;
 	private EditText editTextShortName = null;
 	private EditText editTextValue = null;
@@ -24,9 +34,63 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private Spinner spinnerCurrencyCode = null;
 	private boolean viewCreated = false;
 	private TextView textViewRateValue = null;
+	private OpenExchangeRatesAsyncFetcher oerFetcher;
+	private boolean apiKeyValid = false;
 
 	public AddOrEditCurrencyActivity() {
 		super(R.string.activity_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		// Before going further, verify we have api key to open exchange rates api
+		String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT);
+		final Context ctx = this;
+		apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
+		if(apiKey == null || "".equals(apiKey) || !apiKeyValid) {
+			SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_no_oer_api_key), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// Display preferences
+					Intent intent = new Intent(ctx, PreferencesActivity.class);
+					startActivity(intent);
+				}
+			}).show();
+		} else {
+			apiKeyValid = true;
+		}
+		
+		initOerFetcher();
+	}
+	
+	@Override
+	protected void onResume() {
+		apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
+		super.onResume();
+	}
+	
+	private void initOerFetcher() {
+		oerFetcher = new OpenExchangeRatesAsyncFetcher(this);
+		// init currencies list - set on callback method (async call)
+		try {
+			oerFetcher.setAsyncListener(this);
+			oerFetcher.execute((Currency[])null);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void onFinishAsync() {
+		List<CurrencyISO4217> currenciesList = oerFetcher.getCurrencies();
+		
+		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
+				android.R.layout.simple_spinner_item,
+				currenciesList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerCurrencyCode.setAdapter(adapter);
 	}
 
 	@Override
@@ -40,13 +104,6 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		textViewRateValue = (TextView)findViewById(R.id.text_rate_value);
 		
 		updateTextViewRate();
-
-		// init locales
-		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
-				android.R.layout.simple_spinner_item,
-				CurrencyHelper.getListCurrencyISO4217(this));
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerCurrencyCode.setAdapter(adapter);
 
 		spinnerCurrencyCode.setOnItemSelectedListener(this);
 	}
@@ -124,6 +181,9 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		
+		//CurrencyHelper.testAllCurrencies(this);
+		
 		if(! viewCreated) {
 			// First call here, ignore it
 			viewCreated = true;
@@ -131,14 +191,48 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		}
 		
 		CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getSelectedItem();
+		String currencySymbol = c.getCode();
+		
 		if(c != null) {
-			java.util.Currency currency = java.util.Currency.getInstance(c.getCode());
-			editTextShortName.setText(currency.getSymbol());
-			editTextLongName.setText(c.getName());
-			if(StaticData.getMainCurrency() == null) {
-				updateTextViewRate();
+			
+			try {
+				java.util.Currency currency = java.util.Currency.getInstance(c.getCode());
+				currencySymbol = currency.getSymbol();
+			} catch(IllegalArgumentException iae) {
+				// Not a supported ISO4217, so we do not have a symbol available
+				Log.e(AddOrEditCurrencyActivity.class.getName(), c.getCode() + "/"+ c.getName()+ " is not a valid ISO4217 currency !");
 			}
-		}
+			
+			editTextShortName.setText(currencySymbol);
+			editTextLongName.setText(c.getName());
+			
+			// Need Open Exchange Rates API key to update from server
+			if(apiKeyValid) {
+				final Currency dummyCurrency = new Currency();
+				dummyCurrency.setIsoCode(c.getCode());
+				
+				try {
+					OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(this, StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
+					updater.setAsyncListener(new IAsync() {
+						@Override
+						public void onFinishAsync() {
+							editTextValue.setText(String.valueOf(dummyCurrency.getRateCurrencyLinked()));
+						}
+					});
+					updater.execute(new Currency[]{dummyCurrency});
+				} catch (Exception e) {
+					Toast.makeText(this, getString(R.string.error_currency_update)+" - "+e.getMessage(), Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				// Set to 1 by default
+				editTextValue.setText("1");
+			}
+		} // if
+	}
+	
+	@Override
+	public void refreshDisplay() {
+		// Do not call super method
 	}
 
 	@Override

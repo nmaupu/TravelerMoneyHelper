@@ -48,11 +48,11 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private ImageView icon;
 	private String[] popupMenuIconNames;
 	private static final int MENU_ITEM_APPS = 0;
-	private static final int MENU_ITEM_URL = 1;
-	private static final int MENU_ITEM_CAMERA = 2;
-	private static final int MENU_ITEM_FLAGS = 3;
-	private static final int MENU_ITEM_DEFAULT = 4;
-
+	private static final int MENU_ITEM_FLAGS = 1;
+	private static final int MENU_ITEM_DEFAULT = 2;
+	private static final int MENU_ITEM_URL = 3;
+	private static final int MENU_ITEM_CAMERA = 4;
+	
 	public AddOrEditAccountActivity() {
 		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
 	}
@@ -78,10 +78,14 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		//spinnerCurrency.setAdapter(SpinnerManager.createSpinnerCursorAdapter(this, c, CurrencyData.KEY_LONG_NAME));
 		spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		
+		/*popupMenuIconNames = new String[]{
+		getString(R.string.popup_app_icon),
+		getString(R.string.popup_url), 
+		getString(R.string.popup_camera),
+		getString(R.string.popup_flag_icon),
+		getString(R.string.popup_default_icon)};*/
 		popupMenuIconNames = new String[]{
 				getString(R.string.popup_app_icon),
-				getString(R.string.popup_url), 
-				getString(R.string.popup_camera),
 				getString(R.string.popup_flag_icon),
 				getString(R.string.popup_default_icon)};
 

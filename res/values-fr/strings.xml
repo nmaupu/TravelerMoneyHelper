@@ -11,6 +11,10 @@
     <string name="error">Erreur</string>
     <string name="error_add_object">Impossible d\'ajouter cet objet, il y a des erreurs de saisie !</string>
     <string name="error_no_category">Il n\'y a aucune catégorie définie, merci d\'en créer une !</string>
+    <string name="error_currency_update">Erreur lors de la mise à jour de la devis, code introuvable</string>
+    <string name="error_no_oer_api_key">Pour utiliser les devises, vous devez d\'abord créer un compte sur le site suivant : http://openexchangerates.org (c\'est gratuit). Copiez ensuite la clé d\'API (API key) qu\'on vous donnera dans l\'écran qui va suivre.</string>
+    <string name="error_network_issue">Problème réseau ou réseau non fonctionnel, veuillez réessayer</string>
+    <string name="error_oer_apikey_invalid">La clé d\'API n\'est pas valide, s\il vous plaît, corrigez</string>
     <string name="activity_title_edition_category">Edition de categorie</string>
     <string name="activity_title_edition_currency">Edition de devise</string>
     <string name="activity_title_edition_operation">Edition d\'opération</string>
@@ -86,6 +90,10 @@
     <string name="menu_item_now">Aujourd\'hui</string>
     <string name="default_category_withdrawal_summary">Catégorie par défaut pour les retraits</string>
     <string name="default_category_withdrawal">Catégorie (retrait)</string>
+    <string name="default_account_summary">Entrez le compte par défaut</string>
+    <string name="default_account_title">Compte par défaut</string>
+    <string name="oer_api_key_summary">Entrez la clé API Open Exchange Rates</string>
+    <string name="oer_api_key_title">API Open Exchange Rates</string>
     <string name="warning">Attention</string>
     <string name="default_category_warning">Sélectionnez une catégorie pour les retraits (dans les préférences)</string>
     <string name="set_to_today_button">Aujourd\'hui</string>
@@ -100,6 +108,6 @@
     <string name="welcome_account">Créer un compte</string>
     <string name="update">Màj</string>
     <string name="graph">Graph</string>
-    <string name="refreshing">Refreshing#8230;</string>
+    <string name="refreshing">Chargement</string>
 
 </resources>
