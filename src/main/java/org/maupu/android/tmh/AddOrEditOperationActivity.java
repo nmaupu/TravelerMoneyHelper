@@ -13,12 +13,12 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -45,6 +45,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
     private int mMonth;
     private int mDay;
 
+    private CustomDatePickerDialog customDatePickerDialog = null;
 	private SpinnerManager smAccount;
 	private SpinnerManager smCategory;
 	private SpinnerManager smCurrency;
@@ -272,7 +273,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);
 		} else if(v.getId() == R.id.button_today) {
-			initDatePickerTextView(Calendar.getInstance().getTime());
+			Date now = Calendar.getInstance().getTime();
+			mYear = now.getYear();
+			mMonth = now.getMonth();
+			mDay = now.getDay();
+			//customDatePickerDialog.updateDate(mYear, mMonth, mDay);
+			initDatePickerTextView(now);
 		}
 	}
 	
@@ -280,7 +286,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
 		case DATE_DIALOG_ID:
-			return new DatePickerDialog(this, this, mYear, mMonth, mDay);
+			customDatePickerDialog = new CustomDatePickerDialog(this, this, mYear, mMonth, mDay);
+			return customDatePickerDialog;
 		}
 		
 		return null;
