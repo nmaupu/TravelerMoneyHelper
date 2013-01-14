@@ -38,22 +38,16 @@ public class NumberEditText extends EditText implements TextWatcher {
 	public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		super.onTextChanged(text, start, lengthBefore, lengthAfter);
 		
-		String currentNumberString = this.getText().toString();
+		String currentNumberString = this.getStringText();
 		
 		try {
 			if(mEditing) {
 				mEditing = false;
 				
-				String s = currentNumberString.replaceAll("\\s", "")
-						.replaceAll(",", ".");
-				Double currentNumberDouble = Double.parseDouble(s);
-
-				//Log.d(NumberEditText.class.getCanonicalName(), "onTextChanged "+currentNumberString+" : "+start+" | "+lengthBefore+" | "+lengthAfter);
+				Double currentNumberDouble = Double.parseDouble(currentNumberString);
 				
 				// Setting formatted text
-				if(currentNumberString.endsWith(".")) {
-					this.setText(currentNumberString);
-				} else {
+				if(! currentNumberString.endsWith(".")) {
 					this.setText(NumberUtil.formatDecimalLocale(currentNumberDouble).replace(",", "."));
 				}
 			}
@@ -67,5 +61,13 @@ public class NumberEditText extends EditText implements TextWatcher {
 		int pos = this.length();
 		Editable ed = this.getText();
 		Selection.setSelection(ed, pos);
+	}
+	
+	public String getStringText() {
+		String txt = super.getText()
+				.toString()
+				.replaceAll(",", ".").replaceAll("\\s", "");
+		
+		return txt;
 	}
 }

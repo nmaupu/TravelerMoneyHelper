@@ -162,12 +162,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			StaticData.setCurrentOperationDatePickerDate(d);
 		}
 		
-		boolean res = amount != null && 
-				amount.getText() != null && 
-				!"".equals(amount.getText().toString().trim()) &&
-				NumberUtil.parseDecimal(amount.getText().toString()) != null;
-		
-		return res;
+		return amount != null && 
+				amount.getStringText() != null && 
+				!"".equals(amount.getStringText().trim());
 	}
 
 	@Override
@@ -228,7 +225,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			cur.toDTO(c);
 			obj.setCurrency(cur);
 
-			obj.setAmount(NumberUtil.parseDecimal(amount.getText().toString()));
+			obj.setAmount(NumberUtil.parseDecimal(amount.getStringText()));
 			if(radioButtonDebit.isChecked())
 				obj.setAmount(obj.getAmount()*-1);
 
