@@ -14,6 +14,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
+import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
@@ -32,7 +33,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -49,7 +49,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private SpinnerManager smAccount;
 	private SpinnerManager smCategory;
 	private SpinnerManager smCurrency;
-	private EditText amount;
+	private NumberEditText amount;
 	private RadioButton radioButtonDebit;
 	private RadioButton radioButtonCredit;
 	private CheckBox checkboxUpdateRate;
@@ -68,7 +68,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	protected void initResources() {
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
-		amount = (EditText)findViewById(R.id.amount);
+		amount = (NumberEditText)findViewById(R.id.amount);
 		linearLayoutRateUpdater = (LinearLayout)findViewById(R.id.ll_exchange_rate);
 		checkboxUpdateRate = (CheckBox)findViewById(R.id.checkbox_update_rate);
 		smCurrency = new SpinnerManager(this, (Spinner)findViewById(R.id.currency));
