@@ -45,7 +45,7 @@ public class Category extends BaseObject {
 		return super.getFromCache();
 	}
 	
-	public Cursor fetchAllCategoiesUsedByAccountOperations(int accountId) {
+	public Cursor fetchAllCategoriesUsedByAccountOperations(int accountId) {
 		StringBuffer query = new StringBuffer("SELECT DISTINCT cat._id, cat.name ")
 				.append("FROM category cat ")
 				.append("LEFT JOIN operation o ON o.idCategory=cat._id ")

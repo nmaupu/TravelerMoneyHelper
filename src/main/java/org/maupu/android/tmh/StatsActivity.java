@@ -69,6 +69,14 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(now));
 			StaticData.setStatsAdvancedFilter(false);
 		}
+		
+		
+		try {
+			if(! DialogHelper.isCheckableCursorAdapterInit())
+				StaticData.getStatsExpectedCategories().add(StaticData.getWithdrawalCategory().getId());
+		} catch (NullPointerException npe) {
+			// Nothing to do here if null
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -307,7 +315,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 			break;
 		case R.id.item_categories:
-			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser);
+			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true, true);
 			resetDialogCategoryChooser = false;
 			break;
 		default:

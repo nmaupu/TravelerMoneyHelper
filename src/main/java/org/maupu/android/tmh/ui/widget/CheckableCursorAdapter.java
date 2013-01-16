@@ -18,17 +18,30 @@ import android.widget.SimpleCursorAdapter;
  * Class providing an easy way to have a item with a checkbox
  * Must provide a view with a checkbox with id <em>checkbox</em>
  * @author nmaupu
- *
  */
 @SuppressLint("UseSparseArrays")
 public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private NumberCheckedListener listener = null;
 	private Map<Integer, Boolean> positionsChecked = new HashMap<Integer, Boolean>();
 	private int numberChecked = 0;
+	private Integer[] toCheck;
+	private Boolean[] toCheckChanged;
 
 	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
+	}
+	
+	public CheckableCursorAdapter(Context context, int layout, Cursor c,
+			String[] from, int[] to, Integer[] toCheck) {
+		super(context, layout, c, from, to);
+		this.toCheck = toCheck;
+		if(toCheck != null) {
+			toCheckChanged = new Boolean[toCheck.length];
+			for(int i=0; i<toCheckChanged.length; i++) {
+				toCheckChanged[i] = false;
+			}
+		}
 	}
 
 	@Override
@@ -41,9 +54,18 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 		if(cb != null) {
 			cb.setTag(position);
 			cb.setOnClickListener(this);
-		
+			
 			boolean status = positionsChecked.get(position) != null ? positionsChecked.get(position) : false;
 			cb.setChecked(status);
+			
+			if(toCheck != null && toCheck.length > 0) {
+				for(int c=0; c<toCheck.length; c++) {
+					int p = toCheck[c];
+					// Set to true only if this particular checkbox has never been changed
+					if(position == p && ! toCheckChanged[c])
+						cb.setChecked(true);
+				}
+			}
 		}
 		
 		return row;
@@ -65,6 +87,16 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 		}
 		
 		Integer position = (Integer)cb.getTag();
+		
+		//
+		if(toCheck != null && toCheck.length > 0) {
+			for(int c=0; c<toCheck.length; c++) {
+				int p = toCheck[c];
+				if(position == p)
+					toCheckChanged[c] = true;
+			}
+		}
+		
 		// Store only if checked (memory consumption issue)
 		if(cb.isChecked()) {
 			positionsChecked.put(position, true);

@@ -19,6 +19,10 @@ import android.widget.ListView;
 public abstract class DialogHelper {
 	private static CheckableCursorAdapter categoryChooserAdapter = null;
 	
+	public static boolean isCheckableCursorAdapterInit() {
+		return categoryChooserAdapter != null;
+	}
+	
 	public static Dialog popupDialogAccountChooser(final TmhActivity tmhActivity) {
 		if(tmhActivity == null)
 			return null;
@@ -64,7 +68,7 @@ public abstract class DialogHelper {
 		return dialog;
 	}
 	
-	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup) {
+	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat, boolean tickWithdrawalCat) {
 		if(tmhActivity == null)
 			return null;
 		
@@ -89,7 +93,6 @@ public abstract class DialogHelper {
 						Category cat = new Category();
 						cat.toDTO(c);
 						StaticData.getStatsExpectedCategories().add(cat.getId());
-						//Log.d(StatsActivity.class.getName(), "category "+cat+" is checked");
 					}
 					tmhActivity.refreshDisplay();
 					dialog.dismiss();
@@ -101,7 +104,37 @@ public abstract class DialogHelper {
 		// Adapter for category chooser
 		Category cat = new Category();
 		Account currentAccount = StaticData.getCurrentAccount();
-		Cursor cursor = cat.fetchAllCategoiesUsedByAccountOperations(currentAccount.getId());
+		Cursor cursor;
+		if(hideUnusedCat)
+			cursor = cat.fetchAllCategoriesUsedByAccountOperations(currentAccount.getId());
+		else
+			cursor = cat.fetchAll();
+		
+		// Get position for withdrawal category and force ticking it
+		cursor.moveToFirst();
+		int pos = 0;
+		boolean found = false;
+		Category withdrawalCat = StaticData.getWithdrawalCategory();
+		if(withdrawalCat != null) {
+			while(! cursor.isAfterLast()) {
+				int idxId = cursor.getColumnIndex(CategoryData.KEY_ID);
+				int id = cursor.getInt(idxId);
+				
+				if(id == withdrawalCat.getId()) {
+					found = true;
+					break;
+				}
+				
+				cursor.moveToNext();
+				pos++;
+			}
+		}
+		
+		// Reinit cursor
+		cursor.moveToFirst();
+		Integer[] toCheck = null;
+		if(found)
+			toCheck = new Integer[]{pos};
 		
 		if(categoryChooserAdapter == null || resetPopup) {
 			categoryChooserAdapter = new CheckableCursorAdapter(
@@ -109,7 +142,7 @@ public abstract class DialogHelper {
 					R.layout.category_item,
 					cursor,
 					new String[]{CategoryData.KEY_NAME}, 
-					new int[]{R.id.name});
+					new int[]{R.id.name}, toCheck);
 		} else {
 			categoryChooserAdapter.changeCursor(cursor);
 		}
@@ -118,5 +151,9 @@ public abstract class DialogHelper {
 		dialog.show();
 
 		return dialog;
+	}
+	
+	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
+		return popupDialogCategoryChooser(tmhActivity, resetPopup, hideUnusedCat, false);
 	}
 }
