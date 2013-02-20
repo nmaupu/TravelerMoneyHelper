@@ -43,6 +43,11 @@ public class Operation extends BaseObject {
 		this();
 		this.filter = filter;
 	}
+	
+	@Override
+	public String getDefaultOrder() {
+		return "DESC";
+	}
 
 	public OperationFilter getFilter() {
 		return filter;
@@ -183,7 +188,7 @@ public class Operation extends BaseObject {
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		//qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
 		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
+		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" DESC ");
 
 		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
 		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());

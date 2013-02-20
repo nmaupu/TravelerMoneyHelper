@@ -49,6 +49,14 @@ public abstract class BaseObject implements Validator, Serializable {
 	 * @return a String representing default order column
 	 */
 	public abstract String getDefaultOrderColumn();
+	
+	/**
+	 * Method returning default order. ie. ASC or DESC
+	 * @return a String containing order ASC or DESC
+	 */
+	public String getDefaultOrder() {
+		return "ASC";
+	}
 
 	public BaseObject getFromCache() {
 		BaseObject ret = cache.getBaseDTO(SimpleObjectCache.constructKey(getTableName(), getId()));
@@ -109,10 +117,15 @@ public abstract class BaseObject implements Validator, Serializable {
 	}
 
 	public Cursor fetchAll() {
-		return fetchAllOrderBy(getDefaultOrderColumn());
+		return fetchAllOrderBy(getDefaultOrderColumn(), getDefaultOrder());
 	}
-	public Cursor fetchAllOrderBy(String columnName) {
-		return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, columnName);
+	public Cursor fetchAllOrderBy(String column, String order) {
+		StringBuilder query = new StringBuilder("select * from ")
+		.append(getTableName())
+		.append(" order by ").append(column)
+		.append(" ").append(order);
+		//return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, columnName);
+		return TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), null);
 	}
 	
 	public Cursor fetchAllExcept(Integer[] ids) {
