@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public abstract class DateUtil {
+	private static final String SDF_FORMAT = "dd-MM-yyyy HH:mm:ss";
+	private static final String SDF_FORMAT_TO_DATE = "yyyy-MM-dd HH:mm:ss";
 	
 	/**
 	 * Transform a date string from format %d-%M-%y %H:%M:%S to a Date object 
@@ -18,7 +20,7 @@ public abstract class DateUtil {
 			throw new ParseException("Date "+date+" is impossible to parse", 0);
 		
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT);
 		return sdf.parse(date);
 	}
 	
@@ -32,17 +34,22 @@ public abstract class DateUtil {
 			throw new ParseException("Date "+date+" is impossible to parse", 0);
 		
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT_TO_DATE);
 		return sdf.parse(date);
 	}
 	
-	public static String dateToStringNoHour(Date date) {
+	public static String dateToStringNoTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		return sdf.format(date);
 	}
 	
+	public static String dateToStringOnlyTime(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		return sdf.format(date);
+	}
+	
 	public static String dateToString(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT);
 		return sdf.format(date);
 	}
 	

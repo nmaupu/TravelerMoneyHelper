@@ -192,9 +192,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
+                        android:layout_centerVertical="false"
                         android:textColor="@color/blue"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
 
                     <Button
                         android:id="@+id/button_today"
@@ -204,6 +204,17 @@
                         android:layout_alignRight="@id/date"
                         android:layout_centerVertical="true"
                         android:text="@string/set_to_today_button" />
+
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignRight="@id/date"
+                        android:layout_below="@id/date"
+                        android:layout_centerVertical="false"
+                        android:textColor="@color/blue"
+                        android:textSize="12sp"
+                        android:textStyle="italic" />
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>

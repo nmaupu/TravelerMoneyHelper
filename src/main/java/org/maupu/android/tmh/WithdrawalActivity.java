@@ -131,7 +131,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	
 	public void updateDatePickerTextView() {
 		textViewDate.setText(
-				DateUtil.dateToStringNoHour(new GregorianCalendar(mYear, mMonth, mDay).getTime()));
+				DateUtil.dateToStringNoTime(new GregorianCalendar(mYear, mMonth, mDay).getTime()));
 	}
 	
 	@Override
