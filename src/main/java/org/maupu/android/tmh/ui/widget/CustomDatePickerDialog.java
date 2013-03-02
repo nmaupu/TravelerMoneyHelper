@@ -33,11 +33,7 @@ public class CustomDatePickerDialog extends DatePickerDialog {
 		setTitle(getFormat().format(mCalendar.getTime()));
 	} 
 	
-	/*
-	 * the format for dialog tile, and you can override this method
-	 */
 	public DateFormat getFormat(){
 		return DateFormat.getDateInstance();
-	};
-
+	}
 }

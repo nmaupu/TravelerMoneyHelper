@@ -22,6 +22,8 @@ import org.maupu.android.tmh.util.NumberUtil;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -37,9 +39,11 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
-public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener {
+public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener {
 	private static final int DATE_DIALOG_ID = 0;
+	private static final int TIME_DIALOG_ID = 1;
 	//private DatePicker datePicker;
 	private int mYear;
     private int mMonth;
@@ -277,8 +281,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	public void onClick(View v) {
 		//super.onClick(v);
 		
-		if(v.getId() == R.id.date || v.getId() == R.id.time) {
+		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);
+		} else if(v.getId() == R.id.time) {
+			showDialog(TIME_DIALOG_ID);
 		} else if(v.getId() == R.id.button_today) {
 			Date now = Calendar.getInstance().getTime();
 			setDateTimeFields(now);
@@ -294,6 +300,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		case DATE_DIALOG_ID:
 			customDatePickerDialog = new CustomDatePickerDialog(this, this, mYear, mMonth, mDay);
 			return customDatePickerDialog;
+		case TIME_DIALOG_ID:
+			TimePickerDialog tpd = new TimePickerDialog(this, this, mHours, mMinutes, true);
+			return tpd;
 		}
 		
 		return null;
@@ -325,5 +334,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		mHours = cal.get(Calendar.HOUR_OF_DAY);
 		mMinutes = cal.get(Calendar.MINUTE);
 		mSeconds = cal.get(Calendar.SECOND);
+	}
+
+	@Override
+	public void onTimeSet(TimePicker ctx, int hours, int minutes) {
+		mHours = hours;
+		mMinutes = minutes;
+		updateDatePickerTextView();
 	}
 }
