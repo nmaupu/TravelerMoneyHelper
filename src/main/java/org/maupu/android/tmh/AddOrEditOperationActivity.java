@@ -44,9 +44,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private int mYear;
     private int mMonth;
     private int mDay;
-    private int mHour = 0;
-    private int mMinute = 0;
-    private int mSecond = 0;
+    private int mHours = 0;
+    private int mMinutes = 0;
+    private int mSeconds = 0;
 
     private CustomDatePickerDialog customDatePickerDialog = null;
 	private SpinnerManager smAccount;
@@ -71,10 +71,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void initResources() {
 		// Set current time
-		Date now = Calendar.getInstance().getTime();
-		mHour = now.getHours();
-		mMinute = now.getMinutes();
-		mSecond = now.getSeconds();
+		Calendar cal = Calendar.getInstance();
+		mHours = cal.get(Calendar.HOUR_OF_DAY);
+		mMinutes = cal.get(Calendar.MINUTE);
+		mSeconds = cal.get(Calendar.SECOND);
 		
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
@@ -170,7 +170,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		}
 		
 		if(! isEditing()) {
-			Date d = new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond).getTime();
+			Date d = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
 			StaticData.setCurrentOperationDatePickerDate(d);
 		}
 		
@@ -182,14 +182,19 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void baseObjectToFields(Operation obj) {
 		if(obj != null) {
+			Date d = null;
 			
 			if(obj.getId() != null) {
 				// Updating
 				linearLayoutRateUpdater.setVisibility(View.VISIBLE);
 				checkboxUpdateRate.setChecked(false);
+				d = obj.getDate();
+			} else {
+				// New operation - set date and time to now by default
+				d = Calendar.getInstance().getTime();
 			}
 			
-			initDatePickerTextView(obj.getDate());
+			initDatePickerTextView(d);
 			if(obj.getAccount() !=null)
 				smAccount.setSpinnerPositionCursor(obj.getAccount().getName(), new Account());
 			if(obj.getCategory() != null)
@@ -209,6 +214,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			// Reset all fields
 			initDatePickerTextView(null);
 			amount.setText("");
+			
 			// Set spinner category to current selected one if exists
 			Category cat = StaticData.getCurrentSelectedCategory();
 			smCategory.setSpinnerPositionCursor(cat.getName(), new Category());
@@ -218,7 +224,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void fieldsToBaseObject(Operation obj) {
 		if(obj != null) {
-			obj.setDate(new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond).getTime());
+			obj.setDate(new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime());
 
 			Cursor c = null;
 
@@ -249,20 +255,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	private void initDatePickerTextView(Date d) {
 		Date previousDate = StaticData.getCurrentOperationDatePickerDate();
-		Calendar cal = Calendar.getInstance();
+		Date dateToSet = d != null ? d : previousDate;
 		
-		if(d != null)
-			cal.setTime(d);
-		else if(previousDate != null)
-			cal.setTime(previousDate);
-		
-		mYear = cal.get(Calendar.YEAR);
-		mMonth = cal.get(Calendar.MONTH);
-		mDay = cal.get(Calendar.DAY_OF_MONTH);
-		mHour = cal.get(Calendar.HOUR);
-		mMinute = cal.get(Calendar.MINUTE);
-		mSecond = cal.get(Calendar.SECOND);
-		
+		setDateTimeFields(dateToSet);
 		updateDatePickerTextView();
 	}
 
@@ -286,12 +281,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			showDialog(DATE_DIALOG_ID);
 		} else if(v.getId() == R.id.button_today) {
 			Date now = Calendar.getInstance().getTime();
-			mYear = now.getYear();
-			mMonth = now.getMonth();
-			mDay = now.getDay();
-			mHour = now.getHours();
-			mMinute = now.getMinutes();
-			mSecond = now.getSeconds();
+			setDateTimeFields(now);
+			
 			//customDatePickerDialog.updateDate(mYear, mMonth, mDay);
 			initDatePickerTextView(now);
 		}
@@ -309,7 +300,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	}
 	
 	public void updateDatePickerTextView() {
-		GregorianCalendar gc = new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond);
+		GregorianCalendar gc = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds);
 		
 		textViewDate.setText(DateUtil.dateToStringNoTime(gc.getTime()));
 		textViewTime.setText(DateUtil.dateToStringOnlyTime(gc.getTime()));
@@ -321,5 +312,18 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		mMonth = monthOfYear;
 		mDay = dayOfMonth;
 		updateDatePickerTextView();
+	}
+	
+	private void setDateTimeFields(Date d) {
+		Calendar cal = Calendar.getInstance();
+		if (d != null)
+			cal.setTime(d);
+		
+		mYear = cal.get(Calendar.YEAR);
+		mMonth = cal.get(Calendar.MONTH);
+		mDay = cal.get(Calendar.DAY_OF_MONTH);
+		mHours = cal.get(Calendar.HOUR_OF_DAY);
+		mMinutes = cal.get(Calendar.MINUTE);
+		mSeconds = cal.get(Calendar.SECOND);
 	}
 }
