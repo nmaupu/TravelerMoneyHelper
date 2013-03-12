@@ -79,6 +79,9 @@
     <string name="menu_item_withdrawal">Widthdrawal</string>
     <string name="confirm_modification">Do you confirm modification ?</string>
     <string name="total">Total:</string>
+    <string name="total_">Total</string>
+    <string name="average">Average:</string>
+    <string name="average_">Average</string>
     <string name="update_exchange_rate">Update exchange rate to current</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>

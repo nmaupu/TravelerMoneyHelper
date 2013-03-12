@@ -15,11 +15,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
@@ -27,6 +30,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -42,6 +46,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Gallery;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 @SuppressLint("UseSparseArrays")
 public class StatsActivity extends TmhActivity implements OnItemSelectedListener {
@@ -59,8 +66,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private final static int GROUP_BY_CATEGORY=1;
 	private int currentGroupBy = GROUP_BY_DATE;
 	private QuickActionGrid quickActionGridFilter = null;
+	private LinearLayout graphViewLayout = null;
 	private StatsGraphView statGraphView = null;
+	private TableLayout statsTextLayout = null;
 	private StatsCursorAdapter statsCursorAdapter = null;
+	private boolean showGraph = true;
+	//private TextView tvStatsTotal = null;
+	//private TextView tvStatsAverage = null;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -69,8 +81,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(now));
 			StaticData.setStatsAdvancedFilter(false);
 		}
-		
-		
+
+
 		try {
 			if(! DialogHelper.isCheckableCursorAdapterInit())
 				StaticData.getStatsExpectedCategories().add(StaticData.getWithdrawalCategory().getId());
@@ -85,7 +97,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		super.onCreate(savedInstanceState);
 		super.setActionBarContentView(R.layout.stats_activity);
 		setTitle(R.string.activity_title_statistics);
-		
+
 		// force portrait
 		//super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -121,6 +133,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
+		//tvStatsTotal = (TextView)findViewById(R.id.stats_total_value);
+		//tvStatsAverage = (TextView)findViewById(R.id.stats_avg_value);
 
 
 
@@ -157,8 +171,9 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		super.onResume();
 
 		if(statGraphView == null) {
-			LinearLayout graphLayout = (LinearLayout)findViewById(R.id.graph);
-			statGraphView = new StatsGraphView(this, graphLayout);
+			graphViewLayout = (LinearLayout)findViewById(R.id.graph);
+			statGraphView = new StatsGraphView(this, graphViewLayout);
+			statsTextLayout = (TableLayout)findViewById(R.id.stats_text);
 		} else {
 			refreshDisplay();
 		}
@@ -179,6 +194,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			resetDialogCategoryChooser = true;
 			break;
 		case TmhApplication.ACTION_BAR_GRAPH:
+			// Toggle graph / text stats
+			toggleGraphAndText();
 			break;
 		default:
 			return super.onHandleActionBarItemClick(item, position);
@@ -357,7 +374,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	public Map<Integer, Object> handleRefreshBackground() {
 		Map<Integer, Object> results = new HashMap<Integer, Object>();
-		Cursor cursor = null;
+		Cursor cursorData = null;
+		Cursor cursorStatsTotal = null;
 
 		Account account = StaticData.getCurrentAccount();
 		Operation dummyOp = new Operation();
@@ -377,14 +395,46 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
-			cursor = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		case GROUP_BY_CATEGORY:
-			cursor = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
 
-		results.put(0, cursor);
+		// Get total
+		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
+
+		Date now = new GregorianCalendar().getTime();
+		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+		int cursorStatsSize = cursorStatsTotal.getCount();
+		if(cursorStatsTotal != null && cursorStatsSize > 0) {
+
+			if(end.getTime() - now.getTime() <= 0)
+				now = end; 	// end is before now, we truncate date to now to have a good average
+			// Otherwise, we keep configured end date
+
+			long diff = Math.abs(now.getTime() - beg.getTime());
+			long nbDays = diff / 86400000;
+
+			for(int i = 0; i<cursorStatsSize; i++) {
+				int idxSum = cursorStatsTotal.getColumnIndexOrThrow(Operation.KEY_SUM);
+				int idxCurrencyName = cursorStatsTotal.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+				int idxCurrencyRate = cursorStatsTotal.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+				Double sum = cursorStatsTotal.getDouble(idxSum);
+				String currencyStr = cursorStatsTotal.getString(idxCurrencyName);
+				Double rate = cursorStatsTotal.getDouble(idxCurrencyRate);
+				Double averageByDay = nbDays > 0 ? sum / nbDays : 0;
+
+				// put data and move to next entry
+				statsList.put(currencyStr, new StatsData(currencyStr, sum, averageByDay, rate));
+				cursorStatsTotal.moveToNext();
+			}
+		}
+
+		results.put(0, cursorData);
+		results.put(1, statsList);
+
 		return results;
 	}
 
@@ -433,6 +483,37 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 			statGraphView.refresh();
 		}
+
+		// Getting stats data
+		@SuppressWarnings("unchecked")
+		Map<String,StatsData> stats = (Map<String,StatsData>)results.get(1);
+		Set<String> entries = stats.keySet(); 
+		Iterator<String> it = entries.iterator();
+		// Remove all views but headers
+		statsTextLayout.removeViews(1, statsTextLayout.getChildCount()-1);
+		
+		
+		TableRow.LayoutParams params = new TableRow.LayoutParams();
+		params.weight = 1;
+		params.width = 0;
+		
+		while (it.hasNext()) {
+			String key = it.next();
+			StatsData d = stats.get(key);
+
+			TextView tvStatsTotal = new TextView(this);
+			TextView tvStatsAverage = new TextView(this);
+			tvStatsTotal.setLayoutParams(params);
+			tvStatsAverage.setLayoutParams(params);
+
+			tvStatsTotal.setText(NumberUtil.formatDecimal(d.total) + " " + d.currencyShortName);
+			tvStatsAverage.setText(NumberUtil.formatDecimal(d.average) + " " + d.currencyShortName);
+
+			TableRow row = new TableRow(this);
+			row.addView(tvStatsTotal);
+			row.addView(tvStatsAverage);
+			statsTextLayout.addView(row);
+		}
 	}
 
 	private void closeStatsCursorAdapterIfNeeded() {
@@ -440,6 +521,27 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			statsCursorAdapter.getCursor().close();
 		} catch (NullPointerException npe) {
 			// Nothing to be done
+		}
+	}
+
+	private void toggleGraphAndText() {
+		showGraph = !showGraph;
+
+		graphViewLayout.setVisibility(showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+		statsTextLayout.setVisibility(!showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+	}
+
+	private class StatsData {
+		public String currencyShortName;
+		public Double average;
+		public Double total;
+		public Double rate;
+
+		public StatsData(String currencyShortName, Double total, Double average, Double rate) {
+			this.currencyShortName = currencyShortName;
+			this.total = total;
+			this.average = average;
+			this.rate = rate;
 		}
 	}
 }

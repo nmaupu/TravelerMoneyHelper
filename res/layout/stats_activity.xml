@@ -53,9 +53,45 @@
         android:id="@+id/graph"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical" 
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical" >
     </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/stats_text"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TableRow
+            android:id="@+id/table_head"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" >
+
+            <TextView
+                android:id="@+id/head_total"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@string/total_"
+                android:textSize="16dp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/head_avg"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@string/average_"
+                android:textSize="16dp"
+                android:textStyle="bold" >
+            </TextView>
+        </TableRow>
+    </TableLayout>
 
     <TextView
         android:id="@+id/empty"
