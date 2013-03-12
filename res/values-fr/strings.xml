@@ -80,6 +80,8 @@
     <string name="total_">Total</string>
     <string name="average">Moyenne:</string>
     <string name="average_">Moyenne</string>
+    <string name="averageByDay">Moyenne / jour:</string>
+    <string name="averageByDay_">Moyenne / jour</string>
     <string name="update_exchange_rate">Mettre à jour le taux de change</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Base de données créée et selectionnée</string>

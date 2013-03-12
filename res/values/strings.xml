@@ -82,6 +82,8 @@
     <string name="total_">Total</string>
     <string name="average">Average:</string>
     <string name="average_">Average</string>
+    <string name="averageByDay">Average / day:</string>
+    <string name="averageByDay_">Average / day</string>
     <string name="update_exchange_rate">Update exchange rate to current</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>

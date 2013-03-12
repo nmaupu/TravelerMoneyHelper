@@ -301,9 +301,13 @@ public class Operation extends BaseObject {
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		
+		long diff = dateEnd.getTime() - dateBegin.getTime();
+		long nbDays = diff / 86400000;
+		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("o."+OperationData.KEY_ID+", ");
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+		qb.append("sum("+OperationData.KEY_AMOUNT+") / " + nbDays + " avg, ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
 		qb.append("cat."+CategoryData.KEY_NAME+", ");

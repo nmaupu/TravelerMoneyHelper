@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -21,14 +22,31 @@ public class StatsCursorAdapter extends SimpleCursorAdapter {
 		View row = super.getView(position, convertView, parent);
 		
 		TextView tvAmount = (TextView)row.findViewById(R.id.amount);
+		TextView tvAvg = (TextView)row.findViewById(R.id.average);
+		LinearLayout llHead = (LinearLayout)row.findViewById(R.id.ll_head);
+		
 		int oldPosition = getCursor().getPosition();
 		getCursor().moveToPosition(position);
 		
 		int idxShortName = getCursor().getColumnIndex(CurrencyData.KEY_SHORT_NAME);
 		int idxAmount = getCursor().getColumnIndex("amountString");
+		int idxAvg = getCursor().getColumnIndex("avg");
+		
+		String shortName = getCursor().getString(idxShortName);
 		
 		Double amount = getCursor().getDouble(idxAmount);
-		tvAmount.setText(NumberUtil.formatDecimalLocale(amount)+" "+getCursor().getString(idxShortName));
+		tvAmount.setText(NumberUtil.formatDecimalLocale(amount)+" "+shortName);
+		
+		if(idxAvg == -1) {
+			tvAvg.setVisibility(View.GONE);
+			llHead.setVisibility(View.GONE);
+		} else {
+			tvAvg.setVisibility(View.VISIBLE);
+			llHead.setVisibility(View.VISIBLE);
+			Double average = getCursor().getDouble(idxAvg);
+			tvAvg.setText(NumberUtil.formatDecimalLocale(average)+" "+shortName);
+		}
+		
 		
 		getCursor().moveToPosition(oldPosition);
 		

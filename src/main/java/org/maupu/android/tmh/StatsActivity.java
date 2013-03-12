@@ -33,6 +33,7 @@ import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -99,7 +100,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		setTitle(R.string.activity_title_statistics);
 
 		// force portrait
-		//super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		/* Display a custom icon as action bar item */
 		int drawableId = R.drawable.action_bar_graph;
@@ -271,10 +272,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		adapter2.setSecondDateFormat(null);
 
 		galleryDateBegin.setAdapter(adapter1);
-		galleryDateBegin.setSelection(defaultPosition);
+		galleryDateBegin.setSelection(defaultPosition-1);
 
 		galleryDateEnd.setAdapter(adapter2);
-		galleryDateEnd.setSelection(defaultPosition+1);
+		galleryDateEnd.setSelection(defaultPosition);
 
 		galleryDateBegin.setOnItemSelectedListener(this);
 		galleryDateEnd.setOnItemSelectedListener(this);
@@ -392,31 +393,31 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			beg = StaticData.getStatsDateBeg();
 			end = StaticData.getStatsDateEnd();
 		}
+		
+		Date now = new GregorianCalendar().getTime();
+		if(end.getTime() - now.getTime() <= 0)
+			now = end; 	// end is before now, we truncate date to now to have a good average
+						// Otherwise, we keep configured end date
+		
+		long diff = Math.abs(now.getTime() - beg.getTime());
+		long nbDays = diff / 86400000;
 
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
-			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		case GROUP_BY_CATEGORY:
-			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
 
 		// Get total
 		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
 
-		Date now = new GregorianCalendar().getTime();
-		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+		
+		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
 		int cursorStatsSize = cursorStatsTotal.getCount();
 		if(cursorStatsTotal != null && cursorStatsSize > 0) {
-
-			if(end.getTime() - now.getTime() <= 0)
-				now = end; 	// end is before now, we truncate date to now to have a good average
-			// Otherwise, we keep configured end date
-
-			long diff = Math.abs(now.getTime() - beg.getTime());
-			long nbDays = diff / 86400000;
-
 			for(int i = 0; i<cursorStatsSize; i++) {
 				int idxSum = cursorStatsTotal.getColumnIndexOrThrow(Operation.KEY_SUM);
 				int idxCurrencyName = cursorStatsTotal.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
@@ -441,12 +442,15 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	public void handleRefreshEnding(Map<Integer, Object> results) {
 		String[] from = null;
+		int[] to = null;
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
 			from = new String[]{"dateString", "amountString"};
+			to = new int[]{R.id.text, R.id.amount};
 			break;
 		case GROUP_BY_CATEGORY:
-			from = new String[]{CategoryData.KEY_NAME, "amountString"};
+			from = new String[]{CategoryData.KEY_NAME, "amountString", "avg"};
+			to = new int[]{R.id.text, R.id.amount, R.id.average};
 			break;
 		}
 
@@ -457,7 +461,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				R.layout.stats_item,
 				(Cursor)results.get(0),
 				from,
-				new int[]{R.id.text, R.id.amount});
+				to);
 		listView.setAdapter(statsCursorAdapter);
 
 		// refresh graphical view

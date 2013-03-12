@@ -86,7 +86,7 @@
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text="@string/average_"
+                android:text="@string/averageByDay_"
                 android:textSize="16dp"
                 android:textStyle="bold" >
             </TextView>
