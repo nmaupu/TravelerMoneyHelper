@@ -111,6 +111,8 @@ public abstract class DialogHelper {
 			cursor = cat.fetchAll();
 		
 		// Get position for withdrawal category and force ticking it
+		/* Buggy */
+		/*
 		cursor.moveToFirst();
 		int pos = 0;
 		boolean found = false;
@@ -135,6 +137,7 @@ public abstract class DialogHelper {
 		Integer[] toCheck = null;
 		if(found)
 			toCheck = new Integer[]{pos};
+		*/
 		
 		if(categoryChooserAdapter == null || resetPopup) {
 			categoryChooserAdapter = new CheckableCursorAdapter(
@@ -142,7 +145,7 @@ public abstract class DialogHelper {
 					R.layout.category_item,
 					cursor,
 					new String[]{CategoryData.KEY_NAME}, 
-					new int[]{R.id.name}, toCheck);
+					new int[]{R.id.name});
 		} else {
 			categoryChooserAdapter.changeCursor(cursor);
 		}
