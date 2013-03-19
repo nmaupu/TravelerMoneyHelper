@@ -19,30 +19,38 @@ import org.maupu.android.tmh.ui.CustomActionBarItem;
 import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.NumberUtil;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
-public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener {
+public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, OnKeyListener {
 	private static final int DATE_DIALOG_ID = 0;
+	private static final int TIME_DIALOG_ID = 1;
+	
 	private Spinner spinnerFrom;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
@@ -52,10 +60,15 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	private SpinnerManager spinnerManagerCurrency;
 	private SpinnerManager spinnerManagerCategory;
 	//private Button buttonValidate;
-	private EditText amountEditText;
+	private NumberEditText amount;
+	private TextView textViewConvertedAmount;
 	private TextView textViewDate;
+	private TextView textViewTime;
 	private Button buttonToday;
 	private int mYear, mMonth, mDay;
+	private int mHours = 0;
+    private int mMinutes = 0;
+    private int mSeconds = 0;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -66,22 +79,32 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
 
+		// Set current time
+		Calendar cal = Calendar.getInstance();
+		mHours = cal.get(Calendar.HOUR_OF_DAY);
+		mMinutes = cal.get(Calendar.MINUTE);
+		mSeconds = cal.get(Calendar.SECOND);
+		
 		spinnerFrom = (Spinner)findViewById(R.id.spinner_from);
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
 		spinnerCurrency = (Spinner)findViewById(R.id.spinner_currency);
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
 		//buttonValidate = (Button)findViewById(R.id.button_validate);
-		amountEditText = (EditText)findViewById(R.id.amount);
+		amount = (NumberEditText)findViewById(R.id.amount);
+		amount.setOnKeyListener(this);
+		textViewConvertedAmount = (TextView)findViewById(R.id.converted_amount);
 		textViewDate = (TextView)findViewById(R.id.date);
 		textViewDate.setOnClickListener(this);
+		textViewTime = (TextView)findViewById(R.id.time);
+		textViewTime.setOnClickListener(this);
 		buttonToday = (Button)findViewById(R.id.button_today);
 		buttonToday.setOnClickListener(this);
 
 		spinnerTo.setOnItemSelectedListener(this);
 		//buttonValidate.setOnClickListener(this);
-
+		
 		initSpinnerManagers();
-		initDatePickerTextView(null);
+		initDatePickerTextView(Calendar.getInstance().getTime());
 	}
 	
 	@Override
@@ -98,8 +121,12 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	public void onClick(View v) {
 		if(v.getId() == R.id.date) {
 			showDialog(DATE_DIALOG_ID);
+		} else if(v.getId() == R.id.time) {
+			showDialog(TIME_DIALOG_ID);
 		} else if(v.getId() == R.id.button_today) {
-			initDatePickerTextView(Calendar.getInstance().getTime());
+			Date now = Calendar.getInstance().getTime();
+			setDateTimeFields(now);
+			initDatePickerTextView(now);
 		}
 	}
 	
@@ -108,6 +135,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		switch(id) {
 		case DATE_DIALOG_ID:
 			return new DatePickerDialog(this, this, mYear, mMonth, mDay);
+		case TIME_DIALOG_ID:
+			return new TimePickerDialog(this, this, mHours, mMinutes, true);
 		}
 		
 		return null;
@@ -115,23 +144,29 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	
 	private void initDatePickerTextView(Date d) {
 		Date previousDate = StaticData.getCurrentOperationDatePickerDate();
-		Calendar cal = Calendar.getInstance();
+		Date dateToSet = d != null ? d : previousDate;
 		
-		if(d != null)
-			cal.setTime(d);
-		else if(previousDate != null)
-			cal.setTime(previousDate);
-		
-		mYear = cal.get(Calendar.YEAR);
-		mMonth = cal.get(Calendar.MONTH);
-		mDay = cal.get(Calendar.DAY_OF_MONTH);
-		
+		setDateTimeFields(dateToSet);
 		updateDatePickerTextView();
 	}
 	
 	public void updateDatePickerTextView() {
-		textViewDate.setText(
-				DateUtil.dateToStringNoTime(new GregorianCalendar(mYear, mMonth, mDay).getTime()));
+		GregorianCalendar cal = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds);
+		textViewDate.setText(DateUtil.dateToStringNoTime(cal.getTime()));
+		textViewTime.setText(DateUtil.dateToStringOnlyTime(cal.getTime()));
+	}
+	
+	private void setDateTimeFields(Date d) {
+		Calendar cal = Calendar.getInstance();
+		if (d != null)
+			cal.setTime(d);
+		
+		mYear = cal.get(Calendar.YEAR);
+		mMonth = cal.get(Calendar.MONTH);
+		mDay = cal.get(Calendar.DAY_OF_MONTH);
+		mHours = cal.get(Calendar.HOUR_OF_DAY);
+		mMinutes = cal.get(Calendar.MINUTE);
+		mSeconds = cal.get(Calendar.SECOND);
 	}
 	
 	@Override
@@ -206,6 +241,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 			c.close();
 
 			spinnerManagerCurrency.setSpinnerPositionCursor(currency.getLongName(), new Currency());
+			updateConvertedAmount();
 		}
 	}
 
@@ -231,18 +267,18 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				cursor = spinnerManagerCategory.getSelectedItem();
 				category.toDTO(cursor);
 
-				Double amount = Double.valueOf(amountEditText.getText().toString().trim());
+				Double amountd = Double.valueOf(amount.getStringText().toString().trim());
 
 				Currency currency = new Currency();
 				cursor = spinnerManagerCurrency.getSelectedItem();
 				currency.toDTO(cursor);
 
-				Date date = new GregorianCalendar(mYear, mMonth, mDay).getTime();
+				Date date = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
 				
 				// First, we debit from account
 				Operation operationFrom = new Operation();
 				operationFrom.setAccount(accountFrom);
-				operationFrom.setAmount(-1d * amount);
+				operationFrom.setAmount(-1d * amountd);
 				operationFrom.setCategory(category);
 				operationFrom.setCurrency(currency);
 				operationFrom.setDate(date);
@@ -252,7 +288,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 				// Second, we credit 'to' account
 				Operation operationTo = new Operation();
 				operationTo.setAccount(accountTo);
-				operationTo.setAmount(amount);
+				operationTo.setAmount(amountd);
 				operationTo.setCategory(category);
 				operationTo.setCurrency(currency);
 				operationTo.setDate(date);
@@ -276,9 +312,15 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		Date d = new GregorianCalendar(mYear, mMonth, mDay).getTime();
 		StaticData.setCurrentOperationDatePickerDate(d);
 		
-		return amountEditText.getText() != null && ! "".equals(amountEditText.getText().toString().trim());
+		return amount.getText() != null && ! "".equals(amount.getText().toString().trim());
 	}
-
+	
+	@Override
+	public void onTimeSet(TimePicker ctx, int hours, int minutes) {
+		mHours = hours;
+		mMinutes = minutes;
+		updateDatePickerTextView();
+	}
 	
 	@Override
 	public Map<Integer, Object> handleRefreshBackground() {
@@ -287,5 +329,32 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	
 	@Override
 	public void handleRefreshEnding(Map<Integer, Object> results) {
-	}	
+	}
+	
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		//Log.d(AddOrEditOperationActivity.class.getName(), "Key pressed - "+keyCode);
+		updateConvertedAmount();
+		return false;
+	}
+	
+	private void updateConvertedAmount() {
+		try {
+			Cursor c = spinnerManagerCurrency.getSelectedItem();
+			Currency dummyCur = new Currency();
+			dummyCur.toDTO(c);
+			
+			String a = amount.getStringText();
+			a = a != null ? a.trim() : a;
+			
+			Double currentAmount = 0d;
+			if (a != null && ! "".equals(a))
+				currentAmount = Math.abs(Double.parseDouble(a));
+				
+			Double rate = dummyCur.getRateCurrencyLinked();
+			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+		} catch (NumberFormatException nfe) {
+			// No conversion
+		}
+	}
 }
