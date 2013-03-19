@@ -186,9 +186,9 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 					}).show();
 		}
 
-		// From
+		// To
 		Account current = StaticData.getCurrentAccount();
-		spinnerManagerFrom.setSpinnerPositionCursor(current.getName(), new Account());
+		spinnerManagerTo.setSpinnerPositionCursor(current.getName(), new Account());
 	}
 
 	@Override
