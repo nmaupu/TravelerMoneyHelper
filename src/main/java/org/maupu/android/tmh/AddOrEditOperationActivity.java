@@ -28,8 +28,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -41,7 +45,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener {
+public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener, OnKeyListener, OnItemSelectedListener {
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int TIME_DIALOG_ID = 1;
 	//private DatePicker datePicker;
@@ -64,6 +68,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private TextView textViewSign;
 	private TextView textViewDate;
 	private TextView textViewTime;
+	private TextView textViewConvertedAmount;
 	private Button buttonToday;
 	private static final String PLUS="+";
 	private static final String MINUS="-";
@@ -83,9 +88,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
 		amount = (NumberEditText)findViewById(R.id.amount);
+		amount.setOnKeyListener(this);
 		linearLayoutRateUpdater = (LinearLayout)findViewById(R.id.ll_exchange_rate);
 		checkboxUpdateRate = (CheckBox)findViewById(R.id.checkbox_update_rate);
 		smCurrency = new SpinnerManager(this, (Spinner)findViewById(R.id.currency));
+		smCurrency.getSpinner().setOnItemSelectedListener(this);
 
 		radioButtonCredit = (RadioButton)findViewById(R.id.credit);
 		radioButtonDebit = (RadioButton)findViewById(R.id.debit);
@@ -98,6 +105,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		textViewTime.setOnClickListener(this);
 		buttonToday = (Button)findViewById(R.id.button_today);
 		buttonToday.setOnClickListener(this);
+		textViewConvertedAmount = (TextView)findViewById(R.id.converted_amount);
 		
 
 		// Set spinners content
@@ -341,5 +349,43 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		mHours = hours;
 		mMinutes = minutes;
 		updateDatePickerTextView();
+	}
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		//Log.d(AddOrEditOperationActivity.class.getName(), "Key pressed - "+keyCode);
+		updateConvertedAmount();
+		return false;
+	}
+	
+	private void updateConvertedAmount() {
+		try {
+			Cursor c = smCurrency.getSelectedItem();
+			Currency dummyCur = new Currency();
+			dummyCur.toDTO(c);
+			
+			String a = amount.getStringText();
+			a = a != null ? a.trim() : a;
+			
+			Double currentAmount = 0d;
+			if (a != null && ! "".equals(a))
+				currentAmount = Math.abs(Double.parseDouble(a));
+				
+			Double rate = dummyCur.getRateCurrencyLinked();
+			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+		} catch (NumberFormatException nfe) {
+			// No conversion
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View selectedItemView, int position, long id) {
+		// smCurrrency changed, update converted amount text view
+		updateConvertedAmount();
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// smCurrency changed and nothing selected
 	}
 }
