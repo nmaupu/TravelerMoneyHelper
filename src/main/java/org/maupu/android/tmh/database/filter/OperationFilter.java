@@ -65,7 +65,8 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 
 		qsb.append("ROUND(o."+OperationData.KEY_AMOUNT+"/o."+OperationData.KEY_CURRENCY_VALUE+",2) convertedAmount, ");
 		qsb.append("ROUND(o.amount,2)||' '||c.shortName amountString, ");
-		qsb.append("strftime('%d-%m-%Y', o.date) dateString ");
+		qsb.append("strftime('%d-%m-%Y', o.date) dateString, ");
+		qsb.append("strftime('%d-%m-%Y %H:%M', o.date) dateStringHours ");
 		qsb.append("from "+CategoryData.TABLE_NAME+" as ca, "+AccountData.TABLE_NAME+" as a, "+OperationData.TABLE_NAME+" as o, "+CurrencyData.TABLE_NAME+" as c ");
 		qsb.append("where o.idCategory=ca._id and o.idAccount=a._id and o.idCurrency=c._id ");
 

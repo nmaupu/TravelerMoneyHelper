@@ -356,7 +356,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 						viewPagerOperationActivity, 
 						R.layout.operation_item, 
 						cAllOpMonth, 
-						new String[]{"icon", "account", "category", "dateString", "amountString", "convertedAmount"},
+						new String[]{"icon", "account", "category", "dateStringHours", "amountString", "convertedAmount"},
 						new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 				cca.setOnNumberCheckedListener(this);
 				listView.setAdapter(cca);
