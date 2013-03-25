@@ -53,7 +53,24 @@ public class Category extends BaseObject {
 				.append("WHERE acc._id=? ")
 				.append("ORDER BY cat."+CategoryData.KEY_NAME);
 		
-		return TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), new String[]{String.valueOf(accountId)});
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), new String[]{String.valueOf(accountId)});
+		c.moveToFirst();
+		return c;
+	}
+	
+	public Cursor fetchByName(String name) {
+		StringBuffer query = new StringBuffer();
+		query.append("SELECT _id, name FROM ")
+			.append(CategoryData.TABLE_NAME)
+			.append(" WHERE ")
+			.append(CategoryData.KEY_NAME)
+			.append(" = '")
+			.append(name)
+			.append("'");
+		
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), null);
+		c.moveToFirst();
+		return c;
 	}
 
 	@Override

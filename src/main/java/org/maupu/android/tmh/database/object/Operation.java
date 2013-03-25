@@ -269,6 +269,7 @@ public class Operation extends BaseObject {
 		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("o."+OperationData.KEY_ID+", ");
+		qb.append("o."+OperationData.KEY_DATE+", ");
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");

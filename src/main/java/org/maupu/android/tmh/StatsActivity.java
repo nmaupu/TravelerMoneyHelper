@@ -9,6 +9,7 @@ import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +47,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Gallery;
 import android.widget.LinearLayout;
@@ -55,7 +57,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressLint("UseSparseArrays")
-public class StatsActivity extends TmhActivity implements OnItemSelectedListener {
+public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener {
 	private ListView listView;
 	private Gallery galleryDate;
 	private Gallery galleryDateBegin;
@@ -85,7 +87,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(now));
 			StaticData.setStatsAdvancedFilter(false);
 		}
-
 
 		try {
 			if(! DialogHelper.isCheckableCursorAdapterInit())
@@ -133,13 +134,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		//
 		listView = (ListView)findViewById(R.id.list);
+		listView.setOnItemClickListener(this);
 		galleryDate = (Gallery)findViewById(R.id.gallery_date);
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 		//tvStatsTotal = (TextView)findViewById(R.id.stats_total_value);
 		//tvStatsAverage = (TextView)findViewById(R.id.stats_avg_value);
-
 
 
 		/*final TmhActivity activity = this;
@@ -150,7 +151,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				activity.finish();
 			}
 		};
-
 
 		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
 				this, 
@@ -374,6 +374,9 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		} else {
 			// Update display for this period
 			DateGalleryAdapter adapter = (DateGalleryAdapter)gallery.getAdapter();
+			Date d = (Date)adapter.getItem(position);
+			StaticData.setStatsDateBeg(DateUtil.getFirstDayOfMonth(d));
+			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(d));
 			adapter.notifyDataSetChanged();
 			StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, position);
 		}
@@ -423,6 +426,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			beg = firstDate;
 
 		double nbDays = -1;
+		dummyOp = new Operation();
 		cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 		nbDays = cursorData.getCount();
 		Log.d(StatsActivity.class.getName(), "Nb days computed = "+nbDays+" dateBeg="+beg+", dateEnd="+end);
@@ -556,6 +560,37 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		graphViewLayout.setVisibility(showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
 		statsTextLayout.setVisibility(!showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
+		Cursor c = (Cursor)parent.getAdapter().getItem(pos);
+
+		int idx = -1;
+		switch(currentGroupBy) {
+		case GROUP_BY_DATE:
+			idx = c.getColumnIndex(OperationData.KEY_DATE);
+			String sDate = c.getString(idx);
+			try {
+				Date beg = DateUtil.StringSQLToDate(sDate);
+				beg.setHours(0);
+				beg.setMinutes(0);
+				beg.setSeconds(0);
+				Date end = (Date)beg.clone();
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				DialogHelper.popupDialogStatsDetails(this, beg, end, null, StaticData.getStatsExpectedCategoriesToArray());
+			} catch (ParseException pe) {
+				pe.printStackTrace();
+			}
+			break;
+		case GROUP_BY_CATEGORY:
+			idx = c.getColumnIndex(CategoryData.KEY_NAME);
+			String cat = c.getString(idx);
+			DialogHelper.popupDialogStatsDetails(this, StaticData.getStatsDateBeg(), StaticData.getStatsDateEnd(), cat, StaticData.getStatsExpectedCategoriesToArray());
+			break;
+		}
 	}
 
 	private class StatsData {

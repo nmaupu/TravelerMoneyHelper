@@ -1,18 +1,25 @@
 package org.maupu.android.tmh.ui;
 
+import java.util.Date;
+
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
+import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.filter.OperationFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
+import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
 
 import android.app.Dialog;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -29,7 +36,7 @@ public abstract class DialogHelper {
 		
 		final Dialog dialog = new Dialog(tmhActivity);
 
-		dialog.setContentView(R.layout.dialog_choose_account);
+		dialog.setContentView(R.layout.dialog_listview);
 		dialog.setTitle(tmhActivity.getString(R.string.pick_account));
 
 		ListView listAccount = (ListView)dialog.findViewById(R.id.list);
@@ -76,7 +83,6 @@ public abstract class DialogHelper {
 		dialog.setCancelable(false);
 		dialog.setTitle(R.string.stats_filter_cat_title);
 		dialog.setContentView(R.layout.category_chooser_activity);
-		dialog.findViewById(R.id.list);
 		
 		Button btnValidate = (Button)dialog.findViewById(R.id.btn_validate);
 		final ListView list = (ListView)dialog.findViewById(R.id.list);
@@ -158,5 +164,56 @@ public abstract class DialogHelper {
 	
 	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
 		return popupDialogCategoryChooser(tmhActivity, resetPopup, hideUnusedCat, false);
+	}
+	
+	public static Dialog popupDialogStatsDetails(final TmhActivity tmhActivity, Date beg, Date end, String catName, Integer[] exceptCategories) {
+		if(tmhActivity == null)
+			return null;
+		
+		final Dialog dialog = new Dialog(tmhActivity);
+		dialog.setCancelable(true);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.setContentView(R.layout.dialog_listview);
+		final ListView list = (ListView)dialog.findViewById(R.id.list);
+		
+		// Adapter
+		Operation dummyOp = new Operation();
+		Account currentAccount = StaticData.getCurrentAccount();
+		dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
+		
+		// Fitering category if needed
+		Category dummyCat = new Category();
+		if(catName != null && !"".equals(catName)) {
+			Cursor cursorCat = dummyCat.fetchByName(catName);
+			dummyCat.toDTO(cursorCat);
+		}
+		
+		if(dummyCat.getId() != null)
+			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_CATEGORY, String.valueOf(dummyCat.getId()));
+		
+		StringBuilder b = new StringBuilder("");
+		for(int i=0; i<exceptCategories.length; i++) {
+			int catId = exceptCategories[i];
+			b.append(catId);
+			if(i<exceptCategories.length-1)
+				b.append(",");
+		}
+		
+		if(exceptCategories.length > 0)
+			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, b.toString());
+		
+		// Getting cursor
+		Cursor cursor = dummyOp.fetchByPeriod(beg, end);
+		
+		OperationCursorAdapter sca = new OperationCursorAdapter(tmhActivity, 
+				R.layout.operation_item_nocheckbox, 
+				cursor, 
+				new String[]{"dateStringHours", "category", "amountString", "convertedAmount"}, 
+				new int[]{R.id.date, R.id.category, R.id.amount, R.id.convAmount});
+		list.setAdapter(sca);
+		
+		dialog.show();
+		return dialog;
 	}
 }

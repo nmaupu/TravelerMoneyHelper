@@ -81,6 +81,7 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 			return null;
 		
 		String strFunc = "";
+		boolean nested = false;
 		switch(function) {
 		case AFilter.FUNCTION_EQUAL:
 			strFunc = " = ";
@@ -89,10 +90,12 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 			strFunc = " != ";
 			break;
 		case AFilter.FUNCTION_IN:
-			strFunc = " IN ";
+			strFunc = " IN (";
+			nested = true;
 			break;
 		case AFilter.FUNCTION_NOTIN:
-			strFunc = " NOT IN ";
+			strFunc = " NOT IN (";
+			nested = true;
 			break;
 		default:
 			return qb;
@@ -113,6 +116,9 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
 			
 			qb.append(" AND o." + OperationData.KEY_AMOUNT + " BETWEEN " + valInf +  " AND " + valSup);
 		}
+		
+		if(nested)
+			qb.append(")");
 		
 		return qb.append(" ");
 	}
