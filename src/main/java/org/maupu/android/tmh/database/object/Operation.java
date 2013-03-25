@@ -181,6 +181,10 @@ public class Operation extends BaseObject {
 	}
 
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
+		return fetchByPeriod(dateBegin, dateEnd, "DESC", -1);
+	}
+	
+	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
 		QueryBuilder qsb = filter.getQueryBuilder();
 		//QueryBuilder myQsb = new QueryBuilder(qsb.getStringBuilder());
 
@@ -188,7 +192,8 @@ public class Operation extends BaseObject {
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		//qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
 		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" DESC ");
+		String sLimit = limit > 0 ? " limit "+limit : "";
+		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" " + order + " " + sLimit);
 
 		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
 		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
@@ -287,7 +292,7 @@ public class Operation extends BaseObject {
 		}
 		
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString").append(" "); // group by dateString instead of date because of hours and minutes
-		qb.append("ORDER BY o."+OperationData.KEY_DATE+" ASC ");
+		qb.append("ORDER BY o."+OperationData.KEY_DATE+" DESC ");
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();

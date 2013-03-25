@@ -23,6 +23,8 @@ import java.util.Set;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
@@ -38,6 +40,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -355,10 +358,19 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			DateGalleryAdapter adapter2 = (DateGalleryAdapter)galleryDateEnd.getAdapter();
 			adapter2.notifyDataSetChanged();
 
-			if(gallery == galleryDateBegin)
-				StaticData.setStatsDateBeg((Date)adapter1.getItem(position));
-			else if(gallery == galleryDateEnd)
-				StaticData.setStatsDateEnd((Date)adapter2.getItem(position));
+			if(gallery == galleryDateBegin) {
+				Date beg = (Date)adapter1.getItem(position);
+				beg.setHours(0);
+				beg.setMinutes(0);
+				beg.setSeconds(0);
+				StaticData.setStatsDateBeg(beg);
+			} else if(gallery == galleryDateEnd) {
+				Date end = (Date)adapter2.getItem(position);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				StaticData.setStatsDateEnd(end);
+			}
 		} else {
 			// Update display for this period
 			DateGalleryAdapter adapter = (DateGalleryAdapter)gallery.getAdapter();
@@ -379,7 +391,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		Cursor cursorStatsTotal = null;
 
 		Account account = StaticData.getCurrentAccount();
-		Operation dummyOp = new Operation();
+		
 
 		Date beg = null, end = null;
 		if(! StaticData.isStatsAdvancedFilter()) {
@@ -394,27 +406,38 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			end = StaticData.getStatsDateEnd();
 		}
 		
+		// If end date is after now, we use now to have a well computed average
 		Date now = new GregorianCalendar().getTime();
-		if(end.getTime() - now.getTime() <= 0)
-			now = end; 	// end is before now, we truncate date to now to have a good average
-						// Otherwise, we keep configured end date
+		if(end.after(now))
+			end = now;
 		
-		long diff = Math.abs(now.getTime() - beg.getTime());
-		long nbDays = diff / 86400000;
+		// Getting first data of the month given by dateBeg and verify that date beg is 
+		// not before first data for this account for average being computed without error
+		Operation dummyOp = new Operation();
+		dummyOp.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(account.getId()));
+		Cursor c = dummyOp.fetchByPeriod(DateUtil.getFirstDayOfMonth(beg), end, "ASC", 1);
+		c.moveToFirst();
+		dummyOp.toDTO(c);
+		Date firstDate = dummyOp.getDate();
+		if(firstDate != null && firstDate.after(beg))
+			beg = firstDate;
 
+		double nbDays = -1;
+		cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+		nbDays = cursorData.getCount();
+		Log.d(StatsActivity.class.getName(), "Nb days computed = "+nbDays+" dateBeg="+beg+", dateEnd="+end);
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
-			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
+			// Keeping previous cursorData
 			break;
 		case GROUP_BY_CATEGORY:
-			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
+			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
 
 		// Get total
 		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
 
-		
 		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
 		int cursorStatsSize = cursorStatsTotal.getCount();
 		if(cursorStatsTotal != null && cursorStatsSize > 0) {
@@ -539,13 +562,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		public String currencyShortName;
 		public Double average;
 		public Double total;
-		public Double rate;
+		//public Double rate;
 
 		public StatsData(String currencyShortName, Double total, Double average, Double rate) {
 			this.currencyShortName = currencyShortName;
 			this.total = total;
 			this.average = average;
-			this.rate = rate;
+			//this.rate = rate;
 		}
 	}
 }
