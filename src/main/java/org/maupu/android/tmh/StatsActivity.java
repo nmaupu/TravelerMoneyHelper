@@ -322,9 +322,24 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 			break;
 		case R.id.item_now:
-			//galleryDate.setSelection(galleryDate.getAdapter().getCount()/2, true);
-			galleryDate.setSelection(galleryDate.getAdapter().getCount()-2, true);
-			((DateGalleryAdapter)galleryDate.getAdapter()).notifyDataSetChanged();
+			// Get info for the current day
+			StaticData.setStatsAdvancedFilter(true);
+			Date beg = new Date();
+			DateUtil.resetDateToBeginingOfDay(beg);
+			Date end = (Date)beg.clone();
+			DateUtil.resetDateToEndOfDay(end);
+			StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
+			StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
+			
+			int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
+			galleryDateBegin.setSelection(pos);
+			((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+			
+			pos =  ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
+			galleryDateEnd.setSelection(pos);
+			((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+			
+			refreshHeaderGallery();
 			refreshDisplay();
 			break;
 		case R.id.item_categories:
@@ -400,7 +415,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		// not before first data for this account for average being computed without error
 		Operation dummyOp = new Operation();
 		dummyOp.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(account.getId()));
-		Cursor c = dummyOp.fetchByPeriod(DateUtil.getFirstDayOfMonth(beg), end, "ASC", 1);
+		Cursor c = dummyOp.fetchByPeriod(DateUtil.getFirstDayOfMonth(beg), end, "o."+OperationData.KEY_DATE+" ASC", 1);
 		c.moveToFirst();
 		dummyOp.toDTO(c);
 		Date firstDate = dummyOp.getDate();
@@ -511,15 +526,34 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		
 		while (it.hasNext()) {
 			String key = it.next();
-			StatsData d = stats.get(key);
+			StatsData statsData = stats.get(key);
 
 			TextView tvStatsTotal = new TextView(this);
 			TextView tvStatsAverage = new TextView(this);
 			tvStatsTotal.setLayoutParams(params);
 			tvStatsAverage.setLayoutParams(params);
+			
+			
+			String currentCurrencyShortName = StaticData.getMainCurrency() != null ? StaticData.getMainCurrency().getShortName() : "NA";
+			StringBuilder sb = new StringBuilder();
+			sb.append(NumberUtil.formatDecimal(statsData.total))
+				.append(" ")
+				.append(statsData.currencyShortName)
+				.append(" / ")
+				.append(NumberUtil.formatDecimal(statsData.total / statsData.rate))
+				.append(" ")
+				.append(currentCurrencyShortName);
 
-			tvStatsTotal.setText(NumberUtil.formatDecimal(d.total) + " " + d.currencyShortName);
-			tvStatsAverage.setText(NumberUtil.formatDecimal(d.average) + " " + d.currencyShortName);
+			tvStatsTotal.setText(sb.toString());
+			
+			sb = new StringBuilder();
+			sb.append(NumberUtil.formatDecimal(statsData.average))
+				.append(" ")
+				.append(statsData.currencyShortName)
+				.append(" / ")
+				.append(NumberUtil.formatDecimal(statsData.average / statsData.rate))
+				.append(currentCurrencyShortName);
+			tvStatsAverage.setText(sb.toString());
 
 			TableRow row = new TableRow(this);
 			row.addView(tvStatsTotal);
@@ -563,12 +597,21 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		case GROUP_BY_CATEGORY:
 			idx = c.getColumnIndex(CategoryData.KEY_NAME);
 			String cat = c.getString(idx);
-			DialogHelper.popupDialogStatsDetails(
-					this, 
-					StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG),
-					StaticData.getDateField(StaticData.PREF_STATS_DATE_END), 
-					cat, 
-					StaticData.getStatsExpectedCategoriesToArray());
+			
+			Date beg = null, end = null;
+			if(StaticData.isStatsAdvancedFilter()) {
+				beg = StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG);
+				end = StaticData.getDateField(StaticData.PREF_STATS_DATE_END);
+			} else {
+				int position = StaticData.getPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED);
+				if(position != -1) {
+					Date dateSelected = (Date)galleryDate.getAdapter().getItem(position);
+					beg = DateUtil.getFirstDayOfMonth(dateSelected);
+					end = DateUtil.getLastDayOfMonth(dateSelected);
+				}
+			}
+			
+			DialogHelper.popupDialogStatsDetails(this, beg, end, cat, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
 	}
@@ -577,11 +620,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		public String currencyShortName;
 		public Double average;
 		public Double total;
+		public double rate;
 
 		public StatsData(String currencyShortName, Double total, Double average, Double rate) {
 			this.currencyShortName = currencyShortName;
 			this.total = total;
 			this.average = average;
+			this.rate = rate;
 		}
 	}
 }

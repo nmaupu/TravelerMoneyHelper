@@ -181,7 +181,7 @@ public class Operation extends BaseObject {
 	}
 
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
-		return fetchByPeriod(dateBegin, dateEnd, "DESC", -1);
+		return fetchByPeriod(dateBegin, dateEnd, "o."+OperationData.KEY_DATE+" DESC", -1);
 	}
 	
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
@@ -193,7 +193,7 @@ public class Operation extends BaseObject {
 		//qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
 		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		String sLimit = limit > 0 ? " limit "+limit : "";
-		qsb.append("ORDER BY o."+OperationData.KEY_DATE+" " + order + " " + sLimit);
+		qsb.append("ORDER BY " + order + " " + sLimit);
 
 		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
 		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
@@ -307,8 +307,7 @@ public class Operation extends BaseObject {
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
 		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		
-		long diff = dateEnd.getTime() - dateBegin.getTime();
-		long nbDays = diff / 86400000;
+		long nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
 		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("o."+OperationData.KEY_ID+", ");

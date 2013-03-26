@@ -204,7 +204,7 @@ public abstract class DialogHelper {
 			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, b.toString());
 		
 		// Getting cursor
-		Cursor cursor = dummyOp.fetchByPeriod(beg, end);
+		Cursor cursor = dummyOp.fetchByPeriod(beg, end, "o."+OperationData.KEY_AMOUNT+" ASC", -1);
 		
 		OperationCursorAdapter sca = new OperationCursorAdapter(tmhActivity, 
 				R.layout.operation_item_nocheckbox, 

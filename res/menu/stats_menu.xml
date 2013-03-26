@@ -16,5 +16,10 @@
         android:id="@+id/item_categories"
         android:icon="@drawable/ic_action_send"
         android:title="@string/categories"/>
+    
+    <item
+        android:id="@+id/item_refresh"
+        android:icon="@drawable/ic_menu_refresh"
+        android:title="@string/refresh"/>
 
 </menu>
