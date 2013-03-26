@@ -73,4 +73,30 @@ public abstract class DateUtil {
 
 		return new GregorianCalendar(year, month, maxDay, 23, 59, 59).getTime();
 	}
+	
+	public static int getNumberOfDaysBetweenDates(Date date1, Date date2) {
+		Date d1 = (Date)date1.clone();
+		Date d2 = (Date)date2.clone();
+		
+		d1 = DateUtil.resetDateToBeginingOfDay(d1);
+		d2 = DateUtil.resetDateToEndOfDay(d2);
+		
+		return (int)Math.abs(Math.ceil((double) ( (double)(d1.getTime()-d2.getTime()) / 86400000d)));
+	}
+	
+	public static Date resetDateToBeginingOfDay(Date d) {
+		d.setHours(0);
+		d.setMinutes(0);
+		d.setSeconds(0);
+		
+		return d;
+	}
+	
+	public static Date resetDateToEndOfDay(Date d) {
+		d.setHours(23);
+		d.setMinutes(59);
+		d.setSeconds(59);
+		
+		return d;
+	}
 }

@@ -63,10 +63,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private Gallery galleryDateBegin;
 	private Gallery galleryDateEnd;
 	private LinearLayout layoutAdvancedGallery;
-	//private AlertDialog alertDialogWithdrawalCategory;
 	private final static String LAST_MONTH_SELECTED = "lastMonthSelectedItemPosition";
-	//private CheckableCursorAdapter categoryChooserAdapter = null;
-	//private AlertDialog dialogCategoryChooser = null;
 	private boolean resetDialogCategoryChooser = false;
 	private final static int GROUP_BY_DATE=0;
 	private final static int GROUP_BY_CATEGORY=1;
@@ -77,8 +74,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private TableLayout statsTextLayout = null;
 	private StatsCursorAdapter statsCursorAdapter = null;
 	private boolean showGraph = true;
-	//private TextView tvStatsTotal = null;
-	//private TextView tvStatsAverage = null;
 
 	public StatsActivity() {
 		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
@@ -139,25 +134,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
-		//tvStatsTotal = (TextView)findViewById(R.id.stats_total_value);
-		//tvStatsAverage = (TextView)findViewById(R.id.stats_avg_value);
-
-
-		/*final TmhActivity activity = this;
-		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				startActivity(new Intent(activity, PreferencesActivity.class));
-				activity.finish();
-			}
-		};
-
-		alertDialogWithdrawalCategory = SimpleDialog.errorDialog(
-				this, 
-				getString(R.string.warning), 
-				getString(R.string.default_category_warning),
-				listener).create();
-		 */
 
 		initHeaderGalleries();
 		refreshHeaderGallery();
@@ -359,16 +335,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			adapter2.notifyDataSetChanged();
 
 			if(gallery == galleryDateBegin) {
-				Date beg = (Date)adapter1.getItem(position);
-				beg.setHours(0);
-				beg.setMinutes(0);
-				beg.setSeconds(0);
+				Date beg = DateUtil.resetDateToBeginingOfDay((Date)adapter1.getItem(position));
 				StaticData.setStatsDateBeg(beg);
 			} else if(gallery == galleryDateEnd) {
-				Date end = (Date)adapter2.getItem(position);
-				end.setHours(23);
-				end.setMinutes(59);
-				end.setSeconds(59);
+				Date end = DateUtil.resetDateToEndOfDay((Date)adapter2.getItem(position));
 				StaticData.setStatsDateEnd(end);
 			}
 		} else {
@@ -572,14 +542,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			idx = c.getColumnIndex(OperationData.KEY_DATE);
 			String sDate = c.getString(idx);
 			try {
-				Date beg = DateUtil.StringSQLToDate(sDate);
-				beg.setHours(0);
-				beg.setMinutes(0);
-				beg.setSeconds(0);
-				Date end = (Date)beg.clone();
-				end.setHours(23);
-				end.setMinutes(59);
-				end.setSeconds(59);
+				Date beg = DateUtil.resetDateToBeginingOfDay(DateUtil.StringSQLToDate(sDate));
+				Date end = DateUtil.resetDateToEndOfDay((Date)beg.clone());
 				DialogHelper.popupDialogStatsDetails(this, beg, end, null, StaticData.getStatsExpectedCategoriesToArray());
 			} catch (ParseException pe) {
 				pe.printStackTrace();
@@ -597,13 +561,11 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		public String currencyShortName;
 		public Double average;
 		public Double total;
-		//public Double rate;
 
 		public StatsData(String currencyShortName, Double total, Double average, Double rate) {
 			this.currencyShortName = currencyShortName;
 			this.total = total;
 			this.average = average;
-			//this.rate = rate;
 		}
 	}
 }
