@@ -81,7 +81,7 @@ public abstract class DateUtil {
 		d1 = DateUtil.resetDateToBeginingOfDay(d1);
 		d2 = DateUtil.resetDateToEndOfDay(d2);
 		
-		return (int)Math.abs(Math.ceil((double) ( (double)(d1.getTime()-d2.getTime()) / 86400000d)));
+		return (int)Math.ceil(Math.abs((double) ( (double)(d1.getTime()-d2.getTime()) / 86400000d)));
 	}
 	
 	public static Date resetDateToBeginingOfDay(Date d) {

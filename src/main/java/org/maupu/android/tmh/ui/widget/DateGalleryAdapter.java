@@ -2,7 +2,9 @@ package org.maupu.android.tmh.ui.widget;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.maupu.android.tmh.R;
@@ -76,7 +78,7 @@ public class DateGalleryAdapter extends BaseAdapter {
 		
 		return convertView;
 	}
-
+	
 	@Override
 	public int getCount() {
 		return dates == null ? 0 : dates.size(); 
@@ -85,6 +87,26 @@ public class DateGalleryAdapter extends BaseAdapter {
 	@Override
 	public Object getItem(int position) {
 		return dates == null ? null : dates.get(position);
+	}
+	
+	public int getItemPosition(Date d) {
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.setTime(d);
+		
+		int ret = -1;
+		int size = dates.size();
+		for (int i=0; i<size; i++) {
+			Calendar cal2 = GregorianCalendar.getInstance();
+			cal2.setTime((Date)getItem(i));
+			if(		cal2.get(Calendar.YEAR) == cal.get(Calendar.YEAR) &&
+					cal2.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && 
+					cal2.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)) {
+				ret = i;
+				break;
+			}
+		}
+		
+		return ret;
 	}
 
 	@Override

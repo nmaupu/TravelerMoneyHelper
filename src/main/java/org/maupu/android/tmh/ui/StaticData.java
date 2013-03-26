@@ -22,8 +22,6 @@ public abstract class StaticData {
 	private static boolean isValidCurrentAccount = false;
 	private static Integer defaultAccountId;
 	private static Category currentSelectedCategory = new Category();
-	private static Date statsDateBeg = null;
-	private static Date statsDateEnd = null;
 	private static List<Integer> statsExceptedCategories = new ArrayList<Integer>();
 	private static boolean statsAdvancedFilter = false;
 	private static Date currentOperationDatePickerDate = null;
@@ -48,22 +46,6 @@ public abstract class StaticData {
 	 */
 	public static void invalidateCurrentAccount() {
 		isValidCurrentAccount = false;
-	}
-	
-	public static void setStatsDateBeg(Date statsDateBeg) {
-		if(statsDateBeg == null)
-			return;
-		
-		setPreferenceValueLong(PREF_STATS_DATE_BEG, statsDateBeg.getTime());
-		getStatsDateBeg();
-	}
-	
-	public static void setStatsDateEnd(Date statsDateEnd) {
-		if(statsDateEnd == null)
-			return;
-		
-		setPreferenceValueLong(PREF_STATS_DATE_END, statsDateEnd.getTime());
-		getStatsDateEnd();
 	}
 	
 	public static void setCurrentOperationDatePickerDate(Date currentOperationDatePickerDate) {
@@ -110,29 +92,7 @@ public abstract class StaticData {
 		StaticData.statsAdvancedFilter = statsAdvancedFilter;
 	}
 	
-	public static Date getStatsDateBeg() {
-		SharedPreferences prefs = getPrefs();
-		Long dateBeg = prefs.getLong(PREF_STATS_DATE_BEG, -1);
-		
-		if(dateBeg == -1)
-			return null;
-		
-		statsDateBeg = new Date(dateBeg);
-		return statsDateBeg;
-	}
-	
-	public static Date getStatsDateEnd() {
-		SharedPreferences prefs = getPrefs();
-		Long dateEnd = prefs.getLong(PREF_STATS_DATE_END, -1);
-		
-		if(dateEnd == -1)
-			return null;
-		
-		statsDateEnd = new Date(dateEnd);
-		return statsDateEnd;
-	}
-	
-	public static Date getCustomDateField(String key) {
+	public static Date getDateField(String key) {
 		SharedPreferences prefs = getPrefs();
 		Long date = prefs.getLong(key, -1);
 		
@@ -142,8 +102,8 @@ public abstract class StaticData {
 		return new Date(date);
 	}
 	
-	public static void setCustomDateField(String key, Date date) {
-		if(date == null)
+	public static void setDateField(String key, Date date) {
+		if(date == null || key == null || "".equals(key))
 			return;
 		
 		setPreferenceValueLong(key, date.getTime());

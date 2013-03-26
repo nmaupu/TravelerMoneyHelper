@@ -83,7 +83,7 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
     		fos.close();
     		
     		// Storing date to invalidate cache
-    		StaticData.setCustomDateField(filename, new Date());
+    		StaticData.setDateField(filename, new Date());
     	} catch (FileNotFoundException fnfe) {
     		fnfe.printStackTrace();
     	} catch (IOException ioe) {
@@ -96,7 +96,7 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
 		
 		Date now = new Date();
 		long tnow = now.getTime();
-		Date cacheDate = StaticData.getCustomDateField(filename);
+		Date cacheDate = StaticData.getDateField(filename);
 		
 		if(cacheLimit > 0 && (cacheDate == null || tnow - cacheDate.getTime() >= cacheLimit*1000)) {
 			// no cache available or cache not valid anymore

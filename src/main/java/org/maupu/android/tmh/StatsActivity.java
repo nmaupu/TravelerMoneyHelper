@@ -76,10 +76,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private boolean showGraph = true;
 
 	public StatsActivity() {
-		if(StaticData.getStatsDateBeg() == null || StaticData.getStatsDateEnd() == null) {
+		if(StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG) == null || StaticData.getDateField(StaticData.PREF_STATS_DATE_END) == null) {
 			Date now = new GregorianCalendar().getTime();
-			StaticData.setStatsDateBeg(DateUtil.getFirstDayOfMonth(now));
-			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(now));
+			StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, DateUtil.getFirstDayOfMonth(now));
+			StaticData.setDateField(StaticData.PREF_STATS_DATE_END, DateUtil.getLastDayOfMonth(now));
 			StaticData.setStatsAdvancedFilter(false);
 		}
 
@@ -241,7 +241,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 
 		DateGalleryAdapter adapter1 = new DateGalleryAdapter(this, datesAdvanced);
-		//SimpleDateFormat dateFirst = new SimpleDateFormat("dd/MM/yyyy");
 		DateFormat dateFirst = SimpleDateFormat.getDateInstance();
 		adapter1.setFirstDateFormat(dateFirst);
 		adapter1.setSecondDateFormat(null);
@@ -255,10 +254,27 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		galleryDateEnd.setAdapter(adapter2);
 		galleryDateEnd.setSelection(defaultPosition);
-
+		
+		// Listeners
 		galleryDateBegin.setOnItemSelectedListener(this);
 		galleryDateEnd.setOnItemSelectedListener(this);
-
+		
+		// Restore previous selected position
+		Date beg = StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG);
+		Date end = StaticData.getDateField(StaticData.PREF_STATS_DATE_END);
+		if(beg != null && end != null) {
+			int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
+			if(pos != -1) {
+				galleryDateBegin.setSelection(pos);
+				((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+			}
+			
+			pos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
+			if(pos != -1) {
+				galleryDateEnd.setSelection(pos);
+				((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+			}
+		}
 
 		// Normal selection (by entire month)
 		cal = Calendar.getInstance();
@@ -336,17 +352,14 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 			if(gallery == galleryDateBegin) {
 				Date beg = DateUtil.resetDateToBeginingOfDay((Date)adapter1.getItem(position));
-				StaticData.setStatsDateBeg(beg);
+				StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
 			} else if(gallery == galleryDateEnd) {
 				Date end = DateUtil.resetDateToEndOfDay((Date)adapter2.getItem(position));
-				StaticData.setStatsDateEnd(end);
+				StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
 			}
 		} else {
 			// Update display for this period
 			DateGalleryAdapter adapter = (DateGalleryAdapter)gallery.getAdapter();
-			Date d = (Date)adapter.getItem(position);
-			StaticData.setStatsDateBeg(DateUtil.getFirstDayOfMonth(d));
-			StaticData.setStatsDateEnd(DateUtil.getLastDayOfMonth(d));
 			adapter.notifyDataSetChanged();
 			StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, position);
 		}
@@ -364,7 +377,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		Cursor cursorStatsTotal = null;
 
 		Account account = StaticData.getCurrentAccount();
-		
 
 		Date beg = null, end = null;
 		if(! StaticData.isStatsAdvancedFilter()) {
@@ -375,8 +387,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				end = DateUtil.getLastDayOfMonth(dateSelected);
 			}
 		} else {
-			beg = StaticData.getStatsDateBeg();
-			end = StaticData.getStatsDateEnd();
+			beg = StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG);
+			end = StaticData.getDateField(StaticData.PREF_STATS_DATE_END);
 		}
 		
 		// If end date is after now, we use now to have a well computed average
@@ -384,7 +396,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		if(end.after(now))
 			end = now;
 		
-		// Getting first data of the month given by dateBeg and verify that date beg is 
+		// Getting first data of the month given by date beg and verify that date beg is 
 		// not before first data for this account for average being computed without error
 		Operation dummyOp = new Operation();
 		dummyOp.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(account.getId()));
@@ -395,14 +407,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		if(firstDate != null && firstDate.after(beg))
 			beg = firstDate;
 
-		double nbDays = -1;
+		int nbDays = -1;
 		dummyOp = new Operation();
-		cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-		nbDays = cursorData.getCount();
+		nbDays = DateUtil.getNumberOfDaysBetweenDates(beg, end);
 		Log.d(StatsActivity.class.getName(), "Nb days computed = "+nbDays+" dateBeg="+beg+", dateEnd="+end);
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
-			// Keeping previous cursorData
+			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		case GROUP_BY_CATEGORY:
 			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
@@ -412,7 +423,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		// Get total
 		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
 
-		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, now, StaticData.getStatsExpectedCategoriesToArray());
+		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
 		int cursorStatsSize = cursorStatsTotal.getCount();
 		if(cursorStatsTotal != null && cursorStatsSize > 0) {
 			for(int i = 0; i<cursorStatsSize; i++) {
@@ -552,7 +563,12 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		case GROUP_BY_CATEGORY:
 			idx = c.getColumnIndex(CategoryData.KEY_NAME);
 			String cat = c.getString(idx);
-			DialogHelper.popupDialogStatsDetails(this, StaticData.getStatsDateBeg(), StaticData.getStatsDateEnd(), cat, StaticData.getStatsExpectedCategoriesToArray());
+			DialogHelper.popupDialogStatsDetails(
+					this, 
+					StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG),
+					StaticData.getDateField(StaticData.PREF_STATS_DATE_END), 
+					cat, 
+					StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
 	}
