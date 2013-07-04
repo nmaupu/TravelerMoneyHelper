@@ -11,6 +11,7 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
@@ -277,6 +278,20 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			cur.toDTO(c);
 			obj.setCurrency(cur);
 		}
+	}
+	
+	@Override
+	protected boolean onContinue(boolean disposeActivity) {
+		// Invalidate current account if we are editing it
+		try {
+			if(super.isEditing() && super.getObj().getId().intValue() == StaticData.getCurrentAccount().getId().intValue()) {
+				StaticData.invalidateCurrentAccount();
+			}
+		} catch (NullPointerException npe) {
+			// Do nothing more here
+		}
+		
+		return super.onContinue(disposeActivity);
 	}
 
 	class AppsAdapter extends BaseAdapter {

@@ -120,6 +120,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	public void onClick(View v) {
 		final Operation obj = new Operation();
 		Intent intent = null;
+		// Bug fix : when changing account name, listview is null
+		if(listView == null)
+			refreshDisplay();
 		CheckableCursorAdapter checkableCursorAdapter = (CheckableCursorAdapter)listView.getAdapter();
 		final Integer[] posChecked;
 		if(checkableCursorAdapter != null)
@@ -266,111 +269,121 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	public void refreshDisplay() {
 		// Getting current account
 		Account currentAccount = StaticData.getCurrentAccount();
-		if(currentAccount != null && currentAccount.getId() != null) {
-			// Process list
-			Operation dummy = new Operation();
-			dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
+		
+		// TODO - maybe, invalidate "static current account" to force reload instead of this shit
+	/*	if(currentAccount == null || currentAccount.getId() == null) {
+			// no current account, set default one
+			Account acc = new Account();
+			Cursor c = acc.fetchAll();
+			c.moveToFirst();
+			acc.toDTO(c);
+			StaticData.setCurrentAccount(acc);
+			currentAccount = acc;
+		}*/
 
-			Cursor cAllOpMonth = dummy.fetchByMonth(date);
-			Cursor cSumOpMonth = dummy.sumOperationsByMonth(currentAccount, date, null);
+		// Process list
+		Operation dummy = new Operation();
+		dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
 
-			// Process balance
-			Currency mainCur = StaticData.getMainCurrency();
-			String symbolCurrency = null;
-			try {
-				symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
-			} catch(NullPointerException npe) {
-				symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
-			}
+		Cursor cAllOpMonth = dummy.fetchByMonth(date);
+		Cursor cSumOpMonth = dummy.sumOperationsByMonth(currentAccount, date, null);
 
-			AccountBalance balance = currentAccount.getComputedBalance();
-			StringBuilder sbBalance = new StringBuilder();
-			if(balance.size() == 1) {
-				Set<Integer> s = balance.keySet();
-				Iterator<Integer> it = s.iterator();
-				Integer curId = it.next();
-
-				Double b = balance.get(curId);
-
-				Currency cur = new Currency();
-				Cursor cursor = cur.fetch(curId);
-				cur.toDTO(cursor);
-				cursor.close();
-
-				sbBalance.append(NumberUtil.formatDecimalLocale(b))
-				.append(" ")
-				.append(cur.getShortName())
-				.append(" / ");
-			}
-
-			sbBalance.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
-			.append(" ")
-			.append(symbolCurrency);
-
-
-
-			Double total = 0d;
-			int nbRes = cSumOpMonth.getCount();
-			boolean sameCurrency = (nbRes == 1);
-			for(int i=0; i<nbRes; i++) {
-				int idxSum = cSumOpMonth.getColumnIndexOrThrow(Operation.KEY_SUM);
-				int idxRate = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
-				int idxCurrencyShortName = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
-
-				float amount = cSumOpMonth.getFloat(idxSum);
-				float rate = cSumOpMonth.getFloat(idxRate);
-
-				// If not sameCurrency, convert it from rate
-				if(! sameCurrency) {
-					total += amount/rate;
-				}
-				else {
-					total += amount;
-					symbolCurrency = cSumOpMonth.getString(idxCurrencyShortName);
-				}
-
-				cSumOpMonth.moveToNext();
-			} //for
-
-			// closing useless cursor
-			cSumOpMonth.close();
-
-			StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
-			sbTotal.append(" ");
-			sbTotal.append(symbolCurrency);
-
-
-			// Set and refresh view
-			if(listView == null)
-				listView = (ListView)view.findViewById(R.id.list);
-
-			if(cAllOpMonth != null) {
-				// Close previous cursor before new assignation
-				try {
-					((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
-				} catch(NullPointerException npe) {
-					// listview not yet initialized - do nothing
-				}
-
-				OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
-						viewPagerOperationActivity, 
-						R.layout.operation_item, 
-						cAllOpMonth, 
-						new String[]{"icon", "account", "category", "dateStringHours", "amountString", "convertedAmount"},
-						new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
-				cca.setOnNumberCheckedListener(this);
-				listView.setAdapter(cca);
-
-				textViewBalance.setText(sbBalance.toString());
-				textViewTotal.setText(sbTotal.toString());
-			}
-
-			// refresh header if needed
-			refreshHeader();
-
-			// Disable buttons if needed
-			initButtons();
+		// Process balance
+		Currency mainCur = StaticData.getMainCurrency();
+		String symbolCurrency = null;
+		try {
+			symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
+		} catch(NullPointerException npe) {
+			symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
 		}
+
+		AccountBalance balance = currentAccount.getComputedBalance();
+		StringBuilder sbBalance = new StringBuilder();
+		if(balance.size() == 1) {
+			Set<Integer> s = balance.keySet();
+			Iterator<Integer> it = s.iterator();
+			Integer curId = it.next();
+
+			Double b = balance.get(curId);
+
+			Currency cur = new Currency();
+			Cursor cursor = cur.fetch(curId);
+			cur.toDTO(cursor);
+			cursor.close();
+
+			sbBalance.append(NumberUtil.formatDecimalLocale(b))
+			.append(" ")
+			.append(cur.getShortName())
+			.append(" / ");
+		}
+
+		sbBalance.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
+		.append(" ")
+		.append(symbolCurrency);
+
+
+
+		Double total = 0d;
+		int nbRes = cSumOpMonth.getCount();
+		boolean sameCurrency = (nbRes == 1);
+		for(int i=0; i<nbRes; i++) {
+			int idxSum = cSumOpMonth.getColumnIndexOrThrow(Operation.KEY_SUM);
+			int idxRate = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+			int idxCurrencyShortName = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+
+			float amount = cSumOpMonth.getFloat(idxSum);
+			float rate = cSumOpMonth.getFloat(idxRate);
+
+			// If not sameCurrency, convert it from rate
+			if(! sameCurrency) {
+				total += amount/rate;
+			}
+			else {
+				total += amount;
+				symbolCurrency = cSumOpMonth.getString(idxCurrencyShortName);
+			}
+
+			cSumOpMonth.moveToNext();
+		} //for
+
+		// closing useless cursor
+		cSumOpMonth.close();
+
+		StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
+		sbTotal.append(" ");
+		sbTotal.append(symbolCurrency);
+
+
+		// Set and refresh view
+		if(listView == null)
+			listView = (ListView)view.findViewById(R.id.list);
+
+		if(cAllOpMonth != null) {
+			// Close previous cursor before new assignation
+			try {
+				((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
+			} catch(NullPointerException npe) {
+				// listview not yet initialized - do nothing
+			}
+
+			OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
+					viewPagerOperationActivity, 
+					R.layout.operation_item, 
+					cAllOpMonth, 
+					new String[]{"icon", "account", "category", "dateStringHours", "amountString", "convertedAmount"},
+					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
+			cca.setOnNumberCheckedListener(this);
+			listView.setAdapter(cca);
+
+			textViewBalance.setText(sbBalance.toString());
+			textViewTotal.setText(sbTotal.toString());
+		}
+
+		// refresh header if needed
+		refreshHeader();
+
+		// Disable buttons if needed
+		initButtons();
 	}
 
 

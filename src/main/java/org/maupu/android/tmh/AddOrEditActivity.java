@@ -105,7 +105,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		return true;
 	}
 
-	private boolean onContinue(final boolean disposeActivity) {
+	protected boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {
 			fieldsToBaseObject(obj);
 			
