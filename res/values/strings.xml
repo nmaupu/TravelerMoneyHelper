@@ -116,5 +116,6 @@
     <string name="update">Update</string>
     <string name="graph">Graph</string>
     <string name="refreshing">Refreshing</string>
+    <string name="menu_item_month">Other months</string>
 
 </resources>

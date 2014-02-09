@@ -1,13 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/item_custom_month"
+        android:icon="@drawable/ic_menu_agenda"
+        android:title="@string/menu_item_month"/>
+    <item
         android:id="@+id/item_period"
         android:icon="@drawable/ic_menu_agenda"
-        android:title="@string/menu_item_period" />
+        android:title="@string/menu_item_period"/>
     <item
         android:id="@+id/item_now"
         android:icon="@drawable/ic_menu_revert"
-        android:title="@string/menu_item_now" />
+        android:title="@string/menu_item_now"/>
     <item
         android:id="@+id/item_preferences"
         android:icon="@drawable/ic_menu_preferences"
@@ -16,7 +20,6 @@
         android:id="@+id/item_categories"
         android:icon="@drawable/ic_action_send"
         android:title="@string/categories"/>
-    
     <item
         android:id="@+id/item_refresh"
         android:icon="@drawable/ic_menu_refresh"

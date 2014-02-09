@@ -114,5 +114,6 @@
     <string name="update">Màj</string>
     <string name="graph">Graph</string>
     <string name="refreshing">Chargement</string>
+    <string name="menu_item_month">Autres mois</string>
 
 </resources>

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
@@ -30,12 +31,15 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.Dialog;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -49,6 +53,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.DatePicker;
 import android.widget.Gallery;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -57,7 +62,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressLint("UseSparseArrays")
-public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener {
+public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener {
+	private static final int DATE_DIALOG_ID = 0;
 	private ListView listView;
 	private Gallery galleryDate;
 	private Gallery galleryDateBegin;
@@ -74,6 +80,9 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private TableLayout statsTextLayout = null;
 	private StatsCursorAdapter statsCursorAdapter = null;
 	private boolean showGraph = true;
+	private CustomDatePickerDialog customDatePickerDialog = null;
+	private int choosenYear=0, choosenMonth=0, choosenDay=0;
+	private Calendar currentDateDisplayed = Calendar.getInstance();
 
 	public StatsActivity() {
 		if(StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG) == null || StaticData.getDateField(StaticData.PREF_STATS_DATE_END) == null) {
@@ -187,7 +196,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private void initHeaderGalleries() {
 		List<Date> datesAdvanced = new ArrayList<Date>();
 		List<Date> dates = new ArrayList<Date>();
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = (Calendar)currentDateDisplayed.clone();
 
 		// Advance selection
 		galleryDate.setVisibility(View.GONE);
@@ -202,7 +211,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		cal.add(Calendar.MONTH, 1);
 		Date dateEndMin = DateUtil.getFirstDayOfMonth(cal.getTime());
 
-		Calendar tmpCal = Calendar.getInstance();
+		Calendar tmpCal = (Calendar)currentDateDisplayed.clone();
 		tmpCal.setTime(dateBegMin);
 		int maxDateBeg = tmpCal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		tmpCal.setTime(dateMediumMin);
@@ -277,7 +286,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 
 		// Normal selection (by entire month)
-		cal = Calendar.getInstance();
+		cal = (Calendar)currentDateDisplayed.clone();
 		//cal.add(Calendar.MONTH, -7);
 		cal.add(Calendar.MONTH, -24);
 		for(int i=0; i<25; i++) {
@@ -323,13 +332,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			break;
 		case R.id.item_now:
 			// Get info for the current day
-			StaticData.setStatsAdvancedFilter(true);
+			//StaticData.setStatsAdvancedFilter(true);
 			Date beg = new Date();
 			DateUtil.resetDateToBeginingOfDay(beg);
 			Date end = (Date)beg.clone();
 			DateUtil.resetDateToEndOfDay(end);
+			currentDateDisplayed.setTime(end);
 			StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
 			StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
+			
+			initHeaderGalleries();
 			
 			int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
 			galleryDateBegin.setSelection(pos);
@@ -345,6 +357,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		case R.id.item_categories:
 			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true, true);
 			resetDialogCategoryChooser = false;
+			break;
+		case R.id.item_custom_month:
+			// Popup a calendar chooser to set a month in the past for stats view
+			showDialog(DATE_DIALOG_ID);
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -614,6 +630,45 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			DialogHelper.popupDialogStatsDetails(this, beg, end, cat, StaticData.getStatsExpectedCategoriesToArray());
 			break;
 		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * Dialog (date picker) about changing reference date for stats activity
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DATE_DIALOG_ID:
+			if(choosenYear == 0) {
+				// Initializing
+				Calendar cal = Calendar.getInstance();
+				
+				choosenYear = cal.get(Calendar.YEAR);
+				choosenMonth = cal.get(Calendar.MONTH);
+				choosenDay = cal.get(Calendar.DAY_OF_MONTH);
+			}
+			customDatePickerDialog = new CustomDatePickerDialog(this, this, choosenYear, choosenMonth, choosenDay);
+			return customDatePickerDialog;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+		choosenYear = year;
+		choosenMonth = monthOfYear;
+		choosenDay = dayOfMonth;
+		currentDateDisplayed.set(Calendar.YEAR, choosenYear);
+		currentDateDisplayed.set(Calendar.MONTH, choosenMonth);
+		currentDateDisplayed.set(Calendar.DAY_OF_MONTH, choosenDay);
+		StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, currentDateDisplayed.getTime());
+		StaticData.setDateField(StaticData.PREF_STATS_DATE_END, currentDateDisplayed.getTime());
+		
+		initHeaderGalleries();
+		refreshHeaderGallery();
+		refreshDisplay();
 	}
 
 	private class StatsData {
