@@ -9,3 +9,11 @@ lint.xml
 bin/
 gen/
 target/
+gradle/
+import-summary.txt
+local.properties
+.gradle
+.idea
+travelerMoneyHelper/build/
+greenDroid/build/
+build/

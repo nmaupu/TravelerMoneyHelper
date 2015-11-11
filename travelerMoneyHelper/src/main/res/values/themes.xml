@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.LightTheme" parent="android:style/Theme.Light">
+
+        <!-- item name="android:textAppearance">@style/MyDefaultTextAppearance</item -->
+        <item name="android:textColor">#4E4E4E</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Theme.GDMainTheme" parent="Theme.GreenDroid.Light.NoTitleBar">
+        <item name="gdActionBarTitleColor">#fff</item>
+        <item name="gdActionBarDividerWidth">2px</item>
+        <item name="gdActionBarApplicationDrawable">@drawable/tmh_icon</item>
+        <item name="gdActionBarBackground">@color/actionbar_backround</item>
+        <item name="android:textColor">#4E4E4E</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+</resources>
