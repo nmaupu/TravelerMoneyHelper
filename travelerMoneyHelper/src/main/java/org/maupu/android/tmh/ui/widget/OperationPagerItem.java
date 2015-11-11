@@ -239,8 +239,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			textViewAccountName.setText(account.getName());
 		}
 
-		SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMMM");
+		SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM");
 		String dateString = sdfMonth.format(date);
+		Log.d("OperationPagerItem", "month displayed : " + dateString);
 		textViewTitleMonth.setText(dateString);
 
 		SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
