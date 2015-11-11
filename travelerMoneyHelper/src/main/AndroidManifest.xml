@@ -46,7 +46,6 @@
         <activity android:name=".PreferencesActivity" />
         <activity android:name=".WithdrawalActivity" />
         <activity android:name=".CategoryChooserActivity" />
-        <activity android:name=".StatsGraphActivity" />
     </application>
 
 </manifest>
