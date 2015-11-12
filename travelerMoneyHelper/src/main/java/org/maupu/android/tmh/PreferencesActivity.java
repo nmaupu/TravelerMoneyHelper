@@ -166,7 +166,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		for(int i=0; i<list.length; i++) {
 			String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
 			// If database name is not correct (no prefix), array is wrong so we denied this DB
-			if(vals.length == 2)
+			if(vals.length == 2 && ! vals[1].contains("-journal"))
 				listEntries.add(vals[1]);
 		}
 		
