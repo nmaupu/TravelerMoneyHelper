@@ -39,6 +39,21 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
 		return currencies;
 	}
 
+	public CurrencyISO4217 getCurrency(String match) {
+		if(currencies == null) {
+			return null;
+		} else {
+			Iterator<CurrencyISO4217> it = currencies.iterator();
+			while (it.hasNext()) {
+				CurrencyISO4217 c = it.next();
+				if(c.getName().equals(match) || c.getCode().equals(match))
+					return c;
+			}
+		}
+
+		return null;
+	}
+
     @Override
 	protected Integer doInBackground(Currency... params) {
     	

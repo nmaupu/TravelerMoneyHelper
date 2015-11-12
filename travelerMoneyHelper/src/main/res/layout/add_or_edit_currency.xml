@@ -26,10 +26,13 @@
                     android:layout_weight="2"
                     android:text="@string/currency_code" />
 
-                <Spinner
+                <AutoCompleteTextView
                     android:id="@+id/currency_code"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:completionThreshold="1"
+                    android:inputType="text|textAutoCorrect|textAutoComplete"
+                    android:maxLines="1"
                     android:layout_weight="1" />
             </LinearLayout>
 

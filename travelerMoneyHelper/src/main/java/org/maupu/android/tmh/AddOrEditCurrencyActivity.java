@@ -5,34 +5,42 @@ import java.util.List;
 
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements OnItemSelectedListener, IAsync {
+public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements AdapterView.OnItemClickListener, IAsync {
 	private EditText editTextLongName = null;
 	private EditText editTextShortName = null;
 	private EditText editTextValue = null;
 	private CheckBox checkBoxUpdate = null;
-	private Spinner spinnerCurrencyCode = null;
-	private boolean viewCreated = false;
+	private AutoCompleteTextView actvCurrencyCode = null;
 	private TextView textViewRateValue = null;
 	private OpenExchangeRatesAsyncFetcher oerFetcher;
 	private boolean apiKeyValid = false;
@@ -87,10 +95,10 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		List<CurrencyISO4217> currenciesList = oerFetcher.getCurrencies();
 		
 		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
-				android.R.layout.simple_spinner_item,
+				android.R.layout.simple_dropdown_item_1line,
 				currenciesList);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerCurrencyCode.setAdapter(adapter);
+		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		actvCurrencyCode.setAdapter(adapter);
 	}
 
 	@Override
@@ -100,12 +108,12 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		editTextShortName = (EditText)findViewById(R.id.short_name);
 		editTextValue = (EditText)findViewById(R.id.rate_value);
 		checkBoxUpdate = (CheckBox)findViewById(R.id.checkbox_last_update);
-		spinnerCurrencyCode = (Spinner)findViewById(R.id.currency_code);
+		actvCurrencyCode = (AutoCompleteTextView)findViewById(R.id.currency_code);
 		textViewRateValue = (TextView)findViewById(R.id.text_rate_value);
 		
 		updateTextViewRate();
 
-		spinnerCurrencyCode.setOnItemSelectedListener(this);
+		actvCurrencyCode.setOnItemClickListener(this);
 	}
 	
 	private void updateTextViewRate() {
@@ -124,7 +132,8 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		try {
 			Float.parseFloat(editTextValue.getText().toString());
 			return  !editTextLongName.getText().toString().trim().equals("") && 
-					!editTextShortName.getText().toString().trim().equals("");
+					!editTextShortName.getText().toString().trim().equals("") &&
+					oerFetcher.getCurrency(actvCurrencyCode.getText().toString()) != null;
 		} catch (NumberFormatException nfe) {
 			return false;
 		}
@@ -135,7 +144,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	protected void baseObjectToFields(Currency obj) {
 		if(obj == null) {
 			// Force fields to be fill with value corresponding to spinner
-			onItemSelected(null, null, 0, 0);
+			onItemClick(null, null, 0, 0);
 			editTextValue.setText("");
 			if(checkBoxUpdate.isEnabled()) {
 				checkBoxUpdate.setChecked(true);
@@ -157,11 +166,13 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			}
 
 			// Searching for locale in spinner and select it
-			for(int i=0; i<spinnerCurrencyCode.getCount(); i++) {
+			/*for(int i=0; i<spinnerCurrencyCode.getCount(); i++) {
 				CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getItemAtPosition(i);
 				if(c.getCode().equals(obj.getIsoCode()))
 					spinnerCurrencyCode.setSelection(i);
-			}
+			}*/
+
+			actvCurrencyCode.setText(obj.getIsoCode());
 		}
 	}
 
@@ -175,22 +186,17 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			if(obj.getLastUpdate() == null || checkBoxUpdate.isChecked())
 				obj.setLastUpdate(new GregorianCalendar().getTime());
 
-			obj.setIsoCode(((CurrencyISO4217)spinnerCurrencyCode.getSelectedItem()).getCode());
+			String isoCode =  oerFetcher.getCurrency(actvCurrencyCode.getText().toString()).getCode();
+			obj.setIsoCode(isoCode);
 		}
 	}
 
 	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		
-		//CurrencyHelper.testAllCurrencies(this);
-		
-		if(! viewCreated) {
-			// First call here, ignore it
-			viewCreated = true;
-			return;
-		}
-		
-		CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getSelectedItem();
+	public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+		Log.d(AddOrEditCurrencyActivity.class.getName(), "on item clicked called !");
+
+		String isoCode = actvCurrencyCode.getText().toString();
+		CurrencyISO4217 c = oerFetcher.getCurrency(isoCode);
 		String currencySymbol = c.getCode();
 		
 		if(c != null) {
@@ -202,7 +208,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 				// Not a supported ISO4217, so we do not have a symbol available
 				Log.e(AddOrEditCurrencyActivity.class.getName(), c.getCode() + "/"+ c.getName()+ " is not a valid ISO4217 currency !");
 			}
-			
+
 			editTextShortName.setText(currencySymbol);
 			editTextLongName.setText(c.getName());
 			
@@ -234,7 +240,4 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	public void refreshDisplay() {
 		// Do not call super method
 	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {}
 }
