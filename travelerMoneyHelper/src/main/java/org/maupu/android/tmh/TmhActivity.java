@@ -125,8 +125,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			e.printStackTrace();
 		}
 	}
-	
-	@SuppressLint("NewApi")
+
 	public void setActionBarHomeDrawable(int drawable) {
 		ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
 		if(ib != null) {

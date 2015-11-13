@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import greendroid.app.GDActivity;
+import greendroid.widget.ActionBar;
 import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
 
@@ -19,15 +20,27 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+
 
 public class DashboardActivity extends GDActivity implements OnClickListener {
+	private DrawerLayout drawerLayout;
+	private ListView drawerList;
+	private ActionBarDrawerToggle drawerToggle;
+
 	private Button goButton;
 	private ImageView imageCategory;
 	private ImageView imageCurrency;
@@ -43,7 +56,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	
 	
 	public DashboardActivity() {
-		super(greendroid.widget.ActionBar.Type.Empty);
+		super(ActionBar.Type.Normal);
 	}
 	
 	@Override
@@ -62,13 +75,47 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	    	setActionBarContentView(R.layout.dashboard);
 			setTitle(getString(R.string.app_name));
 			addActionBarItem(Type.Info, TmhApplication.ACTION_BAR_INFO);
-			
-			
+
+			String[] titles = new String[]{ "toto", "titi" };
+			drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+			drawerList = (ListView)findViewById(R.id.left_drawer);
+			drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, titles));
+
+			drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.gd_action_bar_list,
+					R.string.about, R.string.account) {
+				/** Called when a drawer has settled in a completely closed state. */
+				public void onDrawerClosed(View view) {
+					super.onDrawerClosed(view);
+					getGDActionBar().setTitle(getString(R.string.app_name));
+				}
+
+				/** Called when a drawer has settled in a completely open state. */
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+					getGDActionBar().setTitle("drawer opened");
+				}
+			};
+			drawerLayout.setDrawerListener(drawerToggle);
+
+
 		    findViewById(R.id.dashboard_button_operations).setOnClickListener(this);
 		    findViewById(R.id.dashboard_button_stats).setOnClickListener(this);
+
+			((ImageButton)getGDActionBar().getChildAt(0)).setImageResource(R.drawable.gd_action_bar_list);
+			getGDActionBar().getChildAt(0).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Log.d(DashboardActivity.class.getName(), "Home button clicked");
+					if(drawerLayout.isDrawerOpen(drawerList))
+						drawerLayout.closeDrawer(drawerList);
+					else
+						drawerLayout.openDrawer(drawerList);
+				}
+			});
 	    }
 	}
-	
+
+
 	@Override
 	protected void onDestroy() {
 		TmhApplication.getDatabaseHelper().close();
@@ -186,6 +233,7 @@ public class DashboardActivity extends GDActivity implements OnClickListener {
 	
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		Log.d(DashboardActivity.class.getName(), "Action bar clicked");
 		switch(item.getItemId()) {
 		case TmhApplication.ACTION_BAR_INFO:
 			Builder builder = new AlertDialog.Builder(this);
