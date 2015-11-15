@@ -8,5 +8,8 @@
     <color name="gallery_date_first_color">#0077bb</color>
     <color name="actionbar_backround">#0066bb</color>
     <color name="actionbar_backround_disable">#87C8FF</color>
+    <color name="light_gray">#E3E3E3</color>
+    <color name="very_light_gray">#F3F3F3</color>
+    <color name="white">#FFF</color>
 
 </resources>

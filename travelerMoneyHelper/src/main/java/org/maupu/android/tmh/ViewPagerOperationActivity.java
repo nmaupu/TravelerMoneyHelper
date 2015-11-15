@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.widget.ListView;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener {
 	
@@ -23,7 +24,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	private int currentPosition;
 	private QuickActionGrid quickActionGrid;
 
-	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,7 +41,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Withdrawal), TmhApplication.ACTION_BAR_ADD_WITHDRAWAL);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
 
-		
 		adapter = new ViewPagerOperationAdapter(this);
 		ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
 		vp.setAdapter(adapter);

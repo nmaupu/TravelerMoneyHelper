@@ -7,10 +7,12 @@ import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
+import org.maupu.android.tmh.ui.SimpleIconItem;
+import org.maupu.android.tmh.ui.TmhNavigationDrawerClickListener;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,10 +20,14 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -30,7 +36,11 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher {	
+
+public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher{
+	private DrawerLayout drawerLayout;
+	private ListView drawerList;
+
 	public static LayoutInflater getInflater(Context ctx) {
 		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -47,6 +57,72 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//TmhApplication.getDatabaseHelper().createSampleData();
+	}
+
+	@Override
+	public void setActionBarContentView(int resID) {
+		super.setActionBarContentView(resID);
+		initNavigationDrawer();
+	}
+
+	@Override
+	public void setActionBarContentView(View view) {
+		super.setActionBarContentView(view);
+		initNavigationDrawer();
+	}
+
+	@Override
+	public void setActionBarContentView(View view, ViewGroup.LayoutParams params) {
+		super.setActionBarContentView(view, params);
+		initNavigationDrawer();
+	}
+
+	private void initNavigationDrawer() {
+		try {
+			SimpleIconItem[] items = new SimpleIconItem[] {
+				new SimpleIconItem(R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation)),
+				new SimpleIconItem(R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats))
+			};
+
+			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			drawerList = (ListView) findViewById(R.id.left_drawer);
+			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
+			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
+
+			/*drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.gd_action_bar_list,
+					R.string.about, R.string.account) {
+				// Called when a drawer has settled in a completely closed state.
+				public void onDrawerClosed(View view) {
+					super.onDrawerClosed(view);
+					getGDActionBar().setTitle(getString(R.string.app_name));
+				}
+
+				// Called when a drawer has settled in a completely open state.
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+					getGDActionBar().setTitle(getString(R.string.app_name));
+				}
+			};
+			drawerLayout.setDrawerListener(drawerToggle);
+			*/
+
+			((ImageButton)getGDActionBar().getChildAt(0)).setImageResource(R.drawable.gd_action_bar_list);
+			getGDActionBar().getChildAt(0).setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Log.d(TmhActivity.class.getName(), "Drawer button clicked");
+					if (drawerLayout.isDrawerOpen(drawerList))
+						drawerLayout.closeDrawer(drawerList);
+					else
+						drawerLayout.openDrawer(drawerList);
+				}
+			});
+			// Drawer opened by default for testing purpose
+			drawerLayout.openDrawer(drawerList);
+		} catch(NullPointerException npe) {
+			// No drawer available in XML file
+			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
+		}
 	}
 
 	@Override
