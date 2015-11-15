@@ -27,6 +27,8 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -45,7 +47,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener, OnKeyListener, OnItemSelectedListener {
+public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher, OnItemSelectedListener {
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int TIME_DIALOG_ID = 1;
 	//private DatePicker datePicker;
@@ -88,7 +90,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
 		amount = (NumberEditText)findViewById(R.id.amount);
-		amount.setOnKeyListener(this);
+		amount.addTextChangedListener(this);
 		linearLayoutRateUpdater = (LinearLayout)findViewById(R.id.ll_exchange_rate);
 		checkboxUpdateRate = (CheckBox)findViewById(R.id.checkbox_update_rate);
 		smCurrency = new SpinnerManager(this, (Spinner)findViewById(R.id.currency));
@@ -352,19 +354,26 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	}
 
 	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		//Log.d(AddOrEditOperationActivity.class.getName(), "Key pressed - "+keyCode);
+	public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+	@Override
+	public void afterTextChanged(Editable editable) {
+//		Log.d(AddOrEditOperationActivity.class.getName(), "Text changed = "+charSequence);
 		updateConvertedAmount();
-		return false;
 	}
-	
+
+	@Override
+	public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+	}
+
 	private void updateConvertedAmount() {
 		try {
 			Cursor c = smCurrency.getSelectedItem();
 			Currency dummyCur = new Currency();
 			dummyCur.toDTO(c);
-			
+
 			String a = amount.getStringText();
+			Log.d(AddOrEditOperationActivity.class.getName(), "Current amount to convert = "+a);
 			a = a != null ? a.trim() : a;
 			
 			Double currentAmount = 0d;
@@ -375,6 +384,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
 		} catch (NumberFormatException nfe) {
 			// No conversion
+			Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");
 		}
 	}
 
