@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 
+@Deprecated
 public class DashboardActivity extends GDActivity implements OnClickListener {
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
