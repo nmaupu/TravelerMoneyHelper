@@ -11,7 +11,6 @@ import android.util.Log;
 import android.widget.EditText;
 
 public class NumberEditText extends EditText implements TextWatcher {
-	private boolean mEditing = true;
 
 	public NumberEditText(Context context) {
 		super(context);
@@ -25,49 +24,41 @@ public class NumberEditText extends EditText implements TextWatcher {
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		Log.d(NumberEditText.class.getCanonicalName(), "beforeTextChanged");
+		//Log.d(NumberEditText.class.getCanonicalName(), "beforeTextChanged");
 	}
 
 	@Override
 	public void afterTextChanged(Editable s) {
-		Log.d(NumberEditText.class.getCanonicalName(), "afterTextChanged");
-		mEditing = true;
-	}
+		//Log.d(NumberEditText.class.getCanonicalName(), "afterTextChanged");
+		super.removeTextChangedListener(this);
 
-	@Override
-	public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-		super.onTextChanged(text, start, lengthBefore, lengthAfter);
-		
 		String currentNumberString = this.getStringText();
-		
 		try {
-			if(mEditing) {
-				mEditing = false;
-				
-				Double currentNumberDouble = Double.parseDouble(currentNumberString);
-				
-				// Setting formatted text
-				if(! currentNumberString.endsWith(".")) {
-					this.setText(NumberUtil.formatDecimalLocale(currentNumberDouble).replace(",", "."));
-				}
+			Double currentNumberDouble = Double.parseDouble(currentNumberString);
+			// Setting formatted text
+			if(! currentNumberString.endsWith(".")) {
+				this.setText(
+						NumberUtil.formatDecimalLocale(currentNumberDouble).replace(",", ".")
+				);
 			}
+			// set cursor position to the end of EditText
+			int pos = this.length();
+			Editable ed = this.getText();
+			Selection.setSelection(ed, pos);
 		} catch(NumberFormatException nfe) {
 			// not a number yet - ignore that
 		} catch (NullPointerException npe) {
 			npe.printStackTrace();
 		}
-		
-		// set cursor position to the end of EditText
-		int pos = this.length();
-		Editable ed = this.getText();
-		Selection.setSelection(ed, pos);
+		super.addTextChangedListener(this);
+	}
+
+	@Override
+	public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+		//super.onTextChanged(text, start, lengthBefore, lengthAfter);
 	}
 	
 	public String getStringText() {
-		String txt = super.getText()
-				.toString()
-				.replaceAll(",", ".").replaceAll("\\s", "");
-		
-		return txt;
+		return super.getText().toString().replaceAll(",", ".").replaceAll("\\s", "");
 	}
 }

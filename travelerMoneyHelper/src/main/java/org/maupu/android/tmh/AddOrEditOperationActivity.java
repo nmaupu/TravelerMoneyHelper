@@ -357,7 +357,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 	@Override
 	public void afterTextChanged(Editable editable) {
-//		Log.d(AddOrEditOperationActivity.class.getName(), "Text changed = "+charSequence);
 		updateConvertedAmount();
 	}
 
