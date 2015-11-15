@@ -117,8 +117,6 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 						drawerLayout.openDrawer(drawerList);
 				}
 			});
-			// Drawer opened by default for testing purpose
-			drawerLayout.openDrawer(drawerList);
 		} catch(NullPointerException npe) {
 			// No drawer available in XML file
 			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
