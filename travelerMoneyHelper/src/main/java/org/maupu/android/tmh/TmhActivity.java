@@ -89,23 +89,6 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
 			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
 
-			/*drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.gd_action_bar_list,
-					R.string.about, R.string.account) {
-				// Called when a drawer has settled in a completely closed state.
-				public void onDrawerClosed(View view) {
-					super.onDrawerClosed(view);
-					getGDActionBar().setTitle(getString(R.string.app_name));
-				}
-
-				// Called when a drawer has settled in a completely open state.
-				public void onDrawerOpened(View drawerView) {
-					super.onDrawerOpened(drawerView);
-					getGDActionBar().setTitle(getString(R.string.app_name));
-				}
-			};
-			drawerLayout.setDrawerListener(drawerToggle);
-			*/
-
 			((ImageButton)getGDActionBar().getChildAt(0)).setImageResource(R.drawable.gd_action_bar_list);
 			getGDActionBar().getChildAt(0).setOnClickListener(new View.OnClickListener() {
 				@Override
