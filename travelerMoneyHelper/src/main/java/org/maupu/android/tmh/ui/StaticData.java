@@ -39,6 +39,12 @@ public abstract class StaticData {
 	public static final String PREF_STATS_DATE_END = "statsDateEnd";
 	public static final String PREF_OER_EDIT = "oer_apikey_edit_text";
 	public static final String PREF_OER_VALID = "oer_apikey_valid";
+
+	// Keep tracking item selected in navigation drawer
+	public static int navigationDrawerItemSelected = 0;
+
+	// Keep tracking parameters of statsActivity
+	public static boolean showGraph = true;
 	
 	
 	/**

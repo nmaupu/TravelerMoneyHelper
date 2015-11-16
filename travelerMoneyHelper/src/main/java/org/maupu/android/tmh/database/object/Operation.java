@@ -181,7 +181,7 @@ public class Operation extends BaseObject {
 	}
 
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
-		return fetchByPeriod(dateBegin, dateEnd, "o."+OperationData.KEY_DATE+" DESC", -1);
+		return fetchByPeriod(dateBegin, dateEnd, "o." + OperationData.KEY_DATE + " DESC", -1);
 	}
 	
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
@@ -258,6 +258,55 @@ public class Operation extends BaseObject {
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		return c;
+	}
+
+	public Date getFirstDate(Account account, Integer[] exceptCategories) {
+		return getFirstOrLastDate(account, exceptCategories, true);
+	}
+
+	public Date getLastDate(Account account, Integer[] exceptCategories) {
+		return getFirstOrLastDate(account, exceptCategories, false);
+	}
+
+	public Date getFirstOrLastDate(Account account, Integer[] exceptCategories, boolean first) {
+		if(account == null || account.getId() == null)
+			return null;
+
+		String order = first ? "ASC" : "DESC";
+
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("o."+OperationData.KEY_DATE+" ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CategoryData.TABLE_NAME+" ");
+		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND a."+AccountData.KEY_ID+"=o."+OperationData.KEY_ID_ACCOUNT+" ");
+
+		if(exceptCategories != null && exceptCategories.length > 0) {
+			StringBuilder b = new StringBuilder();
+			for(int i=0; i<exceptCategories.length; i++) {
+				int catId = exceptCategories[i];
+				b.append(catId);
+				if(i<exceptCategories.length-1)
+					b.append(",");
+			}
+			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
+		}
+
+		qb.append("ORDER BY o." + OperationData.KEY_DATE + " " + order + " ");
+		qb.append("LIMIT 1 ");
+
+		Log.d(Operation.class.getName(), qb.getStringBuilder().toString());
+
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		int idxDate = c.getColumnIndexOrThrow(OperationData.KEY_DATE);
+		Date d;
+		try {
+			d = DateUtil.StringSQLToDate(c.getString(idxDate));
+		} catch(ParseException pe) {
+			d = null;
+		}
+
+		return d;
 	}
 	
 	public Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {

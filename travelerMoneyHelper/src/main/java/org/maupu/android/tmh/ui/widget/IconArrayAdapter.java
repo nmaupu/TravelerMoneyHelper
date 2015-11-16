@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,15 +11,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.ui.SimpleIconItem;
+import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
+import org.maupu.android.tmh.ui.StaticData;
 
-public class IconArrayAdapter extends ArrayAdapter<SimpleIconItem> {
+public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
     private Context context;
     private int layoutResource;
-    private SimpleIconItem[] data;
+    private NavigationDrawerIconItem[] data;
     private int selectedItem = 0;
 
-    public IconArrayAdapter(Context context, int layoutRes, SimpleIconItem[] data) {
+    public IconArrayAdapter(Context context, int layoutRes, NavigationDrawerIconItem[] data) {
         super(context, layoutRes, data);
         this.context = context;
         this.layoutResource = layoutRes;
@@ -44,7 +44,7 @@ public class IconArrayAdapter extends ArrayAdapter<SimpleIconItem> {
             holder = (SimpleIconHolder)row.getTag();
         }
 
-        SimpleIconItem item = data[position];
+        NavigationDrawerIconItem item = data[position];
         holder.textView.setText(item.getText());
 
         // Handling selected item vs. other items
@@ -63,7 +63,12 @@ public class IconArrayAdapter extends ArrayAdapter<SimpleIconItem> {
 
     public void selectItem(int position) {
         this.selectedItem = position;
+        StaticData.navigationDrawerItemSelected = position;
         notifyDataSetChanged();
+    }
+
+    public int getSelectedItemPosition() {
+        return this.selectedItem;
     }
 
     static class SimpleIconHolder {

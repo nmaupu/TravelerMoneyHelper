@@ -7,7 +7,9 @@ import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
-import org.maupu.android.tmh.ui.SimpleIconItem;
+import org.maupu.android.tmh.ui.INavigationDrawerCallback;
+import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.TmhNavigationDrawerClickListener;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
@@ -37,7 +39,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 
-public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher{
+public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
 
@@ -79,14 +81,16 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 
 	private void initNavigationDrawer() {
 		try {
-			SimpleIconItem[] items = new SimpleIconItem[] {
-				new SimpleIconItem(R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation)),
-				new SimpleIconItem(R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats))
-			};
-
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			drawerList = (ListView) findViewById(R.id.left_drawer);
+
+			NavigationDrawerIconItem[] items = new NavigationDrawerIconItem[] {
+					new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this),
+					new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this)
+			};
 			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
+			((IconArrayAdapter)drawerList.getAdapter()).selectItem(StaticData.navigationDrawerItemSelected);
+
 			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
 
 			((ImageButton)getGDActionBar().getChildAt(0)).setImageResource(R.drawable.gd_action_bar_list);
@@ -103,6 +107,23 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		} catch(NullPointerException npe) {
 			// No drawer available in XML file
 			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
+		}
+	}
+
+	@Override
+	public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
+		Intent intent = null;
+
+		if(item.getFlag() == ViewPagerOperationActivity.class) {
+			intent = new Intent(this, ViewPagerOperationActivity.class);
+		} else if(item.getFlag() == StatsActivity.class) {
+			intent = new Intent(this, StatsActivity.class);
+		}
+
+		if(intent != null) {
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+			finish();
 		}
 	}
 

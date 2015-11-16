@@ -79,7 +79,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private StatsGraphView statGraphView = null;
 	private TableLayout statsTextLayout = null;
 	private StatsCursorAdapter statsCursorAdapter = null;
-	private boolean showGraph = true;
 	private CustomDatePickerDialog customDatePickerDialog = null;
 	private int choosenYear=0, choosenMonth=0, choosenDay=0;
 	private Calendar currentDateDisplayed = Calendar.getInstance();
@@ -104,6 +103,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		super.setActionBarContentView(R.layout.stats_activity);
 		setTitle(R.string.activity_title_statistics);
 
@@ -430,17 +430,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		// Getting first data of the month given by date beg and verify that date beg is 
 		// not before first data for this account for average being computed without error
 		Operation dummyOp = new Operation();
-		dummyOp.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(account.getId()));
-		Cursor c = dummyOp.fetchByPeriod(DateUtil.getFirstDayOfMonth(beg), end, "o."+OperationData.KEY_DATE+" ASC", 1);
-		c.moveToFirst();
-		dummyOp.toDTO(c);
-		Date firstDate = dummyOp.getDate();
+		Date firstDate = dummyOp.getFirstDate(account, StaticData.getStatsExpectedCategoriesToArray());
 		if(firstDate != null && firstDate.after(beg))
 			beg = firstDate;
+		// Checking also end date is before current end date to have good amount computation
+		Date endDate = dummyOp.getLastDate(account, StaticData.getStatsExpectedCategoriesToArray());
+		if(endDate != null && endDate.before(end))
+			end = endDate;
 
-		int nbDays = -1;
-		dummyOp = new Operation();
-		nbDays = DateUtil.getNumberOfDaysBetweenDates(beg, end);
+		//dummyOp = new Operation();
+		int nbDays = DateUtil.getNumberOfDaysBetweenDates(beg, end);
 		Log.d(StatsActivity.class.getName(), "Nb days computed = "+nbDays+" dateBeg="+beg+", dateEnd="+end);
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
@@ -576,6 +575,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			row.addView(tvStatsAverage);
 			statsTextLayout.addView(row);
 		}
+
+		showGraph(StaticData.showGraph);
 	}
 
 	private void closeStatsCursorAdapterIfNeeded() {
@@ -587,10 +588,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	}
 
 	private void toggleGraphAndText() {
-		showGraph = !showGraph;
+		showGraph(!StaticData.showGraph);
+	}
 
-		graphViewLayout.setVisibility(showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
-		statsTextLayout.setVisibility(!showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+	private void showGraph(boolean b) {
+		StaticData.showGraph = b;
+		graphViewLayout.setVisibility(StaticData.showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+		statsTextLayout.setVisibility(!StaticData.showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
 	}
 	
 	@Override
