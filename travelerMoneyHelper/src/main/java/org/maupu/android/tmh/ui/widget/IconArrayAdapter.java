@@ -14,13 +14,15 @@ import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
 
+import java.util.List;
+
 public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
     private Context context;
     private int layoutResource;
-    private NavigationDrawerIconItem[] data;
+    private List<NavigationDrawerIconItem> data;
     private int selectedItem = 0;
 
-    public IconArrayAdapter(Context context, int layoutRes, NavigationDrawerIconItem[] data) {
+    public IconArrayAdapter(Context context, int layoutRes, List<NavigationDrawerIconItem> data) {
         super(context, layoutRes, data);
         this.context = context;
         this.layoutResource = layoutRes;
@@ -44,7 +46,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             holder = (SimpleIconHolder)row.getTag();
         }
 
-        NavigationDrawerIconItem item = data[position];
+        NavigationDrawerIconItem item = data.get(position);
         holder.textView.setText(item.getText());
 
         // Handling selected item vs. other items

@@ -35,13 +35,17 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
-	private DrawerLayout drawerLayout;
-	private ListView drawerList;
+	protected DrawerLayout drawerLayout;
+	protected ListView drawerList;
 
 	public static LayoutInflater getInflater(Context ctx) {
 		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -84,10 +88,10 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			drawerList = (ListView) findViewById(R.id.left_drawer);
 
-			NavigationDrawerIconItem[] items = new NavigationDrawerIconItem[] {
-					new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this),
-					new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this)
-			};
+			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
+            items.add(new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
+            items.add(new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
+
 			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
 			((IconArrayAdapter)drawerList.getAdapter()).selectItem(StaticData.navigationDrawerItemSelected);
 
@@ -114,9 +118,9 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
 		Intent intent = null;
 
-		if(item.getFlag() == ViewPagerOperationActivity.class) {
+		if(item.getTag() == ViewPagerOperationActivity.class) {
 			intent = new Intent(this, ViewPagerOperationActivity.class);
-		} else if(item.getFlag() == StatsActivity.class) {
+		} else if(item.getTag() == StatsActivity.class) {
 			intent = new Intent(this, StatsActivity.class);
 		}
 

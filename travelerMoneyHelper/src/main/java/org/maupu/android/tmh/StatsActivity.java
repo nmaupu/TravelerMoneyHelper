@@ -31,9 +31,12 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
+import org.maupu.android.tmh.ui.INavigationDrawerCallback;
+import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
+import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
@@ -63,7 +66,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressLint("UseSparseArrays")
-public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener {
+public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener, INavigationDrawerCallback {
 	private static final int DATE_DIALOG_ID = 0;
 	private ListView listView;
 	private Gallery galleryDate;
@@ -129,12 +132,20 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_sort_by_size, R.string.category));
 
 		quickActionGridFilter.setOnQuickActionClickListener(new OnQuickActionClickListener() {
-			@Override
-			public void onQuickActionClicked(QuickActionWidget widget, int position) {
-				currentGroupBy = position;
-				refreshDisplay();
-			}
-		});
+            @Override
+            public void onQuickActionClicked(QuickActionWidget widget, int position) {
+                currentGroupBy = position;
+                refreshDisplay();
+            }
+        });
+
+
+        // Navigation drawer
+        ((IconArrayAdapter)super.drawerList.getAdapter()).add(
+                new NavigationDrawerIconItem(PreferencesActivity.class,
+                        R.drawable.ic_equalizer_black,
+                        getResources().getString(R.string.about_title),
+                        this));
 
 
 		//
@@ -179,7 +190,14 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 	}
 
-	public StatsGraphView getStatsGraphView() {
+    @Override
+    public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
+        super.onNavigationDrawerClick(item);
+
+        Log.d(StatsActivity.class.getName(), "Clicked on item " + item);
+    }
+
+    public StatsGraphView getStatsGraphView() {
 		return statGraphView;
 	}
 
@@ -203,6 +221,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		return true;
 	}
+
+
 
 	private void initHeaderGalleries() {
 		List<Date> datesAdvanced = new ArrayList<Date>();

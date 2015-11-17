@@ -1,13 +1,13 @@
 package org.maupu.android.tmh.ui;
 
 public class NavigationDrawerIconItem {
-    Object flag;
+    Object tag;
     int iconResource;
     String text;
     INavigationDrawerCallback callback;
 
-    public NavigationDrawerIconItem(Object flag, int iconRes, String text, INavigationDrawerCallback callback) {
-        this.flag = flag;
+    public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback) {
+        this.tag = tag;
         this.iconResource = iconRes;
         this.text = text;
         this.callback = callback;
@@ -25,8 +25,8 @@ public class NavigationDrawerIconItem {
         return getText();
     }
 
-    public Object getFlag() {
-        return flag;
+    public Object getTag() {
+        return tag;
     }
 
     public INavigationDrawerCallback getCallback() {
