@@ -93,6 +93,7 @@
     <string name="menu_item_more">Plus</string>
     <string name="menu_item_period">Période / Mois</string>
     <string name="menu_item_now">Aujourd\'hui</string>
+    <string name="menu_item_auto">Dates auto</string>
     <string name="default_category_withdrawal_summary">Catégorie par défaut pour les retraits</string>
     <string name="default_category_withdrawal">Catégorie (retrait)</string>
     <string name="default_account_summary">Entrez le compte par défaut</string>

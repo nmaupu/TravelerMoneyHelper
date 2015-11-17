@@ -28,6 +28,7 @@ import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.StaticData;
@@ -158,6 +159,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		Operation o = new Operation();
+		Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
+		Log.d(StatsActivity.class.getName(), "Detected categories to except :");
+		for(int i=0; i<cats.length; i++) {
+			Category cat = new Category();
+			Cursor c = cat.fetch(cats[i]);
+			cat.toDTO(c);
+			Log.d(StatsActivity.class.getName(), "  Auto excepted : "+cats[i]+" ("+cat.getName()+")");
+		}
 
 		if(statGraphView == null) {
 			graphViewLayout = (LinearLayout)findViewById(R.id.graph);
@@ -354,14 +365,41 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshHeaderGallery();
 			refreshDisplay();
 			break;
+		case R.id.item_auto:
+			StaticData.setStatsAdvancedFilter(true);
+			refreshHeaderGallery();
+			refreshDisplay();
+
+			Operation dummyOp = new Operation();
+			Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+			Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+			if(autoBeg != null && autoEnd != null) {
+				currentDateDisplayed.setTime(autoEnd);
+				StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
+				StaticData.setDateField(StaticData.PREF_STATS_DATE_END, autoEnd);
+
+				initHeaderGalleries();
+
+				int autoPos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(autoBeg);
+				galleryDateBegin.setSelection(autoPos);
+				((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+
+				autoPos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(autoEnd);
+				galleryDateEnd.setSelection(autoPos);
+				((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+			}
+
+			refreshHeaderGallery();
+			refreshDisplay();
+			break;
 		case R.id.item_categories:
 			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true, true);
 			resetDialogCategoryChooser = false;
 			break;
-		case R.id.item_custom_month:
+		/*case R.id.item_custom_month:
 			// Popup a calendar chooser to set a month in the past for stats view
 			showDialog(DATE_DIALOG_ID);
-			break;
+			break;*/
 		default:
 			return super.onOptionsItemSelected(item);
 		}

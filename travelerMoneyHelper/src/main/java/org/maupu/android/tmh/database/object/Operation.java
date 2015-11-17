@@ -1,7 +1,9 @@
 package org.maupu.android.tmh.database.object;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -239,8 +241,8 @@ public class Operation extends BaseObject {
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
 		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
 		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
-		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+		qb.append("AND o." + OperationData.KEY_ID_ACCOUNT + "=a." + AccountData.KEY_ID + " ");
+		qb.append("AND o." + OperationData.KEY_ID_CURRENCY + "=c." + CurrencyData.KEY_ID + " ");
 		
 		if(exceptCategories != null && exceptCategories.length > 0) {
 			StringBuilder b = new StringBuilder();
@@ -253,11 +255,38 @@ public class Operation extends BaseObject {
 			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
 		}
 		
-		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY);
+		qb.append("GROUP BY o." + OperationData.KEY_ID_CURRENCY);
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		return c;
+	}
+
+	public Integer[] getExceptCategoriesAuto(Account account) {
+		if(account == null)
+			return null;
+
+		List<Integer> exceptCategories = new ArrayList<Integer>();
+
+		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+		qb.append("c."+CategoryData.KEY_ID+" ");
+		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+CategoryData.TABLE_NAME+" c, "+AccountData.TABLE_NAME+" a ");
+		qb.append("WHERE o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
+		qb.append("AND c."+CategoryData.KEY_ID+"=o."+OperationData.KEY_ID_CATEGORY+" ");
+		qb.append("AND a."+AccountData.KEY_ID+"="+account.getId()+" ");
+		qb.append("AND o." + OperationData.KEY_AMOUNT + ">0 ");
+
+		Log.d(Operation.class.getName(), qb.getStringBuilder().toString());
+
+		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+		c.moveToFirst();
+		int idx;
+		do {
+			idx = c.getColumnIndexOrThrow(CategoryData.KEY_ID);
+			exceptCategories.add(c.getInt(idx));
+		} while(c.moveToNext());
+
+		return exceptCategories.toArray(new Integer[exceptCategories.size()]);
 	}
 
 	public Date getFirstDate(Account account, Integer[] exceptCategories) {
