@@ -5,6 +5,7 @@ public class NavigationDrawerIconItem {
     int iconResource;
     String text;
     INavigationDrawerCallback callback;
+    boolean isSelectable = true;
 
     public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback) {
         this.tag = tag;
@@ -35,5 +36,13 @@ public class NavigationDrawerIconItem {
 
     public void generateClickEvent() {
         getCallback().onNavigationDrawerClick(this);
+    }
+
+    public void setSelectable(boolean b) {
+        this.isSelectable = b;
+    }
+
+    public boolean isSelectable() {
+        return this.isSelectable;
     }
 }

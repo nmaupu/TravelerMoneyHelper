@@ -20,9 +20,12 @@ public class TmhNavigationDrawerClickListener implements AdapterView.OnItemClick
     @Override
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         Log.d(TmhNavigationDrawerClickListener.class.getName(), "onItemClicked : " + adapterView.getAdapter().getItem(position));
-        ((IconArrayAdapter)adapterView.getAdapter()).selectItem(position);
 
         NavigationDrawerIconItem ndii = (NavigationDrawerIconItem)adapterView.getAdapter().getItem(position);
+
+        if(ndii.isSelectable())
+            ((IconArrayAdapter)adapterView.getAdapter()).selectItem(position);
+
         ndii.generateClickEvent();
 
         this.drawerLayout.closeDrawer(drawerList);

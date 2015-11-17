@@ -141,12 +141,12 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 
         // Navigation drawer
-        ((IconArrayAdapter)super.drawerList.getAdapter()).add(
-                new NavigationDrawerIconItem(PreferencesActivity.class,
-                        R.drawable.ic_equalizer_black,
-                        getResources().getString(R.string.about_title),
-                        this));
-
+        NavigationDrawerIconItem ndii = new NavigationDrawerIconItem("period",
+                R.drawable.ic_event_black,
+                getResources().getString(R.string.menu_item_period),
+                this);
+        ndii.setSelectable(false);
+        ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
 
 		//
 		listView = (ListView)findViewById(R.id.list);
@@ -194,7 +194,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
         super.onNavigationDrawerClick(item);
 
-        Log.d(StatsActivity.class.getName(), "Clicked on item " + item);
+        if(item.getTag() instanceof String) {
+            if ((item.getTag()).equals("period")) {
+                StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
+                refreshHeaderGallery();
+                refreshDisplay();
+            }
+        }
     }
 
     public StatsGraphView getStatsGraphView() {
