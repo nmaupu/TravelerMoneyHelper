@@ -146,7 +146,20 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
                 getResources().getString(R.string.menu_item_period),
                 this);
         ndii.setSelectable(false);
+        ndii.setHeight(125);
+        ndii.setTextColor(Color.DKGRAY);
+        ndii.setTextSize(14);
         ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
+        ndii = new NavigationDrawerIconItem("auto",
+                R.drawable.ic_event_black,
+                getResources().getString(R.string.menu_item_auto),
+                this);
+        ndii.setSelectable(false);
+        ndii.setHeight(125);
+        ndii.setTextColor(Color.DKGRAY);
+        ndii.setTextSize(14);
+        ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
+
 
 		//
 		listView = (ListView)findViewById(R.id.list);

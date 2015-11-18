@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.maupu.android.tmh.R;
@@ -40,6 +41,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             holder = new SimpleIconHolder();
             holder.imageView = (ImageView)row.findViewById(R.id.icon);
             holder.textView = (TextView)row.findViewById(R.id.text);
+            holder.layout = (LinearLayout)row.findViewById(R.id.linear_layout_root);
 
             row.setTag(holder);
         } else {
@@ -48,6 +50,11 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
 
         NavigationDrawerIconItem item = data.get(position);
         holder.textView.setText(item.getText());
+        holder.textView.setTextSize(item.getTextSize());
+        holder.textView.setTextColor(item.getTextColor());
+        holder.textView.setTypeface(item.getTypeface());
+        ViewGroup.LayoutParams params = holder.layout.getLayoutParams();
+        params.height=item.getHeight();
 
         // Handling selected item vs. other items
         int tf = Typeface.NORMAL;
@@ -76,5 +83,6 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
     static class SimpleIconHolder {
         ImageView imageView;
         TextView textView;
+        LinearLayout layout;
     }
 }
