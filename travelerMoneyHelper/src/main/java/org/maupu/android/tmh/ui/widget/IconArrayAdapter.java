@@ -2,6 +2,7 @@ package org.maupu.android.tmh.ui.widget;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             holder.imageView = (ImageView)row.findViewById(R.id.icon);
             holder.textView = (TextView)row.findViewById(R.id.text);
             holder.layout = (LinearLayout)row.findViewById(R.id.linear_layout_root);
+            holder.separator = (TextView)row.findViewById(R.id.separator);
 
             row.setTag(holder);
         } else {
@@ -55,6 +57,14 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
         holder.textView.setTypeface(item.getTypeface());
         ViewGroup.LayoutParams params = holder.layout.getLayoutParams();
         params.height=item.getHeight();
+        if(item.hasSeparator()) {
+            holder.separator.setHeight(20);
+            holder.separator.setVisibility(View.VISIBLE);
+            holder.separator.setBackgroundColor(Color.DKGRAY);
+        } else {
+            holder.separator.setVisibility(View.GONE);
+        }
+
 
         // Handling selected item vs. other items
         int tf = Typeface.NORMAL;
@@ -84,5 +94,6 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
         ImageView imageView;
         TextView textView;
         LinearLayout layout;
+        TextView separator;
     }
 }

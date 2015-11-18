@@ -149,6 +149,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         ndii.setHeight(125);
         ndii.setTextColor(Color.DKGRAY);
         ndii.setTextSize(14);
+        ndii.setSeparator(true);
         ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
         ndii = new NavigationDrawerIconItem("auto",
                 R.drawable.ic_event_black,

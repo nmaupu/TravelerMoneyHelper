@@ -13,6 +13,7 @@ public class NavigationDrawerIconItem {
     int textColor = Color.BLACK;
     int height = 200;
     Typeface tf = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+    boolean separator = false;
 
     public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback) {
         this.tag = tag;
@@ -83,5 +84,13 @@ public class NavigationDrawerIconItem {
 
     public void setTypeface(Typeface tf) {
         this.tf = tf;
+    }
+
+    public boolean hasSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(boolean separator) {
+        this.separator = separator;
     }
 }
