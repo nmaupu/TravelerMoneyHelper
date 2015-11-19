@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/linear_layout_root"
-              android:layout_width="fill_parent"
-              android:layout_height="?android:attr/listPreferredItemHeight"
-              android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/separator"
-        android:layout_width="fill_parent"
-        android:layout_height="10px"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:visibility="gone" />
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/linear_layout_root_horizontal"
+        android:id="@+id/layout_root"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal" >
@@ -48,5 +32,4 @@
             android:layout_marginBottom="5dp" />
         <!--android:textAppearance="?android:attr/textAppearanceListItemSmall"-->
 
-    </LinearLayout>
 </LinearLayout>

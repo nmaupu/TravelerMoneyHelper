@@ -4,22 +4,64 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 
 public class NavigationDrawerIconItem {
+    public static final int SMALL_TEXT_SIZE = 14;
+    public static final int SMALL_TEXT_COLOR = Color.GRAY;
+    public static final int SMALL_HEIGHT = 125;
+    public static final Typeface SMALL_TYPEFACE = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+    public static final int NORMAL_TEXT_SIZE = 16;
+    public static final int NORMAL_TEXT_COLOR = Color.BLACK;
+    public static final int NORMAL_HEIGHT = 200;
+    public static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+    public static final int SEPARATOR_HEIGHT = 15;
+    public static final int SEPARATOR_COLOR = Color.BLACK;
+    public static final Typeface SELECTED_TYPEFACE = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
+    public static final int SELECT_BG_COLOR = Color.LTGRAY;
+    public static final int DEFAULT_BG_COLOR = Color.WHITE;
+    public enum ItemType {
+        SMALL, NORMAL
+    };
+
     Object tag;
     int iconResource;
     String text;
     INavigationDrawerCallback callback;
     boolean isSelectable = true;
-    float textSize = 16;
-    int textColor = Color.BLACK;
-    int height = 200;
-    Typeface tf = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
+    float textSize;
+    int textColor;
+    int height;
+    Typeface tf;
     boolean separator = false;
 
+    public NavigationDrawerIconItem() {
+        this.separator = true;
+    }
+
     public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback) {
+        this(tag, iconRes, text, callback, ItemType.NORMAL);
+    }
+
+    public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback, ItemType itemType) {
         this.tag = tag;
         this.iconResource = iconRes;
         this.text = text;
         this.callback = callback;
+
+        switch(itemType) {
+            case NORMAL:
+                textSize = NORMAL_TEXT_SIZE;
+                textColor = NORMAL_TEXT_COLOR;
+                height = NORMAL_HEIGHT;
+                tf = NORMAL_TYPEFACE;
+                setSelectable(true);
+                break;
+            case SMALL:
+                textSize = SMALL_TEXT_SIZE;
+                textColor = SMALL_TEXT_COLOR;
+                height = SMALL_HEIGHT;
+                tf = SMALL_TYPEFACE;
+                setSelectable(false);
+                break;
+        }
     }
 
     public String getText() {
@@ -86,7 +128,7 @@ public class NavigationDrawerIconItem {
         this.tf = tf;
     }
 
-    public boolean hasSeparator() {
+    public boolean isSeparator() {
         return separator;
     }
 

@@ -87,6 +87,9 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private int choosenYear=0, choosenMonth=0, choosenDay=0;
 	private Calendar currentDateDisplayed = Calendar.getInstance();
 
+    private final static Integer DRAWER_ITEM_PERIOD = 0;
+    private final static Integer DRAWER_ITEM_AUTO = 1;
+
 	public StatsActivity() {
 		if(StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG) == null || StaticData.getDateField(StaticData.PREF_STATS_DATE_END) == null) {
 			Date now = new GregorianCalendar().getTime();
@@ -141,24 +144,18 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 
         // Navigation drawer
-        NavigationDrawerIconItem ndii = new NavigationDrawerIconItem("period",
+        ((IconArrayAdapter)super.drawerList.getAdapter()).add(new NavigationDrawerIconItem());
+
+        NavigationDrawerIconItem ndii = new NavigationDrawerIconItem(DRAWER_ITEM_PERIOD,
                 R.drawable.ic_event_black,
                 getResources().getString(R.string.menu_item_period),
-                this);
-        ndii.setSelectable(false);
-        ndii.setHeight(125);
-        ndii.setTextColor(Color.DKGRAY);
-        ndii.setTextSize(14);
-        ndii.setSeparator(true);
+                this, NavigationDrawerIconItem.ItemType.SMALL);
+
         ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
-        ndii = new NavigationDrawerIconItem("auto",
+        ndii = new NavigationDrawerIconItem(DRAWER_ITEM_AUTO,
                 R.drawable.ic_event_black,
                 getResources().getString(R.string.menu_item_auto),
-                this);
-        ndii.setSelectable(false);
-        ndii.setHeight(125);
-        ndii.setTextColor(Color.DKGRAY);
-        ndii.setTextSize(14);
+                this, NavigationDrawerIconItem.ItemType.SMALL);
         ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
 
 
@@ -208,9 +205,35 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
         super.onNavigationDrawerClick(item);
 
-        if(item.getTag() instanceof String) {
-            if ((item.getTag()).equals("period")) {
+        if(item.getTag() instanceof Integer) {
+            if (item.getTag() == DRAWER_ITEM_PERIOD) {
                 StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
+                refreshHeaderGallery();
+                refreshDisplay();
+            } else if(item.getTag() == DRAWER_ITEM_AUTO) {
+                StaticData.setStatsAdvancedFilter(true);
+                refreshHeaderGallery();
+                refreshDisplay();
+
+                Operation dummyOp = new Operation();
+                Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+                Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+                if(autoBeg != null && autoEnd != null) {
+                    currentDateDisplayed.setTime(autoEnd);
+                    StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
+                    StaticData.setDateField(StaticData.PREF_STATS_DATE_END, autoEnd);
+
+                    initHeaderGalleries();
+
+                    int autoPos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(autoBeg);
+                    galleryDateBegin.setSelection(autoPos);
+                    ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+
+                    autoPos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(autoEnd);
+                    galleryDateEnd.setSelection(autoPos);
+                    ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+                }
+
                 refreshHeaderGallery();
                 refreshDisplay();
             }

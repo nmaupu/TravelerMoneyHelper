@@ -42,8 +42,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             holder = new SimpleIconHolder();
             holder.imageView = (ImageView)row.findViewById(R.id.icon);
             holder.textView = (TextView)row.findViewById(R.id.text);
-            holder.layout = (LinearLayout)row.findViewById(R.id.linear_layout_root);
-            holder.separator = (TextView)row.findViewById(R.id.separator);
+            holder.layout = (LinearLayout)row.findViewById(R.id.layout_root);
 
             row.setTag(holder);
         } else {
@@ -51,31 +50,32 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
         }
 
         NavigationDrawerIconItem item = data.get(position);
-        holder.textView.setText(item.getText());
-        holder.textView.setTextSize(item.getTextSize());
-        holder.textView.setTextColor(item.getTextColor());
-        holder.textView.setTypeface(item.getTypeface());
         ViewGroup.LayoutParams params = holder.layout.getLayoutParams();
-        params.height=item.getHeight();
-        if(item.hasSeparator()) {
-            holder.separator.setHeight(20);
-            holder.separator.setVisibility(View.VISIBLE);
-            holder.separator.setBackgroundColor(Color.DKGRAY);
+        if(item.isSeparator()) {
+            params.height=NavigationDrawerIconItem.SEPARATOR_HEIGHT;
+            holder.layout.setBackgroundColor(NavigationDrawerIconItem.SEPARATOR_COLOR);
+            holder.imageView.setVisibility(View.GONE);
+            holder.textView.setVisibility(View.GONE);
         } else {
-            holder.separator.setVisibility(View.GONE);
-        }
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.VISIBLE);
+            holder.textView.setText(item.getText());
+            holder.textView.setTextSize(item.getTextSize());
+            holder.textView.setTextColor(item.getTextColor());
+            holder.textView.setTypeface(item.getTypeface());
+            params.height=item.getHeight();
 
-
-        // Handling selected item vs. other items
-        int tf = Typeface.NORMAL;
-        int color = row.getResources().getColor(R.color.white);
-        if(this.selectedItem == position) {
-            tf = Typeface.BOLD;
-            color = row.getResources().getColor(R.color.light_gray);
+            // Handling selected item vs. other items
+            Typeface tf = NavigationDrawerIconItem.NORMAL_TYPEFACE;
+            int color = NavigationDrawerIconItem.DEFAULT_BG_COLOR;
+            if(this.selectedItem == position) {
+                tf = NavigationDrawerIconItem.SELECTED_TYPEFACE;
+                color =NavigationDrawerIconItem.SELECT_BG_COLOR;
+            }
+            row.setBackgroundColor(color);
+            holder.textView.setTypeface(tf);
+            holder.imageView.setImageResource(item.getIconResource());
         }
-        row.setBackgroundColor(color);
-        holder.textView.setTypeface(null, tf);
-        holder.imageView.setImageResource(item.getIconResource());
 
         return row;
     }
@@ -94,6 +94,5 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
         ImageView imageView;
         TextView textView;
         LinearLayout layout;
-        TextView separator;
     }
 }
