@@ -70,7 +70,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             int color = NavigationDrawerIconItem.DEFAULT_BG_COLOR;
             if(this.selectedItem == position) {
                 tf = NavigationDrawerIconItem.SELECTED_TYPEFACE;
-                color =NavigationDrawerIconItem.SELECT_BG_COLOR;
+                color = NavigationDrawerIconItem.SELECT_BG_COLOR;
             }
             row.setBackgroundColor(color);
             holder.textView.setTypeface(tf);

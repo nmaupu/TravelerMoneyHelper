@@ -85,7 +85,8 @@ public class NavigationDrawerIconItem {
     }
 
     public void generateClickEvent() {
-        getCallback().onNavigationDrawerClick(this);
+        if(getCallback() != null)
+            getCallback().onNavigationDrawerClick(this);
     }
 
     public void setSelectable(boolean b) {

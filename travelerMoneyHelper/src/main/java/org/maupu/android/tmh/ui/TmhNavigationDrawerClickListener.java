@@ -23,11 +23,13 @@ public class TmhNavigationDrawerClickListener implements AdapterView.OnItemClick
 
         NavigationDrawerIconItem ndii = (NavigationDrawerIconItem)adapterView.getAdapter().getItem(position);
 
-        if(ndii.isSelectable())
-            ((IconArrayAdapter)adapterView.getAdapter()).selectItem(position);
+        if(ndii.getCallback() != null) {
+            if (ndii.isSelectable())
+                ((IconArrayAdapter) adapterView.getAdapter()).selectItem(position);
 
-        ndii.generateClickEvent();
+            ndii.generateClickEvent();
 
-        this.drawerLayout.closeDrawer(drawerList);
+            this.drawerLayout.closeDrawer(drawerList);
+        }
     }
 }
