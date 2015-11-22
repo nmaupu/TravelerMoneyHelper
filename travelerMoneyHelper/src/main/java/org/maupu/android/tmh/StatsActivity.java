@@ -47,9 +47,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -130,6 +127,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		ActionBarItem abiGraph = getGDActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
 		addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
 		/* End of displaying a custom icon in action bar item */
+
 		// Change list type (sum by category or by date)
 		addActionBarItem(Type.Settings, TmhApplication.ACTION_BAR_GROUPBY);
 		// Possibility to change between accounts
@@ -418,87 +416,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			layoutAdvancedGallery.setVisibility(View.GONE);
 			galleryDate.setVisibility(View.VISIBLE);
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.stats_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case R.id.item_period:
-			StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
-			refreshHeaderGallery();
-			refreshDisplay();
-			break;
-		case R.id.item_now:
-			// Get info for the current day
-			//StaticData.setStatsAdvancedFilter(true);
-			Date beg = new Date();
-			DateUtil.resetDateToBeginingOfDay(beg);
-			Date end = (Date)beg.clone();
-			DateUtil.resetDateToEndOfDay(end);
-			currentDateDisplayed.setTime(end);
-			StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
-			StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
-			
-			initHeaderGalleries();
-			
-			int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
-			galleryDateBegin.setSelection(pos);
-			((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
-			
-			pos =  ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
-			galleryDateEnd.setSelection(pos);
-			((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
-			
-			refreshHeaderGallery();
-			refreshDisplay();
-			break;
-		case R.id.item_auto:
-			StaticData.setStatsAdvancedFilter(true);
-			refreshHeaderGallery();
-			refreshDisplay();
-
-			Operation dummyOp = new Operation();
-			Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
-			Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
-			if(autoBeg != null && autoEnd != null) {
-				currentDateDisplayed.setTime(autoEnd);
-				StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
-				StaticData.setDateField(StaticData.PREF_STATS_DATE_END, autoEnd);
-
-				initHeaderGalleries();
-
-				int autoPos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(autoBeg);
-				galleryDateBegin.setSelection(autoPos);
-				((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
-
-				autoPos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(autoEnd);
-				galleryDateEnd.setSelection(autoPos);
-				((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
-			}
-
-			refreshHeaderGallery();
-			refreshDisplay();
-			break;
-		case R.id.item_categories:
-			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
-			resetDialogCategoryChooser = false;
-			break;
-		/*case R.id.item_custom_month:
-			// Popup a calendar chooser to set a month in the past for stats view
-			showDialog(DATE_DIALOG_ID);
-			break;*/
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-
-		return true;
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package org.maupu.android.tmh.core;
 
 import greendroid.app.GDApplication;
 
-import org.maupu.android.tmh.DashboardActivity;
+import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.ui.StaticData;
 
@@ -24,13 +24,8 @@ public class TmhApplication extends GDApplication {
 	public static final int ACTION_BAR_GRAPH = 9;
 	
 	
-	public static final Class<?> HOME_ACTIVITY_CLASS = DashboardActivity.class;
-	
-	@Override
-	public Class<?> getHomeActivityClass() {
-		return HOME_ACTIVITY_CLASS;
-	}
-	
+	public static final Class<?> HOME_ACTIVITY_CLASS = ViewPagerOperationActivity.class;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();

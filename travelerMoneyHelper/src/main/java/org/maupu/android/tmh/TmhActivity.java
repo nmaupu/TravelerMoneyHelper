@@ -159,28 +159,6 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		refreshDisplay();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case R.id.item_refresh:
-			refreshDisplay();
-			break;
-		case R.id.item_preferences:
-			startActivityFromMenu(PreferencesActivity.class);
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-
-		return true;
-	}
-
 	protected QuickActionGrid createQuickActionGridEdition() {
 		QuickActionGrid quickActionGrid = new QuickActionGrid(this);
 		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_group, R.string.accounts));

@@ -74,7 +74,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	protected void onPause() {
 		if(dbChanged) {
 			// if db changed, restart from dashboard
-			startActivity(new Intent(this, DashboardActivity.class));
+			startActivity(new Intent(this, TmhApplication.HOME_ACTIVITY_CLASS));
 		}
 		
 		super.onPause();
