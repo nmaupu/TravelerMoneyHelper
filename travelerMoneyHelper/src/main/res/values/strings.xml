@@ -52,6 +52,7 @@
     <string name="delete">Delete</string>
     <string name="edition">Edition</string>
     <string name="categories">Categories</string>
+    <string name="categories_exception">Categories exception</string>
     <string name="currencies">Currencies</string>
     <string name="accounts">Accounts</string>
     <string name="home">Home</string>
@@ -95,6 +96,7 @@
     <string name="menu_item_more">More</string>
     <string name="menu_item_period">Period / Month</string>
     <string name="menu_item_now">Today</string>
+    <string name="today">Today</string>
     <string name="menu_item_auto">Auto dates</string>
     <string name="default_category_withdrawal_summary">Select default category for withdrawal</string>
     <string name="default_category_withdrawal">Withdrawal category</string>
@@ -118,5 +120,6 @@
     <string name="graph">Graph</string>
     <string name="refreshing">Refreshing</string>
     <string name="menu_item_month">Other months</string>
+    <string name="auto">Auto</string>
 
 </resources>

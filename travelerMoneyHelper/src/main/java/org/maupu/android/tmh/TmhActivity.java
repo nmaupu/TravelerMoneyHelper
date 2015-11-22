@@ -41,11 +41,14 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
 	protected DrawerLayout drawerLayout;
 	protected ListView drawerList;
+
+    private static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
 
 	public static LayoutInflater getInflater(Context ctx) {
 		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -91,6 +94,9 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
             items.add(new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
             items.add(new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
+            items.add(new NavigationDrawerIconItem());
+            items.add(new NavigationDrawerIconItem(PreferencesActivity.class, R.drawable.ic_settings_black, getResources().getString(R.string.parameters), this, NavigationDrawerIconItem.ItemType.SMALL));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, getResources().getString(R.string.refresh), this, NavigationDrawerIconItem.ItemType.SMALL));
 
 			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
 			((IconArrayAdapter)drawerList.getAdapter()).selectItem(StaticData.navigationDrawerItemSelected);
@@ -117,17 +123,28 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	@Override
 	public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
 		Intent intent = null;
+        boolean killCurrentActivity = false;
 
 		if(item.getTag() == ViewPagerOperationActivity.class) {
 			intent = new Intent(this, ViewPagerOperationActivity.class);
+            killCurrentActivity = true;
 		} else if(item.getTag() == StatsActivity.class) {
 			intent = new Intent(this, StatsActivity.class);
-		}
+            killCurrentActivity = true;
+		} else if(item.getTag() == PreferencesActivity.class) {
+            intent = new Intent(this, PreferencesActivity.class);
+        } else if(item.getTag() instanceof String && DRAWER_ITEM_REFRESH.equals(item.getTag())) {
+            refreshDisplay();
+        }
 
 		if(intent != null) {
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if(killCurrentActivity)
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
 			startActivity(intent);
-			finish();
+
+            if(killCurrentActivity)
+			    finish();
 		}
 	}
 

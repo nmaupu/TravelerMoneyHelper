@@ -1,6 +1,8 @@
 package org.maupu.android.tmh.ui.widget;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.maupu.android.tmh.R;
@@ -19,13 +21,12 @@ import android.widget.SimpleCursorAdapter;
  * Must provide a view with a checkbox with id <em>checkbox</em>
  * @author nmaupu
  */
-@SuppressLint("UseSparseArrays")
 public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
 	private NumberCheckedListener listener = null;
 	private Map<Integer, Boolean> positionsChecked = new HashMap<Integer, Boolean>();
 	private int numberChecked = 0;
 	private Integer[] toCheck;
-	private Boolean[] toCheckChanged;
+    private Map<Integer, Boolean> inits = new HashMap<Integer, Boolean>();
 
 	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
@@ -35,39 +36,49 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, Integer[] toCheck) {
 		super(context, layout, c, from, to);
-		this.toCheck = toCheck;
-		if(toCheck != null) {
-			toCheckChanged = new Boolean[toCheck.length];
-			for(int i=0; i<toCheckChanged.length; i++) {
-				toCheckChanged[i] = false;
-			}
-		}
+		setToCheck(toCheck);
 	}
 
-	@Override
+    public void setToCheck(Integer[] toCheck) {
+        this.toCheck = toCheck;
+        clearCheckedItems();
+        for(int i = 0; i<toCheck.length; i++)
+            addToCheckedItems(toCheck[i]);
+    }
+
+    @Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = super.getView(position, convertView, parent);
 		
 		row.setOnClickListener(this);
 		CheckBox cb = (CheckBox)row.findViewById(R.id.checkbox);
-		//cb.setVisibility(View.GONE);
+
 		if(cb != null) {
 			cb.setTag(position);
 			cb.setOnClickListener(this);
 			
 			boolean status = positionsChecked.get(position) != null ? positionsChecked.get(position) : false;
 			cb.setChecked(status);
-			
-			if(toCheck != null && toCheck.length > 0) {
-				for(int c=0; c<toCheck.length; c++) {
-					int p = toCheck[c];
-					// Set to true only if this particular checkbox has never been changed
-					if(position == p && ! toCheckChanged[c])
-						cb.setChecked(true);
-				}
-			}
+
+            /**
+             * Check if checkbox is first init and check if asked
+             * but only the first time it is displayed to avoid having a checkbox impossible to
+             * check
+             */
+            if(inits.get(position) == null) {
+                // This cb has been initialized
+                inits.put(position, new Boolean(true));
+
+                if (toCheck != null && toCheck.length > 0) {
+                    for(int c = 0; c<toCheck.length; c++) {
+                        int pos = toCheck[c];
+                        if(position == pos)
+                            cb.setChecked(true);
+                    } //for
+                } //if
+            } //if cb not initialized
 		}
-		
+
 		return row;
 	}
 	
@@ -88,29 +99,38 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 		
 		Integer position = (Integer)cb.getTag();
 		
-		//
-		if(toCheck != null && toCheck.length > 0) {
-			for(int c=0; c<toCheck.length; c++) {
-				int p = toCheck[c];
-				if(position == p)
-					toCheckChanged[c] = true;
-			}
-		}
-		
 		// Store only if checked (memory consumption issue)
 		if(cb.isChecked()) {
-			positionsChecked.put(position, true);
-			numberChecked++;
+			addToCheckedItems(position);
 		} else {
-			positionsChecked.remove(position);
-			numberChecked--;
+			removeFromCheckedItems(position);
 		}
 		
 		if(listener != null)
 			listener.onCheckedItem(numberChecked);
 	}
-	
-	public Integer[] getCheckedPositions() {
+
+    private void addToCheckedItems(int position) {
+        positionsChecked.put(position, true);
+        numberChecked++;
+    }
+
+    private void removeFromCheckedItems(int position) {
+        positionsChecked.remove(position);
+        numberChecked--;
+    }
+
+    public void clearCheckedItems() {
+        positionsChecked.clear();
+        numberChecked = 0;
+    }
+
+    @Override
+    public void changeCursor(Cursor c) {
+        super.changeCursor(c);
+    }
+
+    public Integer[] getCheckedPositions() {
 		return positionsChecked.keySet().toArray(new Integer[0]);
 	}
 }

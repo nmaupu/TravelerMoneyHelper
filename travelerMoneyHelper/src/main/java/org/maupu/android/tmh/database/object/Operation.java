@@ -17,6 +17,7 @@ import org.maupu.android.tmh.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
@@ -281,12 +282,17 @@ public class Operation extends BaseObject {
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		int idx;
-		do {
-			idx = c.getColumnIndexOrThrow(CategoryData.KEY_ID);
-			exceptCategories.add(c.getInt(idx));
-		} while(c.moveToNext());
+        try {
+            do {
+                idx = c.getColumnIndexOrThrow(CategoryData.KEY_ID);
+                exceptCategories.add(c.getInt(idx));
+            } while (c.moveToNext());
+        } catch(CursorIndexOutOfBoundsException cioobe) {
+            // Cursor is empty, nothing special to do
+            Log.e(Operation.class.getName(), "Error in calling getExceptCategoriesAuto, cursor empty ?");
+        }
 
-		return exceptCategories.toArray(new Integer[exceptCategories.size()]);
+		return exceptCategories.toArray(new Integer[0]);
 	}
 
 	public Date getFirstDate(Account account, Integer[] exceptCategories) {
@@ -333,7 +339,9 @@ public class Operation extends BaseObject {
 			d = DateUtil.StringSQLToDate(c.getString(idxDate));
 		} catch(ParseException pe) {
 			d = null;
-		}
+		} catch(CursorIndexOutOfBoundsException cioobe) {
+            d = null;
+        }
 
 		return d;
 	}

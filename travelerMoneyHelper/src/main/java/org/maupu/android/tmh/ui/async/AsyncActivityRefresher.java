@@ -27,7 +27,7 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
 			waitSpinner.setCanceledOnTouchOutside(true);
 		}
 	}
-	
+
 	public boolean isDisplayPopup() {
 		return displayPopup;
 	}

@@ -20,15 +20,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+import java.util.UUID;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
-import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.INavigationDrawerCallback;
@@ -41,7 +39,6 @@ import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.pm.ActivityInfo;
@@ -65,7 +62,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-@SuppressLint("UseSparseArrays")
 public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener, INavigationDrawerCallback {
 	private static final int DATE_DIALOG_ID = 0;
 	private ListView listView;
@@ -87,8 +83,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private int choosenYear=0, choosenMonth=0, choosenDay=0;
 	private Calendar currentDateDisplayed = Calendar.getInstance();
 
-    private final static Integer DRAWER_ITEM_PERIOD = 0;
-    private final static Integer DRAWER_ITEM_AUTO = 1;
+    private final static UUID DRAWER_ITEM_PERIOD = UUID.randomUUID();
+    private final static UUID DRAWER_ITEM_AUTO = UUID.randomUUID();
+    private final static UUID DRAWER_ITEM_CAT_EXCEPT = UUID.randomUUID();
+    private final static UUID DRAWER_ITEM_TODAY = UUID.randomUUID();
 
 	public StatsActivity() {
 		if(StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG) == null || StaticData.getDateField(StaticData.PREF_STATS_DATE_END) == null) {
@@ -98,15 +96,22 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			StaticData.setStatsAdvancedFilter(false);
 		}
 
-		try {
-			if(! DialogHelper.isCheckableCursorAdapterInit())
-				StaticData.getStatsExpectedCategories().add(StaticData.getWithdrawalCategory().getId());
-		} catch (NullPointerException npe) {
-			// Nothing to do here if null
-		}
+        if(!DialogHelper.isCheckableCursorAdapterInit()) {
+            autoSetExceptedCategories();
+        }
 	}
 
-	@SuppressLint("NewApi")
+    public void autoSetExceptedCategories() {
+        try {
+            Operation o = new Operation();
+            Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
+            for (int i = 0; i < cats.length; i++)
+                StaticData.getStatsExceptedCategories().add(cats[i]);
+        } catch (NullPointerException npe) {
+            // Nothing to do here if null
+        }
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -142,23 +147,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
             }
         });
 
-
-        // Navigation drawer
-        ((IconArrayAdapter)super.drawerList.getAdapter()).add(new NavigationDrawerIconItem());
-
-        NavigationDrawerIconItem ndii = new NavigationDrawerIconItem(DRAWER_ITEM_PERIOD,
-                R.drawable.ic_event_black,
-                getResources().getString(R.string.menu_item_period),
-                this, NavigationDrawerIconItem.ItemType.SMALL);
-
-        ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
-        ndii = new NavigationDrawerIconItem(DRAWER_ITEM_AUTO,
-                R.drawable.ic_event_black,
-                getResources().getString(R.string.menu_item_auto),
-                this, NavigationDrawerIconItem.ItemType.SMALL);
-        ((IconArrayAdapter)super.drawerList.getAdapter()).add(ndii);
-
-
 		//
 		listView = (ListView)findViewById(R.id.list);
 		listView.setOnItemClickListener(this);
@@ -167,6 +155,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
+        buildNavigationDrawer();
 		initHeaderGalleries();
 		refreshHeaderGallery();
 		refreshDisplay();
@@ -182,16 +171,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	protected void onResume() {
 		super.onResume();
 
-		Operation o = new Operation();
-		Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
-		Log.d(StatsActivity.class.getName(), "Detected categories to except :");
-		for(int i=0; i<cats.length; i++) {
-			Category cat = new Category();
-			Cursor c = cat.fetch(cats[i]);
-			cat.toDTO(c);
-			Log.d(StatsActivity.class.getName(), "  Auto excepted : "+cats[i]+" ("+cat.getName()+")");
-		}
-
 		if(statGraphView == null) {
 			graphViewLayout = (LinearLayout)findViewById(R.id.graph);
 			statGraphView = new StatsGraphView(this, graphViewLayout);
@@ -205,19 +184,18 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
         super.onNavigationDrawerClick(item);
 
-        if(item.getTag() instanceof Integer) {
-            if (item.getTag() == DRAWER_ITEM_PERIOD) {
+        if(item.getTag() instanceof UUID) {
+            if(DRAWER_ITEM_PERIOD.equals(item.getTag())) {
                 StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
                 refreshHeaderGallery();
                 refreshDisplay();
-            } else if(item.getTag() == DRAWER_ITEM_AUTO) {
+            } else if(DRAWER_ITEM_AUTO.equals(item.getTag())) {
                 StaticData.setStatsAdvancedFilter(true);
-                refreshHeaderGallery();
-                refreshDisplay();
 
                 Operation dummyOp = new Operation();
-                Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
-                Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+                Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
+                Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
+                Log.d(StatsActivity.class.getName(), "Auto dates computed beg="+autoBeg+", end="+autoEnd);
                 if(autoBeg != null && autoEnd != null) {
                     currentDateDisplayed.setTime(autoEnd);
                     StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
@@ -236,13 +214,66 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
                 refreshHeaderGallery();
                 refreshDisplay();
+            } else if(DRAWER_ITEM_CAT_EXCEPT.equals(item.getTag())) {
+                DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
+                resetDialogCategoryChooser = false;
+            } else if(DRAWER_ITEM_TODAY.equals(item.getTag())) {
+                // Get info for the current day
+                //StaticData.setStatsAdvancedFilter(true);
+                Date beg = new Date();
+                DateUtil.resetDateToBeginingOfDay(beg);
+                Date end = (Date)beg.clone();
+                DateUtil.resetDateToEndOfDay(end);
+                currentDateDisplayed.setTime(end);
+                StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
+                StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
+
+                initHeaderGalleries();
+
+                int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
+                galleryDateBegin.setSelection(pos);
+                ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+
+                pos =  ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
+                galleryDateEnd.setSelection(pos);
+                ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+
+                refreshHeaderGallery();
+                refreshDisplay();
             }
         }
     }
 
-    public StatsGraphView getStatsGraphView() {
-		return statGraphView;
-	}
+    private void buildNavigationDrawer() {
+        // Create a simple separator
+        NavigationDrawerIconItem[] items = new NavigationDrawerIconItem[]{
+                new NavigationDrawerIconItem(),
+                createNavDrawerItem(
+                        DRAWER_ITEM_TODAY,
+                        R.drawable.ic_today_black,
+                        R.string.today),
+                createNavDrawerItem(
+                        DRAWER_ITEM_PERIOD,
+                        R.drawable.ic_period_black,
+                        R.string.menu_item_period),
+                createNavDrawerItem(
+                        DRAWER_ITEM_AUTO,
+                        R.drawable.ic_event_black,
+                        R.string.menu_item_auto),
+                createNavDrawerItem(
+                        DRAWER_ITEM_CAT_EXCEPT,
+                        R.drawable.ic_cat_except_black,
+                        R.string.categories_exception),
+        };
+
+        for(int i=0; i<items.length; i++)
+            ((IconArrayAdapter)super.drawerList.getAdapter()).add(items[i]);
+    }
+
+    private NavigationDrawerIconItem createNavDrawerItem(Object tag, int iconRes, int textRes) {
+        return new NavigationDrawerIconItem(
+                tag, iconRes, getResources().getString(textRes), this, NavigationDrawerIconItem.ItemType.SMALL);
+    }
 
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
@@ -434,8 +465,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 
 			Operation dummyOp = new Operation();
-			Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
-			Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExpectedCategoriesToArray());
+			Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
+			Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
 			if(autoBeg != null && autoEnd != null) {
 				currentDateDisplayed.setTime(autoEnd);
 				StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
@@ -456,7 +487,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			refreshDisplay();
 			break;
 		case R.id.item_categories:
-			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true, true);
+			DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
 			resetDialogCategoryChooser = false;
 			break;
 		/*case R.id.item_custom_month:
@@ -504,9 +535,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 	@Override
 	public Map<Integer, Object> handleRefreshBackground() {
+        Log.d(StatsActivity.class.getName(), "handleRefreshBackground called");
 		Map<Integer, Object> results = new HashMap<Integer, Object>();
 		Cursor cursorData = null;
-		Cursor cursorStatsTotal = null;
+		Cursor cursorStatsTotal;
 
 		Account account = StaticData.getCurrentAccount();
 
@@ -529,32 +561,31 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			end = now;
 		
 		// Getting first data of the month given by date beg and verify that date beg is 
-		// not before first data for this account for average being computed without error
+		// not before first data for this account for average being computed well
 		Operation dummyOp = new Operation();
-		Date firstDate = dummyOp.getFirstDate(account, StaticData.getStatsExpectedCategoriesToArray());
+		Date firstDate = dummyOp.getFirstDate(account, StaticData.getStatsExceptedCategoriesToArray());
 		if(firstDate != null && firstDate.after(beg))
 			beg = firstDate;
 		// Checking also end date is before current end date to have good amount computation
-		Date endDate = dummyOp.getLastDate(account, StaticData.getStatsExpectedCategoriesToArray());
+		Date endDate = dummyOp.getLastDate(account, StaticData.getStatsExceptedCategoriesToArray());
 		if(endDate != null && endDate.before(end))
 			end = endDate;
 
-		//dummyOp = new Operation();
 		int nbDays = DateUtil.getNumberOfDaysBetweenDates(beg, end);
-		Log.d(StatsActivity.class.getName(), "Nb days computed = "+nbDays+" dateBeg="+beg+", dateEnd="+end);
+		Log.d(StatsActivity.class.getName(), "Nb days = "+nbDays+" (dateBeg="+beg+", dateEnd="+end+")");
 		switch(currentGroupBy) {
-		case GROUP_BY_DATE:
-			cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-			break;
-		case GROUP_BY_CATEGORY:
-			cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
-			break;
+            case GROUP_BY_DATE:
+                cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
+                break;
+		    case GROUP_BY_CATEGORY:
+			    cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
+			    break;
 		}
 
 		// Get total
 		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
 
-		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExpectedCategoriesToArray());
+		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
 		int cursorStatsSize = cursorStatsTotal.getCount();
 		if(cursorStatsTotal != null && cursorStatsSize > 0) {
 			for(int i = 0; i<cursorStatsSize; i++) {
@@ -580,6 +611,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 	@Override
 	public void handleRefreshEnding(Map<Integer, Object> results) {
+        Log.d(StatsActivity.class.getName(), "handleRefreshEnding called");
 		String[] from = null;
 		int[] to = null;
 		switch(currentGroupBy) {
@@ -628,7 +660,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		}
 
 		// Getting stats data
-		@SuppressWarnings("unchecked")
 		Map<String,StatsData> stats = (Map<String,StatsData>)results.get(1);
 		Set<String> entries = stats.keySet(); 
 		Iterator<String> it = entries.iterator();
@@ -702,7 +733,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
 		Cursor c = (Cursor)parent.getAdapter().getItem(pos);
 
-		int idx = -1;
+		int idx;
 		switch(currentGroupBy) {
 		case GROUP_BY_DATE:
 			idx = c.getColumnIndex(OperationData.KEY_DATE);
@@ -710,7 +741,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			try {
 				Date beg = DateUtil.resetDateToBeginingOfDay(DateUtil.StringSQLToDate(sDate));
 				Date end = DateUtil.resetDateToEndOfDay((Date)beg.clone());
-				DialogHelper.popupDialogStatsDetails(this, beg, end, null, StaticData.getStatsExpectedCategoriesToArray());
+				DialogHelper.popupDialogStatsDetails(this, beg, end, null, StaticData.getStatsExceptedCategoriesToArray());
 			} catch (ParseException pe) {
 				pe.printStackTrace();
 			}
@@ -732,7 +763,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 				}
 			}
 			
-			DialogHelper.popupDialogStatsDetails(this, beg, end, cat, StaticData.getStatsExpectedCategoriesToArray());
+			DialogHelper.popupDialogStatsDetails(this, beg, end, cat, StaticData.getStatsExceptedCategoriesToArray());
 			break;
 		}
 	}

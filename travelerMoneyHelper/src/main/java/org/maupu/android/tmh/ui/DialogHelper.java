@@ -1,8 +1,11 @@
 package org.maupu.android.tmh.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.StatsActivity;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -43,129 +46,162 @@ public abstract class DialogHelper {
 		Account dummyAccount = new Account();
 		final Cursor cursorAllAccounts = dummyAccount.fetchAll();
 
-		final IconCursorAdapter adapter = new IconCursorAdapter(tmhActivity, 
-				R.layout.icon_name_item_no_checkbox, 
-				cursorAllAccounts,
-				new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
-				new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
-			@Override
-			public View callback(Object item) {
-				int position = (Integer)((View)item).getTag();
-				int oldPosition = cursorAllAccounts.getPosition();
-				cursorAllAccounts.moveToPosition(position);
+		final IconCursorAdapter adapter = new IconCursorAdapter(
+                tmhActivity,
+                R.layout.icon_name_item_no_checkbox,
+                cursorAllAccounts,
+                new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME},
+                new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
+                    @Override
+                    public View callback(Object item) {
+                        Log.d(DialogHelper.class.getName(), "popupDialogAccountChooser : callback called");
 
-				Account account = new Account();
-				account.toDTO(cursorAllAccounts);
+                        int position = (Integer)((View)item).getTag();
+                        int oldPosition = cursorAllAccounts.getPosition();
+                        cursorAllAccounts.moveToPosition(position);
 
-				cursorAllAccounts.moveToPosition(oldPosition);
+                        Account account = new Account();
+                        account.toDTO(cursorAllAccounts);
 
+                        cursorAllAccounts.moveToPosition(oldPosition);
 
-				// Replacing preferences account
-				StaticData.setCurrentAccount(account);
-				tmhActivity.refreshDisplay();
-				Log.d("OperationPagerItem", "Callback called");
-				dialog.dismiss();
+                        // Replacing preferences account (excepted categories are also reset)
+                        StaticData.setCurrentAccount(account);
+                        if(tmhActivity instanceof StatsActivity) {
+                            ((StatsActivity) tmhActivity).autoSetExceptedCategories();
+                        }
+                        tmhActivity.refreshDisplay();
+                        dialog.dismiss();
 
-				return (View)item;
-			}
-		});
+                        return (View)item;
+                    }
+        });
 		listAccount.setAdapter(adapter);
 		dialog.show();
 
 		return dialog;
 	}
 	
-	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat, boolean tickWithdrawalCat) {
+	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
 		if(tmhActivity == null)
 			return null;
 		
 		final Dialog dialog = new Dialog(tmhActivity);
-		dialog.setCancelable(false);
+		dialog.setCancelable(true);
 		dialog.setTitle(R.string.stats_filter_cat_title);
 		dialog.setContentView(R.layout.category_chooser_activity);
-		
-		Button btnValidate = (Button)dialog.findViewById(R.id.btn_validate);
+
+        Button btnValidate = (Button)dialog.findViewById(R.id.btn_validate);
+        Button btnAutosel = (Button)dialog.findViewById(R.id.btn_autosel);
 		final ListView list = (ListView)dialog.findViewById(R.id.list);
-		
+
+        /**
+         * Adapter for category chooser
+         */
+        Category cat = new Category();
+        Account currentAccount = StaticData.getCurrentAccount();
+        final Cursor cursor;
+        if(hideUnusedCat)
+            cursor = cat.fetchAllCategoriesUsedByAccountOperations(currentAccount.getId());
+        else
+            cursor = cat.fetchAll();
+        cursor.moveToFirst();
+
+        /**
+         * Buttons' listener
+         */
 		Button.OnClickListener listener = new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (v.getId() == R.id.btn_validate) {
-					StaticData.getStatsExpectedCategories().clear();
+					StaticData.getStatsExceptedCategories().clear();
 					CheckableCursorAdapter adapter = (CheckableCursorAdapter)list.getAdapter(); 
 					Integer[] ints = adapter.getCheckedPositions();
 					for(int i : ints) {
 						Cursor c = (Cursor)adapter.getItem(i);
 						Category cat = new Category();
 						cat.toDTO(c);
-						StaticData.getStatsExpectedCategories().add(cat.getId());
+						StaticData.getStatsExceptedCategories().add(cat.getId());
 					}
+                    dialog.dismiss();
 					tmhActivity.refreshDisplay();
-					dialog.dismiss();
-				}
+				} else if (v.getId() == R.id.btn_autosel) {
+                    categoryChooserAdapter.setToCheck(getAutoExceptCategoriesPositions(cursor));
+                    categoryChooserAdapter.notifyDataSetChanged();
+                }
 			}
 		};
 		btnValidate.setOnClickListener(listener);
-		
-		// Adapter for category chooser
-		Category cat = new Category();
-		Account currentAccount = StaticData.getCurrentAccount();
-		Cursor cursor;
-		if(hideUnusedCat)
-			cursor = cat.fetchAllCategoriesUsedByAccountOperations(currentAccount.getId());
-		else
-			cursor = cat.fetchAll();
-		
-		// Get position for withdrawal category and force ticking it
-		/* Buggy */
-		/*
-		cursor.moveToFirst();
-		int pos = 0;
-		boolean found = false;
-		Category withdrawalCat = StaticData.getWithdrawalCategory();
-		if(withdrawalCat != null) {
-			while(! cursor.isAfterLast()) {
-				int idxId = cursor.getColumnIndex(CategoryData.KEY_ID);
-				int id = cursor.getInt(idxId);
-				
-				if(id == withdrawalCat.getId()) {
-					found = true;
-					break;
-				}
-				
-				cursor.moveToNext();
-				pos++;
-			}
-		}
-		
-		// Reinit cursor
-		cursor.moveToFirst();
-		Integer[] toCheck = null;
-		if(found)
-			toCheck = new Integer[]{pos};
-		*/
-		
+        btnAutosel.setOnClickListener(listener);
+
 		if(categoryChooserAdapter == null || resetPopup) {
+            Log.d(DialogHelper.class.getName(), "categoryChooserAdapter creation from scratch");
 			categoryChooserAdapter = new CheckableCursorAdapter(
 					tmhActivity, 
 					R.layout.category_item,
 					cursor,
 					new String[]{CategoryData.KEY_NAME}, 
-					new int[]{R.id.name});
+					new int[]{R.id.name},
+                    getAutoExceptCategoriesPositions(cursor));
 		} else {
+            Log.d(DialogHelper.class.getName(), "categoryChooserAdapter reused but cursor changed");
 			categoryChooserAdapter.changeCursor(cursor);
 		}
-		
+
 		list.setAdapter(categoryChooserAdapter);
 		dialog.show();
 
 		return dialog;
 	}
-	
-	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
-		return popupDialogCategoryChooser(tmhActivity, resetPopup, hideUnusedCat, false);
-	}
-	
+
+    /**
+     * Get position of category in a cursor. Useful to know position on a list (cursor adapter)
+     * @param cursor
+     * @param category
+     * @return the position of the category inside cursor
+     */
+    private static Integer getCategoryPositionInCursor(Cursor cursor, Category category) {
+        int currentCursorPos = cursor.getPosition();
+        int pos = 0;
+        Integer resPos = null;
+
+        cursor.moveToFirst();
+        while(! cursor.isAfterLast()) {
+            int idxId = cursor.getColumnIndexOrThrow(CategoryData.KEY_ID);
+            int id = cursor.getInt(idxId);
+            if(id == category.getId()) {
+                resPos = new Integer(pos);
+                break;
+            }
+
+            cursor.moveToNext();
+            pos++;
+        }
+
+        cursor.move(currentCursorPos);
+        return resPos;
+    }
+
+    /**
+     * Get all categories to except automatically (categories that have credit)
+     * @param cursor
+     * @return List of all category position (in a cursor) to except. Those categories are taken in db automatically.
+     */
+    private static Integer[] getAutoExceptCategoriesPositions(Cursor cursor) {
+        final List<Integer> posToCheck = new ArrayList<Integer>();
+        Operation o = new Operation();
+        Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
+        for(int i=0; i<cats.length; i++) {
+            Category ca = new Category();
+            Cursor cu = ca.fetch(cats[i]);
+            ca.toDTO(cu);
+            posToCheck.add(getCategoryPositionInCursor(cursor, ca));
+            Log.d(DialogHelper.class.getName(), "  - Auto checked category : "+cats[i]+" ("+ca.getName()+")");
+        }
+
+        return posToCheck.toArray(new Integer[0]);
+    }
+
 	public static Dialog popupDialogStatsDetails(final TmhActivity tmhActivity, Date beg, Date end, String catName, Integer[] exceptCategories) {
 		if(tmhActivity == null)
 			return null;

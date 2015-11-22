@@ -2,7 +2,9 @@ package org.maupu.android.tmh.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -22,7 +24,7 @@ public abstract class StaticData {
 	private static boolean isValidCurrentAccount = false;
 	private static Integer defaultAccountId;
 	private static Category currentSelectedCategory = new Category();
-	private static List<Integer> statsExceptedCategories = new ArrayList<Integer>();
+	private static Set<Integer> statsExceptedCategories = new HashSet<Integer>();
 	private static boolean statsAdvancedFilter = false;
 	private static Date currentOperationDatePickerDate = null;
 	private static Currency mainCurrency = null;
@@ -61,22 +63,15 @@ public abstract class StaticData {
 		setPreferenceValueLong(PREF_CURRENT_OPERATION_DATE_PICKER, currentOperationDatePickerDate.getTime());
 	}
 	
-	public static void setStatsExpectedCategories(List<Integer> ints) {
-		if(ints == null)
-			return;
-		
-		statsExceptedCategories = ints;
-	}
-	
-	public static List<Integer> getStatsExpectedCategories() {
+	public static Set<Integer> getStatsExceptedCategories() {
 		return statsExceptedCategories;
 	}
 	
-	public static Integer[] getStatsExpectedCategoriesToArray() {
+	public static Integer[] getStatsExceptedCategoriesToArray() {
 		if(statsExceptedCategories == null || statsExceptedCategories.size() == 0)
 			return new Integer[0];
 		
-		return statsExceptedCategories.toArray(new Integer[statsExceptedCategories.size()]);
+		return statsExceptedCategories.toArray(new Integer[0]);
 	}
 	
 	public static Date getCurrentOperationDatePickerDate() {
