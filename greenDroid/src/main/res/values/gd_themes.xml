@@ -200,7 +200,10 @@
 		
 		<item name="gdPageIndicatorStyle">@style/GreenDroid.Widget.PageIndicator</item>
 
-        <item name="android:colorBackground">@android:color/white</item>
+        <!-- Android override -->
+        <!-- Added by @nmaupu 2015-11-23 -->
+        <!-- Avoid having all widgets to be background color grey -->
+        <item name="android:windowBackground">@android:color/white</item>
 	</style>
 	
 	<style name="Theme.GreenDroid.Light.NoTitleBar" parent="@style/Theme.GreenDroid.Light">
