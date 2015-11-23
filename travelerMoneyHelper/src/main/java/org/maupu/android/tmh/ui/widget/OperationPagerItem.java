@@ -295,7 +295,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		try {
 			symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
 		} catch(NullPointerException npe) {
-			symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
+			symbolCurrency = "€";
 		}
 
 		AccountBalance balance = currentAccount.getComputedBalance();
