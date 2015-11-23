@@ -14,7 +14,7 @@
         android:name="org.maupu.android.tmh.core.TmhApplication"
         android:icon="@drawable/tmh_icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.GDMainTheme"
+        android:theme="@style/Theme.GreenDroid.Light.NoTitleBar"
         android:allowBackup="true" >
 
         <!-- Main Activity -->

@@ -35,6 +35,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,7 +50,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, OnKeyListener {
+public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher {
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int TIME_DIALOG_ID = 1;
 	
@@ -91,7 +94,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
 		//buttonValidate = (Button)findViewById(R.id.button_validate);
 		amount = (NumberEditText)findViewById(R.id.amount);
-		amount.setOnKeyListener(this);
+        amount.addTextChangedListener(this);
 		textViewConvertedAmount = (TextView)findViewById(R.id.converted_amount);
 		textViewDate = (TextView)findViewById(R.id.date);
 		textViewDate.setOnClickListener(this);
@@ -330,31 +333,36 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	@Override
 	public void handleRefreshEnding(Map<Integer, Object> results) {
 	}
-	
-	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		//Log.d(AddOrEditOperationActivity.class.getName(), "Key pressed - "+keyCode);
-		updateConvertedAmount();
-		return false;
-	}
-	
-	private void updateConvertedAmount() {
-		try {
-			Cursor c = spinnerManagerCurrency.getSelectedItem();
-			Currency dummyCur = new Currency();
-			dummyCur.toDTO(c);
-			
-			String a = amount.getStringText();
-			a = a != null ? a.trim() : a;
-			
-			Double currentAmount = 0d;
-			if (a != null && ! "".equals(a))
-				currentAmount = Math.abs(Double.parseDouble(a));
-				
-			Double rate = dummyCur.getRateCurrencyLinked();
-			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
-		} catch (NumberFormatException nfe) {
-			// No conversion
-		}
-	}
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    @Override
+    public void afterTextChanged(Editable editable) {
+        updateConvertedAmount();
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+    private void updateConvertedAmount() {
+        try {
+            Cursor c = spinnerManagerCurrency.getSelectedItem();
+            Currency dummyCur = new Currency();
+            dummyCur.toDTO(c);
+
+            String a = amount.getStringText();
+            Log.d(AddOrEditOperationActivity.class.getName(), "Current amount to convert = " + a);
+            a = a != null ? a.trim() : a;
+
+            Double currentAmount = 0d;
+            if (a != null && ! "".equals(a))
+                currentAmount = Math.abs(Double.parseDouble(a));
+
+            Double rate = dummyCur.getRateCurrencyLinked();
+            textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+        } catch (NumberFormatException nfe) {
+            // No conversion
+            Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");
+        }
+    }
 }

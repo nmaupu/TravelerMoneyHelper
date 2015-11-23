@@ -117,7 +117,7 @@
 	   However, it looks like there are no way to overcome this (multiple inheritance
 	   is not permitted).
 	-->
-	<style name="Theme.GreenDroid.Light" parent="@android:style/Theme.Light">
+	<style name="Theme.GreenDroid.Light" parent="android:Theme.DeviceDefault.Light">
 	
 		<item name="gdTextAppearance">@style/TextAppearance</item>
 		<item name="gdTextAppearanceLarge">@style/TextAppearance.Large</item>
@@ -173,7 +173,7 @@
 		<item name="gdSegmentedHostStyle">@style/GreenDroid.Widget.SegmentedHost</item>
 		
 		<item name="gdActionBarTitleColor">@android:color/white</item>
-		<item name="gdActionBarBackground">@color/gd_action_bar_tint</item>
+		<item name="gdActionBarBackground">@color/gd_action_bar_blue</item>
 		<item name="gdActionBarItemBackground">@drawable/gd_action_bar_item</item>
 		<item name="gdActionBarDividerDrawable">@color/gd_action_bar_divider_tint</item>
 		<item name="gdActionBarDividerWidth">1px</item>
@@ -199,6 +199,8 @@
 		<item name="gdQuickActionGridItemStyle">@style/GreenDroid.Widget.QuickAction.Grid.Item</item>
 		
 		<item name="gdPageIndicatorStyle">@style/GreenDroid.Widget.PageIndicator</item>
+
+        <item name="android:colorBackground">@android:color/white</item>
 	</style>
 	
 	<style name="Theme.GreenDroid.Light.NoTitleBar" parent="@style/Theme.GreenDroid.Light">
