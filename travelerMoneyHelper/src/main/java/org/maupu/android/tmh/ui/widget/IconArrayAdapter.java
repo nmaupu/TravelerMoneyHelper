@@ -52,8 +52,8 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
         NavigationDrawerIconItem item = data.get(position);
         ViewGroup.LayoutParams params = holder.layout.getLayoutParams();
         if(item.isSeparator()) {
-            params.height=NavigationDrawerIconItem.SEPARATOR_HEIGHT;
-            holder.layout.setBackgroundColor(NavigationDrawerIconItem.SEPARATOR_COLOR);
+            params.height=item.getHeight();
+            holder.layout.setBackgroundColor(item.getTextColor());
             holder.imageView.setVisibility(View.GONE);
             holder.textView.setVisibility(View.GONE);
         } else {

@@ -34,6 +34,8 @@ public class NavigationDrawerIconItem {
 
     public NavigationDrawerIconItem() {
         this.separator = true;
+        this.height = SEPARATOR_HEIGHT;
+        this.textColor = SEPARATOR_COLOR;
     }
 
     public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback) {
@@ -41,10 +43,15 @@ public class NavigationDrawerIconItem {
     }
 
     public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback, ItemType itemType) {
+        this(tag, iconRes, text, callback, itemType, null);
+    }
+
+    public NavigationDrawerIconItem(Object tag, int iconRes, String text, INavigationDrawerCallback callback, ItemType itemType, Boolean isSelectable) {
         this.tag = tag;
         this.iconResource = iconRes;
         this.text = text;
         this.callback = callback;
+        boolean isSel = true;
 
         switch(itemType) {
             case NORMAL:
@@ -52,16 +59,21 @@ public class NavigationDrawerIconItem {
                 textColor = NORMAL_TEXT_COLOR;
                 height = NORMAL_HEIGHT;
                 tf = NORMAL_TYPEFACE;
-                setSelectable(true);
+                isSel = true;
                 break;
             case SMALL:
                 textSize = SMALL_TEXT_SIZE;
                 textColor = SMALL_TEXT_COLOR;
                 height = SMALL_HEIGHT;
                 tf = SMALL_TYPEFACE;
-                setSelectable(false);
+                isSel = false;
                 break;
         }
+
+        if(isSelectable == null)
+            setSelectable(isSel);
+        else
+            setSelectable(true);
     }
 
     public String getText() {

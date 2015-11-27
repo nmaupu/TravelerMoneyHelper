@@ -128,22 +128,22 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private AlertDialog createDialogIconChooser(int dialogType) {
 		Toast toast = Toast.makeText(this, getString(R.string.not_implemented), Toast.LENGTH_SHORT);
 		switch(dialogType) {
-		case MENU_ITEM_APPS:
-			return createDialogFromApps();
-		case MENU_ITEM_URL:
-			toast.show();
-			return null;
-		case MENU_ITEM_CAMERA:
-			toast.show();
-			return null;
-		case MENU_ITEM_FLAGS:
-			return createDialogFromFlags();
-		case MENU_ITEM_DEFAULT:
-			imageViewIcon.setImageResource(R.drawable.icon_default);
-			imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
-			return null;
-		default:
-			return null;
+            case MENU_ITEM_APPS:
+                return createDialogFromApps();
+            case MENU_ITEM_URL:
+                toast.show();
+                return null;
+            case MENU_ITEM_CAMERA:
+                toast.show();
+                return null;
+            case MENU_ITEM_FLAGS:
+                return createDialogFromFlags();
+            case MENU_ITEM_DEFAULT:
+                imageViewIcon.setImageResource(R.drawable.icon_default);
+                imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
+                return null;
+            default:
+                return null;
 		}
 	}
 	
@@ -151,7 +151,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		AlertDialog.Builder builder;
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) findViewById(R.id.layout_root));
+		View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) findViewById(R.id.drawer_layout), false);
 		
 		
 		builder = new AlertDialog.Builder(mContext);
@@ -184,7 +184,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		AlertDialog.Builder builder;
 		Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_flags_icon, (ViewGroup) findViewById(R.id.layout_root));
+		View layout = inflater.inflate(R.layout.dialog_flags_icon, (ViewGroup) findViewById(R.id.drawer_layout), false);
 		
 		builder = new AlertDialog.Builder(mContext);
 		builder.setView(layout);

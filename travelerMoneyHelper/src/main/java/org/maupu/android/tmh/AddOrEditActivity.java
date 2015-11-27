@@ -60,6 +60,8 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		
 		// Fill form fields
 		baseObjectToFields(obj);
+
+        refreshDisplay();
 	}
 
 	@SuppressWarnings("unchecked")

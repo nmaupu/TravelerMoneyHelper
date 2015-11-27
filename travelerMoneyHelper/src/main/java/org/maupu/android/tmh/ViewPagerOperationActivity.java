@@ -37,7 +37,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		quickActionGrid = createQuickActionGridEdition();
 		
 		// Action bar items
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
+		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Withdrawal), TmhApplication.ACTION_BAR_ADD_WITHDRAWAL);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
 
@@ -57,9 +57,9 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 			// Add operation
 			startActivityForResult(new Intent(this, AddOrEditOperationActivity.class), 0);
 			break;
-		case TmhApplication.ACTION_BAR_EDIT:
-			quickActionGrid.show(item.getItemView());
-			break;
+		//case TmhApplication.ACTION_BAR_EDIT:
+		//	quickActionGrid.show(item.getItemView());
+		//	break;
 		case TmhApplication.ACTION_BAR_ADD_WITHDRAWAL:
 			startActivityFromMenu(WithdrawalActivity.class);
 			break;

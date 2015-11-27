@@ -25,9 +25,6 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -35,7 +32,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -94,6 +90,9 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
             items.add(new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
             items.add(new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
+            items.add(new NavigationDrawerIconItem(ManageAccountActivity.class, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
+            items.add(new NavigationDrawerIconItem(ManageCategoryActivity.class, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
+            items.add(new NavigationDrawerIconItem(ManageCurrencyActivity.class, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
             items.add(new NavigationDrawerIconItem());
             items.add(new NavigationDrawerIconItem(PreferencesActivity.class, R.drawable.ic_settings_black, getResources().getString(R.string.parameters), this, NavigationDrawerIconItem.ItemType.SMALL));
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, getResources().getString(R.string.refresh), this, NavigationDrawerIconItem.ItemType.SMALL));
@@ -103,17 +102,17 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 
 			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
 
-			((ImageButton)getGDActionBar().getChildAt(0)).setImageResource(R.drawable.gd_action_bar_list);
-			getGDActionBar().getChildAt(0).setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Log.d(TmhActivity.class.getName(), "Drawer button clicked");
-					if (drawerLayout.isDrawerOpen(drawerList))
-						drawerLayout.closeDrawer(drawerList);
-					else
-						drawerLayout.openDrawer(drawerList);
-				}
-			});
+            setActionBarHomeDrawable(R.drawable.ic_menu_white);
+            setActionBarHomeOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TmhActivity.class.getName(), "Drawer button clicked");
+                    if (drawerLayout.isDrawerOpen(drawerList))
+                        drawerLayout.closeDrawer(drawerList);
+                    else
+                        drawerLayout.openDrawer(drawerList);
+                }
+            });
 		} catch(NullPointerException npe) {
 			// No drawer available in XML file
 			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
@@ -125,27 +124,25 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		Intent intent = null;
         boolean killCurrentActivity = false;
 
-		if(item.getTag() == ViewPagerOperationActivity.class) {
-			intent = new Intent(this, ViewPagerOperationActivity.class);
-            killCurrentActivity = true;
-		} else if(item.getTag() == StatsActivity.class) {
-			intent = new Intent(this, StatsActivity.class);
-            killCurrentActivity = true;
-		} else if(item.getTag() == PreferencesActivity.class) {
-            intent = new Intent(this, PreferencesActivity.class);
-        } else if(item.getTag() instanceof String && DRAWER_ITEM_REFRESH.equals(item.getTag())) {
+        if(item.getTag() instanceof String && DRAWER_ITEM_REFRESH.equals(item.getTag())) {
             refreshDisplay();
+        } else if(item.getTag() == PreferencesActivity.class) {
+            intent = new Intent(this, (Class)item.getTag());
+            killCurrentActivity = false;
+        } else {
+            intent = new Intent(this, (Class)item.getTag());
+            killCurrentActivity = true;
         }
 
-		if(intent != null) {
+        if(intent != null) {
             if(killCurrentActivity)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-			startActivity(intent);
+            startActivity(intent);
 
             if(killCurrentActivity)
-			    finish();
-		}
+                finish();
+        }
 	}
 
 	@Override
@@ -166,21 +163,21 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_star, R.string.currencies));
 
 		quickActionGrid.setOnQuickActionClickListener(new OnQuickActionClickListener() {
-			@Override
-			public void onQuickActionClicked(QuickActionWidget widget, int position) {
-				switch(position) {
-				case 0:
-					startActivityFromMenu(ManageAccountActivity.class);
-					break;
-				case 1:
-					startActivityFromMenu(ManageCategoryActivity.class);
-					break;
-				case 2:
-					startActivityFromMenu(ManageCurrencyActivity.class);
-					break;
-				}
-			}
-		});
+            @Override
+            public void onQuickActionClicked(QuickActionWidget widget, int position) {
+                switch (position) {
+                    case 0:
+                        startActivityFromMenu(ManageAccountActivity.class);
+                        break;
+                    case 1:
+                        startActivityFromMenu(ManageCategoryActivity.class);
+                        break;
+                    case 2:
+                        startActivityFromMenu(ManageCurrencyActivity.class);
+                        break;
+                }
+            }
+        });
 
 		return quickActionGrid;
 	}
@@ -203,12 +200,19 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		}
 	}
 
-	public void setActionBarHomeDrawable(int drawable) {
+	protected void setActionBarHomeDrawable(int drawable) {
 		ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
 		if(ib != null) {
 			ib.setImageResource(drawable);
 		}
 	}
+
+    protected void setActionBarHomeOnClickListener(View.OnClickListener listener) {
+        ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
+        if(ib != null) {
+            ib.setOnClickListener(listener);
+        }
+    }
 
 	public static void setListViewAnimation(ListView listView) {
 		// Setting animation
