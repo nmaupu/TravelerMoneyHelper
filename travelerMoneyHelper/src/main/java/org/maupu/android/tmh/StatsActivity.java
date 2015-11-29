@@ -153,7 +153,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
 		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
-        buildNavigationDrawer();
 		initHeaderGalleries();
 		refreshHeaderGallery();
 		refreshDisplay();
@@ -242,10 +241,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         }
     }
 
-    private void buildNavigationDrawer() {
+    @Override
+    public NavigationDrawerIconItem[] buildNavigationDrawer() {
         // Create a simple separator
-        NavigationDrawerIconItem[] items = new NavigationDrawerIconItem[]{
-                new NavigationDrawerIconItem(),
+        return new NavigationDrawerIconItem[]{
                 createNavDrawerItem(
                         DRAWER_ITEM_TODAY,
                         R.drawable.ic_today_black,
@@ -263,9 +262,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
                         R.drawable.ic_cat_except_black,
                         R.string.categories_exception),
         };
-
-        for(int i=0; i<items.length; i++)
-            ((IconArrayAdapter)super.drawerList.getAdapter()).add(items[i]);
     }
 
     private NavigationDrawerIconItem createNavDrawerItem(Object tag, int iconRes, int textRes) {

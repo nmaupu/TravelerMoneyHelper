@@ -36,6 +36,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,15 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	protected DrawerLayout drawerLayout;
 	protected ListView drawerList;
 
+    /** Navigation drawer items **/
+    private static final String DRAWER_ITEM_OPERATIONS = UUID.randomUUID().toString();
+    private static final String DRAWER_ITEM_STATS = UUID.randomUUID().toString();
+    private static final String DRAWER_ITEM_ACCOUNTS = UUID.randomUUID().toString();
+    private static final String DRAWER_ITEM_CATEGORIES = UUID.randomUUID().toString();
+    private static final String DRAWER_ITEM_CURRENCIES = UUID.randomUUID().toString();
+    private static final String DRAWER_ITEM_PARAMETERS = UUID.randomUUID().toString();
     private static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
+
 
 	public static LayoutInflater getInflater(Context ctx) {
 		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -87,21 +96,36 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			drawerList = (ListView) findViewById(R.id.left_drawer);
 
+            /** Main items **/
 			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
-            items.add(new NavigationDrawerIconItem(ViewPagerOperationActivity.class, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
-            items.add(new NavigationDrawerIconItem(StatsActivity.class, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
-            items.add(new NavigationDrawerIconItem(ManageAccountActivity.class, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
-            items.add(new NavigationDrawerIconItem(ManageCategoryActivity.class, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
-            items.add(new NavigationDrawerIconItem(ManageCurrencyActivity.class, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
-            items.add(new NavigationDrawerIconItem());
-            items.add(new NavigationDrawerIconItem(PreferencesActivity.class, R.drawable.ic_settings_black, getResources().getString(R.string.parameters), this, NavigationDrawerIconItem.ItemType.SMALL));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CURRENCIES, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
+
+            /** Custom items **/
+            NavigationDrawerIconItem[] customItems = buildNavigationDrawer();
+            if(customItems != null) {
+                items.add(NavigationDrawerIconItem.separator());
+                items.addAll(Arrays.asList(customItems));
+            }
+
+            /** sepatator **/
+            items.add(NavigationDrawerIconItem.separator());
+
+            /** Last items : refresh, parameters, etc ... **/
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, getResources().getString(R.string.parameters), this, NavigationDrawerIconItem.ItemType.SMALL));
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, getResources().getString(R.string.refresh), this, NavigationDrawerIconItem.ItemType.SMALL));
 
+            /** Add items to adapter **/
 			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
 			((IconArrayAdapter)drawerList.getAdapter()).selectItem(StaticData.navigationDrawerItemSelected);
 
+            /** Listener **/
 			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
 
+            /** Change home icon and open / close drawer on click **/
             setActionBarHomeDrawable(R.drawable.ic_menu_white);
             setActionBarHomeOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,26 +146,37 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	@Override
 	public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
 		Intent intent = null;
-        boolean killCurrentActivity = false;
+        boolean killCurrentActivity = true;
 
-        if(item.getTag() instanceof String && DRAWER_ITEM_REFRESH.equals(item.getTag())) {
-            refreshDisplay();
-        } else if(item.getTag() == PreferencesActivity.class) {
-            intent = new Intent(this, (Class)item.getTag());
-            killCurrentActivity = false;
-        } else {
-            intent = new Intent(this, (Class)item.getTag());
-            killCurrentActivity = true;
-        }
+        if(item.getTag() instanceof String) {
+            /** Determine what item has been clicked **/
+            if (item.getTag() == DRAWER_ITEM_REFRESH) {
+                refreshDisplay();
+            } else if (item.getTag() == DRAWER_ITEM_PARAMETERS) {
+                intent = new Intent(this, PreferencesActivity.class);
+                killCurrentActivity = false;
+            } else if (item.getTag() == DRAWER_ITEM_OPERATIONS) {
+                intent = new Intent(this, ViewPagerOperationActivity.class);
+            } else if (item.getTag() == DRAWER_ITEM_STATS) {
+                intent = new Intent(this, StatsActivity.class);
+            } else if (item.getTag() == DRAWER_ITEM_ACCOUNTS) {
+                intent = new Intent(this, ManageAccountActivity.class);
+            } else if (item.getTag() == DRAWER_ITEM_CATEGORIES) {
+                intent = new Intent(this, ManageCategoryActivity.class);
+            } else if (item.getTag() == DRAWER_ITEM_CURRENCIES) {
+                intent = new Intent(this, ManageCurrencyActivity.class);
+            }
 
-        if(intent != null) {
-            if(killCurrentActivity)
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            /** Launch corresponding activity if recognized **/
+            if(intent != null) {
+                if(killCurrentActivity)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            startActivity(intent);
+                startActivity(intent);
 
-            if(killCurrentActivity)
-                finish();
+                if(killCurrentActivity)
+                    finish();
+            }
         }
 	}
 
@@ -246,4 +281,13 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			return d;
 		}
 	}
+
+    /**
+     * Called when navigation drawer is created. To customize, override this and return
+     * an array. Separator is already included.
+     * @return an array of NavigationDrawerIconItem corresponding to custom items
+     */
+    public NavigationDrawerIconItem[] buildNavigationDrawer() {
+        return null;
+    };
 }

@@ -19,7 +19,7 @@ public class NavigationDrawerIconItem {
     public static final int DEFAULT_BG_COLOR = Color.WHITE;
     public enum ItemType {
         SMALL, NORMAL
-    };
+    }
 
     Object tag;
     int iconResource;
@@ -147,5 +147,13 @@ public class NavigationDrawerIconItem {
 
     public void setSeparator(boolean separator) {
         this.separator = separator;
+    }
+
+    /**
+     * Create a NavigationDrawerIconItem so that it is a separator with default size and color
+     * @return a new NavigationDrawerIconItem which is a default separator
+     */
+    public static NavigationDrawerIconItem separator() {
+        return new NavigationDrawerIconItem();
     }
 }
