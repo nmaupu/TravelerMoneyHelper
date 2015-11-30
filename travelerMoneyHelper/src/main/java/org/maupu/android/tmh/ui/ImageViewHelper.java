@@ -6,10 +6,12 @@ import org.maupu.android.tmh.R;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 public abstract class ImageViewHelper {
 	public static void setIcon(Context ctx, ImageView imageView, String filename) {
+        Log.d(ImageViewHelper.class.getName(), "Setting icon " + filename);
 		try {
 			FileInputStream fIn = ctx.openFileInput(filename);
 			imageView.setImageBitmap(BitmapFactory.decodeStream(fIn));
