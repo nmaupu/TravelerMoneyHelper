@@ -298,6 +298,11 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
             cSumOp = dummy.sumOperations(currentAccount, null);
         }
 
+        if(cSumOp == null || cAllOp == null) {
+            /* An error occured */
+            return;
+        }
+
 
 		// Process balance
 		Currency mainCur = StaticData.getMainCurrency();
@@ -305,7 +310,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		try {
 			symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
 		} catch(NullPointerException npe) {
-			symbolCurrency = java.util.Currency.getInstance(Locale.FRENCH).getSymbol();
+			symbolCurrency = java.util.Currency.getInstance(new Locale("fr", "FR")).getSymbol();
 		}
 
 		AccountBalance balance = currentAccount.getComputedBalance();

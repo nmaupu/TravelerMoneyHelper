@@ -154,56 +154,44 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		return ret;
 	}
 
-	private CharSequence[] getAllDatabasesListEntries() {
-		// For an obscure reason, databaseList() returns strange results on some device 
-		// such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
-		// instead of [TravelerMoneyHelper_appdata_default]
-		// What is 0 ? What is TravelerMoneyHelper_appdata ? who knows ! 
-		CharSequence[] list = TmhApplication.getAppContext().databaseList();
-		//CharSequence[] ret = new CharSequence[list.length];
-		List<String> listEntries = new ArrayList<String>();
+    /**
+     * Get either list of databases ready to be printed to user
+     * or stored database filename depending on prettyPrint parameter.
+     * @param prettyPrint Weather getting all databases ready to be printed to user or raw filenames
+     * @return List of all available databases
+     */
+    private CharSequence[] getAllDatabases(boolean prettyPrint) {
+        // For an obscure reason, databaseList() returns strange results on some device
+        // such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
+        // instead of [TravelerMoneyHelper_appdata_default]
+        // What is 0 ? What is TravelerMoneyHelper_appdata ? who knows !
+        CharSequence[] list = TmhApplication.getAppContext().databaseList();
+        //CharSequence[] ret = new CharSequence[list.length];
+        List<String> listEntries = new ArrayList<String>();
 
-		for(int i=0; i<list.length; i++) {
-			String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
-			// If database name is not correct (no prefix), array is wrong so we denied this DB
-			if(vals.length == 2 && ! vals[1].contains("-journal"))
-				listEntries.add(vals[1]);
-		}
-		
-		// Y U throw a ClassCastException exception ?
-		//return (String[])ret.toArray();
-		CharSequence[] ret = new CharSequence[listEntries.size()];
-		int nb = listEntries.size();
-		for(int i=0; i<nb; i++) {
-			ret[i] = listEntries.get(i);
-		}
-		
-		return ret;
+        Log.d(PreferencesActivity.class.getName(), "Number of databases returned : " + list.length);
+        for(int i=0; i<list.length; i++) {
+            String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
+            // If database name is not correct (no prefix), array is wrong so we denied this DB
+            // We also discard journal DB
+            if(vals.length == 2 && ! vals[1].contains("-journal")) {
+                Log.d(PreferencesActivity.class.getName(), "Database filename : " + list[i] + " - database name : " + vals[1]);
+                if(prettyPrint)
+                    listEntries.add(vals[1]);
+                else
+                    listEntries.add(list[i].toString());
+            }
+        }
+
+        return listEntries.toArray(new String[0]);
+    }
+
+	private CharSequence[] getAllDatabasesListEntries() {
+		return getAllDatabases(true);
 	}
 
 	private CharSequence[] getAllDatabasesListEntryValues() {
-		// For an obscure reason, databaseList() returns strange results on some device 
-		// such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
-		// instead of [TravelerMoneyHelper_appdata_default]
-		// What is 0 ? What is TravelerMoneyHelper_appdata ? who knows ! 
-		CharSequence[] list = TmhApplication.getAppContext().databaseList();
-		//CharSequence[] ret = new CharSequence[list.length];
-		List<CharSequence> listEntries = new ArrayList<CharSequence>();
-
-		for(int i=0; i<list.length; i++) {
-			String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
-			// If database name is not correct (no prefix), array is wrong so we denied this DB
-			if(vals.length == 2)
-				listEntries.add(list[i]); // Get the entire db name
-		}
-
-		CharSequence[] ret = new CharSequence[listEntries.size()];
-		int nb = listEntries.size();
-		for(int i=0; i<nb; i++) {
-			ret[i] = listEntries.get(i);
-		}
-		
-		return ret;
+        return getAllDatabases(false);
 	}
 
 	@Override
