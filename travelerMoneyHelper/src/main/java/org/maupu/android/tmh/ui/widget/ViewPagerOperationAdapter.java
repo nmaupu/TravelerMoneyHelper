@@ -102,9 +102,9 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 	}
 	
 	private void doRefreshItemView(int position) {
-		Log.d(ViewPagerOperationAdapter.class.getName(), "Refreshing item number "+position);
 		OperationPagerItem item = items.get(position);
 		if(item != null) {
+            Log.d(ViewPagerOperationAdapter.class.getName(), "Refreshing item number "+position);
 			item.refreshDisplay();
 		}
 	}
