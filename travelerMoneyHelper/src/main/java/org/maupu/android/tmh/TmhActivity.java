@@ -289,5 +289,10 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
      */
     public NavigationDrawerIconItem[] buildNavigationDrawer() {
         return null;
-    };
+    }
+
+    public NavigationDrawerIconItem createSmallNavigationDrawerItem(Object tag, int iconRes, int textRes) {
+        return new NavigationDrawerIconItem(
+                tag, iconRes, getResources().getString(textRes), this, NavigationDrawerIconItem.ItemType.SMALL);
+    }
 }

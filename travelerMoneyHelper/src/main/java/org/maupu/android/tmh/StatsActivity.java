@@ -245,28 +245,23 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     public NavigationDrawerIconItem[] buildNavigationDrawer() {
         // Create a simple separator
         return new NavigationDrawerIconItem[]{
-                createNavDrawerItem(
+                createSmallNavigationDrawerItem(
                         DRAWER_ITEM_TODAY,
                         R.drawable.ic_today_black,
                         R.string.today),
-                createNavDrawerItem(
+                createSmallNavigationDrawerItem(
                         DRAWER_ITEM_PERIOD,
                         R.drawable.ic_period_black,
                         R.string.menu_item_period),
-                createNavDrawerItem(
+                createSmallNavigationDrawerItem(
                         DRAWER_ITEM_AUTO,
                         R.drawable.ic_event_black,
                         R.string.menu_item_auto),
-                createNavDrawerItem(
+                createSmallNavigationDrawerItem(
                         DRAWER_ITEM_CAT_EXCEPT,
                         R.drawable.ic_cat_except_black,
                         R.string.categories_exception),
         };
-    }
-
-    private NavigationDrawerIconItem createNavDrawerItem(Object tag, int iconRes, int textRes) {
-        return new NavigationDrawerIconItem(
-                tag, iconRes, getResources().getString(textRes), this, NavigationDrawerIconItem.ItemType.SMALL);
     }
 
 	@Override

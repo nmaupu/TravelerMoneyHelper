@@ -99,4 +99,10 @@ public abstract class DateUtil {
 		
 		return d;
 	}
+
+    public static Date getCurrentDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new GregorianCalendar().getTime());
+        return cal.getTime();
+    }
 }

@@ -13,7 +13,6 @@ import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -24,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 
-@SuppressLint("UseSparseArrays")
 public class ManageOperationActivity extends ManageableObjectActivity<Operation> implements OnItemSelectedListener, IViewPagerAdapter{
 	private static Operation dummyOperation = new Operation();
 	private SpinnerManager spinnerAccountManager;

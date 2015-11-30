@@ -26,6 +26,7 @@
     <string name="activity_title_manage_category">Categorie</string>
     <string name="activity_title_manage_currency">Devise</string>
     <string name="activity_title_manage_operation">Opération</string>
+    <string name="activity_title_viewpager_operation">Opérations</string>
     <string name="activity_title_manage_account">Compte</string>
     <string name="activity_title_statistics">Statistiques</string>
     <string name="activity_title_category_chooser">Catégories</string>
@@ -119,5 +120,8 @@
     <string name="refreshing">Chargement</string>
     <string name="menu_item_month">Autres mois</string>
     <string name="auto">Auto</string>
+    <string name="operation_list_type">Mois / tout</string>
+    <string name="operation_all_main_title">Opérations</string>
+    <string name="operation_all_sub_title">Toutes</string>
 
 </resources>

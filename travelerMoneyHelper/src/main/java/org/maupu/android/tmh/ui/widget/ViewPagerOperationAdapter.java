@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.maupu.android.tmh.ViewPagerOperationActivity;
+import org.maupu.android.tmh.util.DateUtil;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,25 +26,42 @@ import android.view.View;
 @SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
 	private ViewPagerOperationActivity ctx;
-	private final static int count = 25;
-	private final static int offset = -1 * (count/2);
+	private final static int COUNT = 25;
 	private Map<Integer, OperationPagerItem> items = new HashMap<Integer, OperationPagerItem>();
-	
-	public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx) {
-		this.ctx = ctx;
-	}
+    private int count;
+    private int offset;
+    private Date startDate;
+
+    public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx) {
+        this(ctx, COUNT);
+    }
+
+    public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx, int count) {
+        this(ctx, count, DateUtil.getCurrentDate());
+    }
+
+    public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx, int count, Date startDate) {
+        this.ctx = ctx;
+        this.count = count%2 == 0 ? count+1 : count;
+        this.offset = -1 * (this.count / 2);
+        this.startDate = startDate;
+    }
 
 	@Override
 	public Object instantiateItem(View pager, int position) {
 		OperationPagerItem opi = items.get(position);
 		
 		if(opi == null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(new GregorianCalendar().getTime());
-			cal.add(Calendar.MONTH, offset+position);
-			Date date = cal.getTime();
+            Date date = null;
+            if(this.startDate != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(this.startDate);
+                cal.add(Calendar.MONTH, offset + position);
+                date = cal.getTime();
+            }
 
 			LayoutInflater inflater = (LayoutInflater)pager.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            // if date is null, all operations will be displayed
 			opi = new OperationPagerItem(ctx, inflater, date);
 			items.put(position, opi);
 		}

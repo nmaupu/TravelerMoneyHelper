@@ -25,7 +25,6 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.NumberUtil;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -43,7 +42,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-@SuppressLint("UseSparseArrays")
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
 	private ViewPagerOperationActivity viewPagerOperationActivity;
 	private View view;
@@ -131,47 +129,47 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			return;
 
 		switch(v.getId()) {
-		case R.id.account_icon:
-			Log.d("OperationPagerItem", "Icon clicked");
-			DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
-			break;
-		case R.id.button_edit:
-			if(posChecked.length == 1) {
-				int p = posChecked[0];
-				Cursor cursor = (Cursor)listView.getItemAtPosition(p);
-				obj.toDTO(cursor);
+            case R.id.account_icon:
+                Log.d(OperationPagerItem.class.getName(), "Icon clicked");
+                DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
+                break;
+            case R.id.button_edit:
+                if(posChecked.length == 1) {
+                    int p = posChecked[0];
+                    Cursor cursor = (Cursor)listView.getItemAtPosition(p);
+                    obj.toDTO(cursor);
 
-				intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
-				intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
-				viewPagerOperationActivity.startActivityForResult(intent, 0);
-			}
+                    intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
+                    intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
+                    viewPagerOperationActivity.startActivityForResult(intent, 0);
+                }
 
-			break;
-		case R.id.button_delete:
-			SimpleDialog.confirmDialog(viewPagerOperationActivity, 
-					viewPagerOperationActivity.getString(R.string.manageable_obj_del_confirm_question), 
-					new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					String errMessage = viewPagerOperationActivity.getString(R.string.manageable_obj_del_error);
-					boolean err = false;
+                break;
+            case R.id.button_delete:
+                SimpleDialog.confirmDialog(viewPagerOperationActivity,
+                        viewPagerOperationActivity.getString(R.string.manageable_obj_del_confirm_question),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String errMessage = viewPagerOperationActivity.getString(R.string.manageable_obj_del_error);
+                        boolean err = false;
 
-					for(int i=0; i<posChecked.length; i++) {
-						Integer pos = posChecked[i];
-						//Request deletion
-						Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
-						obj.toDTO(cursor);
-						obj.delete();
-					}
+                        for(int i=0; i<posChecked.length; i++) {
+                            Integer pos = posChecked[i];
+                            //Request deletion
+                            Cursor cursor = (Cursor)listView.getItemAtPosition(pos);
+                            obj.toDTO(cursor);
+                            obj.delete();
+                        }
 
-					if(err)
-						SimpleDialog.errorDialog(viewPagerOperationActivity, viewPagerOperationActivity.getString(R.string.error), errMessage).show();
+                        if(err)
+                            SimpleDialog.errorDialog(viewPagerOperationActivity, viewPagerOperationActivity.getString(R.string.error), errMessage).show();
 
-					dialog.dismiss();
-					refreshDisplay();
-				}
-			}).show();
-			break;
+                        dialog.dismiss();
+                        refreshDisplay();
+                    }
+                }).show();
+                break;
 		}
 	}
 
@@ -208,7 +206,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
-		View v = (View)view.findViewById(R.id.layout_root_footer);
+		View v = view.findViewById(R.id.layout_root_footer);
 
 		// Already ok
 		if((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))
@@ -229,7 +227,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		v.startAnimation(animation);
 	}
 
-	@SuppressLint("SimpleDateFormat")
 	public void refreshHeader() {
 		Account account = StaticData.getCurrentAccount();
 
@@ -239,14 +236,20 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			textViewAccountName.setText(account.getName());
 		}
 
-		SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM");
-		String dateString = sdfMonth.format(date);
-		Log.d("OperationPagerItem", "month displayed : " + dateString);
-		textViewTitleMonth.setText(dateString);
+        if(this.date != null) {
+            SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM");
+            String dateString = sdfMonth.format(this.date);
+            Log.d("OperationPagerItem", "month displayed : " + dateString);
+            textViewTitleMonth.setText(dateString);
 
-		SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
-		dateString = sdfYear.format(date);
-		textViewTitleYear.setText(dateString);
+            SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+            dateString = sdfYear.format(this.date);
+            textViewTitleYear.setText(dateString);
+        } else {
+            // No date specified, displaying all
+            textViewTitleMonth.setText(getView().getResources().getString(R.string.operation_all_main_title));
+            textViewTitleYear.setText(getView().getResources().getString(R.string.operation_all_sub_title));
+        }
 	}
 
 	@Override
@@ -286,12 +289,19 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		Operation dummy = new Operation();
 		dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
 
-		Cursor cAllOpMonth = dummy.fetchByMonth(date);
-		Cursor cSumOpMonth = dummy.sumOperationsByMonth(currentAccount, date, null);
+        Cursor cAllOp, cSumOp;
+        if(this.date != null) {
+            cAllOp = dummy.fetchByMonth(date);
+            cSumOp = dummy.sumOperationsByMonth(currentAccount, date, null);
+        } else {
+            cAllOp = dummy.fetchAll();
+            cSumOp = dummy.sumOperations(currentAccount, null);
+        }
+
 
 		// Process balance
 		Currency mainCur = StaticData.getMainCurrency();
-		String symbolCurrency = null;
+		String symbolCurrency;
 		try {
 			symbolCurrency = java.util.Currency.getInstance(mainCur.getIsoCode()).getSymbol();
 		} catch(NullPointerException npe) {
@@ -323,17 +333,16 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		.append(symbolCurrency);
 
 
-
 		Double total = 0d;
-		int nbRes = cSumOpMonth.getCount();
+		int nbRes = cSumOp.getCount();
 		boolean sameCurrency = (nbRes == 1);
 		for(int i=0; i<nbRes; i++) {
-			int idxSum = cSumOpMonth.getColumnIndexOrThrow(Operation.KEY_SUM);
-			int idxRate = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
-			int idxCurrencyShortName = cSumOpMonth.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+			int idxSum = cSumOp.getColumnIndexOrThrow(Operation.KEY_SUM);
+			int idxRate = cSumOp.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+			int idxCurrencyShortName = cSumOp.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
 
-			float amount = cSumOpMonth.getFloat(idxSum);
-			float rate = cSumOpMonth.getFloat(idxRate);
+			float amount = cSumOp.getFloat(idxSum);
+			float rate = cSumOp.getFloat(idxRate);
 
 			// If not sameCurrency, convert it from rate
 			if(! sameCurrency) {
@@ -341,14 +350,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			}
 			else {
 				total += amount;
-				symbolCurrency = cSumOpMonth.getString(idxCurrencyShortName);
+				symbolCurrency = cSumOp.getString(idxCurrencyShortName);
 			}
 
-			cSumOpMonth.moveToNext();
+			cSumOp.moveToNext();
 		} //for
 
 		// closing useless cursor
-		cSumOpMonth.close();
+		cSumOp.close();
 
 		StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
 		sbTotal.append(" ");
@@ -359,7 +368,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		if(listView == null)
 			listView = (ListView)view.findViewById(R.id.list);
 
-		if(cAllOpMonth != null) {
+		if(cAllOp != null) {
 			// Close previous cursor before new assignation
 			try {
 				((CheckableCursorAdapter)listView.getAdapter()).getCursor().close();
@@ -370,7 +379,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
 					viewPagerOperationActivity, 
 					R.layout.operation_item, 
-					cAllOpMonth, 
+					cAllOp,
 					new String[]{"icon", "account", "category", "dateStringHours", "amountString", "convertedAmount"},
 					new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 			cca.setOnNumberCheckedListener(this);

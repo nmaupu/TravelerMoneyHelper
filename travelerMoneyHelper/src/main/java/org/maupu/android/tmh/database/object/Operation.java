@@ -179,7 +179,7 @@ public class Operation extends BaseObject {
 	}
 
 	public Cursor fetchAll() {
-		QueryBuilder qsb = filter.getQueryBuilder();
+		QueryBuilder qsb = filter.getQueryBuilder().append("ORDER BY o." + OperationData.KEY_DATE + " ASC");
 		return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
@@ -210,6 +210,16 @@ public class Operation extends BaseObject {
 
 		return fetchByPeriod(dateBegin, dateEnd);
 	}
+
+    /**
+     * Select and sum all amounts grouping by currency for a given account
+     * @param account
+     * @param exceptCategories
+     * @return Sum of all operations for given parameters
+     */
+    public Cursor sumOperations(Account account, Integer[] exceptCategories) {
+        return sumOperationsByPeriod(account, null, null, exceptCategories);
+    }
 	
 	/**
 	 * Select and sum all amounts grouping by currency for a given account and for a given month
@@ -225,15 +235,18 @@ public class Operation extends BaseObject {
 	 * Select and sum all amounts grouping by currency for a given account and for a given period
 	 * @param dateBegin
 	 * @param dateEnd
-	 * @param operationType
 	 * @return Sum of all operations for given parameters
 	 */
 	public Cursor sumOperationsByPeriod(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
 		if(account == null || account.getId() == null)
 			return null;
-		
-		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
-		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+
+        String sBeg = null;
+        String sEnd = null;
+        if(dateBegin != null)
+		   sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+        if(dateEnd != null)
+            sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 		
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("sum("+OperationData.KEY_AMOUNT+") "+Operation.KEY_SUM+", ");
@@ -241,7 +254,8 @@ public class Operation extends BaseObject {
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+" ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c ");
 		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
-		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+        if(sBeg != null && sEnd != null)
+		    qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		qb.append("AND o." + OperationData.KEY_ID_ACCOUNT + "=a." + AccountData.KEY_ID + " ");
 		qb.append("AND o." + OperationData.KEY_ID_CURRENCY + "=c." + CurrencyData.KEY_ID + " ");
 		
