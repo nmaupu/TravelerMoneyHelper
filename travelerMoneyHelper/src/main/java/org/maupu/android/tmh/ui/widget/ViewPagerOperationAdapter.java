@@ -2,7 +2,6 @@ package org.maupu.android.tmh.ui.widget;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +25,14 @@ import android.view.View;
 @SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
 	private ViewPagerOperationActivity ctx;
-	private final static int COUNT = 25;
+	public final static int DEFAULT_COUNT = 25;
 	private Map<Integer, OperationPagerItem> items = new HashMap<Integer, OperationPagerItem>();
     private int count;
     private int offset;
     private Date startDate;
 
     public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx) {
-        this(ctx, COUNT);
+        this(ctx, DEFAULT_COUNT);
     }
 
     public ViewPagerOperationAdapter(ViewPagerOperationActivity ctx, int count) {

@@ -7,6 +7,7 @@ import java.util.List;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.StatsActivity;
 import org.maupu.android.tmh.TmhActivity;
+import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
@@ -17,6 +18,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
+import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.app.Dialog;
 import android.database.Cursor;
@@ -65,10 +67,13 @@ public abstract class DialogHelper {
 
                         cursorAllAccounts.moveToPosition(oldPosition);
 
-                        // Replacing preferences account (excepted categories are also reset)
+                        /** Replacing preferences account (excepted categories are also reset to auto) **/
+                        /** Setting some specific stuff as well **/
                         StaticData.setCurrentAccount(account);
                         if(tmhActivity instanceof StatsActivity) {
                             ((StatsActivity) tmhActivity).autoSetExceptedCategories();
+                        } else if(tmhActivity instanceof ViewPagerOperationActivity) {
+                            ((ViewPagerOperationActivity) tmhActivity).notifyChangeCurrentAccount();
                         }
                         tmhActivity.refreshDisplay();
                         dialog.dismiss();

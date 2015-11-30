@@ -97,6 +97,7 @@
     <string name="menu_item_more">More</string>
     <string name="menu_item_period">Period / Month</string>
     <string name="menu_item_now">Today</string>
+    <string name="menu_item_choose_month">Other month</string>
     <string name="today">Today</string>
     <string name="menu_item_auto">Auto dates</string>
     <string name="default_category_withdrawal_summary">Select default category for withdrawal</string>
@@ -120,7 +121,6 @@
     <string name="update">Update</string>
     <string name="graph">Graph</string>
     <string name="refreshing">Refreshing</string>
-    <string name="menu_item_month">Other months</string>
     <string name="auto">Auto</string>
     <string name="operation_list_type">Month / all</string>
     <string name="operation_all_main_title">Operations</string>
