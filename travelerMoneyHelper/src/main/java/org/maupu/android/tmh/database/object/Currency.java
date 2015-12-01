@@ -2,8 +2,12 @@ package org.maupu.android.tmh.database.object;
 
 import java.util.Date;
 
+import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.util.QueryBuilder;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -61,6 +65,24 @@ public class Currency extends BaseObject {
 		
 		return cv;
 	}
+
+    public static Currency getMainCurrency() {
+        QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
+        qb.append("* ");
+        qb.append("FROM "+CurrencyData.TABLE_NAME+" ");
+        qb.append("ORDER BY " + CurrencyData.KEY_ID + " ASC LIMIT 1");
+        Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
+        if(c != null) {
+            c.moveToFirst();
+
+            Currency curRes = new Currency();
+            curRes.toDTO(c);
+
+            return curRes;
+        } else {
+            return null;
+        }
+    }
 	
 	@Override
 	public String getTableName() {

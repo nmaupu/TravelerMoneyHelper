@@ -10,6 +10,7 @@ import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
@@ -209,16 +210,19 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if(StaticData.PREF_DATABASE.equals(preference.getKey())) {
-			Log.d(PreferencesActivity.class.getName(), "Opening database "+newValue);
-			TmhApplication.changeOrCreateDatabase(this, (String)newValue);
+			Log.d(PreferencesActivity.class.getName(), "Opening database " + newValue);
+			TmhApplication.changeOrCreateDatabase((String) newValue);
+            Currency cur = Currency.getMainCurrency();
+            if(cur != null)
+                StaticData.setMainCurrency(cur.getId());
 		} else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
-			if(! "".equals((String)newValue)) {
+			if(! "".equals(newValue)) {
 				Log.d(PreferencesActivity.class.getName(), "Creating new database "+newValue);
 
 				String dbName = DatabaseHelper.DATABASE_PREFIX+((String)newValue);
 
 				// creating a new DB
-				TmhApplication.changeOrCreateDatabase(this, dbName);
+				TmhApplication.changeOrCreateDatabase(dbName);
 
 				// Resetting edit text to emtpy string
 				ListPreference dbPref = (ListPreference)findPreference(StaticData.PREF_DATABASE);

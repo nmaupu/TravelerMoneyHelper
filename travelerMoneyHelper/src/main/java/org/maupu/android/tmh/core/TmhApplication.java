@@ -42,7 +42,7 @@ public class TmhApplication extends GDApplication {
 		return dbHelper;
 	}
 	
-	public static void changeOrCreateDatabase(Context ctx, String dbName) {
+	public static void changeOrCreateDatabase(String dbName) {
 		String name = dbName;
 		if(dbName != null && !"".equals(dbName) && ! dbName.startsWith(DatabaseHelper.DATABASE_PREFIX)) {
 			name = DatabaseHelper.DATABASE_PREFIX+dbName;
