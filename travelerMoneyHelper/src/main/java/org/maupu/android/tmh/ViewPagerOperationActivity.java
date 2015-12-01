@@ -242,6 +242,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
         Calendar cal = Calendar.getInstance();
         cal.setTime(new GregorianCalendar(year, monthOfYear, dayOfMonth).getTime());
 
+        StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
         setViewpagerAdapter(
                 new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, cal.getTime())
         );
