@@ -124,7 +124,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 					java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
 		} else if (StaticData.getMainCurrency() == null) {
 			if(editTextShortName.getText() != null)
-			textViewRateValue.setText(textViewRateValue.getText() + editTextShortName.getText().toString());
+			    textViewRateValue.setText(textViewRateValue.getText() + " " + editTextShortName.getText().toString());
 		}
 	}
 
@@ -196,33 +196,38 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		Log.d(AddOrEditCurrencyActivity.class.getName(), "on item clicked called !");
 
 		String isoCode = actvCurrencyCode.getText().toString();
-		CurrencyISO4217 c = oerFetcher.getCurrency(isoCode);
-		String currencySymbol = c.getCode();
+		CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);
+		String currencySymbol = cur.getCode();
 		
-		if(c != null) {
+		if(cur != null) {
 			
 			try {
-				java.util.Currency currency = java.util.Currency.getInstance(c.getCode());
+				java.util.Currency currency = java.util.Currency.getInstance(cur.getCode());
 				currencySymbol = currency.getSymbol();
 			} catch(IllegalArgumentException iae) {
 				// Not a supported ISO4217, so we do not have a symbol available
-				Log.e(AddOrEditCurrencyActivity.class.getName(), c.getCode() + "/"+ c.getName()+ " is not a valid ISO4217 currency !");
+				Log.e(AddOrEditCurrencyActivity.class.getName(), cur.getCode() + "/"+ cur.getName()+ " is not a valid ISO4217 currency !");
 			}
 
 			editTextShortName.setText(currencySymbol);
-			editTextLongName.setText(c.getName());
+			editTextLongName.setText(cur.getName());
 			
 			// Need Open Exchange Rates API key to update from server
 			if(apiKeyValid) {
 				final Currency dummyCurrency = new Currency();
-				dummyCurrency.setIsoCode(c.getCode());
+				dummyCurrency.setIsoCode(cur.getCode());
 				
 				try {
 					OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(this, StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
 					updater.setAsyncListener(new IAsync() {
 						@Override
 						public void onFinishAsync() {
-							editTextValue.setText(String.valueOf(dummyCurrency.getRateCurrencyLinked()));
+                            if(dummyCurrency.getRateCurrencyLinked() == null) {
+                                updateTextViewRate();
+                                editTextValue.setText("1");
+                            } else {
+                                editTextValue.setText(String.valueOf(dummyCurrency.getRateCurrencyLinked()));
+                            }
 						}
 					});
 					updater.execute(new Currency[]{dummyCurrency});

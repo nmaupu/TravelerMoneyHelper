@@ -494,6 +494,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		Map<String,StatsData> statsList = new HashMap<String, StatsData>();
 
 		cursorStatsTotal = dummyOp.sumOperationsByPeriod(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
+
+        if(cursorStatsTotal == null)
+            return null;
+
 		int cursorStatsSize = cursorStatsTotal.getCount();
 		if(cursorStatsTotal != null && cursorStatsSize > 0) {
 			for(int i = 0; i<cursorStatsSize; i++) {
@@ -520,6 +524,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	public void handleRefreshEnding(Map<Integer, Object> results) {
         Log.d(StatsActivity.class.getName(), "handleRefreshEnding called");
+
+        if(results == null)
+            return;
+
 		String[] from = null;
 		int[] to = null;
 		switch(currentGroupBy) {
