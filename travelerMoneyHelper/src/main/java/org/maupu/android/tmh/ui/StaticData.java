@@ -255,7 +255,7 @@ public abstract class StaticData {
 		return mainCurrency;
 	}
 	
-	private static Currency getDefaultMainCurrency() {
+	public static Currency getDefaultMainCurrency() {
 		Currency cur = new Currency();
 		Cursor c = cur.fetchAllOrderBy(CurrencyData.KEY_ID, "ASC");
 		

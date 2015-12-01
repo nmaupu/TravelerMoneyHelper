@@ -28,7 +28,7 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 				OperationData.KEY_ID_CATEGORY+"="+obj.getId(), null, null, null, null).getCount();
 		
 		Category withdrawalCat = StaticData.getWithdrawalCategory();
-		if(withdrawalCat.getId() == obj.getId()) {
+		if(withdrawalCat != null && withdrawalCat.getId() != null && withdrawalCat.getId() == obj.getId()) {
 			// Unset withdrawal cat because we are deleting it
 			StaticData.setWithdrawalCategory(null);
 		}

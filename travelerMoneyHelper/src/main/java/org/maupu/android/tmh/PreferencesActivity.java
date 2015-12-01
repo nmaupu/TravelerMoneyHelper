@@ -212,14 +212,14 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		if(StaticData.PREF_DATABASE.equals(preference.getKey())) {
 			Log.d(PreferencesActivity.class.getName(), "Opening database " + newValue);
 			TmhApplication.changeOrCreateDatabase((String) newValue);
-            Currency cur = Currency.getMainCurrency();
+            Currency cur = StaticData.getDefaultMainCurrency();
             if(cur != null)
                 StaticData.setMainCurrency(cur.getId());
 		} else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			if(! "".equals(newValue)) {
 				Log.d(PreferencesActivity.class.getName(), "Creating new database "+newValue);
 
-				String dbName = DatabaseHelper.DATABASE_PREFIX+((String)newValue);
+				String dbName = DatabaseHelper.DATABASE_PREFIX+(newValue);
 
 				// creating a new DB
 				TmhApplication.changeOrCreateDatabase(dbName);

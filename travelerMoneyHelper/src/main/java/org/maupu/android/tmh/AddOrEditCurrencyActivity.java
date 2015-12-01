@@ -119,7 +119,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private void updateTextViewRate() {
 		textViewRateValue.setText(getString(R.string.form_addedit_value));
 		
-		if(textViewRateValue != null && StaticData.getMainCurrency() != null) {
+		if(textViewRateValue != null && StaticData.getMainCurrency() != null && StaticData.getMainCurrency().getId() != null) {
 			textViewRateValue.setText(textViewRateValue.getText() + 
 					java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
 		} else if (StaticData.getMainCurrency() == null) {
@@ -240,8 +240,19 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 			}
 		} // if
 	}
-	
-	@Override
+
+    @Override
+    protected boolean onContinue(boolean disposeActivity) {
+        boolean ret = super.onContinue(disposeActivity);
+
+        if(StaticData.getMainCurrency() == null || StaticData.getMainCurrency().getId() == null) {
+            StaticData.setMainCurrency(StaticData.getDefaultMainCurrency().getId());
+        }
+
+        return ret;
+    }
+
+    @Override
 	public void refreshDisplay() {
 		// Do not call super method
 	}

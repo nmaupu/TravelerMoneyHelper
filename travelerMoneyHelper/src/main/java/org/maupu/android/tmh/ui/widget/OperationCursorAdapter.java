@@ -12,6 +12,7 @@ import org.maupu.android.tmh.util.NumberUtil;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,11 +37,16 @@ public class OperationCursorAdapter extends SimpleCursorAdapter {
 		TextView tvConvAmount = (TextView)view.findViewById(R.id.convAmount);
 		int idxConvAmount = cursor.getColumnIndex("convertedAmount");
 		Double convAmount = Double.parseDouble(cursor.getString(idxConvAmount));
-		
-		// format amount
-		tvAmount.setText(NumberUtil.formatDecimalLocale(amount) + " " + currencySymbol);
-		tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " + 
-				Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
+
+        try {
+            // format amount
+            tvAmount.setText(NumberUtil.formatDecimalLocale(amount) + " " + currencySymbol);
+            tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " +
+                    Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
+        } catch (NullPointerException npe) {
+            // Nothing done
+            Log.e(OperationCursorAdapter.class.getName(), "Main currency is null or not set yet !");
+        }
 		
 		// Set color for amount
 		if(amount >= 0d)
