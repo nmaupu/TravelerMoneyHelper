@@ -71,6 +71,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	private TextView textViewDate;
 	private TextView textViewTime;
 	private TextView textViewConvertedAmount;
+    private TextView textViewAmount;
 	private Button buttonToday;
 	private static final String PLUS="+";
 	private static final String MINUS="-";
@@ -108,7 +109,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		buttonToday = (Button)findViewById(R.id.button_today);
 		buttonToday.setOnClickListener(this);
 		textViewConvertedAmount = (TextView)findViewById(R.id.converted_amount);
-		
+        textViewAmount = (TextView)findViewById(R.id.text_amount);
 
 		// Set spinners content
 		Cursor c = null;
@@ -216,7 +217,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			if(obj.getCurrency() != null)
 				smCurrency.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
 			if(obj.getAmount() != null) {
-				amount.setText(""+NumberUtil.formatDecimal(Math.abs(obj.getAmount())));
+				//amount.setText(""+NumberUtil.formatDecimal(Math.abs(obj.getAmount())));
+                amount.setText(""+Math.abs(obj.getAmount()));
 				if(obj.getAmount() >= 0.0f)
 					radioButtonCredit.setChecked(true);
 				else
@@ -355,14 +357,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 	@Override
 	public void afterTextChanged(Editable editable) {
 		updateConvertedAmount();
-	}
-
-	@Override
-	public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
 	}
 
 	private void updateConvertedAmount() {
@@ -380,7 +379,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 				currentAmount = Math.abs(Double.parseDouble(a));
 				
 			Double rate = dummyCur.getRateCurrencyLinked();
-			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+			textViewConvertedAmount.setText(""+NumberUtil.formatDecimalLocale(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+            textViewAmount.setText(""+NumberUtil.formatDecimalLocale(currentAmount)+" "+dummyCur.getShortName());
 		} catch (NumberFormatException nfe) {
 			// No conversion
 			Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");

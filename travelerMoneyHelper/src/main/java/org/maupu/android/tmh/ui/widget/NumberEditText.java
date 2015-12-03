@@ -27,6 +27,22 @@ public class NumberEditText extends EditText implements TextWatcher {
 		//Log.d(NumberEditText.class.getCanonicalName(), "beforeTextChanged");
 	}
 
+    @Override
+    public void afterTextChanged(Editable s) {
+        super.removeTextChangedListener(this);
+
+        String currentNumberString = this.getStringText();
+        this.setText(currentNumberString);
+
+        // set cursor position to the end of EditText
+        int pos = this.length();
+        Editable ed = this.getText();
+        Selection.setSelection(ed, pos);
+
+        super.addTextChangedListener(this);
+    }
+
+    /*
 	@Override
 	public void afterTextChanged(Editable s) {
 		//Log.d(NumberEditText.class.getCanonicalName(), "afterTextChanged");
@@ -38,7 +54,7 @@ public class NumberEditText extends EditText implements TextWatcher {
 			// Setting formatted text
 			if(! currentNumberString.endsWith(".")) {
 				this.setText(
-						NumberUtil.formatDecimalLocale(currentNumberDouble).replace(",", ".")
+						NumberUtil.formatDecimal(currentNumberDouble).replace(",", ".")
 				);
 			}
 			// set cursor position to the end of EditText
@@ -50,8 +66,9 @@ public class NumberEditText extends EditText implements TextWatcher {
 		} catch (NullPointerException npe) {
 			npe.printStackTrace();
 		}
+
 		super.addTextChangedListener(this);
-	}
+	}*/
 
 	@Override
 	public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
@@ -59,6 +76,6 @@ public class NumberEditText extends EditText implements TextWatcher {
 	}
 	
 	public String getStringText() {
-		return super.getText().toString().replaceAll(",", ".").replaceAll("\\s", "");
+		return super.getText().toString().replaceAll(",", ".").replaceAll("\\s*", "");
 	}
 }
