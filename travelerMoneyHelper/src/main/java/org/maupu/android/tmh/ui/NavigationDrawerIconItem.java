@@ -12,7 +12,7 @@ public class NavigationDrawerIconItem {
     public static final int NORMAL_TEXT_COLOR = Color.BLACK;
     public static final int NORMAL_HEIGHT = 200;
     public static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
-    public static final int SEPARATOR_HEIGHT = 15;
+    public static final int SEPARATOR_HEIGHT = 8;
     public static final int SEPARATOR_COLOR = Color.BLACK;
     public static final Typeface SELECTED_TYPEFACE = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
     public static final int SELECT_BG_COLOR = Color.LTGRAY;

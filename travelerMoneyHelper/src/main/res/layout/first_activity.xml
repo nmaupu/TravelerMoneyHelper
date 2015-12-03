@@ -7,11 +7,10 @@
         android:id="@+id/welcome_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:gravity="center"
         android:text="@string/welcome_title"
         android:textSize="17dp"
-        android:textStyle="italic" />
+        android:textStyle="italic" android:layout_marginBottom="40dp"/>
 
     <LinearLayout
         android:id="@+id/category_layout"
@@ -26,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="20dp"
-            android:src="@drawable/puce" />
+            android:src="@drawable/puce" android:layout_marginLeft="20dp"/>
 
         <TextView
             android:id="@+id/category_title"
@@ -49,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="20dp"
-            android:src="@drawable/puce" />
+            android:src="@drawable/puce" android:layout_marginLeft="20dp"/>
 
         <TextView
             android:id="@+id/currency_title"
@@ -72,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="20dp"
-            android:src="@drawable/puce" />
+            android:src="@drawable/puce" android:layout_marginLeft="20dp"/>
 
         <TextView
             android:id="@+id/account_title"
@@ -88,12 +87,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
         android:layout_marginTop="20dp"
         android:drawableTop="@drawable/ic_action_send"
         android:gravity="center"
         android:paddingLeft="45dp"
         android:paddingRight="45dp"
-        android:text="@string/welcome_button" />
+        android:text="@string/welcome_button" android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

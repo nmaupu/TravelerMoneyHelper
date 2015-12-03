@@ -16,7 +16,9 @@ import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
+import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
+import org.maupu.android.tmh.util.DateUtil;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -65,6 +67,8 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
         // Setting automatically to the month corresponding to last operation for this account
         Operation dummyOp = new Operation();
         Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+        autoLast = autoLast == null ? DateUtil.getCurrentDate() : autoLast;
+
 		adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
         adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
 
@@ -86,8 +90,8 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		viewpager.setOnPageChangeListener(this);
 	}
-	
-	@Override
+
+    @Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
 		case TmhApplication.ACTION_BAR_ADD:
@@ -103,7 +107,15 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		return true;
 	}
 
-	@Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ensure nav drawer operation item is selected
+        int position = getPositionNavigationDrawerItem(TmhActivity.DRAWER_ITEM_OPERATIONS);
+        ((IconArrayAdapter) super.drawerList.getAdapter()).selectItem(position);
+    }
+
+    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(ViewPagerOperationActivity.class.getName(), "onActivityResult resultCode : " + resultCode);
 		refreshDisplay();
@@ -136,10 +148,12 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
         switch(statusType) {
             case LIST_BY_MONTH:
+                Log.d(ViewPagerOperationActivity.class.getName(), "Setting list type to By month");
                 StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
                 a = this.adapter;
                 break;
             case LIST_RAW:
+                Log.d(ViewPagerOperationActivity.class.getName(), "Setting list type to All");
                 StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_RAW);
                 a = this.adapterRaw;
                 break;

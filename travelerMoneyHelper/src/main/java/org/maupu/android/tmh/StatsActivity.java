@@ -243,7 +243,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
     @Override
     public NavigationDrawerIconItem[] buildNavigationDrawer() {
-        // Create a simple separator
         return new NavigationDrawerIconItem[]{
                 createSmallNavigationDrawerItem(
                         DRAWER_ITEM_TODAY,

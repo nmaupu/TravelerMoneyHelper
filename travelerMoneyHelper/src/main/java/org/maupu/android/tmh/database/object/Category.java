@@ -1,7 +1,9 @@
 package org.maupu.android.tmh.database.object;
 
 import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
+import org.maupu.android.tmh.database.OperationData;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -46,12 +48,13 @@ public class Category extends BaseObject {
 	}
 	
 	public Cursor fetchAllCategoriesUsedByAccountOperations(int accountId) {
-		StringBuffer query = new StringBuffer("SELECT DISTINCT cat._id, cat.name ")
-				.append("FROM category cat ")
-				.append("LEFT JOIN operation o ON o.idCategory=cat._id ")
-				.append("LEFT JOIN account acc ON acc._id=o.idAccount ")
-				.append("WHERE acc._id=? ")
-				.append("ORDER BY cat."+CategoryData.KEY_NAME);
+		StringBuffer query = new StringBuffer(
+                "SELECT DISTINCT cat." + CategoryData.KEY_ID + ", cat." + CategoryData.KEY_NAME + " ")
+				.append("FROM " + CategoryData.TABLE_NAME + " cat ")
+				.append("LEFT JOIN " + OperationData.TABLE_NAME + " o ON o." + OperationData.KEY_ID_CATEGORY + "=cat." + CategoryData.KEY_ID + " ")
+				.append("LEFT JOIN " + AccountData.TABLE_NAME + " acc ON acc." + AccountData.KEY_ID + "=o." + OperationData.KEY_ID_ACCOUNT + " ")
+				.append("WHERE acc." + AccountData.KEY_ID + "=? ")
+				.append("ORDER BY cat." + CategoryData.KEY_NAME);
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), new String[]{String.valueOf(accountId)});
 		c.moveToFirst();
@@ -60,7 +63,7 @@ public class Category extends BaseObject {
 	
 	public Cursor fetchByName(String name) {
 		StringBuffer query = new StringBuffer();
-		query.append("SELECT _id, name FROM ")
+		query.append("SELECT " + CategoryData.KEY_ID + ", " + CategoryData.KEY_NAME + " FROM ")
 			.append(CategoryData.TABLE_NAME)
 			.append(" WHERE ")
 			.append(CategoryData.KEY_NAME)

@@ -32,6 +32,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
+import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -46,13 +47,13 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	protected ListView drawerList;
 
     /** Navigation drawer items **/
-    private static final String DRAWER_ITEM_OPERATIONS = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_STATS = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_ACCOUNTS = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_CATEGORIES = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_CURRENCIES = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_PARAMETERS = UUID.randomUUID().toString();
-    private static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_OPERATIONS = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_STATS = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_ACCOUNTS = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_CATEGORIES = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_CURRENCIES = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_PARAMETERS = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
 
 
 	public static LayoutInflater getInflater(Context ctx) {
@@ -281,6 +282,20 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			return d;
 		}
 	}
+
+    protected Integer getPositionNavigationDrawerItem(Object tag) {
+        if(drawerList == null || drawerList.getAdapter() == null)
+            return null;
+
+        Adapter adapter = drawerList.getAdapter();
+        int nb = adapter.getCount();
+        for(int i=0; i<nb; i++) {
+            if(((NavigationDrawerIconItem)adapter.getItem(i)).getTag() == tag)
+                return i;
+        }
+
+        return null;
+    }
 
     /**
      * Called when navigation drawer is created. To customize, override this and return

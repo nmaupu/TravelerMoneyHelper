@@ -63,7 +63,7 @@ public class IconArrayAdapter extends ArrayAdapter<NavigationDrawerIconItem> {
             holder.textView.setTextSize(item.getTextSize());
             holder.textView.setTextColor(item.getTextColor());
             holder.textView.setTypeface(item.getTypeface());
-            params.height=item.getHeight();
+            //params.height=item.getHeight();
 
             // Handling selected item vs. other items
             Typeface tf = NavigationDrawerIconItem.NORMAL_TYPEFACE;
