@@ -35,7 +35,7 @@ public class StatsCursorAdapter extends SimpleCursorAdapter {
 		String shortName = getCursor().getString(idxShortName);
 		
 		Double amount = getCursor().getDouble(idxAmount);
-		tvAmount.setText(NumberUtil.formatDecimalLocale(amount)+" "+shortName);
+		tvAmount.setText(NumberUtil.formatDecimal(amount)+" "+shortName);
 		
 		if(idxAvg == -1) {
 			tvAvg.setVisibility(View.GONE);
@@ -44,7 +44,7 @@ public class StatsCursorAdapter extends SimpleCursorAdapter {
 			tvAvg.setVisibility(View.VISIBLE);
 			llHead.setVisibility(View.VISIBLE);
 			Double average = getCursor().getDouble(idxAvg);
-			tvAvg.setText(NumberUtil.formatDecimalLocale(average)+" "+shortName);
+			tvAvg.setText(NumberUtil.formatDecimal(average)+" "+shortName);
 		}
 		
 		

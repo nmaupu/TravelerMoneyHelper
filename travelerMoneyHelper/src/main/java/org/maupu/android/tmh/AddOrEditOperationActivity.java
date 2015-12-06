@@ -24,16 +24,16 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
@@ -112,7 +112,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         textViewAmount = (TextView)findViewById(R.id.text_amount);
 
 		// Set spinners content
-		Cursor c = null;
+		Cursor c;
 
 		Account dummyAccount = new Account();
 		c = dummyAccount.fetchAll();
@@ -161,6 +161,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		smCurrency.setAdapter(c, CurrencyData.KEY_LONG_NAME);
 		if(currentAccount != null && currentAccount.getCurrency() != null)
 			smCurrency.setSpinnerPositionCursor(currentAccount.getCurrency().toString(), new Currency());
+
+        // Force edit text to get focus on startup
+        amount.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 	}
 	
 	@Override
@@ -379,8 +384,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 				currentAmount = Math.abs(Double.parseDouble(a));
 				
 			Double rate = dummyCur.getRateCurrencyLinked();
-			textViewConvertedAmount.setText(""+NumberUtil.formatDecimalLocale(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
-            textViewAmount.setText(""+NumberUtil.formatDecimalLocale(currentAmount)+" "+dummyCur.getShortName());
+			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount / rate)+" "+StaticData.getMainCurrency().getShortName());
+            textViewAmount.setText(""+NumberUtil.formatDecimal(currentAmount)+" "+dummyCur.getShortName());
 		} catch (NumberFormatException nfe) {
 			// No conversion
 			Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");

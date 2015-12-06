@@ -31,6 +31,7 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -38,10 +39,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
@@ -62,16 +62,17 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	private SpinnerManager spinnerManagerTo;
 	private SpinnerManager spinnerManagerCurrency;
 	private SpinnerManager spinnerManagerCategory;
-	//private Button buttonValidate;
 	private NumberEditText amount;
+    private TextView textViewAmount;
 	private TextView textViewConvertedAmount;
 	private TextView textViewDate;
 	private TextView textViewTime;
-	private Button buttonToday;
+    private Button buttonToday;
 	private int mYear, mMonth, mDay;
 	private int mHours = 0;
     private int mMinutes = 0;
     private int mSeconds = 0;
+
 
 	@SuppressLint("NewApi")
 	@Override
@@ -92,9 +93,9 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
 		spinnerCurrency = (Spinner)findViewById(R.id.spinner_currency);
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
-		//buttonValidate = (Button)findViewById(R.id.button_validate);
 		amount = (NumberEditText)findViewById(R.id.amount);
         amount.addTextChangedListener(this);
+        textViewAmount = (TextView)findViewById(R.id.text_amount);
 		textViewConvertedAmount = (TextView)findViewById(R.id.converted_amount);
 		textViewDate = (TextView)findViewById(R.id.date);
 		textViewDate.setOnClickListener(this);
@@ -104,10 +105,14 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		buttonToday.setOnClickListener(this);
 
 		spinnerTo.setOnItemSelectedListener(this);
-		//buttonValidate.setOnClickListener(this);
 		
 		initSpinnerManagers();
 		initDatePickerTextView(Calendar.getInstance().getTime());
+
+        // Force edit text to get focus on startup
+        amount.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 	}
 	
 	@Override
@@ -337,12 +342,11 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    @Override
     public void afterTextChanged(Editable editable) {
         updateConvertedAmount();
     }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
     private void updateConvertedAmount() {
         try {
@@ -359,7 +363,8 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
                 currentAmount = Math.abs(Double.parseDouble(a));
 
             Double rate = dummyCur.getRateCurrencyLinked();
-            textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount/rate)+" "+StaticData.getMainCurrency().getShortName());
+            textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount / rate)+" "+StaticData.getMainCurrency().getShortName());
+            textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());
         } catch (NumberFormatException nfe) {
             // No conversion
             Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");

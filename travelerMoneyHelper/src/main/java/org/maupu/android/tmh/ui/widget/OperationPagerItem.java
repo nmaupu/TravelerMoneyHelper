@@ -327,13 +327,13 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			cur.toDTO(cursor);
 			cursor.close();
 
-			sbBalance.append(NumberUtil.formatDecimalLocale(b))
+			sbBalance.append(NumberUtil.formatDecimal(b))
 			.append(" ")
 			.append(cur.getShortName())
 			.append(" / ");
 		}
 
-		sbBalance.append(NumberUtil.formatDecimalLocale(balance.getBalanceRate()))
+		sbBalance.append(NumberUtil.formatDecimal(balance.getBalanceRate()))
 		.append(" ")
 		.append(symbolCurrency);
 
@@ -364,7 +364,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		// closing useless cursor
 		cSumOp.close();
 
-		StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimalLocale(total));
+		StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimal(total));
 		sbTotal.append(" ");
 		sbTotal.append(symbolCurrency);
 

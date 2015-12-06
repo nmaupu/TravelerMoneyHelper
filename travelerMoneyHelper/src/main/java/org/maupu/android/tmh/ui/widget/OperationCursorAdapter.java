@@ -40,8 +40,8 @@ public class OperationCursorAdapter extends SimpleCursorAdapter {
 
         try {
             // format amount
-            tvAmount.setText(NumberUtil.formatDecimalLocale(amount) + " " + currencySymbol);
-            tvConvAmount.setText(NumberUtil.formatDecimalLocale(convAmount) + " " +
+            tvAmount.setText(NumberUtil.formatDecimal(amount) + " " + currencySymbol);
+            tvConvAmount.setText(NumberUtil.formatDecimal(convAmount) + " " +
                     Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
         } catch (NullPointerException npe) {
             // Nothing done

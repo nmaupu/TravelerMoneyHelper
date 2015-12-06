@@ -8,22 +8,12 @@ import java.util.Locale;
 
 public abstract class NumberUtil {
 	private static DecimalFormat NF = init();
-	
+
 	public static String formatDecimal(Double value) {
 		if(value == null)
 			return "NaN";
-		
+
 		return NF.format(value);
-	}
-
-	public static String formatDecimalLocale(Double value) {
-		if(value == null)
-			return "NaN";
-
-        DecimalFormat df = (DecimalFormat)NumberFormat.getInstance();
-        df.setDecimalSeparatorAlwaysShown(false);
-        df.applyPattern(",##0.00");
-		return df.format(value);
 	}
 	
 	public static Double parseDecimal(String value) {
@@ -33,9 +23,10 @@ public abstract class NumberUtil {
 			return null;
 		}
 	}
-	
+
 	private static DecimalFormat init() {
-		DecimalFormat df = (DecimalFormat)NumberFormat.getInstance(Locale.UK);
+        // Get current locale instance
+		DecimalFormat df = (DecimalFormat)NumberFormat.getInstance();
         df.setDecimalSeparatorAlwaysShown(false);
         df.applyPattern(",##0.00");
 		return df;
