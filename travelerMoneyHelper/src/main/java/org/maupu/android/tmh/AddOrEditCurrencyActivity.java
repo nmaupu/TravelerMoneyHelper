@@ -97,7 +97,6 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<CurrencyISO4217>(this, 
 				android.R.layout.simple_dropdown_item_1line,
 				currenciesList);
-		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		actvCurrencyCode.setAdapter(adapter);
 	}
 

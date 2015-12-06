@@ -101,9 +101,10 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
+            items.add(NavigationDrawerIconItem.separator());
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CURRENCIES, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
 
             /** Custom items **/
             NavigationDrawerIconItem[] customItems = buildNavigationDrawer();
