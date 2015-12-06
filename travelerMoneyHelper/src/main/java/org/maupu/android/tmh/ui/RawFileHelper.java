@@ -11,17 +11,18 @@ import android.content.Context;
 import android.util.Log;
 
 public final class RawFileHelper<T extends Object> {
+    public static final String FIELD_SEPARATOR = "|";
 	private Context ctx;
 	private int rawFileId;
-	private ICallback<T> callback;
-	
+	private ICallback<T> listener;
+
 	public RawFileHelper(Context ctx, int rawFileId) {
 		this.ctx = ctx;
 		this.rawFileId = rawFileId;
 	}
 	
-	public void setCallback(ICallback<T> callback) {
-		this.callback = callback;
+	public void setListener(ICallback<T> listener) {
+		this.listener = listener;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,9 +36,9 @@ public final class RawFileHelper<T extends Object> {
 		try {
 			String line;
 			while ((line = br.readLine()) != null) {
-				Log.d("", "Current line = "+line);
-				if(callback != null)
-					ret.add(callback.callback(line));
+				Log.d("", "Current line = " + line);
+				if(listener != null)
+					ret.add(listener.callback(line));
 				else
 					ret.add((T)line);
 			}

@@ -4,27 +4,41 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.maupu.android.tmh.R;
 
 import android.content.Context;
+import android.util.Log;
 
 public final class Flag {
+    private String isoCode;
 	private String country;
-	private int drawableId;
 	private static List<Flag> listFlags;
 
-	public Flag(String country, int drawableId) {
+	public Flag(String isoCode, String country) {
+        this.isoCode = isoCode;
 		this.country = country;
-		this.drawableId = drawableId;
 	}
 
-	public String getCountry() {
+    public String getIsoCode() {
+        return isoCode;
+    }
+
+    public String getCountry() {
 		return country;
 	}
 
-	public int getDrawableId() {
-		return drawableId;
+	public Integer getDrawableId(int size) {
+        try {
+            Field field = R.drawable.class.getField("flag_" + getIsoCode() + "_" + size);
+            field.setAccessible(true);
+            return (Integer) field.get(new Integer(0));
+        } catch (NoSuchFieldException nsfe) {
+            return null;
+        } catch (IllegalAccessException iae) {
+            return null;
+        }
 	}
 
 	public String toString() {
@@ -36,23 +50,20 @@ public final class Flag {
 			return listFlags;
 
 		listFlags = new ArrayList<Flag>();
-		RawFileHelper<Flag> rfh = new RawFileHelper<Flag>(ctx, R.raw.flags);
-		rfh.setCallback(new ICallback<Flag>() {
-			@Override
-			public Flag callback(Object item) {
-				// Ugly
-				try {
-					String line = (String) item;
-					Field field = R.drawable.class.getField(line);
-					field.setAccessible(true);
-					return new Flag(line, (Integer)field.get(new Integer(0)));
-				} catch (NoSuchFieldException e) {
-					return null;
-				} catch (IllegalAccessException iae) {
-					return null;
-				}
-			}
-		});
+		RawFileHelper<Flag> rfh = new RawFileHelper<Flag>(ctx, R.raw.iso_countries);
+		rfh.setListener(new ICallback<Flag>() {
+            @Override
+            public Flag callback(Object item) {
+                String line = (String) item;
+                StringTokenizer tok = new StringTokenizer(line, RawFileHelper.FIELD_SEPARATOR);
+                String isoCode = tok.nextToken();
+                String countryName = tok.nextToken();
+
+                Log.d(Flag.class.getName(), "new flag : " + isoCode + " -> " + countryName);
+
+                return new Flag(isoCode, countryName);
+            }
+        });
 
 		return rfh.getRawFile();
 	}
@@ -64,7 +75,7 @@ public final class Flag {
 
 		int i=0;
 		while (it.hasNext()) {
-			Flag currentFlag = (Flag)it.next(); 
+			Flag currentFlag = it.next();
 			ret[i++] = currentFlag.toString();
 		}
 
@@ -79,7 +90,7 @@ public final class Flag {
 
 		Iterator<Flag> it = list.iterator();
 		while (it.hasNext()) {
-			Flag currentFlag = (Flag)it.next();
+			Flag currentFlag = it.next();
 			if(currentFlag.getCountry().equals(country.trim()))
 				return currentFlag;
 		}

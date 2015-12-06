@@ -53,6 +53,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private static final int MENU_ITEM_DEFAULT = 2;
 	private static final int MENU_ITEM_URL = 3;
 	private static final int MENU_ITEM_CAMERA = 4;
+    private static final int FLAG_SIZE_DIALOG = 48;
 	
 	public AddOrEditAccountActivity() {
 		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
@@ -78,13 +79,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		Cursor c = dummyCurrency.fetchAll();
 		//spinnerCurrency.setAdapter(SpinnerManager.createSpinnerCursorAdapter(this, c, CurrencyData.KEY_LONG_NAME));
 		spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
-		
-		/*popupMenuIconNames = new String[]{
-		getString(R.string.popup_app_icon),
-		getString(R.string.popup_url), 
-		getString(R.string.popup_camera),
-		getString(R.string.popup_flag_icon),
-		getString(R.string.popup_default_icon)};*/
+
 		popupMenuIconNames = new String[]{
 				getString(R.string.popup_app_icon),
 				getString(R.string.popup_flag_icon),
@@ -213,13 +208,9 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 			public void onClick(View v) {
 				Flag f = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
 				if(f != null) {
-					// Resize flag
-					Bitmap bmp = BitmapFactory.decodeResource(getResources(), f.getDrawableId());
-					final int w = (int) (65 * getResources().getDisplayMetrics().density + 0.5f);
-				    Bitmap resizedbitmap = Bitmap.createScaledBitmap(bmp, w, w, true);
-					
-				    // Set it
-				    imageViewIcon.setImageBitmap(resizedbitmap);
+				    // Set flag
+                    imageViewIcon.setImageDrawable(
+                            getResources().getDrawable(f.getDrawableId(FLAG_SIZE_DIALOG)));
 				    imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
 				    
 					dialog.dismiss();

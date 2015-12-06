@@ -16,7 +16,7 @@
             android:layout_height="wrap_content" >
 
             <LinearLayout
-                android:id="@+id/layout1"
+                android:id="@+id/layout_currency_chooser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -38,11 +38,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layout2"
+                android:id="@+id/layout_currency_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout1"
+                android:layout_below="@id/layout_currency_chooser"
                 android:orientation="horizontal"
                 android:paddingBottom="2dip"
                 android:paddingTop="2dip" >
@@ -62,11 +62,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layout3"
+                android:id="@+id/layout_amount_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout2"
+                android:layout_below="@id/layout_currency_info"
                 android:orientation="horizontal"
                 android:paddingBottom="2dip"
                 android:paddingTop="2dip" >
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout3"
+                android:layout_below="@id/layout_amount_edit"
                 android:orientation="horizontal"
                 android:paddingBottom="2dip"
                 android:paddingTop="2dip" >

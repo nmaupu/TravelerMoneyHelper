@@ -20,15 +20,15 @@ public abstract class CurrencyHelper {
 			return currencyISO4217List;
 		
 		RawFileHelper<CurrencyISO4217> rfh = new RawFileHelper<CurrencyISO4217>(ctx, R.raw.currencies);
-		rfh.setCallback(new ICallback<CurrencyISO4217>() {
-			@Override
-			public CurrencyISO4217 callback(Object item) {
-				String line = (String) item;
-				Log.d("CurrencyHelper", "Current line = "+line);
-				StringTokenizer st = new StringTokenizer(line, "|");
-				return new CurrencyISO4217(st.nextToken(), st.nextToken());
-			}
-		});
+		rfh.setListener(new ICallback<CurrencyISO4217>() {
+            @Override
+            public CurrencyISO4217 callback(Object item) {
+                String line = (String) item;
+                Log.d("CurrencyHelper", "Current line = " + line);
+                StringTokenizer st = new StringTokenizer(line, "|");
+                return new CurrencyISO4217(st.nextToken(), st.nextToken());
+            }
+        });
 
 		// Loading list
 		currencyISO4217List = rfh.getRawFile();
