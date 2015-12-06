@@ -2,8 +2,10 @@ package org.maupu.android.tmh.ui;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.maupu.android.tmh.R;
@@ -15,6 +17,12 @@ public final class Flag {
     private String isoCode;
 	private String country;
 	private static List<Flag> listFlags;
+
+    public static final int ICON_VERY_SMALL_SIZE = 16;
+    public static final int ICON_SMALL_SIZE = 16;
+    public static final int ICON_NORMAL_SIZE = 32;
+    public static final int ICON_LARGE_SIZE = 48;
+    public static final int ICON_DEFAULT_SIZE = ICON_NORMAL_SIZE;
 
 	public Flag(String isoCode, String country) {
         this.isoCode = isoCode;
@@ -97,4 +105,20 @@ public final class Flag {
 		
 		return null;
 	}
+
+    public static List<Map<String, ?>> getFlagsForAdapter(Context ctx) {
+        List<Flag> list = getAllFlags(ctx);
+        List<Map<String, ?>> ret = new ArrayList<Map<String, ?>>();
+
+        Iterator<Flag> it = list.iterator();
+        while(it.hasNext()) {
+            Flag flag = it.next();
+            Map<String, Object> elt = new HashMap<String, Object>();
+            elt.put("icon", String.valueOf(flag.getDrawableId(32)));
+            elt.put("name", flag.getCountry());
+            ret.add(elt);
+        }
+
+        return ret;
+    }
 }

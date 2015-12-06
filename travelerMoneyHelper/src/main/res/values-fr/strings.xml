@@ -44,8 +44,8 @@
     <string name="icon">Icône</string>
     <string name="cancel">Annuler</string>
     <string name="close">X</string>
-    <string name="dialog_choose_icon">Choisir une icône</string>
-    <string name="dialog_choose_account">Choisir un compte</string>
+    <string name="dialog_choose_icon">Choisissez une icône</string>
+    <string name="dialog_choose_account">Choisissez un compte</string>
     <string name="add">Ajouter</string>
     <string name="edit">Editer</string>
     <string name="delete">Supprimer</string>

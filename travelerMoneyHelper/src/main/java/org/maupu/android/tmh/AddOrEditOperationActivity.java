@@ -12,6 +12,7 @@ import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
@@ -81,7 +82,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	}
 
 	@Override
-	protected void initResources() {
+	protected View initResources() {
 		// Set current time
 		Calendar cal = Calendar.getInstance();
 		mHours = cal.get(Calendar.HOUR_OF_DAY);
@@ -163,12 +164,15 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			smCurrency.setSpinnerPositionCursor(currentAccount.getCurrency().toString(), new Currency());
 
         // Force edit text to get focus on startup
-        amount.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-	}
-	
-	@Override
+        return amount;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
 	protected void onDestroy() {
 		smAccount.closeAdapterCursor();
 		smCategory.closeAdapterCursor();
@@ -284,7 +288,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		Log.d("AddOrEditOperationActivity", "RadioButton check changed");
+		Log.d(AddOrEditOperationActivity.class.getName(), "RadioButton check changed");
 		if(radioButtonCredit.isChecked()) {
 			textViewSign.setText(PLUS);
 			textViewSign.setTextColor(Operation.COLOR_POSITIVE_AMOUNT);

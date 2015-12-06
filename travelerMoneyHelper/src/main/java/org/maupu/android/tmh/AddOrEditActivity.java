@@ -9,11 +9,14 @@ import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.CustomActionBarItem;
 import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -53,7 +56,11 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		retrieveItemFromExtra();
 		
 		// Init all widgets
-		initResources();
+		View v = initResources();
+        if(v != null) {
+            v.requestFocus();
+            SoftKeyboardHelper.forceShowUp(this);
+        }
 		
 		if(isEditing() || appInit)
 			CustomActionBarItem.setEnableItem(false, saveAndAddItem);
@@ -122,15 +129,19 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 						dialog.dismiss();
 						
 						// Dispose this activity
-						if(disposeActivity)
-							current.finish();
+						if(disposeActivity) {
+                            SoftKeyboardHelper.hide(current);
+                            current.finish();
+                        }
 					}
 				}).show();
 			} else {
 				obj.insert();
 				
-				if(disposeActivity)
-					this.finish();
+				if(disposeActivity) {
+                    SoftKeyboardHelper.hide(this);
+                    this.finish();
+                }
 			}
 			
 			return true;
@@ -141,20 +152,24 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	}
 	
 	/**
-	 * Method called just after ui creation to finish initialization
+	 * Method called just after ui creation to finish initialization.
+     * @return A View which will receive the focus (soft keyboard will also pop). Return Null for no focus.
 	 */
-	protected abstract void initResources();
+	protected abstract View initResources();
+
 	/**
 	 * Method called to validate all field before updating or adding a baseObject
 	 * @return
 	 */
 	protected abstract boolean validate();
+
 	/**
 	 * Method to fill all fields from a given object
 	 * If parameter is null, all fields must be reset
 	 * @param obj
 	 */
 	protected abstract void baseObjectToFields(T obj);
+
 	/**
 	 * Method to fill a baseObject from fields's content
 	 * @param obj

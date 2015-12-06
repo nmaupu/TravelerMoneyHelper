@@ -9,9 +9,13 @@ import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.Flag;
+import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
+import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 
 import android.app.AlertDialog;
@@ -22,8 +26,8 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +41,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,14 +58,13 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	private static final int MENU_ITEM_DEFAULT = 2;
 	private static final int MENU_ITEM_URL = 3;
 	private static final int MENU_ITEM_CAMERA = 4;
-    private static final int FLAG_SIZE_DIALOG = 48;
 	
 	public AddOrEditAccountActivity() {
 		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
 	}
 
 	@Override
-	protected void initResources() {
+	protected View initResources() {
 		imageViewIcon = (ImageView)findViewById(R.id.icon);
 		textViewName = (TextView)findViewById(R.id.name);
 		Spinner spinnerCurrency = (Spinner)findViewById(R.id.currency);
@@ -86,6 +90,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 				getString(R.string.popup_default_icon)};
 
 		loadApps();
+        return textViewName;
 	}
 	
 	@Override
@@ -177,7 +182,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	
 	private AlertDialog createDialogFromFlags() {
 		AlertDialog.Builder builder;
-		Context mContext = this;
+		final Context mContext = this;
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.dialog_flags_icon, (ViewGroup) findViewById(R.id.drawer_layout), false);
 		
@@ -185,13 +190,34 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		builder.setView(layout);
 
 		final AlertDialog dialog = builder.create();
-		
+
 		//ListView list = (ListView)layout.findViewById(R.id.list);
-		//FlagAdapter adapter = new FlagAdapter(this, Flag.getAllFlags(this), R.layout.icon_name_item_no_checkbox, new String[]{"name", "icon"}, new int[]{R.id.name, R.id.icon});
-		//list.setAdapter(adapter);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, Flag.toStringArray(this));
-        final AutoCompleteTextView textView = (AutoCompleteTextView)layout.findViewById(R.id.edit);
+		SimpleIconAdapter adapter = new SimpleIconAdapter(
+                this, Flag.getFlagsForAdapter(this),
+                R.layout.icon_name_item_no_checkbox,
+                new String[]{"icon", "name"},
+                new int[]{R.id.icon, R.id.name});
+        final ImageView flagImageView = (ImageView)layout.findViewById(R.id.flag_icon);
+        final AutoCompleteTextViewIcon textView = (AutoCompleteTextViewIcon)layout.findViewById(R.id.edit);
+        textView.setOnUpdateListener(new ICallback() {
+            @Override
+            public Object callback(Object item) {
+                // Text field is updated so we are called and we can now set the flag icon
+                Flag flag = Flag.getFlagFromCountry(mContext, (String)item);
+                if(flag != null) {
+                    flagImageView.setImageDrawable(
+                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_DEFAULT_SIZE)));
+                }
+
+                return null;
+            }
+        });
+        textView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
         textView.setAdapter(adapter);
 
 		Button cancel = (Button)layout.findViewById(R.id.cancel);
@@ -206,11 +232,11 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		validate.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Flag f = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
-				if(f != null) {
+				Flag flag = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
+				if(flag != null) {
 				    // Set flag
                     imageViewIcon.setImageDrawable(
-                            getResources().getDrawable(f.getDrawableId(FLAG_SIZE_DIALOG)));
+                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
 				    imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
 				    
 					dialog.dismiss();

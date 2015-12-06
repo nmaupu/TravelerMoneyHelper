@@ -102,7 +102,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	}
 
 	@Override
-	protected void initResources() {
+	protected View initResources() {
 		// Get resource instances
 		editTextLongName = (EditText)findViewById(R.id.long_name);
 		editTextShortName = (EditText)findViewById(R.id.short_name);
@@ -114,6 +114,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		updateTextViewRate();
 
 		actvCurrencyCode.setOnItemClickListener(this);
+        return actvCurrencyCode;
 	}
 	
 	private void updateTextViewRate() {

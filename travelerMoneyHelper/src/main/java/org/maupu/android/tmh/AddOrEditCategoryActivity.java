@@ -1,7 +1,9 @@
 package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
+import android.view.View;
 import android.widget.TextView;
 
 public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
@@ -14,8 +16,9 @@ public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
 	}
 	
 	@Override
-	protected void initResources() {
+	protected View initResources() {
 		tvName = (TextView)findViewById(R.id.name);
+        return tvName;
 	}
 	
 	@Override
