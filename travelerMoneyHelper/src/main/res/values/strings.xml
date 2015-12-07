@@ -23,9 +23,6 @@
     <string name="activity_title_edition_operation">Operation edition</string>
     <string name="activity_title_edition_account">Account edition</string>
     <string name="activity_title_edition_withdrawal">Withdrawal edition</string>
-    <string name="account_icon_edit_dialog_title">Choose an icon from …</string>
-    <string name="manageable_obj_del_confirm_question">Are you sure you want to delete these objects ?</string>
-    <string name="manageable_obj_del_error">One or more objects could not be deleted</string>
     <string name="activity_title_manage_category">Category</string>
     <string name="activity_title_manage_currency">Currency</string>
     <string name="activity_title_manage_operation">Operation</string>
@@ -33,6 +30,10 @@
     <string name="activity_title_manage_account">Account</string>
     <string name="activity_title_statistics">Statistics</string>
     <string name="activity_title_category_chooser">Categories</string>
+    <string name="activity_title_currency_converter">Currency converter</string>
+    <string name="account_icon_edit_dialog_title">Choose an icon from …</string>
+    <string name="manageable_obj_del_confirm_question">Are you sure you want to delete these objects ?</string>
+    <string name="manageable_obj_del_error">One or more objects could not be deleted</string>
     <string name="name">Name</string>
     <string name="long_name">Long name</string>
     <string name="short_name">Short name</string>
@@ -48,6 +49,7 @@
     <string name="close">X</string>
     <string name="dialog_choose_icon">Choose an icon</string>
     <string name="dialog_choose_account">Choose an account</string>
+    <string name="dialog_choose_currency">Choose a currency</string>
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -74,6 +76,7 @@
     <string name="not_implemented">This feature is not yet implemented</string>
     <string name="validate">Validate</string>
     <string name="hint_flag_autocompletion">Use this autocompletion field to choose a country flag</string>
+    <string name="hint_currency_autocompletion">Use this autocompletion field to choose a currency</string>
     <string name="country">Country</string>
     <string name="country_not_found">Country not found !</string>
     <string name="withdrawal">Withdrawal</string>
@@ -125,5 +128,6 @@
     <string name="operation_list_type">Month / all</string>
     <string name="operation_all_main_title">Operations</string>
     <string name="operation_all_sub_title">All displayed</string>
+    <string name="converter">Converter</string>
 
 </resources>

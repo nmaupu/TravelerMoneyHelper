@@ -304,11 +304,16 @@ public abstract class StaticData {
 		SharedPreferences prefs = getPrefs();
 		return prefs.getBoolean(key, false);
 	}
-	
-	public static Long getPreferenceValueLong(String key) {
-		SharedPreferences prefs = getPrefs();
-		return prefs.getLong(key, -1);
-	}
+
+    public static Long getPreferenceValueLong(String key) {
+        SharedPreferences prefs = getPrefs();
+        return prefs.getLong(key, -1);
+    }
+
+    public static Float getPreferenceValueFloat(String key) {
+        SharedPreferences prefs = getPrefs();
+        return prefs.getFloat(key, -1);
+    }
 	
 	public static void setPreferenceValueBoolean(String key, boolean value) {
 		SharedPreferences prefs = getPrefs();
@@ -337,4 +342,11 @@ public abstract class StaticData {
 		editor.putLong(key, value);
 		editor.commit();
 	}
+
+    public static void setPreferenceValueFloat(String key, Float value) {
+        SharedPreferences prefs = getPrefs();
+        Editor editor = prefs.edit();
+        editor.putFloat(key, value);
+        editor.commit();
+    }
 }

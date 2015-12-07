@@ -20,9 +20,6 @@
     <string name="activity_title_edition_operation">Edition d\'opération</string>
     <string name="activity_title_edition_account">Edition de compte</string>
     <string name="activity_title_edition_withdrawal">Edition de retrait</string>
-    <string name="account_icon_edit_dialog_title">Choisir l\'icone depuis &#8230;</string>
-    <string name="manageable_obj_del_confirm_question">Etes-vous sûr(e) de vouloir supprimer ces objets ?</string>
-    <string name="manageable_obj_del_error">Un ou plusieurs objets ne peuvent pas être supprimés</string>
     <string name="activity_title_manage_category">Categorie</string>
     <string name="activity_title_manage_currency">Devise</string>
     <string name="activity_title_manage_operation">Opération</string>
@@ -30,6 +27,10 @@
     <string name="activity_title_manage_account">Compte</string>
     <string name="activity_title_statistics">Statistiques</string>
     <string name="activity_title_category_chooser">Catégories</string>
+    <string name="activity_title_currency_converter">Convertisseur de devises</string>
+    <string name="account_icon_edit_dialog_title">Choisir l\'icone depuis &#8230;</string>
+    <string name="manageable_obj_del_confirm_question">Etes-vous sûr(e) de vouloir supprimer ces objets ?</string>
+    <string name="manageable_obj_del_error">Un ou plusieurs objets ne peuvent pas être supprimés</string>
     <string name="name">Nom</string>
     <string name="long_name">Nom long</string>
     <string name="short_name">Nom court</string>
@@ -46,6 +47,7 @@
     <string name="close">X</string>
     <string name="dialog_choose_icon">Choisissez une icône</string>
     <string name="dialog_choose_account">Choisissez un compte</string>
+    <string name="dialog_choose_currency">Choisissez une devise</string>
     <string name="add">Ajouter</string>
     <string name="edit">Editer</string>
     <string name="delete">Supprimer</string>
@@ -72,6 +74,7 @@
     <string name="not_implemented">Cette fonction n\'est pas encore disponible !</string>
     <string name="validate">Valider</string>
     <string name="hint_flag_autocompletion">Utilisez ce champ afin de choisir le drapeau d\'un pays</string>
+    <string name="hint_currency_autocompletion">Utilisez ce champ afin de choisir une devise</string>
     <string name="country">Pays</string>
     <string name="country_not_found">Ce pays n\'existe pas !</string>
     <string name="withdrawal">Retrait</string>
@@ -123,5 +126,6 @@
     <string name="operation_list_type">Mois / tout</string>
     <string name="operation_all_main_title">Opérations</string>
     <string name="operation_all_sub_title">Toutes</string>
+    <string name="converter">Convertisseur</string>
 
 </resources>

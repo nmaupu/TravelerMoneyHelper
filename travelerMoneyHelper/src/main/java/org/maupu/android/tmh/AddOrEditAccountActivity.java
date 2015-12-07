@@ -212,12 +212,6 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
                 return null;
             }
         });
-        textView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
         textView.setAdapter(adapter);
 
 		Button cancel = (Button)layout.findViewById(R.id.cancel);

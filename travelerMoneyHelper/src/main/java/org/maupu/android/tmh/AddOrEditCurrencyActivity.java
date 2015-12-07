@@ -197,19 +197,9 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 
 		String isoCode = actvCurrencyCode.getText().toString();
 		CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);
-		String currencySymbol = cur.getCode();
 		
 		if(cur != null) {
-			
-			try {
-				java.util.Currency currency = java.util.Currency.getInstance(cur.getCode());
-				currencySymbol = currency.getSymbol();
-			} catch(IllegalArgumentException iae) {
-				// Not a supported ISO4217, so we do not have a symbol available
-				Log.e(AddOrEditCurrencyActivity.class.getName(), cur.getCode() + "/"+ cur.getName()+ " is not a valid ISO4217 currency !");
-			}
-
-			editTextShortName.setText(currencySymbol);
+			editTextShortName.setText(cur.getCurrencySymbol());
 			editTextLongName.setText(cur.getName());
 			
 			// Need Open Exchange Rates API key to update from server

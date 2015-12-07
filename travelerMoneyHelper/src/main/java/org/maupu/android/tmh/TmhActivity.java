@@ -9,6 +9,7 @@ import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
 
 import org.maupu.android.tmh.ui.INavigationDrawerCallback;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.TmhNavigationDrawerClickListener;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
@@ -39,6 +40,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -49,6 +51,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
     /** Navigation drawer items **/
     protected static final String DRAWER_ITEM_OPERATIONS = UUID.randomUUID().toString();
     protected static final String DRAWER_ITEM_STATS = UUID.randomUUID().toString();
+    protected static final String DRAWER_ITEM_CONVERTER = UUID.randomUUID().toString();
     protected static final String DRAWER_ITEM_ACCOUNTS = UUID.randomUUID().toString();
     protected static final String DRAWER_ITEM_CATEGORIES = UUID.randomUUID().toString();
     protected static final String DRAWER_ITEM_CURRENCIES = UUID.randomUUID().toString();
@@ -101,6 +104,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
+            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CONVERTER, R.drawable.ic_equalizer_black, getResources().getString(R.string.converter), this));
             items.add(NavigationDrawerIconItem.separator());
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CURRENCIES, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
             items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
@@ -161,6 +165,8 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
                 intent = new Intent(this, ViewPagerOperationActivity.class);
             } else if (item.getTag() == DRAWER_ITEM_STATS) {
                 intent = new Intent(this, StatsActivity.class);
+            } else if(item.getTag() == DRAWER_ITEM_CONVERTER) {
+                intent = new Intent(this, ConverterActivity.class);
             } else if (item.getTag() == DRAWER_ITEM_ACCOUNTS) {
                 intent = new Intent(this, ManageAccountActivity.class);
             } else if (item.getTag() == DRAWER_ITEM_CATEGORIES) {
@@ -297,6 +303,14 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 
         return null;
     }
+
+    @Override
+    public Map<Integer, Object> handleRefreshBackground() {
+        return null;
+    }
+
+    @Override
+    public void handleRefreshEnding(Map<Integer, Object> results) {}
 
     /**
      * Called when navigation drawer is created. To customize, override this and return
