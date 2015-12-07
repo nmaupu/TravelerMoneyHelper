@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
@@ -26,10 +27,13 @@ import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
+import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ConverterActivity extends TmhActivity implements View.OnClickListener, IAsync, TextWatcher {
     public static final String TAG = ConverterActivity.class.getName();
@@ -38,6 +42,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     public static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";
     public static final String PREFS_CONVERTER_CURRENCY_2 = "ConverterActivity_currency_2";
     public static final String PREFS_CONVERTER_AMOUNT = "ConverterActivity_amount";
+
+    private static final String DRAWER_ITEM_UPDATE_RATES = UUID.randomUUID().toString();
 
     /** Chooser widgets **/
     private TextView tvCurrencyCode1, tvCurrencyCode2;
@@ -51,6 +57,9 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     private TextView tvAmountSymbol;
     private TextView tvConverterResult1, tvConverterResult2;
 
+    /** Mist widgets **/
+    private TextView tvRatesLastUpdate;
+
     /** Currency tools **/
     private OpenExchangeRatesAsyncFetcher oerFetcher;
     private boolean apiKeyValid = false;
@@ -63,6 +72,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     private CurrencyISO4217 currency1, currency2;
     private Double rate1, rate2, rateConverter;
     private Double convertedAmount1 = 0d, convertedAmount2 = 0d;
+    private Date ratesLastUpdate = null;
+    private boolean ratesCacheEnabled = true;
 
 
     @Override
@@ -88,6 +99,9 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
         tvAmountSymbol = (TextView)findViewById(R.id.amount_symbol);
         tvConverterResult1 = (TextView)findViewById(R.id.converter_result_1);
         tvConverterResult2 = (TextView)findViewById(R.id.converter_result_2);
+
+        /** Misc widgets **/
+        tvRatesLastUpdate = (TextView)findViewById(R.id.rates_last_update);
 
         /**
          * Events
@@ -125,6 +139,28 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
         }
 
         initOerFetcher();
+    }
+
+    @Override
+    public NavigationDrawerIconItem[] buildNavigationDrawer() {
+        return new NavigationDrawerIconItem[] {
+                createSmallNavigationDrawerItem(
+                        DRAWER_ITEM_UPDATE_RATES,
+                        R.drawable.ic_update_black,
+                        R.string.force_update_currency),
+        };
+    }
+
+    @Override
+    public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
+        if(item.getTag() == DRAWER_ITEM_UPDATE_RATES) {
+            Log.d(TAG, "Forcing rates update from the internet");
+            ratesCacheEnabled = false;
+            updateConvertedAmounts();
+            refreshDisplay();
+        } else {
+            super.onNavigationDrawerClick(item);
+        }
     }
 
     @Override
@@ -206,6 +242,15 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
         // Call by parent class when refreshDisplay is called
         refreshFields(currency1, tvCurrencyCode1, tvCurrencyInfo1, true);
         refreshFields(currency2, tvCurrencyCode2, tvCurrencyInfo2, false);
+
+        // Rates last update
+        StringBuilder sb = new StringBuilder(getResources().getString(R.string.rates_last_update));
+        sb.append(" "); // Last space is trimed if put insde string resource file
+        if(ratesLastUpdate !=null)
+            sb.append(DateUtil.dateToString(ratesLastUpdate));
+        else
+            sb.append("N/A");
+        tvRatesLastUpdate.setText(sb.toString());
     }
 
     private void refreshFields(CurrencyISO4217 currency, TextView tvCurrencyCode, TextView tvCurrencyInfo, boolean mainCurrency) {
@@ -257,13 +302,13 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
                 try {
                     final Double amount = Double.parseDouble(netAmount.getStringText());
 
-                    if(rateConverter == null || rateConverter == 0d) {
+                    if(! ratesCacheEnabled || rateConverter == null || rateConverter == 0d) {
                         final Currency dummyCurrency1 = new Currency();
                         final Currency dummyCurrency2 = new Currency();
                         dummyCurrency1.setIsoCode(currency1.getCode());
                         dummyCurrency2.setIsoCode(currency2.getCode());
 
-                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(this, StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
+                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(this, StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT), ratesCacheEnabled);
                         updater.setAsyncListener(new IAsync() {
                             @Override
                             public void onFinishAsync() {
@@ -275,6 +320,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
                                 rateConverter = rate2 / rate1;
                                 convertedAmount1 = amount;
                                 convertedAmount2 = amount * rateConverter;
+                                ratesLastUpdate = OpenExchangeRatesAsyncUpdater.getCurrencyRatesCacheDate();
+                                ratesCacheEnabled = true;
                             }
                         });
                         updater.execute(new Currency[]{dummyCurrency1, dummyCurrency2});

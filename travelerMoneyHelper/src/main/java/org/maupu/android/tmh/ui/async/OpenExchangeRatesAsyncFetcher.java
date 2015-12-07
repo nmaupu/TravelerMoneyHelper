@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.StaticData;
 
 import android.util.Log;
 
@@ -131,5 +133,14 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
     	}
 		
 		return curList;
+    }
+
+    /**
+     * Get date of the last currencies' list cache available.
+     * Beware : this is not the cache for rates
+     * @return date of the last cache available
+     */
+    public static Date getCurrenciesListCacheDate() {
+        return StaticData.getDateField(OER_CACHE_CURRENCIES);
     }
 }

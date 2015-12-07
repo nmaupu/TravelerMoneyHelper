@@ -88,6 +88,7 @@
     <string name="averageByDay">Moyenne / jour:</string>
     <string name="averageByDay_">Moyenne / jour</string>
     <string name="update_exchange_rate">Mettre à jour le taux de change</string>
+    <string name="force_update_currency">Forcer màj des taux de conv.</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Base de données créée et selectionnée</string>
     <string name="database">Base de données</string>
@@ -127,5 +128,8 @@
     <string name="operation_all_main_title">Opérations</string>
     <string name="operation_all_sub_title">Toutes</string>
     <string name="converter">Convertisseur</string>
+    <string name="rates_last_update">Dernière mise à jour :</string>
+    <string name="update_rates_failed">Erreur lors de la mise à jour des taux de conversion via internet</string>
+    <string name="update_rates_success">Mise à jour ok</string>
 
 </resources>

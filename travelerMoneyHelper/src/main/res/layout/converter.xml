@@ -130,6 +130,15 @@
                         android:textSize="20dp"
                         android:layout_weight="1" />
                 </LinearLayout>
+                <TextView
+                    android:id="@+id/rates_last_update"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_converter_result"
+                    android:gravity="right"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

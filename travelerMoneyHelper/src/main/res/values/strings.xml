@@ -90,6 +90,7 @@
     <string name="averageByDay">Average / day:</string>
     <string name="averageByDay_">Average / day</string>
     <string name="update_exchange_rate">Update exchange rate to current</string>
+    <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>
     <string name="database">Database</string>
@@ -129,5 +130,8 @@
     <string name="operation_all_main_title">Operations</string>
     <string name="operation_all_sub_title">All displayed</string>
     <string name="converter">Converter</string>
+    <string name="rates_last_update">Last update :</string>
+    <string name="update_rates_failed">Error updating rates from the internet</string>
+    <string name="update_rates_success">Rates updated ok</string>
 
 </resources>

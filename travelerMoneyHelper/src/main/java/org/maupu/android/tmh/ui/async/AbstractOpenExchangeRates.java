@@ -26,7 +26,7 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
 	public static final int DEFAULT_CACHE_LIMIT_TIME = 3600; // 1h
 	protected TmhActivity context;
 	protected ProgressDialog waitSpinner = null;
-	protected final static String URL = "http://openexchangerates.org/api/";
+	protected final static String URL = "https://openexchangerates.org/api/";
 	protected final static int ACTION_CURRENCY_LIST = 0;
 	protected final static int ACTION_CURRENCY_LATEST = 1;
 	

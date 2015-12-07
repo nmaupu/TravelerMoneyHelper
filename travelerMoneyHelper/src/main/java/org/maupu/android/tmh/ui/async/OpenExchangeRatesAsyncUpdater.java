@@ -23,12 +23,25 @@ import android.util.Log;
 
 public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 	private final static String OER_CACHE_CURRENCIES_LATEST = "OpenExchangeRatesLatest.json";
+    /**
+     *  Stored as a long in StaticData for further reference. Corresponds to the freshness of rates
+     *  given by OpenExchangeRates api (field timestamp)
+     *  @see https://openexchangerates.org/documentation
+     */
+    private final static String OER_CURRENCIES_TIMESTAMP = "OERCurrenciesTimestamp";
 	private String apiKey = null;
+    private boolean cacheEnabled = true;
 
-	public OpenExchangeRatesAsyncUpdater(TmhActivity context, String apiKey) {
-		super(context, "Updating currencies");
-		this.apiKey = apiKey;
-	}
+    public OpenExchangeRatesAsyncUpdater(TmhActivity context, String apiKey) {
+        super(context, "Updating currencies");
+        this.apiKey = apiKey;
+    }
+
+    public OpenExchangeRatesAsyncUpdater(TmhActivity context, String apiKey, boolean cacheEnabled) {
+        super(context, "Updating currencies");
+        this.apiKey = apiKey;
+        this.cacheEnabled = cacheEnabled;
+    }
 
 	protected Integer doInBackground(Currency... currencies) {
 		if(currencies == null || currencies.length == 0)
@@ -41,7 +54,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 
 		for(Currency currency : currencies) {
 			try {
-				nbProcessedSucc += updateRateFromOpenExchangeRates(currency) ? 1 : 0;
+				nbProcessedSucc += updateRateFromOpenExchangeRates(currency, cacheEnabled) ? 1 : 0;
 				nbProcessed++;
 				publishProgress(nbProcessed*100/nbTotal);
 			} catch(Exception e) {
@@ -53,11 +66,12 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 		return nbProcessedSucc;
 	}
 
-	public boolean updateRateFromOpenExchangeRates(Currency currency) throws Exception {
+	public boolean updateRateFromOpenExchangeRates(Currency currency, boolean cacheEnabled) throws Exception {
 		StringBuilder url = super.getUrl(ACTION_CURRENCY_LATEST, apiKey);
-		
-		StringBuilder builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, DEFAULT_CACHE_LIMIT_TIME);
-		//StringBuilder builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, 10);
+
+        StringBuilder builderJson = null;
+        if(cacheEnabled)
+		    builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, DEFAULT_CACHE_LIMIT_TIME);
 		
 		// Load from internet
 		if(builderJson == null || "".equals(builderJson.toString())) {
@@ -104,6 +118,13 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 			try {
 				Currency mainCurrency = StaticData.getMainCurrency();
 
+                // Store latest timestamp in StaticData
+                JsonNode timestampNode = rootNode.get("timestamp");
+                if(timestampNode != null) {
+                    Long timestampValue = timestampNode.getLongValue();
+                    StaticData.setDateField(OER_CURRENCIES_TIMESTAMP, timestampValue);
+                }
+
 				JsonNode ratesNode = rootNode.get("rates");
 				JsonNode nodeMainVal = ratesNode.get(mainCurrency.getIsoCode());
 				Double mainVal = nodeMainVal.getDoubleValue();
@@ -131,4 +152,21 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 		// Everything ok !
 		return true;
 	}
+
+    /**
+     * Get date of the last currencies' rates cache available.
+     * @return date of the last cache available
+     */
+    public static Date getCurrencyRatesCacheDate() {
+        return StaticData.getDateField(OER_CACHE_CURRENCIES_LATEST);
+    }
+
+    /**
+     * Get date of the last update given by OpenExchangeRates API
+     * Give the latest update in cache if using cache data
+     * @return date of the last rates' update
+     */
+    public static Date getCurrencyRatesLastUpdate() {
+        return StaticData.getDateField(OER_CURRENCIES_TIMESTAMP);
+    }
 }

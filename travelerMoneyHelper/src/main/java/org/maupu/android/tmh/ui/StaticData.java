@@ -96,11 +96,7 @@ public abstract class StaticData {
 	public static Date getDateField(String key) {
 		SharedPreferences prefs = getPrefs();
 		Long date = prefs.getLong(key, -1);
-		
-		if(date == -1)
-			return null;
-		
-		return new Date(date);
+        return date == -1 ? null : new Date(date);
 	}
 	
 	public static void setDateField(String key, Date date) {
@@ -109,6 +105,13 @@ public abstract class StaticData {
 		
 		setPreferenceValueLong(key, date.getTime());
 	}
+
+    public static void setDateField(String key, Long timestamp) {
+        if(timestamp == null || key == null || "".equals(key))
+            return;
+
+        setPreferenceValueLong(key, timestamp);
+    }
 	
 	public static void setCurrentAccount(Account account) {
 		int id = account == null || account.getId() == null ? -1 : account.getId();
