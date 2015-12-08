@@ -26,8 +26,8 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.setContentView(R.layout.first);
         super.onCreate(savedInstanceState);
-        super.setActionBarContentView(R.layout.first);
         super.setTitle(R.string.welcome_title);
 
         /** Widgets **/

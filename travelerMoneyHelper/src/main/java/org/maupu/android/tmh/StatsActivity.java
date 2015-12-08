@@ -110,9 +110,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		super.setActionBarContentView(R.layout.stats_activity);
+        super.setContentView(R.layout.stats_activity);
+        super.onCreate(savedInstanceState);
 		setTitle(R.string.activity_title_statistics);
 
 		// force portrait
@@ -122,15 +121,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 		int drawableId = R.drawable.action_bar_graph;
 		int descriptionId = R.string.graph;
 
+		/*
 		final Drawable d = new ActionBarDrawable(getGDActionBar().getContext(), drawableId);
 		ActionBarItem abiGraph = getGDActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
 		addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
-		/* End of displaying a custom icon in action bar item */
 
 		// Change list type (sum by category or by date)
 		addActionBarItem(Type.Settings, TmhApplication.ACTION_BAR_GROUPBY);
 		// Possibility to change between accounts
 		addActionBarItem(Type.Group, TmhApplication.ACTION_BAR_ACCOUNT);
+
 		//
 		quickActionGridFilter = new QuickActionGrid(this);
 		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.date));
@@ -143,6 +143,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
                 refreshDisplay();
             }
         });
+        */
 
 		//
 		listView = (ListView)findViewById(R.id.list);
@@ -262,6 +263,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         };
     }
 
+    /*
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
@@ -282,6 +284,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 
 		return true;
 	}
+	*/
 
 
 

@@ -78,8 +78,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.setContentView(R.layout.converter);
         super.onCreate(savedInstanceState);
-        super.setActionBarContentView(R.layout.converter);
         super.setTitle(R.string.activity_title_currency_converter);
 
         /**

@@ -51,18 +51,20 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Log.d(ViewPagerOperationActivity.class.getName(), "onCreate called");
+        super.setContentView(R.layout.viewpager_operation);
 		super.onCreate(savedInstanceState);
-		
-		setActionBarContentView(R.layout.viewpager_operation);
-		setTitle(getContentView().getResources().getString(R.string.activity_title_viewpager_operation));
+
+		setTitle(getResources().getString(R.string.activity_title_viewpager_operation));
 		
 		// Force portrait
 		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
+
+        /*
 		// Action bar items
 		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Withdrawal), TmhApplication.ACTION_BAR_ADD_WITHDRAWAL);
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
+		*/
 
         // Setting automatically to the month corresponding to last operation for this account
         Operation dummyOp = new Operation();
@@ -91,6 +93,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 		viewpager.setOnPageChangeListener(this);
 	}
 
+    /*
     @Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
@@ -106,12 +109,15 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		return true;
 	}
+	*/
 
     @Override
     protected void onResume() {
         super.onResume();
         // Ensure nav drawer operation item is selected
-        int position = getPositionNavigationDrawerItem(TmhActivity.DRAWER_ITEM_OPERATIONS);
+        Integer position = getPositionNavigationDrawerItem(TmhActivity.DRAWER_ITEM_OPERATIONS);
+        if(position == null)
+            position = 0;
         ((IconArrayAdapter) super.drawerList.getAdapter()).selectItem(position);
     }
 

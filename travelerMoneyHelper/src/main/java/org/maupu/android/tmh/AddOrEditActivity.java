@@ -43,14 +43,16 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setActionBarContentView(contentView);
+        setContentView(contentView);
 		super.setTitle(getString(title));
 		
 		// actionbar items
+        /*
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
 		
 		saveAndAddItem = CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.SaveAndAdd);
 		addActionBarItem(saveAndAddItem, TmhApplication.ACTION_BAR_SAVE_AND_ADD);
+		*/
 
 		// Retrieve extra parameter
 		retrieveItemFromExtra();
@@ -93,7 +95,8 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			throw cce;
 		}
 	}
-	
+
+    /*
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
@@ -112,7 +115,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		}
 		
 		return true;
-	}
+	}*/
 
 	protected boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {

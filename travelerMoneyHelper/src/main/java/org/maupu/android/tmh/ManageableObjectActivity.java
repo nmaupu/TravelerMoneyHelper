@@ -58,17 +58,17 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setActionBarContentView(layoutList);
+        super.setContentView(layoutList);
+        super.onCreate(savedInstanceState);
 		super.setTitle(title);
 
 
 		// actionbar items
 		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Cancel), TmhApplication.ACTION_BAR_CANCEL);
 		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
+		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
 
-		quickActionGrid = createQuickActionGridEdition();
+		//quickActionGrid = createQuickActionGridEdition();
 
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
@@ -99,6 +99,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		refreshDisplay();
 	}
 
+    /*
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
@@ -117,6 +118,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 		return true;
 	}
+	*/
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
 		checkableCursorAdapter = new CheckableCursorAdapter(this, layout, data, from, to);

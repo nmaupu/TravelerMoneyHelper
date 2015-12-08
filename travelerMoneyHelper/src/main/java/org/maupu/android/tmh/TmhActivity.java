@@ -16,6 +16,7 @@ import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -44,7 +45,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-public abstract class TmhActivity extends GDActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
+public abstract class TmhActivity extends Activity implements IAsyncActivityRefresher, INavigationDrawerCallback {
 	protected DrawerLayout drawerLayout;
 	protected ListView drawerList;
 
@@ -64,35 +65,14 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 	}
 	
 	public TmhActivity() {
-		super(Type.Normal);
-	}
-	
-	public TmhActivity(Type type) {
-		super(type);
+		super();
 	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//TmhApplication.getDatabaseHelper().createSampleData();
-	}
-
-	@Override
-	public void setActionBarContentView(int resID) {
-		super.setActionBarContentView(resID);
-		initNavigationDrawer();
-	}
-
-	@Override
-	public void setActionBarContentView(View view) {
-		super.setActionBarContentView(view);
-		initNavigationDrawer();
-	}
-
-	@Override
-	public void setActionBarContentView(View view, ViewGroup.LayoutParams params) {
-		super.setActionBarContentView(view, params);
-		initNavigationDrawer();
+        initNavigationDrawer();
 	}
 
 	private void initNavigationDrawer() {
@@ -132,6 +112,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
 
             /** Change home icon and open / close drawer on click **/
+            /*
             setActionBarHomeDrawable(R.drawable.ic_menu_white);
             setActionBarHomeOnClickListener(new View.OnClickListener() {
                 @Override
@@ -143,6 +124,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
                         drawerLayout.openDrawer(drawerList);
                 }
             });
+            */
 		} catch(NullPointerException npe) {
 			// No drawer available in XML file
 			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
@@ -199,6 +181,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		refreshDisplay();
 	}
 
+    /*
 	protected QuickActionGrid createQuickActionGridEdition() {
 		QuickActionGrid quickActionGrid = new QuickActionGrid(this);
 		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_group, R.string.accounts));
@@ -223,7 +206,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
         });
 
 		return quickActionGrid;
-	}
+	}*/
 
 	protected void startActivityFromMenu(Class<?> cls) {
 		startActivity(new Intent(this, cls));
@@ -243,6 +226,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
 		}
 	}
 
+    /*
 	protected void setActionBarHomeDrawable(int drawable) {
 		ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
 		if(ib != null) {
@@ -256,6 +240,7 @@ public abstract class TmhActivity extends GDActivity implements IAsyncActivityRe
             ib.setOnClickListener(listener);
         }
     }
+    */
 
 	public static void setListViewAnimation(ListView listView) {
 		// Setting animation

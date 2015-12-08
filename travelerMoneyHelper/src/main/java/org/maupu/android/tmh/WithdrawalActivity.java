@@ -77,11 +77,13 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setActionBarContentView(R.layout.withdrawal);
+        super.setContentView(R.layout.withdrawal);
+        super.onCreate(savedInstanceState);
 		setTitle(R.string.activity_title_edition_withdrawal);
 
+        /*
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
+		*/
 
 		// Set current time
 		Calendar cal = Calendar.getInstance();
@@ -256,6 +258,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {}
 
+    /*
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch(item.getItemId()) {
@@ -315,6 +318,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
 		return true;
 	}
+    */
 
 	protected boolean validate() {
 		Date d = new GregorianCalendar(mYear, mMonth, mDay).getTime();
