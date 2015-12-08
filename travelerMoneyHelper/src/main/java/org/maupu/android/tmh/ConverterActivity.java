@@ -110,6 +110,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
         tvCurrencyCode1.setOnClickListener(this);
         tvCurrencyCode2.setOnClickListener(this);
         netAmount.addTextChangedListener(this);
+        tvConverterResult1.setOnClickListener(this);
+        tvConverterResult2.setOnClickListener(this);
 
         /**
          * Fields init
@@ -233,7 +235,12 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
             updateConvertedAmounts();
             refreshDisplay();
         } else if(v instanceof TextView) {
-            createDialogCurrencyChooser(v == tvCurrencyCode1 ? TYPE_LEFT : TYPE_RIGHT).show();
+            if(v == tvCurrencyCode1 || v == tvCurrencyCode2) {
+                createDialogCurrencyChooser(v == tvCurrencyCode1 ? TYPE_LEFT : TYPE_RIGHT).show();
+            } else if (v == tvConverterResult1 || v == tvConverterResult2) {
+                // Setting edit text's text with the content of corresponding result's text view
+                netAmount.setText(((TextView)v).getText().toString());
+            }
         }
     }
 
