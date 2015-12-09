@@ -1,41 +1,32 @@
 package org.maupu.android.tmh;
 
-import greendroid.app.GDActivity;
-import greendroid.widget.ActionBar.Type;
-import greendroid.widget.QuickAction;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
-import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
-
 import org.maupu.android.tmh.ui.INavigationDrawerCallback;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
-import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.TmhNavigationDrawerClickListener;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.Adapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -45,7 +36,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-public abstract class TmhActivity extends Activity implements IAsyncActivityRefresher, INavigationDrawerCallback {
+public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
 	protected DrawerLayout drawerLayout;
 	protected ListView drawerList;
 
@@ -59,23 +50,49 @@ public abstract class TmhActivity extends Activity implements IAsyncActivityRefr
     protected static final String DRAWER_ITEM_PARAMETERS = UUID.randomUUID().toString();
     protected static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
 
+    protected Integer menuResId;
+    protected Integer contentView;
+    protected Integer title;
+
+    public TmhActivity() {
+        super();
+    }
+
+    public TmhActivity(int contentView, int title) {
+        this.contentView = contentView;
+        this.title = title;
+    }
 
 	public static LayoutInflater getInflater(Context ctx) {
 		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	public TmhActivity() {
-		super();
-	}
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        super.setContentView(this.contentView);
+        super.setTitle(this.title);
+
 		//TmhApplication.getDatabaseHelper().createSampleData();
         initNavigationDrawer();
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 	}
 
-	private void initNavigationDrawer() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(this, ViewPagerOperationActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initNavigationDrawer() {
 		try {
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -261,6 +278,7 @@ public abstract class TmhActivity extends Activity implements IAsyncActivityRefr
 		listView.setLayoutAnimation(controller);
 	}
 
+    /*
 	protected static class MyQuickAction extends QuickAction {
 		private static final ColorFilter BLACK_CF = new LightingColorFilter(Color.BLACK, Color.BLACK);
 
@@ -274,6 +292,7 @@ public abstract class TmhActivity extends Activity implements IAsyncActivityRefr
 			return d;
 		}
 	}
+	*/
 
     protected Integer getPositionNavigationDrawerItem(Object tag) {
         if(drawerList == null || drawerList.getAdapter() == null)

@@ -81,7 +81,6 @@
     <string name="country_not_found">Country not found !</string>
     <string name="withdrawal">Withdrawal</string>
     <string name="default_account_name">Account1</string>
-    <string name="menu_item_withdrawal">Widthdrawal</string>
     <string name="confirm_modification">Do you confirm modification ?</string>
     <string name="total">Total:</string>
     <string name="total_">Total</string>
@@ -102,8 +101,9 @@
     <string name="menu_item_period">Period / Month</string>
     <string name="menu_item_now">Today</string>
     <string name="menu_item_choose_month">Other month</string>
-    <string name="today">Today</string>
+    <string name="menu_item_withdrawal">Widthdrawal</string>
     <string name="menu_item_auto">Auto dates</string>
+    <string name="today">Today</string>
     <string name="default_category_withdrawal_summary">Select default category for withdrawal</string>
     <string name="default_category_withdrawal">Withdrawal category</string>
     <string name="default_account_summary">Enter the default account</string>
@@ -133,5 +133,10 @@
     <string name="rates_last_update">Last update :</string>
     <string name="update_rates_failed">Error updating rates from the internet</string>
     <string name="update_rates_success">Rates updated ok</string>
+
+    <!-- Toolbar relative strings -->
+    <string name="toolbar_add">Add</string>
+    <string name="toolbar_edit">Edit</string>
+    <string name="toolbar_withdrawal">Withdrawal</string>
 
 </resources>

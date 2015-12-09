@@ -1,13 +1,5 @@
 package org.maupu.android.tmh;
 
-import greendroid.graphics.drawable.ActionBarDrawable;
-import greendroid.widget.ActionBarItem;
-import greendroid.widget.ActionBarItem.Type;
-import greendroid.widget.NormalActionBarItem;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
-import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,7 +62,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private final static int GROUP_BY_DATE=0;
 	private final static int GROUP_BY_CATEGORY=1;
 	private int currentGroupBy = GROUP_BY_DATE;
-	private QuickActionGrid quickActionGridFilter = null;
+	//private QuickActionGrid quickActionGridFilter = null;
 	private LinearLayout graphViewLayout = null;
 	private StatsGraphView statGraphView = null;
 	private TableLayout statsTextLayout = null;

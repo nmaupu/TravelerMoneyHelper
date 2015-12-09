@@ -1,13 +1,8 @@
 package org.maupu.android.tmh;
 
-import greendroid.widget.ActionBarItem;
-
 import java.util.Map;
 
-import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.BaseObject;
-import org.maupu.android.tmh.ui.CustomActionBarItem;
-import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
@@ -15,9 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.View;
-import android.widget.Toast;
 
 /**
  * Class representing an Activity to add or edit objects
@@ -30,10 +23,11 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	private int contentView;
 	private T obj;
 	private int title;
-	private ActionBarItem saveAndAddItem;
+	//private ActionBarItem saveAndAddItem;
 	private boolean appInit = false;
 
 	public AddOrEditActivity(int title, int contentView, T obj) {
+        super(contentView, title);
 		this.contentView = contentView;
 		this.obj = obj;
 		this.title = title;
@@ -43,8 +37,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setContentView(contentView);
-		super.setTitle(getString(title));
 		
 		// actionbar items
         /*
@@ -63,9 +55,11 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
             v.requestFocus();
             SoftKeyboardHelper.forceShowUp(this);
         }
-		
+
+        /*
 		if(isEditing() || appInit)
 			CustomActionBarItem.setEnableItem(false, saveAndAddItem);
+		*/
 		
 		// Fill form fields
 		baseObjectToFields(obj);
@@ -81,7 +75,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			T objnew = (T) bundle.get(AddOrEditActivity.EXTRA_OBJECT_ID);
 			if(objnew != null) {
 				//buttonContinueAndAdd.setEnabled(false);
-				CustomActionBarItem.setEnableItem(false, saveAndAddItem);
+				//CustomActionBarItem.setEnableItem(false, saveAndAddItem);
 				obj = objnew;
 			}
 			

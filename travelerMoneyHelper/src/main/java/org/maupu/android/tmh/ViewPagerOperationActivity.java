@@ -1,18 +1,13 @@
 package org.maupu.android.tmh;
 
-import greendroid.widget.ActionBarItem;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.Inflater;
 
-import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.ui.CustomActionBarItem;
-import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
@@ -26,6 +21,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.DatePicker;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener, DatePickerDialog.OnDateSetListener {
@@ -48,14 +44,14 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     private final static String DRAWER_ITEM_AUTO = UUID.randomUUID().toString();
     private final static String DRAWER_ITEM_TODAY = UUID.randomUUID().toString();
 
+    public ViewPagerOperationActivity() {
+        super(R.layout.viewpager_operation, R.string.activity_title_viewpager_operation);
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        Log.d(ViewPagerOperationActivity.class.getName(), "onCreate called");
-        super.setContentView(R.layout.viewpager_operation);
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		setTitle(getResources().getString(R.string.activity_title_viewpager_operation));
-		
 		// Force portrait
 		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -92,24 +88,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		viewpager.setOnPageChangeListener(this);
 	}
-
-    /*
-    @Override
-	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
-		switch(item.getItemId()) {
-		case TmhApplication.ACTION_BAR_ADD:
-			startActivityForResult(new Intent(this, AddOrEditOperationActivity.class), 0);
-			break;
-		case TmhApplication.ACTION_BAR_ADD_WITHDRAWAL:
-			startActivityFromMenu(WithdrawalActivity.class);
-			break;
-		default:
-			return super.onHandleActionBarItemClick(item, position);	
-		}
-
-		return true;
-	}
-	*/
 
     @Override
     protected void onResume() {

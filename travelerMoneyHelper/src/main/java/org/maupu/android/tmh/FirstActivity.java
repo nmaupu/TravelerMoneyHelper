@@ -24,11 +24,13 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
     private int nbAcc = 0;
     private int nbCur = 0;
 
+    public FirstActivity() {
+        super(R.layout.first, R.string.welcome_title);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.setContentView(R.layout.first);
         super.onCreate(savedInstanceState);
-        super.setTitle(R.string.welcome_title);
 
         /** Widgets **/
         goBtn = (Button)findViewById(R.id.button);

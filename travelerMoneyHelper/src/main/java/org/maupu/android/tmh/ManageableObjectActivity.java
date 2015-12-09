@@ -1,12 +1,6 @@
 package org.maupu.android.tmh;
 
-import greendroid.widget.ActionBarItem;
-import greendroid.widget.QuickActionGrid;
-
-import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.BaseObject;
-import org.maupu.android.tmh.ui.CustomActionBarItem;
-import org.maupu.android.tmh.ui.CustomActionBarItem.CustomType;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
@@ -40,7 +34,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private Class<?> addOrEditActivity;
 	private Integer layoutList;
 	private T obj;
-	private QuickActionGrid quickActionGrid;
+	//private QuickActionGrid quickActionGrid;
 	private boolean animList = false;
 	private CheckableCursorAdapter checkableCursorAdapter = null;
 
