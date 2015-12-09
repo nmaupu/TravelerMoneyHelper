@@ -13,7 +13,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/welcome_title"
+        android:text="@string/welcome_hint"
         android:textSize="17dp"
         android:textStyle="italic" android:layout_marginBottom="40dp"/>
 

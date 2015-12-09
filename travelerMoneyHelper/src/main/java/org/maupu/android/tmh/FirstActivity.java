@@ -25,7 +25,7 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
     private int nbCur = 0;
 
     public FirstActivity() {
-        super(R.layout.first, R.string.welcome_title);
+        super(R.layout.first, R.string.app_name);
     }
 
     @Override
