@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AccelerateInterpolator;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public abstract class ManageableObjectActivity<T extends BaseObject> extends TmhActivity implements NumberCheckedListener, OnClickListener {
+    private static final String TAG = ManageableObjectActivity.class.getName();
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;
@@ -43,6 +45,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	}
 
 	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList, boolean animList) {
+        super(layoutList, title);
 		this.title = title;
 		this.addOrEditActivity = addOrEditActivity;
 		this.layoutList = layoutList;
@@ -52,10 +55,8 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        super.setContentView(layoutList);
+        Log.d(TAG, "Calling onCreate");
         super.onCreate(savedInstanceState);
-		super.setTitle(title);
-
 
 		// actionbar items
 		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Cancel), TmhApplication.ACTION_BAR_CANCEL);

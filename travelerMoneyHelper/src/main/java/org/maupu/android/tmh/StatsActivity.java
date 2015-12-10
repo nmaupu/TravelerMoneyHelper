@@ -77,6 +77,8 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     private final static UUID DRAWER_ITEM_TODAY = UUID.randomUUID();
 
 	public StatsActivity() {
+        super(R.layout.stats_activity, R.string.activity_title_statistics);
+
 		if(StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG) == null || StaticData.getDateField(StaticData.PREF_STATS_DATE_END) == null) {
 			Date now = new GregorianCalendar().getTime();
 			StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, DateUtil.getFirstDayOfMonth(now));
@@ -89,29 +91,16 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         }
 	}
 
-    public void autoSetExceptedCategories() {
-        try {
-            Operation o = new Operation();
-            Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
-            for (int i = 0; i < cats.length; i++)
-                StaticData.getStatsExceptedCategories().add(cats[i]);
-        } catch (NullPointerException npe) {
-            // Nothing to do here if null
-        }
-    }
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-        super.setContentView(R.layout.stats_activity);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		setTitle(R.string.activity_title_statistics);
 
-		// force portrait
-		super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // force portrait
+        super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		/* Display a custom icon as action bar item */
-		int drawableId = R.drawable.action_bar_graph;
-		int descriptionId = R.string.graph;
+        int drawableId = R.drawable.action_bar_graph;
+        int descriptionId = R.string.graph;
 
 		/*
 		final Drawable d = new ActionBarDrawable(getGDActionBar().getContext(), drawableId);
@@ -137,18 +126,29 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         });
         */
 
-		//
-		listView = (ListView)findViewById(R.id.list);
-		listView.setOnItemClickListener(this);
-		galleryDate = (Gallery)findViewById(R.id.gallery_date);
-		layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
-		galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
-		galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
+        //
+        listView = (ListView)findViewById(R.id.list);
+        listView.setOnItemClickListener(this);
+        galleryDate = (Gallery)findViewById(R.id.gallery_date);
+        layoutAdvancedGallery = (LinearLayout)findViewById(R.id.layout_period);
+        galleryDateBegin = (Gallery)findViewById(R.id.gallery_date_begin);
+        galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
-		initHeaderGalleries();
-		refreshHeaderGallery();
-		refreshDisplay();
-	}
+        initHeaderGalleries();
+        refreshHeaderGallery();
+        refreshDisplay();
+    }
+
+    public void autoSetExceptedCategories() {
+        try {
+            Operation o = new Operation();
+            Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
+            for (int i = 0; i < cats.length; i++)
+                StaticData.getStatsExceptedCategories().add(cats[i]);
+        } catch (NullPointerException npe) {
+            // Nothing to do here if null
+        }
+    }
 
 	@Override
 	protected void onDestroy() {
@@ -314,11 +314,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			cal.add(Calendar.DAY_OF_MONTH, 1);
 		}
 
-		Calendar calNow = Calendar.getInstance();
-		int d = calNow.get(Calendar.DAY_OF_MONTH);
-		int m = calNow.get(Calendar.MONTH);
-		int y = calNow.get(Calendar.YEAR);
-		Date now = new GregorianCalendar(y,m,d,0,0,0).getTime();
+		Date now = DateUtil.getCurrentDate();
 
 		cal.setTime(dateMediumMin);
 		for(int i=0; i<maxDateMedium; i++) {

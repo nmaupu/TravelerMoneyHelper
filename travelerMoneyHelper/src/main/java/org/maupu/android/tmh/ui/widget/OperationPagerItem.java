@@ -74,6 +74,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		createHeader();
 		createFooterTotal();
 
+        // Avoid having toolbar twice
+        view.findViewById(R.id.tmh_toolbar).setVisibility(View.GONE);
+
 		this.editButton = (Button)view.findViewById(R.id.button_edit);
 		this.deleteButton = (Button)view.findViewById(R.id.button_delete);
 

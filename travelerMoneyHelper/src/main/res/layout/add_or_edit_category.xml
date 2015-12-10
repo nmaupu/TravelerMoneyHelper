@@ -10,9 +10,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar" />
+        <include layout="@layout/toolbar"
+                 android:id="@+id/toolbar" />
 
         <ScrollView
             android:layout_margin="8dp"
@@ -38,6 +37,7 @@
             </LinearLayout>
 
         </ScrollView>
+
     </LinearLayout>
 
     <include layout="@layout/drawer" />

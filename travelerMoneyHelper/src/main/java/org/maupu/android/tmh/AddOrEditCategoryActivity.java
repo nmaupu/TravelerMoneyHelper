@@ -7,12 +7,13 @@ import android.view.View;
 import android.widget.TextView;
 
 public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
+    private static final String TAG = AddOrEditCategoryActivity.class.getName();
 	private TextView tvName;
 	
 	public AddOrEditCategoryActivity() {
-		super(R.string.activity_title_edition_category,  
-				R.layout.add_or_edit_category, 
-				new Category());
+		super(R.string.activity_title_edition_category,
+                R.layout.add_or_edit_category,
+                new Category());
 	}
 	
 	@Override

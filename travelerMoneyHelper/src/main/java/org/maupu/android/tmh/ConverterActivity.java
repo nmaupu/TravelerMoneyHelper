@@ -75,12 +75,13 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     private Date ratesLastUpdate = null;
     private boolean ratesCacheEnabled = true;
 
+    public ConverterActivity() {
+        super(R.layout.converter, R.string.activity_title_currency_converter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.setContentView(R.layout.converter);
         super.onCreate(savedInstanceState);
-        super.setTitle(R.string.activity_title_currency_converter);
 
         /**
          * Widgets

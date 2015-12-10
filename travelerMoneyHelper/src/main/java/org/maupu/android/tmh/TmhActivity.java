@@ -8,18 +8,14 @@ import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -37,6 +33,7 @@ import java.util.UUID;
 
 
 public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
+    private static final String TAG = TmhActivity.class.getName();
 	protected DrawerLayout drawerLayout;
 	protected ListView drawerList;
 
@@ -62,22 +59,26 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         this.contentView = contentView;
         this.title = title;
     }
-
-	public static LayoutInflater getInflater(Context ctx) {
-		return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        super.setContentView(this.contentView);
-        super.setTitle(this.title);
+        if(this.contentView != null)
+            setContentView(this.contentView);
+        if(this.title != null)
+            setTitle(this.title);
 
-		//TmhApplication.getDatabaseHelper().createSampleData();
+        Toolbar toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
+        if(toolbar != null)
+            setSupportActionBar(toolbar);
+
         initNavigationDrawer();
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //TmhApplication.getDatabaseHelper().createSampleData();
 	}
+
+    public static LayoutInflater getInflater(Context ctx) {
+        return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,7 +135,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             setActionBarHomeOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TmhActivity.class.getName(), "Drawer button clicked");
+                    Log.d(TAG, "Drawer button clicked");
                     if (drawerLayout.isDrawerOpen(drawerList))
                         drawerLayout.closeDrawer(drawerList);
                     else
@@ -144,7 +145,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             */
 		} catch(NullPointerException npe) {
 			// No drawer available in XML file
-			Log.e(TmhActivity.class.getName(), "No drawer_layout and/or no left_drawer available in XML resource");
+			Log.e(TAG, "No drawer_layout and/or no left_drawer available in XML resource");
 		}
 	}
 
@@ -224,10 +225,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 
 		return quickActionGrid;
 	}*/
-
-	protected void startActivityFromMenu(Class<?> cls) {
-		startActivity(new Intent(this, cls));
-	}
 
 	/**
 	 * Called when click refresh button on menu
@@ -318,7 +315,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 
     /**
      * Called when navigation drawer is created. To customize, override this and return
-     * an array. Separator is already included.
+     * an array. Separators are already included.
      * @return an array of NavigationDrawerIconItem corresponding to custom items
      */
     public NavigationDrawerIconItem[] buildNavigationDrawer() {
