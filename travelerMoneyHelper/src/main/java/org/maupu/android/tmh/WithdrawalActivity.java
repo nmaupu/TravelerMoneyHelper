@@ -11,6 +11,7 @@ import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
@@ -33,6 +34,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -43,6 +46,7 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher {
 	private static final int DATE_DIALOG_ID = 0;
@@ -112,8 +116,25 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 	}
-	
-	@Override
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_or_edit_menu, menu);
+        menu.findItem(R.id.action_add).setVisible(false);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_save:
+                save(true);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
 	protected void onDestroy() {
 		spinnerManagerFrom.closeAdapterCursor();
 		spinnerManagerTo.closeAdapterCursor();
@@ -368,6 +389,58 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         } catch (NumberFormatException nfe) {
             // No conversion
             Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");
+        }
+    }
+
+    private void save(boolean finishActivity) {
+        if(!validate()) {
+            SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
+        } else {
+            Account accountFrom = new Account();
+            Cursor cursor = spinnerManagerFrom.getSelectedItem();
+            accountFrom.toDTO(cursor);
+
+            Account accountTo = new Account();
+            cursor = spinnerManagerTo.getSelectedItem();
+            accountTo.toDTO(cursor);
+
+            Category category = new Category();
+            cursor = spinnerManagerCategory.getSelectedItem();
+            category.toDTO(cursor);
+
+            Double amountd = Double.valueOf(amount.getStringText().toString().trim());
+
+            Currency currency = new Currency();
+            cursor = spinnerManagerCurrency.getSelectedItem();
+            currency.toDTO(cursor);
+
+            Date date = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
+
+            // First, we debit from account
+            Operation operationFrom = new Operation();
+            operationFrom.setAccount(accountFrom);
+            operationFrom.setAmount(-1d * amountd);
+            operationFrom.setCategory(category);
+            operationFrom.setCurrency(currency);
+            operationFrom.setDate(date);
+            operationFrom.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
+            operationFrom.insert();
+
+            // Second, we credit 'to' account
+            Operation operationTo = new Operation();
+            operationTo.setAccount(accountTo);
+            operationTo.setAmount(amountd);
+            operationTo.setCategory(category);
+            operationTo.setCurrency(currency);
+            operationTo.setDate(date);
+            operationTo.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
+            operationTo.insert();
+
+            Operation.linkTwoOperations(operationFrom, operationTo);
+
+            // Dispose activity
+            if(finishActivity)
+                finish();
         }
     }
 }

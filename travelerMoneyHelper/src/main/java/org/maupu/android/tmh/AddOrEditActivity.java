@@ -69,6 +69,8 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_or_edit_menu, menu);
+        if(isEditing())
+            menu.findItem(R.id.action_add).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 
