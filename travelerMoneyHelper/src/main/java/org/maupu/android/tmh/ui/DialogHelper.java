@@ -18,7 +18,6 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
-import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 
 import android.app.Dialog;
 import android.database.Cursor;
@@ -71,9 +70,11 @@ public abstract class DialogHelper {
                         /** Setting some specific stuff as well **/
                         StaticData.setCurrentAccount(account);
                         if(tmhActivity instanceof StatsActivity) {
-                            ((StatsActivity) tmhActivity).autoSetExceptedCategories();
+                            StatsActivity a = ((StatsActivity) tmhActivity);
+                            a.autoSetExceptedCategories();
+                            a.setViewToAutoDates();
                         } else if(tmhActivity instanceof ViewPagerOperationActivity) {
-                            ((ViewPagerOperationActivity) tmhActivity).notifyChangeCurrentAccount();
+                            ((ViewPagerOperationActivity) tmhActivity).refreshAfterCurrentAccountChanged();
                         }
                         tmhActivity.refreshDisplay();
                         dialog.dismiss();

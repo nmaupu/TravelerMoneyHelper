@@ -137,5 +137,8 @@
     <string name="toolbar_edit">Édition</string>
     <string name="toolbar_withdrawal">Retrait</string>
     <string name="toolbar_save">Sauver</string>
+    <string name="toolbar_swap_mode">Change</string>
+    <string name="toolbar_graph_info">Graph ou info</string>
+    <string name="toolbar_account">Compte</string>
 
 </resources>

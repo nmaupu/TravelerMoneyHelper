@@ -275,68 +275,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {}
 
-    /*
-	@Override
-	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
-		switch(item.getItemId()) {
-		case TmhApplication.ACTION_BAR_SAVE:
-			if(!validate()) {
-				SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
-			} else {
-				Account accountFrom = new Account();
-				Cursor cursor = spinnerManagerFrom.getSelectedItem();
-				accountFrom.toDTO(cursor);
-
-				Account accountTo = new Account();
-				cursor = spinnerManagerTo.getSelectedItem();
-				accountTo.toDTO(cursor);
-
-				Category category = new Category();
-				cursor = spinnerManagerCategory.getSelectedItem();
-				category.toDTO(cursor);
-
-				Double amountd = Double.valueOf(amount.getStringText().toString().trim());
-
-				Currency currency = new Currency();
-				cursor = spinnerManagerCurrency.getSelectedItem();
-				currency.toDTO(cursor);
-
-				Date date = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
-				
-				// First, we debit from account
-				Operation operationFrom = new Operation();
-				operationFrom.setAccount(accountFrom);
-				operationFrom.setAmount(-1d * amountd);
-				operationFrom.setCategory(category);
-				operationFrom.setCurrency(currency);
-				operationFrom.setDate(date);
-				operationFrom.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
-				operationFrom.insert();
-
-				// Second, we credit 'to' account
-				Operation operationTo = new Operation();
-				operationTo.setAccount(accountTo);
-				operationTo.setAmount(amountd);
-				operationTo.setCategory(category);
-				operationTo.setCurrency(currency);
-				operationTo.setDate(date);
-				operationTo.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
-				operationTo.insert();
-
-				Operation.linkTwoOperations(operationFrom, operationTo);
-
-				// Dispose activity
-				finish();
-			}
-			break;
-		default:
-			return super.onHandleActionBarItemClick(item, position);		
-		}
-
-		return true;
-	}
-    */
-
 	protected boolean validate() {
 		Date d = new GregorianCalendar(mYear, mMonth, mDay).getTime();
 		StaticData.setCurrentOperationDatePickerDate(d);

@@ -182,9 +182,9 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     }
 
     /**
-     * Call to refresh view when static current account is changed
+     * Call it to refresh view when static current account is changed
      */
-    public void notifyChangeCurrentAccount() {
+    public void refreshAfterCurrentAccountChanged() {
         Operation dummyOp = new Operation();
         Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
         adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month

@@ -27,6 +27,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
+import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
@@ -38,6 +39,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -98,34 +101,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         // force portrait
         super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-		/* Display a custom icon as action bar item */
-        int drawableId = R.drawable.action_bar_graph;
-        int descriptionId = R.string.graph;
-
-		/*
-		final Drawable d = new ActionBarDrawable(getGDActionBar().getContext(), drawableId);
-		ActionBarItem abiGraph = getGDActionBar().newActionBarItem(NormalActionBarItem.class).setDrawable(d).setContentDescription(descriptionId);
-		addActionBarItem(abiGraph, TmhApplication.ACTION_BAR_GRAPH);
-
-		// Change list type (sum by category or by date)
-		addActionBarItem(Type.Settings, TmhApplication.ACTION_BAR_GROUPBY);
-		// Possibility to change between accounts
-		addActionBarItem(Type.Group, TmhApplication.ACTION_BAR_ACCOUNT);
-
-		//
-		quickActionGridFilter = new QuickActionGrid(this);
-		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.date));
-		quickActionGridFilter.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_sort_by_size, R.string.category));
-
-		quickActionGridFilter.setOnQuickActionClickListener(new OnQuickActionClickListener() {
-            @Override
-            public void onQuickActionClicked(QuickActionWidget widget, int position) {
-                currentGroupBy = position;
-                refreshDisplay();
-            }
-        });
-        */
-
         //
         listView = (ListView)findViewById(R.id.list);
         listView.setOnItemClickListener(this);
@@ -135,8 +110,31 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         galleryDateEnd = (Gallery)findViewById(R.id.gallery_date_end);
 
         initHeaderGalleries();
-        refreshHeaderGallery();
-        refreshDisplay();
+        setViewToAutoDates();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.stats_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_swap_mode:
+                toggleGroupBy();
+                break;
+            case R.id.action_graph_info:
+                toggleGraphAndText();
+                break;
+            case R.id.action_account:
+                DialogHelper.popupDialogAccountChooser(this);
+                resetDialogCategoryChooser = true;
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void autoSetExceptedCategories() {
@@ -179,30 +177,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
                 refreshHeaderGallery();
                 refreshDisplay();
             } else if(DRAWER_ITEM_AUTO.equals(item.getTag())) {
-                StaticData.setStatsAdvancedFilter(true);
-
-                Operation dummyOp = new Operation();
-                Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
-                Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
-                Log.d(StatsActivity.class.getName(), "Auto dates computed beg="+autoBeg+", end="+autoEnd);
-                if(autoBeg != null && autoEnd != null) {
-                    currentDateDisplayed.setTime(autoEnd);
-                    StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
-                    StaticData.setDateField(StaticData.PREF_STATS_DATE_END, autoEnd);
-
-                    initHeaderGalleries();
-
-                    int autoPos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(autoBeg);
-                    galleryDateBegin.setSelection(autoPos);
-                    ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
-
-                    autoPos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(autoEnd);
-                    galleryDateEnd.setSelection(autoPos);
-                    ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
-                }
-
-                refreshHeaderGallery();
-                refreshDisplay();
+                setViewToAutoDates();
             } else if(DRAWER_ITEM_CAT_EXCEPT.equals(item.getTag())) {
                 DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
                 resetDialogCategoryChooser = false;
@@ -233,6 +208,33 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
         }
     }
 
+    public void setViewToAutoDates() {
+        StaticData.setStatsAdvancedFilter(true);
+
+        Operation dummyOp = new Operation();
+        Date autoBeg = dummyOp.getFirstDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
+        Date autoEnd = dummyOp.getLastDate(StaticData.getCurrentAccount(), StaticData.getStatsExceptedCategoriesToArray());
+        Log.d(StatsActivity.class.getName(), "Auto dates computed beg="+autoBeg+", end="+autoEnd);
+        if(autoBeg != null && autoEnd != null) {
+            currentDateDisplayed.setTime(autoEnd);
+            StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, autoBeg);
+            StaticData.setDateField(StaticData.PREF_STATS_DATE_END, autoEnd);
+
+            initHeaderGalleries();
+
+            int autoPos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(autoBeg);
+            galleryDateBegin.setSelection(autoPos);
+            ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+
+            autoPos = ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(autoEnd);
+            galleryDateEnd.setSelection(autoPos);
+            ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
+        }
+
+        refreshHeaderGallery();
+        refreshDisplay();
+    }
+
     @Override
     public NavigationDrawerIconItem[] buildNavigationDrawer() {
         return new NavigationDrawerIconItem[]{
@@ -254,31 +256,6 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
                         R.string.categories_exception),
         };
     }
-
-    /*
-	@Override
-	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
-		switch(item.getItemId()) {
-		case TmhApplication.ACTION_BAR_GROUPBY:
-			quickActionGridFilter.show(item.getItemView());
-			break;
-		case TmhApplication.ACTION_BAR_ACCOUNT:
-			DialogHelper.popupDialogAccountChooser(this);
-			resetDialogCategoryChooser = true;
-			break;
-		case TmhApplication.ACTION_BAR_GRAPH:
-			// Toggle graph / text stats
-			toggleGraphAndText();
-			break;
-		default:
-			return super.onHandleActionBarItemClick(item, position);
-		}
-
-		return true;
-	}
-	*/
-
-
 
 	private void initHeaderGalleries() {
 		List<Date> datesAdvanced = new ArrayList<Date>();
@@ -421,7 +398,7 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 			// Update display for this period
 			DateGalleryAdapter adapter = (DateGalleryAdapter)gallery.getAdapter();
 			adapter.notifyDataSetChanged();
-			StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, position);
+            StaticData.setPreferenceValueInt(StatsActivity.LAST_MONTH_SELECTED, position);
 		}
 
 		refreshDisplay();
@@ -631,9 +608,13 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private void showGraph(boolean b) {
 		StaticData.showGraph = b;
 		graphViewLayout.setVisibility(StaticData.showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
-		statsTextLayout.setVisibility(!StaticData.showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
+        statsTextLayout.setVisibility(!StaticData.showGraph ? LinearLayout.VISIBLE : LinearLayout.GONE);
 	}
-	
+
+    private void toggleGroupBy() {
+        currentGroupBy = currentGroupBy == GROUP_BY_DATE ? GROUP_BY_CATEGORY : GROUP_BY_DATE;
+        refreshDisplay();
+    }
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
 		Cursor c = (Cursor)parent.getAdapter().getItem(pos);

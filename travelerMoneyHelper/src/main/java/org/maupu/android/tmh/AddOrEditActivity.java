@@ -36,14 +36,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// actionbar items
-        /*
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
-		
-		saveAndAddItem = CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.SaveAndAdd);
-		addActionBarItem(saveAndAddItem, TmhApplication.ACTION_BAR_SAVE_AND_ADD);
-		*/
 
 		// Retrieve extra parameter
 		retrieveItemFromExtra();
@@ -54,11 +46,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
             v.requestFocus();
             SoftKeyboardHelper.forceShowUp(this);
         }
-
-        /*
-		if(isEditing() || appInit)
-			CustomActionBarItem.setEnableItem(false, saveAndAddItem);
-		*/
 		
 		// Fill form fields
 		baseObjectToFields(obj);
@@ -69,7 +56,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_or_edit_menu, menu);
-        if(isEditing())
+        if(isEditing() || appInit)
             menu.findItem(R.id.action_add).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
@@ -114,27 +101,6 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 			throw cce;
 		}
 	}
-
-    /*
-	@Override
-	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
-		switch(item.getItemId()) {
-		case TmhApplication.ACTION_BAR_SAVE:
-			onContinue(true);
-			break;
-		case TmhApplication.ACTION_BAR_SAVE_AND_ADD:
-			if(onContinue(false)) {
-				Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
-				obj.reset();
-				refreshDisplay();
-			}
-			break;
-		default:
-			return super.onHandleActionBarItemClick(item, position);
-		}
-		
-		return true;
-	}*/
 
 	protected boolean onContinue(final boolean disposeActivity) {
 		if(validate()) {
