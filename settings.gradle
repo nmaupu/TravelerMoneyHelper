@@ -1,2 +1,1 @@
-include ':greenDroid'
 include ':travelerMoneyHelper'
