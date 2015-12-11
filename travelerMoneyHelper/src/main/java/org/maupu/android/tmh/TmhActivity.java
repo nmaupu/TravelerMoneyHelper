@@ -69,8 +69,12 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             setTitle(this.title);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
-        if(toolbar != null)
-            setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.tmh_icon_verysmall);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         initNavigationDrawer();
         //TmhApplication.getDatabaseHelper().createSampleData();

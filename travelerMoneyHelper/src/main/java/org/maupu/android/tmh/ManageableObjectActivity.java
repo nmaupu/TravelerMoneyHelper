@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AccelerateInterpolator;
@@ -32,9 +34,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	private Button editButton;
 	private Button deleteButton;
 	private Button updateButton;
-	private int title;
 	private Class<?> addOrEditActivity;
-	private Integer layoutList;
 	private T obj;
 	//private QuickActionGrid quickActionGrid;
 	private boolean animList = false;
@@ -46,9 +46,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 	public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList, boolean animList) {
         super(layoutList, title);
-		this.title = title;
 		this.addOrEditActivity = addOrEditActivity;
-		this.layoutList = layoutList;
 		this.obj = obj;
 		this.animList = animList;
 	}
@@ -94,26 +92,22 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		refreshDisplay();
 	}
 
-    /*
-	@Override
-	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
-		switch(item.getItemId()) {
-		case TmhApplication.ACTION_BAR_ADD:
-			onAddClicked();
-			break;
-		//case TmhApplication.ACTION_BAR_EDIT:
-		//	quickActionGrid.show(item.getItemView());
-		//	break;
-		//case TmhApplication.ACTION_BAR_CANCEL:
-		//	startActivity(new Intent(this, ViewPagerOperationActivity.class));
-		//	break;
-		default:
-			return super.onHandleActionBarItemClick(item, position);
-		}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.manage_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-		return true;
-	}
-	*/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                onAddClicked();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 	public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
 		checkableCursorAdapter = new CheckableCursorAdapter(this, layout, data, from, to);
@@ -289,7 +283,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	
 	/**
 	 * Callback when clicking a button
-	 * @param the button clicked
+	 * @param objs button clicked
 	 */
 	protected abstract void onClickUpdate(Integer[] objs);
 

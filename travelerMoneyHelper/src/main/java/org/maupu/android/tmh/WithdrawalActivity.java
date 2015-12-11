@@ -67,13 +67,15 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
     private int mMinutes = 0;
     private int mSeconds = 0;
 
+    public WithdrawalActivity() {
+        super(R.layout.withdrawal, R.string.activity_title_edition_withdrawal);
+    }
+
 
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        super.setContentView(R.layout.withdrawal);
         super.onCreate(savedInstanceState);
-		setTitle(R.string.activity_title_edition_withdrawal);
 
         /*
 		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);

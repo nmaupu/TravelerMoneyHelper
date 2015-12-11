@@ -17,11 +17,7 @@ public abstract class NumberUtil {
 	}
 	
 	public static Double parseDecimal(String value) {
-		try {
-			return NF.parse(value).doubleValue();
-		} catch(ParseException pe) {
-			return null;
-		}
+        return Double.parseDouble(value);
 	}
 
 	private static DecimalFormat init() {

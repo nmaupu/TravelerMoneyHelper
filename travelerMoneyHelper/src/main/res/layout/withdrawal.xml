@@ -4,244 +4,251 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dip"
-        android:layout_weight="1" >
 
-        <RelativeLayout
-            android:id="@+id/layout_root"
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+        <include layout="@layout/toolbar" />
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dip"
+            android:layout_weight="1" >
 
-            <LinearLayout
-                android:id="@+id/layout_currency_chooser"
+            <RelativeLayout
+                android:id="@+id/layout_root"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
+                android:layout_height="wrap_content" >
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/layout_currency_chooser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/debit" />
-
-                <Spinner
-                    android:id="@+id/spinner_from"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_currency_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_currency_chooser"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/credit" />
-
-                <Spinner
-                    android:id="@+id/spinner_to"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_amount_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_currency_info"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/currency" />
-
-                <Spinner
-                    android:id="@+id/spinner_currency"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_amount_edit"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:text="@string/amount" />
-
-                <org.maupu.android.tmh.ui.widget.NumberEditText
-                    android:id="@+id/amount"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view_separator1"
-                android:layout_width="match_parent"
-                android:layout_below="@id/layout4"
-                android:layout_alignParentLeft="true"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-
-            <LinearLayout
-                android:id="@+id/layout5"
-                android:layout_width="fill_parent"
-                android:layout_below="@id/view_separator1"
-                android:layout_alignParentLeft="true"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="3dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="3dip" >
-
-                <TextView
-                    android:id="@+id/text_amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right|center_vertical"
-                    android:layout_weight="1"
-                    android:text="0.00" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:text=" -> " />
-
-                <TextView
-                    android:id="@+id/converted_amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="left|center_vertical"
-                    android:layout_weight="1"
-                    android:text="0.00" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view_separator2"
-                android:layout_below="@id/layout5"
-                android:layout_alignParentLeft="true"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-
-            <LinearLayout
-                android:id="@+id/layout6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/view_separator2"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/category" />
-
-                <Spinner
-                    android:id="@+id/spinner_category"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout6"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/date" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
 
                     <TextView
-                        android:id="@+id/date"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="false"
-                        android:textColor="@color/blue"
-                        android:textSize="18sp" />
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="@string/debit" />
 
-                    <Button
-                        android:id="@+id/button_today"
-                        android:layout_width="wrap_content"
+                    <Spinner
+                        android:id="@+id/spinner_from"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignRight="@id/date"
-                        android:layout_centerVertical="true"
-                        android:text="@string/set_to_today_button" />
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_currency_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_currency_chooser"
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
 
                     <TextView
-                        android:id="@+id/time"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignRight="@id/date"
-                        android:layout_below="@id/date"
-                        android:layout_centerVertical="false"
-                        android:textColor="@color/blue"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
-                </RelativeLayout>
-            </LinearLayout>
-        </RelativeLayout>
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="@string/credit" />
 
-    </ScrollView>
+                    <Spinner
+                        android:id="@+id/spinner_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_amount_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_currency_info"
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="@string/currency" />
+
+                    <Spinner
+                        android:id="@+id/spinner_currency"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_amount_edit"
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
+
+                    <TextView
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="3"
+                        android:text="@string/amount" />
+
+                    <org.maupu.android.tmh.ui.widget.NumberEditText
+                        android:id="@+id/amount"
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:inputType="numberDecimal" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/view_separator1"
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/layout4"
+                    android:layout_alignParentLeft="true"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+                <LinearLayout
+                    android:id="@+id/layout5"
+                    android:layout_width="fill_parent"
+                    android:layout_below="@id/view_separator1"
+                    android:layout_alignParentLeft="true"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="3dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip"
+                    android:paddingTop="3dip" >
+
+                    <TextView
+                        android:id="@+id/text_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right|center_vertical"
+                        android:layout_weight="1"
+                        android:text="0.00" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:text=" -> " />
+
+                    <TextView
+                        android:id="@+id/converted_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:layout_weight="1"
+                        android:text="0.00" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/view_separator2"
+                    android:layout_below="@id/layout5"
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+                <LinearLayout
+                    android:id="@+id/layout6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/view_separator2"
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="@string/category" />
+
+                    <Spinner
+                        android:id="@+id/spinner_category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout6"
+                    android:orientation="horizontal"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="2dip" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="@string/date" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" >
+
+                        <TextView
+                            android:id="@+id/date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="false"
+                            android:textColor="@color/blue"
+                            android:textSize="18sp" />
+
+                        <Button
+                            android:id="@+id/button_today"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignRight="@id/date"
+                            android:layout_centerVertical="true"
+                            android:text="@string/set_to_today_button" />
+
+                        <TextView
+                            android:id="@+id/time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignRight="@id/date"
+                            android:layout_below="@id/date"
+                            android:layout_centerVertical="false"
+                            android:textColor="@color/blue"
+                            android:textSize="12sp"
+                            android:textStyle="italic" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </ScrollView>
+    </LinearLayout>
 
     <include layout="@layout/drawer" />
 </android.support.v4.widget.DrawerLayout>

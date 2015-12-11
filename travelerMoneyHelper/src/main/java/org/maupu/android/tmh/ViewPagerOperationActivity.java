@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.UUID;
-import java.util.zip.Inflater;
 
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
@@ -21,8 +20,8 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.DatePicker;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener, DatePickerDialog.OnDateSetListener {
@@ -89,6 +88,26 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		viewpager.setOnPageChangeListener(this);
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.viewpager_operation_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_add:
+                startActivity(new Intent(this, AddOrEditOperationActivity.class));
+                break;
+            case R.id.action_withdrawal:
+                startActivity(new Intent(this, WithdrawalActivity.class));
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onResume() {

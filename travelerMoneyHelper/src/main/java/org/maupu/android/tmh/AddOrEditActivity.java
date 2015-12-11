@@ -10,7 +10,10 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Class representing an Activity to add or edit objects
@@ -20,17 +23,13 @@ import android.view.View;
 public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivity {
 	public static final String EXTRA_OBJECT_ID = "base_object";
 	public static final String EXTRA_APP_INIT = "app_init";
-	private int contentView;
 	private T obj;
-	private int title;
 	//private ActionBarItem saveAndAddItem;
 	private boolean appInit = false;
 
 	public AddOrEditActivity(int title, int contentView, T obj) {
         super(contentView, title);
-		this.contentView = contentView;
 		this.obj = obj;
-		this.title = title;
 	}
 
 	@SuppressLint("NewApi")
@@ -67,7 +66,31 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
         refreshDisplay();
 	}
 
-	@SuppressWarnings("unchecked")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_or_edit_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_save:
+                onContinue(true);
+                break;
+            case R.id.action_add:
+                if(onContinue(false)) {
+                    Toast.makeText(this, getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
+                    obj.reset();
+                    refreshDisplay();
+                }
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("unchecked")
 	private void retrieveItemFromExtra() {
 		try {
 			Intent intent = this.getIntent();

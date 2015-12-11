@@ -5,85 +5,92 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ScrollView
-        android:layout_margin="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
 
-        <LinearLayout
+        <include layout="@layout/toolbar" />
+
+        <ScrollView
+            android:layout_margin="8dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" >
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2"
-                            android:text="@string/name" />
-
-                        <EditText
-                            android:id="@+id/name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2"
-                            android:gravity="center_vertical"
-                            android:text="@string/icon" />
-
-                        <ImageView
-                            android:id="@+id/icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:clickable="true"
-                            android:src="@drawable/icon_default" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2"
-                            android:gravity="center_vertical"
-                            android:text="@string/currency" />
-
-                        <Spinner
-                            android:id="@+id/currency"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1" />
-                    </LinearLayout>
-                </LinearLayout>
+                            android:orientation="horizontal" >
 
-        </LinearLayout>
-    </ScrollView>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="@string/name" />
+
+                            <EditText
+                                android:id="@+id/name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:gravity="center_vertical"
+                                android:text="@string/icon" />
+
+                            <ImageView
+                                android:id="@+id/icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:clickable="true"
+                                android:src="@drawable/icon_default" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:gravity="center_vertical"
+                                android:text="@string/currency" />
+
+                            <Spinner
+                                android:id="@+id/currency"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
     <include layout="@layout/drawer" />
 </android.support.v4.widget.DrawerLayout>

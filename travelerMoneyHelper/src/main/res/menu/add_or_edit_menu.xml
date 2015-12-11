@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_save"
+          android:title="@string/toolbar_save"
+          android:orderInCategory="10"
+          app:showAsAction="ifRoom"
+          android:icon="@drawable/ic_save_white" />
+
+    <item android:id="@+id/action_add"
+          android:title="@string/toolbar_add"
+          android:orderInCategory="20"
+          app:showAsAction="ifRoom|withText"
+          android:icon="@drawable/ic_add_circle_white" />
+
+</menu>
