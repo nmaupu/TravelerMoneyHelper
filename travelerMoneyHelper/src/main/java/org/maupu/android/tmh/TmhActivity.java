@@ -4,6 +4,7 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.ui.ImageViewHelper;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
@@ -177,6 +178,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, R.string.parameters));
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, R.string.refresh));
 
+            final TmhActivity thisActivity = this;
             /** Navigation drawer itself **/
             navigationDrawer = new DrawerBuilder()
                     .withActivity(this)
@@ -191,6 +193,20 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                     .withAccountHeader(accountHeader)
                     .withToolbar(toolbar)
                     .withActionBarDrawerToggle(true)
+                    .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                        @Override
+                        public void onDrawerOpened(View drawerView) {
+                            SoftKeyboardHelper.hide(thisActivity);
+                        }
+
+                        @Override
+                        public void onDrawerClosed(View drawerView) {}
+
+                        @Override
+                        public void onDrawerSlide(View drawerView, float slideOffset) {
+                            SoftKeyboardHelper.hide(thisActivity);
+                        }
+                    })
                     .withOnDrawerItemClickListener(this)
                     .build();
 
