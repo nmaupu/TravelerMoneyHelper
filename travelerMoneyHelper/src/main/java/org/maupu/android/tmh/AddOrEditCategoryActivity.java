@@ -6,6 +6,8 @@ import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.UUID;
+
 public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
     private static final String TAG = AddOrEditCategoryActivity.class.getName();
 	private TextView tvName;
@@ -15,8 +17,13 @@ public class AddOrEditCategoryActivity extends AddOrEditActivity<Category> {
                 R.layout.add_or_edit_category,
                 new Category());
 	}
-	
-	@Override
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_CATEGORIES;
+    }
+
+    @Override
 	protected View initResources() {
 		tvName = (TextView)findViewById(R.id.name);
         return tvName;

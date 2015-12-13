@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import org.maupu.android.tmh.R;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
@@ -20,4 +21,13 @@ public abstract class ImageViewHelper {
 			imageView.setImageResource(R.drawable.icon_default);
 		}
 	}
+
+    public static Bitmap getBitmapIcon(Context ctx, String filename) {
+        try {
+            FileInputStream fIn = ctx.openFileInput(filename);
+            return BitmapFactory.decodeStream(fIn);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

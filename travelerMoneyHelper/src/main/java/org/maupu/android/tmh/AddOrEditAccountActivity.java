@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
@@ -63,7 +64,12 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 		super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
 	}
 
-	@Override
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_ACCOUNTS;
+    }
+
+    @Override
 	protected View initResources() {
 		imageViewIcon = (ImageView)findViewById(R.id.icon);
 		textViewName = (TextView)findViewById(R.id.name);

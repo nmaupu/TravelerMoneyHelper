@@ -17,6 +17,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
@@ -43,7 +46,7 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     public static final String PREFS_CONVERTER_CURRENCY_2 = "ConverterActivity_currency_2";
     public static final String PREFS_CONVERTER_AMOUNT = "ConverterActivity_amount";
 
-    private static final String DRAWER_ITEM_UPDATE_RATES = UUID.randomUUID().toString();
+    private static final int DRAWER_ITEM_UPDATE_RATES = TmhApplication.getIdentifier("DRAWER_ITEM_UPDATE_RATES");
 
     /** Chooser widgets **/
     private TextView tvCurrencyCode1, tvCurrencyCode2;
@@ -77,6 +80,11 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
 
     public ConverterActivity() {
         super(R.layout.converter, R.string.activity_title_currency_converter);
+    }
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_CONVERTER;
     }
 
     @Override
@@ -145,9 +153,9 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     }
 
     @Override
-    public NavigationDrawerIconItem[] buildNavigationDrawer() {
-        return new NavigationDrawerIconItem[] {
-                createSmallNavigationDrawerItem(
+    public IDrawerItem[] buildNavigationDrawer() {
+        return new IDrawerItem[] {
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_UPDATE_RATES,
                         R.drawable.ic_update_black,
                         R.string.force_update_currency),
@@ -155,15 +163,15 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     }
 
     @Override
-    public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
-        if(item.getTag() == DRAWER_ITEM_UPDATE_RATES) {
+    public boolean onItemClick(View view, int position, IDrawerItem item) {
+        if(item.getIdentifier() == DRAWER_ITEM_UPDATE_RATES) {
             Log.d(TAG, "Forcing rates update from the internet");
             ratesCacheEnabled = false;
             updateConvertedAmounts();
             refreshDisplay();
-        } else {
-            super.onNavigationDrawerClick(item);
         }
+
+        return super.onItemClick(view, position, item);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.maupu.android.tmh;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
@@ -33,6 +34,11 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		// animList is disabled because of bad performance
 		super(R.string.activity_title_manage_operation, AddOrEditOperationActivity.class, new Operation(), false);
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_OPERATIONS;
+    }
 
 	@Override
 	protected boolean validateConstraintsForDeletion(Operation obj) {

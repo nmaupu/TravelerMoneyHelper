@@ -11,18 +11,6 @@ public class TmhApplication extends Application {
 	private static Context applicationContext;
 	private static DatabaseHelper dbHelper;
 	
-	public static final int ACTION_BAR_ADD = 0;
-	public static final int ACTION_BAR_EDIT = 1;
-	public static final int ACTION_BAR_ADD_WITHDRAWAL = 2;
-	public static final int ACTION_BAR_SAVE = 3;
-	public static final int ACTION_BAR_SAVE_AND_ADD = 4;
-	public static final int ACTION_BAR_CANCEL = 5;
-	public static final int ACTION_BAR_INFO = 6;
-	public static final int ACTION_BAR_GROUPBY = 7;
-	public static final int ACTION_BAR_ACCOUNT = 8;
-	public static final int ACTION_BAR_GRAPH = 9;
-	
-	
 	public static final Class<?> HOME_ACTIVITY_CLASS = FirstActivity.class;
 
 	@Override
@@ -30,7 +18,6 @@ public class TmhApplication extends Application {
 		super.onCreate();
 		TmhApplication.applicationContext = this.getApplicationContext();
 		dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
-		//initDefaultCurrency();
 	}
 	
 	public static Context getAppContext() {
@@ -57,4 +44,8 @@ public class TmhApplication extends Application {
 		StaticData.setWithdrawalCategory(null);
 		StaticData.setMainCurrency(null);
 	}
+
+    public static int getIdentifier(String s) {
+        return s == null ? -1 : Math.abs(s.hashCode());
+    }
 }

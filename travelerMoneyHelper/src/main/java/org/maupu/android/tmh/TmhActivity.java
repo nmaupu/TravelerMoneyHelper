@@ -1,55 +1,67 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.ui.INavigationDrawerCallback;
-import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
+import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.TmhNavigationDrawerClickListener;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
-import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
-import android.widget.Adapter;
 import android.widget.ListView;
+
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
-public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, INavigationDrawerCallback {
+public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, Drawer.OnDrawerItemClickListener {
     private static final String TAG = TmhActivity.class.getName();
-	protected DrawerLayout drawerLayout;
-	protected ListView drawerList;
+	public AccountHeader accountHeader;
+    public Drawer navigationDrawer;
 
     /** Navigation drawer items **/
-    protected static final String DRAWER_ITEM_OPERATIONS = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_STATS = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_CONVERTER = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_ACCOUNTS = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_CATEGORIES = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_CURRENCIES = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_PARAMETERS = UUID.randomUUID().toString();
-    protected static final String DRAWER_ITEM_REFRESH = UUID.randomUUID().toString();
+    protected static final int DRAWER_ITEM_OPERATIONS = TmhApplication.getIdentifier("DRAWER_ITEM_OPERATIONS");
+    protected static final int DRAWER_ITEM_STATS = TmhApplication.getIdentifier("DRAWER_ITEM_STATS");
+    protected static final int DRAWER_ITEM_CONVERTER = TmhApplication.getIdentifier("DRAWER_ITEM_CONVERTER");
+    protected static final int DRAWER_ITEM_ACCOUNTS = TmhApplication.getIdentifier("DRAWER_ITEM_ACCOUNTS");
+    protected static final int DRAWER_ITEM_CATEGORIES = TmhApplication.getIdentifier("DRAWER_ITEM_CATEGORIES");
+    protected static final int DRAWER_ITEM_CURRENCIES = TmhApplication.getIdentifier("DRAWER_ITEM_CURRENCIES");
+    protected static final int DRAWER_ITEM_PARAMETERS = TmhApplication.getIdentifier("DRAWER_ITEM_PARAMETERS");
+    protected static final int DRAWER_ITEM_REFRESH = TmhApplication.getIdentifier("DRAWER_ITEM_REFRESH");
 
-    protected Integer menuResId;
     protected Integer contentView;
     protected Integer title;
+    protected Toolbar toolbar;
 
     public TmhActivity() {
         super();
@@ -68,12 +80,12 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         if(this.title != null)
             setTitle(this.title);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
+        toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.tmh_icon_verysmall);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white);
+            getSupportActionBar().setHomeButtonEnabled(false);
         }
 
         initNavigationDrawer();
@@ -98,102 +110,158 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     private void initNavigationDrawer() {
-		try {
-			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			drawerList = (ListView) findViewById(R.id.left_drawer);
+        if(accountHeader == null) {
+            /** Header **/
+            accountHeader = new AccountHeaderBuilder()
+                    .withActivity(this)
+                    .withHeaderBackground(R.drawable.navigation_drawer_header)
+                    .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                        @Override
+                        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
+                            Account a = (Account) ((ProfileDrawerItem) profile).getTag();
+                            StaticData.setCurrentAccount(a);
+                            refreshAfterCurrentAccountChanged();
+                            return false;
+                        }
+                    }).build();
 
-            /** Main items **/
-			List<NavigationDrawerIconItem> items = new ArrayList<NavigationDrawerIconItem>();
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, getResources().getString(R.string.dashboard_operation), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, getResources().getString(R.string.dashboard_stats), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CONVERTER, R.drawable.ic_converter_black, getResources().getString(R.string.converter), this));
-            items.add(NavigationDrawerIconItem.separator());
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CURRENCIES, R.drawable.ic_currency_black, getResources().getString(R.string.currencies), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, getResources().getString(R.string.categories), this));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, getResources().getString(R.string.accounts), this));
+            Account account = new Account();
+            Cursor cursor = account.fetchAll();
+            cursor.moveToFirst();
+            int currentAccountId = StaticData.getCurrentAccount().getId();
+            IProfile profileToActivate = null;
+            for (int i = 0; i < cursor.getCount(); i++) {
+                int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
+                int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
+                int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
+                Bitmap icon = ImageViewHelper.getBitmapIcon(this, cursor.getString(idxIcon));
+                Account a = new Account();
+                a.toDTO(cursor);
+                IProfile profile = new ProfileDrawerItem()
+                        .withTag(a)
+                        .withName(cursor.getString(idxName))
+                        .withIcon(icon);
+                // Select current account on nav drawer header
+                if (cursor.getInt(idxId) == currentAccountId)
+                    profileToActivate = profile;
+                accountHeader.addProfile(profile, i);
+                cursor.moveToNext();
+            }
+
+            if (profileToActivate != null)
+                accountHeader.setActiveProfile(profileToActivate);
+        }
+
+        if(navigationDrawer == null) {
+
+            /** Items **/
+            List<IDrawerItem> items = new ArrayList<>();
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, R.string.dashboard_operation));
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, R.string.dashboard_stats));
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_CONVERTER, R.drawable.ic_converter_black, R.string.converter));
+            items.add(new DividerDrawerItem());
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_CURRENCIES, R.drawable.ic_currency_black, R.string.currencies));
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, R.string.categories));
+            items.add(createPrimaryDrawerItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, R.string.accounts));
 
             /** Custom items **/
-            NavigationDrawerIconItem[] customItems = buildNavigationDrawer();
-            if(customItems != null) {
-                items.add(NavigationDrawerIconItem.separator());
+            IDrawerItem[] customItems = buildNavigationDrawer();
+            if (customItems != null) {
+                items.add(new DividerDrawerItem());
                 items.addAll(Arrays.asList(customItems));
             }
 
-            /** sepatator **/
-            items.add(NavigationDrawerIconItem.separator());
+            items.add(new DividerDrawerItem());
 
             /** Last items : refresh, parameters, etc ... **/
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, getResources().getString(R.string.parameters), this, NavigationDrawerIconItem.ItemType.SMALL));
-            items.add(new NavigationDrawerIconItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, getResources().getString(R.string.refresh), this, NavigationDrawerIconItem.ItemType.SMALL));
+            items.add(createSecondaryDrawerItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, R.string.parameters));
+            items.add(createSecondaryDrawerItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, R.string.refresh));
 
-            /** Add items to adapter **/
-			drawerList.setAdapter(new IconArrayAdapter(this, R.layout.drawer_list_item, items));
-			((IconArrayAdapter)drawerList.getAdapter()).selectItem(StaticData.navigationDrawerItemSelected);
+            /** Navigation drawer itself **/
+            navigationDrawer = new DrawerBuilder()
+                    .withActivity(this)
+                    .addDrawerItems(items.toArray(new IDrawerItem[0]))
+                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                        @Override
+                        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                            Log.d(TAG, "Drawer item clicked");
+                            return false;
+                        }
+                    })
+                    .withAccountHeader(accountHeader)
+                    .withToolbar(toolbar)
+                    .withActionBarDrawerToggle(true)
+                    .withOnDrawerItemClickListener(this)
+                    .build();
 
-            /** Listener **/
-			drawerList.setOnItemClickListener(new TmhNavigationDrawerClickListener(drawerLayout, drawerList));
+            // Order and boolean are important to have custom icon as home up indicator
+            navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-            /** Change home icon and open / close drawer on click **/
-            /*
-            setActionBarHomeDrawable(R.drawable.ic_menu_white);
-            setActionBarHomeOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Drawer button clicked");
-                    if (drawerLayout.isDrawerOpen(drawerList))
-                        drawerLayout.closeDrawer(drawerList);
-                    else
-                        drawerLayout.openDrawer(drawerList);
-                }
-            });
-            */
-		} catch(NullPointerException npe) {
-			// No drawer available in XML file
-			Log.e(TAG, "No drawer_layout and/or no left_drawer available in XML resource");
-		}
-	}
+        /** Select good item in nav drawer **/
+        this.selectDrawerItem(whatIsMyDrawerIdentifier());
+    }
 
-	@Override
-	public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
+    public void refreshAfterCurrentAccountChanged() {
+        List<IProfile> profiles = accountHeader.getProfiles();
+        Iterator<IProfile> it = profiles.iterator();
+        while(it.hasNext()) {
+            ProfileDrawerItem p = (ProfileDrawerItem)it.next();
+            Account a = (Account)p.getTag();
+            if(StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId())
+                accountHeader.setActiveProfile(p);
+        }
+    }
+
+    /**
+     * Called when navigation drawer's item is clicked
+     * @param view
+     * @param position
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onItemClick(View view, int position, IDrawerItem item) {
 		Intent intent = null;
         boolean killCurrentActivity = true;
 
-        if(item.getTag() instanceof String) {
-            /** Determine what item has been clicked **/
-            if (item.getTag() == DRAWER_ITEM_REFRESH) {
-                refreshDisplay();
-            } else if (item.getTag() == DRAWER_ITEM_PARAMETERS) {
-                intent = new Intent(this, PreferencesActivity.class);
-                killCurrentActivity = false;
-            } else if (item.getTag() == DRAWER_ITEM_OPERATIONS) {
-                intent = new Intent(this, ViewPagerOperationActivity.class);
-            } else if (item.getTag() == DRAWER_ITEM_STATS) {
-                intent = new Intent(this, StatsActivity.class);
-            } else if(item.getTag() == DRAWER_ITEM_CONVERTER) {
-                intent = new Intent(this, ConverterActivity.class);
-            } else if (item.getTag() == DRAWER_ITEM_ACCOUNTS) {
-                intent = new Intent(this, ManageAccountActivity.class);
-            } else if (item.getTag() == DRAWER_ITEM_CATEGORIES) {
-                intent = new Intent(this, ManageCategoryActivity.class);
-            } else if (item.getTag() == DRAWER_ITEM_CURRENCIES) {
-                intent = new Intent(this, ManageCurrencyActivity.class);
-            }
-
-            /** Launch corresponding activity if recognized **/
-            if(intent != null) {
-                if(killCurrentActivity)
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                startActivity(intent);
-
-                if(killCurrentActivity)
-                    finish();
-            }
+        /** Determine what item has been clicked **/
+        if (item.getIdentifier() == DRAWER_ITEM_REFRESH) {
+            refreshDisplay();
+        } else if (item.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
+            intent = new Intent(this, PreferencesActivity.class);
+            killCurrentActivity = false;
+        } else if (item.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
+            intent = new Intent(this, ViewPagerOperationActivity.class);
+        } else if (item.getIdentifier() == DRAWER_ITEM_STATS) {
+            intent = new Intent(this, StatsActivity.class);
+        } else if(item.getIdentifier() == DRAWER_ITEM_CONVERTER) {
+            intent = new Intent(this, ConverterActivity.class);
+        } else if (item.getIdentifier() == DRAWER_ITEM_ACCOUNTS) {
+            intent = new Intent(this, ManageAccountActivity.class);
+        } else if (item.getIdentifier() == DRAWER_ITEM_CATEGORIES) {
+            intent = new Intent(this, ManageCategoryActivity.class);
+        } else if (item.getIdentifier() == DRAWER_ITEM_CURRENCIES) {
+            intent = new Intent(this, ManageCurrencyActivity.class);
         }
+
+        /** Launch corresponding activity if recognized **/
+        if(intent != null) {
+            if(killCurrentActivity)
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            startActivity(intent);
+
+            if(killCurrentActivity)
+                finish();
+        }
+
+        return false;
 	}
 
 	@Override
-	protected void onDestroy() {
+    protected void onDestroy() {
 		super.onDestroy();
 	}
 
@@ -202,33 +270,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 		super.onResume();
 		refreshDisplay();
 	}
-
-    /*
-	protected QuickActionGrid createQuickActionGridEdition() {
-		QuickActionGrid quickActionGrid = new QuickActionGrid(this);
-		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_group, R.string.accounts));
-		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.categories));
-		quickActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_star, R.string.currencies));
-
-		quickActionGrid.setOnQuickActionClickListener(new OnQuickActionClickListener() {
-            @Override
-            public void onQuickActionClicked(QuickActionWidget widget, int position) {
-                switch (position) {
-                    case 0:
-                        startActivityFromMenu(ManageAccountActivity.class);
-                        break;
-                    case 1:
-                        startActivityFromMenu(ManageCategoryActivity.class);
-                        break;
-                    case 2:
-                        startActivityFromMenu(ManageCurrencyActivity.class);
-                        break;
-                }
-            }
-        });
-
-		return quickActionGrid;
-	}*/
 
 	/**
 	 * Called when click refresh button on menu
@@ -243,22 +284,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 			e.printStackTrace();
 		}
 	}
-
-    /*
-	protected void setActionBarHomeDrawable(int drawable) {
-		ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
-		if(ib != null) {
-			ib.setImageResource(drawable);
-		}
-	}
-
-    protected void setActionBarHomeOnClickListener(View.OnClickListener listener) {
-        ImageButton ib = (ImageButton)getGDActionBar().findViewById(R.id.gd_action_bar_home_item);
-        if(ib != null) {
-            ib.setOnClickListener(listener);
-        }
-    }
-    */
 
 	public static void setListViewAnimation(ListView listView) {
 		// Setting animation
@@ -279,36 +304,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 		listView.setLayoutAnimation(controller);
 	}
 
-    /*
-	protected static class MyQuickAction extends QuickAction {
-		private static final ColorFilter BLACK_CF = new LightingColorFilter(Color.BLACK, Color.BLACK);
-
-		public MyQuickAction(Context ctx, int drawableId, int titleId) {
-			super(ctx, buildDrawable(ctx, drawableId), titleId);
-		}
-
-		private static Drawable buildDrawable(Context ctx, int drawableId) {
-			Drawable d = ctx.getResources().getDrawable(drawableId);
-			d.setColorFilter(BLACK_CF);
-			return d;
-		}
-	}
-	*/
-
-    protected Integer getPositionNavigationDrawerItem(Object tag) {
-        if(drawerList == null || drawerList.getAdapter() == null)
-            return null;
-
-        Adapter adapter = drawerList.getAdapter();
-        int nb = adapter.getCount();
-        for(int i=0; i<nb; i++) {
-            if(((NavigationDrawerIconItem)adapter.getItem(i)).getTag() == tag)
-                return i;
-        }
-
-        return null;
-    }
-
     @Override
     public Map<Integer, Object> handleRefreshBackground() {
         return null;
@@ -317,17 +312,35 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {}
 
+    protected void selectDrawerItem(int identifier) {
+        navigationDrawer.setSelection(identifier, false);
+    }
+
+    public abstract int whatIsMyDrawerIdentifier();
+
     /**
      * Called when navigation drawer is created. To customize, override this and return
      * an array. Separators are already included.
-     * @return an array of NavigationDrawerIconItem corresponding to custom items
+     * @return an array of IDrawerItem corresponding to custom items
      */
-    public NavigationDrawerIconItem[] buildNavigationDrawer() {
+    public IDrawerItem[] buildNavigationDrawer() {
         return null;
     }
 
-    public NavigationDrawerIconItem createSmallNavigationDrawerItem(Object tag, int iconRes, int textRes) {
-        return new NavigationDrawerIconItem(
-                tag, iconRes, getResources().getString(textRes), this, NavigationDrawerIconItem.ItemType.SMALL);
+    public IDrawerItem createPrimaryDrawerItem(int identifier, int iconRes, int textRes) {
+        Log.d(TAG, "Creating primary drawer item (" + getResources().getString(textRes) + ") with identifier="+identifier);
+        return new PrimaryDrawerItem()
+                .withIdentifier(identifier)
+                .withIcon(iconRes)
+                .withName(textRes);
+    }
+
+    public IDrawerItem createSecondaryDrawerItem(int identifier, int iconRes, int textRes) {
+        Log.d(TAG, "Creating secondary drawer item (" + getResources().getString(textRes) + ") with identifier="+identifier);
+        return new SecondaryDrawerItem()
+                .withIdentifier(identifier)
+                .withIcon(iconRes)
+                .withName(textRes)
+                .withSelectable(false);
     }
 }

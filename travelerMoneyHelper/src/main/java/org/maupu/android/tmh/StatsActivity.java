@@ -27,7 +27,6 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.DateGalleryAdapter;
 import org.maupu.android.tmh.ui.widget.StatsCursorAdapter;
-import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 
@@ -36,7 +35,6 @@ import android.app.Dialog;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -53,7 +51,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener, INavigationDrawerCallback {
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+
+public class StatsActivity extends TmhActivity implements OnItemSelectedListener, OnItemClickListener, OnDateSetListener {
 	private static final int DATE_DIALOG_ID = 0;
 	private ListView listView;
 	private Gallery galleryDate;
@@ -74,10 +74,10 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	private int choosenYear=0, choosenMonth=0, choosenDay=0;
 	private Calendar currentDateDisplayed = Calendar.getInstance();
 
-    private final static UUID DRAWER_ITEM_PERIOD = UUID.randomUUID();
-    private final static UUID DRAWER_ITEM_AUTO = UUID.randomUUID();
-    private final static UUID DRAWER_ITEM_CAT_EXCEPT = UUID.randomUUID();
-    private final static UUID DRAWER_ITEM_TODAY = UUID.randomUUID();
+    private final static int DRAWER_ITEM_PERIOD = TmhApplication.getIdentifier("DRAWER_ITEM_PERIOD");
+    private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
+    private final static int DRAWER_ITEM_CAT_EXCEPT = TmhApplication.getIdentifier("DRAWER_ITEM_CAT_EXCEPT");
+    private final static int DRAWER_ITEM_TODAY = TmhApplication.getIdentifier("DRAWER_ITEM_TODAY");
 
 	public StatsActivity() {
         super(R.layout.stats_activity, R.string.activity_title_statistics);
@@ -93,6 +93,11 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
             autoSetExceptedCategories();
         }
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_STATS;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,44 +173,42 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	}
 
     @Override
-    public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
-        super.onNavigationDrawerClick(item);
+    public boolean onItemClick(View view, int position, IDrawerItem item) {
+        if(DRAWER_ITEM_PERIOD == item.getIdentifier()) {
+            StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
+            refreshHeaderGallery();
+            refreshDisplay();
+        } else if(DRAWER_ITEM_AUTO == item.getIdentifier()) {
+            setViewToAutoDates();
+        } else if(DRAWER_ITEM_CAT_EXCEPT == item.getIdentifier()) {
+            DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
+            resetDialogCategoryChooser = false;
+        } else if(DRAWER_ITEM_TODAY == item.getIdentifier()) {
+            // Get info for the current day
+            //StaticData.setStatsAdvancedFilter(true);
+            Date beg = new Date();
+            DateUtil.resetDateToBeginingOfDay(beg);
+            Date end = (Date)beg.clone();
+            DateUtil.resetDateToEndOfDay(end);
+            currentDateDisplayed.setTime(end);
+            StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
+            StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
 
-        if(item.getTag() instanceof UUID) {
-            if(DRAWER_ITEM_PERIOD.equals(item.getTag())) {
-                StaticData.setStatsAdvancedFilter(!StaticData.isStatsAdvancedFilter());
-                refreshHeaderGallery();
-                refreshDisplay();
-            } else if(DRAWER_ITEM_AUTO.equals(item.getTag())) {
-                setViewToAutoDates();
-            } else if(DRAWER_ITEM_CAT_EXCEPT.equals(item.getTag())) {
-                DialogHelper.popupDialogCategoryChooser(this, resetDialogCategoryChooser, true);
-                resetDialogCategoryChooser = false;
-            } else if(DRAWER_ITEM_TODAY.equals(item.getTag())) {
-                // Get info for the current day
-                //StaticData.setStatsAdvancedFilter(true);
-                Date beg = new Date();
-                DateUtil.resetDateToBeginingOfDay(beg);
-                Date end = (Date)beg.clone();
-                DateUtil.resetDateToEndOfDay(end);
-                currentDateDisplayed.setTime(end);
-                StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, beg);
-                StaticData.setDateField(StaticData.PREF_STATS_DATE_END, end);
+            initHeaderGalleries();
 
-                initHeaderGalleries();
+            int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
+            galleryDateBegin.setSelection(pos);
+            ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
 
-                int pos = ((DateGalleryAdapter)galleryDateBegin.getAdapter()).getItemPosition(beg);
-                galleryDateBegin.setSelection(pos);
-                ((DateGalleryAdapter)galleryDateBegin.getAdapter()).notifyDataSetChanged();
+            pos =  ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
+            galleryDateEnd.setSelection(pos);
+            ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
 
-                pos =  ((DateGalleryAdapter)galleryDateEnd.getAdapter()).getItemPosition(end);
-                galleryDateEnd.setSelection(pos);
-                ((DateGalleryAdapter)galleryDateEnd.getAdapter()).notifyDataSetChanged();
-
-                refreshHeaderGallery();
-                refreshDisplay();
-            }
+            refreshHeaderGallery();
+            refreshDisplay();
         }
+
+        return super.onItemClick(view, position, item);
     }
 
     public void setViewToAutoDates() {
@@ -236,21 +239,21 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
     }
 
     @Override
-    public NavigationDrawerIconItem[] buildNavigationDrawer() {
-        return new NavigationDrawerIconItem[]{
-                createSmallNavigationDrawerItem(
+    public IDrawerItem[] buildNavigationDrawer() {
+        return new IDrawerItem[]{
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_TODAY,
                         R.drawable.ic_today_black,
                         R.string.today),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_PERIOD,
                         R.drawable.ic_period_black,
                         R.string.menu_item_period),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_AUTO,
                         R.drawable.ic_event_black,
                         R.string.menu_item_auto),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_CAT_EXCEPT,
                         R.drawable.ic_cat_except_black,
                         R.string.categories_exception),
@@ -407,7 +410,15 @@ public class StatsActivity extends TmhActivity implements OnItemSelectedListener
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {}
 
-	@Override
+    @Override
+    public void refreshAfterCurrentAccountChanged() {
+        super.refreshAfterCurrentAccountChanged();
+
+        autoSetExceptedCategories();
+        setViewToAutoDates();
+    }
+
+    @Override
 	public Map<Integer, Object> handleRefreshBackground() {
         Log.d(StatsActivity.class.getName(), "handleRefreshBackground called");
 		Map<Integer, Object> results = new HashMap<Integer, Object>();

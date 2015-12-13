@@ -3,6 +3,7 @@ package org.maupu.android.tmh;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.UUID;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -80,6 +81,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	public AddOrEditOperationActivity() {
 		super(R.string.activity_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_OPERATIONS;
+    }
 
 	@Override
 	protected View initResources() {

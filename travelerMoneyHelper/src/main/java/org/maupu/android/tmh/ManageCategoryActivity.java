@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
@@ -17,6 +18,11 @@ public class ManageCategoryActivity extends ManageableObjectActivity<Category> {
 	public ManageCategoryActivity() {
 		super(R.string.activity_title_manage_category, AddOrEditCategoryActivity.class, new Category(), true);
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_CATEGORIES;
+    }
 	
 	@Override
 	protected boolean validateConstraintsForDeletion(Category obj) {

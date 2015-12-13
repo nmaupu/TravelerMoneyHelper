@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -19,6 +20,11 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 	public ManageAccountActivity() {
 		super(R.string.activity_title_manage_account, AddOrEditAccountActivity.class, new Account(), true);
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_ACCOUNTS;
+    }
 
 	@Override
 	protected boolean validateConstraintsForDeletion(Account obj) {

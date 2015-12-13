@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="TmhBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- MaterialDrawerTheme.Light.TranslucentStatus is a noActionBar theme -->
+    <style name="TmhBaseTheme" parent="MaterialDrawerTheme.Light.TranslucentStatus">
+        <item name="colorAccent">@android:color/holo_blue_light</item>
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>

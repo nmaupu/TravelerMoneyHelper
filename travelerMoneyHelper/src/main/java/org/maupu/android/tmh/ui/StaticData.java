@@ -1,9 +1,7 @@
 package org.maupu.android.tmh.ui;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -18,6 +16,8 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.Drawer;
 
 public abstract class StaticData {
 	private static Account currentAccount = new Account();

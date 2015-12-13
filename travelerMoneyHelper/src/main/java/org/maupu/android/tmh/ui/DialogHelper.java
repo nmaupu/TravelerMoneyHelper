@@ -69,13 +69,7 @@ public abstract class DialogHelper {
                         /** Replacing preferences account (excepted categories are also reset to auto) **/
                         /** Setting some specific stuff as well **/
                         StaticData.setCurrentAccount(account);
-                        if(tmhActivity instanceof StatsActivity) {
-                            StatsActivity a = ((StatsActivity) tmhActivity);
-                            a.autoSetExceptedCategories();
-                            a.setViewToAutoDates();
-                        } else if(tmhActivity instanceof ViewPagerOperationActivity) {
-                            ((ViewPagerOperationActivity) tmhActivity).refreshAfterCurrentAccountChanged();
-                        }
+                        tmhActivity.refreshAfterCurrentAccountChanged();
                         tmhActivity.refreshDisplay();
                         dialog.dismiss();
 

@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.UUID;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
@@ -22,7 +23,10 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.DatePicker;
+
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener, DatePickerDialog.OnDateSetListener {
 
@@ -39,13 +43,18 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     public final static int LIST_BY_MONTH = 1;
     public final static String STATIC_DATA_LIST_STATUS = "StaticDataVPOAListStatus";
 
-    private final static String DRAWER_ITEM_LIST_TYPE = UUID.randomUUID().toString();
-    private final static String DRAWER_ITEM_CHOOSE_MONTH = UUID.randomUUID().toString();
-    private final static String DRAWER_ITEM_AUTO = UUID.randomUUID().toString();
-    private final static String DRAWER_ITEM_TODAY = UUID.randomUUID().toString();
+    private final static int DRAWER_ITEM_CHOOSE_MONTH = TmhApplication.getIdentifier("DRAWER_ITEM_CHOOSE_MONTH");
+    private final static int DRAWER_ITEM_LIST_TYPE = TmhApplication.getIdentifier("DRAWER_ITEM_LIST_TYPE");
+    private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
+    private final static int DRAWER_ITEM_TODAY = TmhApplication.getIdentifier("DRAWER_ITEM_TODAY");
 
     public ViewPagerOperationActivity() {
         super(R.layout.viewpager_operation, R.string.activity_title_viewpager_operation);
+    }
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_OPERATIONS;
     }
 
 	@Override
@@ -54,13 +63,6 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
 		// Force portrait
 		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        /*
-		// Action bar items
-		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Withdrawal), TmhApplication.ACTION_BAR_ADD_WITHDRAWAL);
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
-		*/
 
         // Setting automatically to the month corresponding to last operation for this account
         Operation dummyOp = new Operation();
@@ -112,11 +114,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     @Override
     protected void onResume() {
         super.onResume();
-        // Ensure nav drawer operation item is selected
-        Integer position = getPositionNavigationDrawerItem(TmhActivity.DRAWER_ITEM_OPERATIONS);
-        if(position == null)
-            position = 0;
-        ((IconArrayAdapter) super.drawerList.getAdapter()).selectItem(position);
+        super.selectDrawerItem(DRAWER_ITEM_OPERATIONS);
     }
 
     @Override
@@ -181,10 +179,9 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
         }
     }
 
-    /**
-     * Call it to refresh view when static current account is changed
-     */
+    @Override
     public void refreshAfterCurrentAccountChanged() {
+        super.refreshAfterCurrentAccountChanged();
         Operation dummyOp = new Operation();
         Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
         adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
@@ -194,21 +191,21 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     }
 
     @Override
-    public NavigationDrawerIconItem[] buildNavigationDrawer() {
-        return new NavigationDrawerIconItem[] {
-                createSmallNavigationDrawerItem(
+    public IDrawerItem[] buildNavigationDrawer() {
+        return new IDrawerItem[] {
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_AUTO,
                         R.drawable.ic_event_black,
                         R.string.menu_item_auto),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_TODAY,
                         R.drawable.ic_today_black,
                         R.string.today),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_CHOOSE_MONTH,
                         R.drawable.ic_period_black,
                         R.string.menu_item_choose_month),
-                createSmallNavigationDrawerItem(
+                createSecondaryDrawerItem(
                         DRAWER_ITEM_LIST_TYPE,
                         R.drawable.ic_list_black,
                         R.string.operation_list_type),
@@ -216,13 +213,12 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     }
 
     @Override
-    public void onNavigationDrawerClick(NavigationDrawerIconItem item) {
-        super.onNavigationDrawerClick(item);
-        if(item.getTag() == DRAWER_ITEM_LIST_TYPE) {
+    public boolean onItemClick(View view, int position, IDrawerItem item) {
+        if(item.getIdentifier() == DRAWER_ITEM_LIST_TYPE) {
             changeOperationsListType(
                     StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS) == LIST_BY_MONTH ? LIST_RAW : LIST_BY_MONTH
             );
-        } else if(item.getTag() == DRAWER_ITEM_CHOOSE_MONTH) {
+        } else if(item.getIdentifier() == DRAWER_ITEM_CHOOSE_MONTH) {
             int month = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN);
             int year = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN);
             int day = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN);
@@ -237,17 +233,19 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
             }
 
             new CustomDatePickerDialog(this, this, year, month, day).show();
-        } else if(item.getTag() == DRAWER_ITEM_AUTO) {
+        } else if(item.getIdentifier() == DRAWER_ITEM_AUTO) {
             StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
             Operation dummyOp = new Operation();
             Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
             setViewpagerAdapter(new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast));
             refreshDisplay();
-        } else if(item.getTag() == DRAWER_ITEM_TODAY) {
+        } else if(item.getIdentifier() == DRAWER_ITEM_TODAY) {
             StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
             setViewpagerAdapter(new ViewPagerOperationAdapter(this));
             refreshDisplay();
         }
+
+        return super.onItemClick(view, position, item);
     }
 
     @Override

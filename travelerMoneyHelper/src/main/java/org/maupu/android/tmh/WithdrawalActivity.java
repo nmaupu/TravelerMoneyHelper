@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -75,6 +76,10 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         super(R.layout.withdrawal, R.string.activity_title_edition_withdrawal);
     }
 
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_OPERATIONS;
+    }
 
 	@SuppressLint("NewApi")
 	@Override

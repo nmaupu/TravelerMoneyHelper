@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -19,6 +20,11 @@ public class ManageCurrencyActivity extends ManageableObjectActivity<Currency> {
 	public ManageCurrencyActivity() {
 		super(R.string.activity_title_manage_currency, AddOrEditCurrencyActivity.class, new Currency(), true);
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_CURRENCIES;
+    }
 
 	@Override
 	protected boolean validateConstraintsForDeletion(Currency obj) {

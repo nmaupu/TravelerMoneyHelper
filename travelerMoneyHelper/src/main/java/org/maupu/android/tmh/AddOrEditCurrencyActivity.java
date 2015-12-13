@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.UUID;
 
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
@@ -48,6 +49,11 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	public AddOrEditCurrencyActivity() {
 		super(R.string.activity_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
 	}
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return super.DRAWER_ITEM_CURRENCIES;
+    }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

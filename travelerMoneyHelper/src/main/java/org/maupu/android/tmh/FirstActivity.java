@@ -12,6 +12,7 @@ import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Activity displayed at first activity in order to get ready first app launch
@@ -26,6 +27,11 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
 
     public FirstActivity() {
         super(R.layout.first, R.string.app_name);
+    }
+
+    @Override
+    public int whatIsMyDrawerIdentifier() {
+        return -1;
     }
 
     @Override
