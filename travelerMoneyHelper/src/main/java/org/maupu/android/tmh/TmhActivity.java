@@ -3,6 +3,8 @@ package org.maupu.android.tmh;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +34,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -154,7 +159,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         }
 
         if(navigationDrawer == null) {
-
             /** Items **/
             List<IDrawerItem> items = new ArrayList<>();
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, R.string.dashboard_operation));
@@ -209,6 +213,9 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                     })
                     .withOnDrawerItemClickListener(this)
                     .build();
+
+            // Update all badges in the drawer
+            updateDrawerBadges();
 
             // Order and boolean are important to have custom icon as home up indicator
             navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
@@ -299,6 +306,8 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+        updateDrawerBadges();
 	}
 
 	public static void setListViewAnimation(ListView listView) {
@@ -344,19 +353,30 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     public IDrawerItem createPrimaryDrawerItem(int identifier, int iconRes, int textRes) {
-        Log.d(TAG, "Creating primary drawer item (" + getResources().getString(textRes) + ") with identifier="+identifier);
+        Log.d(TAG, "Creating primary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
         return new PrimaryDrawerItem()
                 .withIdentifier(identifier)
+                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.blue))
                 .withIcon(iconRes)
                 .withName(textRes);
     }
 
     public IDrawerItem createSecondaryDrawerItem(int identifier, int iconRes, int textRes) {
-        Log.d(TAG, "Creating secondary drawer item (" + getResources().getString(textRes) + ") with identifier="+identifier);
+        Log.d(TAG, "Creating secondary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
         return new SecondaryDrawerItem()
                 .withIdentifier(identifier)
                 .withIcon(iconRes)
                 .withName(textRes)
                 .withSelectable(false);
+    }
+
+    public void updateDrawerBadges() {
+        int nbCurrencies = new Currency().getCount();
+        int nbCategories = new Category().getCount();
+        int nbAccounts = new Account().getCount();
+
+        navigationDrawer.updateBadge(DRAWER_ITEM_CURRENCIES, new StringHolder(String.valueOf(nbCurrencies)));
+        navigationDrawer.updateBadge(DRAWER_ITEM_CATEGORIES, new StringHolder(String.valueOf(nbCategories)));
+        navigationDrawer.updateBadge(DRAWER_ITEM_ACCOUNTS, new StringHolder(String.valueOf(nbAccounts)));
     }
 }
