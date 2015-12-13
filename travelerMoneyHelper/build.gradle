@@ -35,6 +35,15 @@ dependencies {
     compile 'com.mikepenz:iconics-core:2.5.1@aar'
     compile 'com.mikepenz:google-material-typeface:2.1.0.1.original@aar'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.1@aar'
+
+    // https://github.com/rengwuxian/MaterialEditText/
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    // https://github.com/ganfra/MaterialSpinner
+    compile ('com.github.ganfra:material-spinner:1.1.1'){
+        exclude group: 'com.nineoldandroids', module: 'library'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
     compile files('libs/achartengine-1.0.0.jar')
     compile files('libs/jackson-core-asl-1.8.5.jar')
     compile files('libs/jackson-mapper-asl-1.8.5.jar')

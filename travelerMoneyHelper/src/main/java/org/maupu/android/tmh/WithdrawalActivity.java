@@ -86,10 +86,6 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
-		addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Save), TmhApplication.ACTION_BAR_SAVE);
-		*/
-
 		// Set current time
 		Calendar cal = Calendar.getInstance();
 		mHours = cal.get(Calendar.HOUR_OF_DAY);

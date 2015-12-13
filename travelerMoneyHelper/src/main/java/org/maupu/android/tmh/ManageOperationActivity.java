@@ -60,7 +60,7 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		Spinner spinnerAccount = new Spinner(this);
 		spinnerAccount.setOnItemSelectedListener(this);
 		spinnerAccount.setLayoutParams(
-				new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+				new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		spinnerAccountManager = new SpinnerManager(this, spinnerAccount);
 		Account dummy = new Account();
 		Cursor c = dummy.fetchAll();

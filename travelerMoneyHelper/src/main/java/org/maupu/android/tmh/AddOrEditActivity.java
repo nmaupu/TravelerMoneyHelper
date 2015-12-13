@@ -42,7 +42,7 @@ public abstract class AddOrEditActivity<T extends BaseObject> extends TmhActivit
 		
 		// Init all widgets
 		View v = initResources();
-        if(v != null) {
+        if(v != null && ! isEditing()) {
             v.requestFocus();
             SoftKeyboardHelper.forceShowUp(this);
         }

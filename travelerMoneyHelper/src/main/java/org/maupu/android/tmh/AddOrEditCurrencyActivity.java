@@ -2,39 +2,30 @@ package org.maupu.android.tmh;
 
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.UUID;
 
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
-import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> implements AdapterView.OnItemClickListener, IAsync {
 	private EditText editTextLongName = null;
@@ -42,7 +33,6 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	private EditText editTextValue = null;
 	private CheckBox checkBoxUpdate = null;
 	private AutoCompleteTextView actvCurrencyCode = null;
-	private TextView textViewRateValue = null;
 	private OpenExchangeRatesAsyncFetcher oerFetcher;
 	private boolean apiKeyValid = false;
 
@@ -114,7 +104,6 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		editTextValue = (EditText)findViewById(R.id.rate_value);
 		checkBoxUpdate = (CheckBox)findViewById(R.id.checkbox_last_update);
 		actvCurrencyCode = (AutoCompleteTextView)findViewById(R.id.currency_code);
-		textViewRateValue = (TextView)findViewById(R.id.text_rate_value);
 		
 		updateTextViewRate();
 
@@ -123,14 +112,20 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 	}
 	
 	private void updateTextViewRate() {
-		textViewRateValue.setText(getString(R.string.form_addedit_value));
-		
-		if(textViewRateValue != null && StaticData.getMainCurrency() != null && StaticData.getMainCurrency().getId() != null) {
-			textViewRateValue.setText(textViewRateValue.getText() + 
-					java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
+        MaterialEditText met = (MaterialEditText)editTextValue;
+        if(met == null)
+            return;
+
+        CharSequence curText = getString(R.string.form_addedit_value);
+        met.setFloatingLabelText(curText);
+
+		if(StaticData.getMainCurrency() != null && StaticData.getMainCurrency().getId() != null) {
+            met.setFloatingLabelText(
+                    curText +
+                    java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol()
+            );
 		} else if (StaticData.getMainCurrency() == null) {
-			if(editTextShortName.getText() != null)
-			    textViewRateValue.setText(textViewRateValue.getText() + " " + editTextShortName.getText().toString());
+            met.setFloatingLabelText(curText + " " + editTextShortName.getText().toString());
 		}
 	}
 
@@ -205,6 +200,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 		CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);
 		
 		if(cur != null) {
+            SoftKeyboardHelper.hide(this);
 			editTextShortName.setText(cur.getCurrencySymbol());
 			editTextLongName.setText(cur.getName());
 			
