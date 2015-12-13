@@ -1,156 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include layout="@layout/toolbar" />
+
+    <ScrollView
+        android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dip"
+        android:layout_weight="1" >
 
-        <include layout="@layout/toolbar" />
+        <LinearLayout
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_margin="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1" >
-
-            <LinearLayout
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-
-                <RelativeLayout
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/layout_currency_chooser"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <LinearLayout
-                        android:id="@+id/layout_currency_chooser"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true">
-                        <TextView
-                            android:id="@+id/currency_code_1"
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:textSize="30dp"
-                            android:text="@string/currency"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:gravity="center"
-                            android:layout_weight="2"/>
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:src="@drawable/compare_arrows_black"
-                            android:id="@+id/switch_image"
-                            android:layout_weight="1"/>
-                        <TextView
-                            android:id="@+id/currency_code_2"
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:textSize="30dp"
-                            android:text="@string/currency"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:gravity="center"
-                            android:layout_weight="2"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/layout_amount_edit"
-                        android:layout_below="@id/layout_currency_chooser"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/amount_symbol"
-                            android:gravity="right"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginRight="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="25dp" />
-                        <org.maupu.android.tmh.ui.widget.NumberEditText
-                            android:id="@+id/amount"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberDecimal"
-                            android:ems="10"
-                            android:textSize="25dp"
-                            android:layout_weight="1"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/layout_currency_info"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@id/layout_amount_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/currency_info_1"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal|center_vertical"
-                            android:textSize="10dp"
-                            android:textStyle="italic"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/currency_info_2"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal|center_vertical"
-                            android:textSize="10dp"
-                            android:textStyle="italic"
-                            android:layout_weight="1" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/layout_converter_result"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@id/layout_currency_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/converter_result_1"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal|center_vertical"
-                            android:textSize="20dp"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/converter_result_2"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal|center_vertical"
-                            android:textSize="20dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true">
                     <TextView
-                        android:id="@+id/rates_last_update"
-                        android:layout_marginTop="15dp"
-                        android:layout_width="match_parent"
+                        android:id="@+id/currency_code_1"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
+                        android:textSize="30dp"
+                        android:text="@string/currency"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:gravity="center"
+                        android:layout_weight="2"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:src="@drawable/compare_arrows_black"
+                        android:id="@+id/switch_image"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/currency_code_2"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="30dp"
+                        android:text="@string/currency"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:gravity="center"
+                        android:layout_weight="2"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout_amount_edit"
+                    android:layout_below="@id/layout_currency_chooser"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/amount_symbol"
+                        android:gravity="right"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25dp" />
+                    <org.maupu.android.tmh.ui.widget.NumberEditText
+                        android:id="@+id/amount"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:ems="10"
+                        android:textSize="25dp"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@+id/layout_currency_info"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_amount_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/currency_info_1"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="10dp"
                         android:textStyle="italic"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@id/layout_converter_result"
-                        android:gravity="right"/>
-                </RelativeLayout>
-            </LinearLayout>
-        </ScrollView>
+                        android:layout_weight="1" />
+                    <TextView
+                        android:id="@+id/currency_info_2"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="10dp"
+                        android:textStyle="italic"
+                        android:layout_weight="1" />
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@+id/layout_converter_result"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_currency_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/converter_result_1"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="20dp"
+                        android:layout_weight="1" />
+                    <TextView
+                        android:id="@+id/converter_result_2"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="20dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/rates_last_update"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/layout_converter_result"
+                    android:gravity="right"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
-
-    <include layout="@layout/drawer" />
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>

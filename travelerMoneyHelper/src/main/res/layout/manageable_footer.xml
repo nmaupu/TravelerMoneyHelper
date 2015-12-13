@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_root_footer"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="0dip"
     android:background="@android:color/background_light"
@@ -10,7 +10,7 @@
 
     <Button
         android:id="@+id/button_edit"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dip"
         android:layout_marginLeft="2dip"
@@ -24,7 +24,7 @@
 
     <Button
         android:id="@+id/button_update"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dip"
         android:layout_marginLeft="2dip"
@@ -39,7 +39,7 @@
     
     <Button
         android:id="@+id/button_delete"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dip"
         android:layout_marginLeft="2dip"

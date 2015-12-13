@@ -1,118 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/toolbar" />
+
+    <!-- header with dates chooser -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Gallery
+            android:id="@+id/gallery_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:spacing="16dp" />
 
         <LinearLayout
-            android:id="@+id/root_layout"
+            android:id="@+id/layout_period"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" >
 
-            <include layout="@layout/toolbar" />
-
-            <!-- header with dates chooser -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-    
-                <Gallery
-                    android:id="@+id/gallery_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:spacing="16dp" />
-    
-                <LinearLayout
-                    android:id="@+id/layout_period"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
-    
-                    <Gallery
-                        android:id="@+id/gallery_date_begin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:spacing="16dp" />
-    
-                    <Gallery
-                        android:id="@+id/gallery_date_end"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:spacing="16dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- operations' list -->
-            <ListView
-                android:id="@+id/list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:dividerHeight="@dimen/list_divider_height" />
-
-            <!-- graph -->
-            <LinearLayout
-                android:id="@+id/graph"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:orientation="vertical" >
-            </LinearLayout>
-
-            <!-- stats, total and average -->
-            <TableLayout
-                android:id="@+id/stats_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:orientation="vertical"
-                android:visibility="gone" >
-    
-                <TableRow
-                    android:id="@+id/table_head"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal" >
-    
-                    <TextView
-                        android:id="@+id/head_total"
-                        android:layout_width="0dip"
-                        android:layout_weight="1"
-                        android:gravity="left"
-                        android:text="@string/total_"
-                        android:textSize="16dp"
-                        android:textStyle="bold" >
-                    </TextView>
-    
-                    <TextView
-                        android:id="@+id/head_avg"
-                        android:layout_width="0dip"
-                        android:layout_weight="1"
-                        android:gravity="left"
-                        android:text="@string/averageByDay_"
-                        android:textSize="16dp"
-                        android:textStyle="bold" >
-                    </TextView>
-                </TableRow>
-            </TableLayout>
-    
-            <TextView
-                android:id="@+id/empty"
+            <Gallery
+                android:id="@+id/gallery_date_begin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text=""
-                android:visibility="gone" />
+                android:gravity="center_vertical"
+                android:spacing="16dp" />
+
+            <Gallery
+                android:id="@+id/gallery_date_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:spacing="16dp" />
+        </LinearLayout>
     </LinearLayout>
 
-    <include layout="@layout/drawer" />
-</android.support.v4.widget.DrawerLayout>
+    <!-- operations' list -->
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:dividerHeight="@dimen/list_divider_height" />
+
+    <!-- graph -->
+    <LinearLayout
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <!-- stats, total and average -->
+    <TableLayout
+        android:id="@+id/stats_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TableRow
+            android:id="@+id/table_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" >
+
+            <TextView
+                android:id="@+id/head_total"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@string/total_"
+                android:textSize="16dp"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/head_avg"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@string/averageByDay_"
+                android:textSize="16dp"
+                android:textStyle="bold" >
+            </TextView>
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text=""
+        android:visibility="gone" />
+</LinearLayout>

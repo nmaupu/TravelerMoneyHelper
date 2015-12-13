@@ -219,7 +219,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
      * @param view
      * @param position
      * @param item
-     * @return
+     * @return false to stop broadcasting event, true otherwise.
      */
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {

@@ -1,13 +1,14 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_root"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
     <TextView
         android:id="@+id/welcome_title"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/welcome_hint"
@@ -31,8 +32,8 @@
 
         <TextView
             android:id="@+id/category_title"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/welcome_category" />
     </LinearLayout>
@@ -54,8 +55,8 @@
 
         <TextView
             android:id="@+id/currency_title"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/welcome_currency" />
     </LinearLayout>
@@ -77,8 +78,8 @@
 
         <TextView
             android:id="@+id/account_title"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/welcome_account" />
     </LinearLayout>
@@ -97,4 +98,4 @@
         android:text="@string/welcome_button" android:layout_centerVertical="true"
         android:layout_alignParentStart="true"/>
 
-</RelativeLayout>
+</LinearLayout>

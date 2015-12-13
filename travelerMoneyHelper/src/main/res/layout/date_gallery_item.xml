@@ -11,7 +11,7 @@
 
     <TextView
         android:id="@+id/text_view_first"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
         android:textColor="@color/gallery_date_first_color"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/text_view_second"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
         android:textSize="12dp"

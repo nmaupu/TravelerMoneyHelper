@@ -360,7 +360,7 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
         AlertDialog.Builder builder;
         final Context mContext = this;
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_currency_chooser, (ViewGroup) findViewById(R.id.drawer_layout), false);
+        View layout = inflater.inflate(R.layout.dialog_currency_chooser, (ViewGroup) findViewById(R.id.root_layout), false);
 
         builder = new AlertDialog.Builder(mContext);
         builder.setView(layout);
