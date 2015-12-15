@@ -9,6 +9,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
+import fr.ganfra.materialspinner.MaterialSpinner;
+
 /**
  * Easier management of spinners
  * @author nmaupu
@@ -42,10 +44,9 @@ public class SpinnerManager {
 		// Close previous cursor
 		closeAdapterCursor();
 
-        SpinnerAdapter a = createSpinnerCursorAdapter(c, from);
-		spinner.setAdapter(a);
+        adapter = createSpinnerCursorAdapter(c, from);
+		spinner.setAdapter(adapter);
 		spinner.setEnabled(c != null && c.getCount() > 1);
-        this.adapter = a;
 	}
 	
 	public void closeAdapterCursor() {

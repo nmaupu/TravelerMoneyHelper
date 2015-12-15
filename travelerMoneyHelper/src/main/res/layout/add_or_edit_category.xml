@@ -7,11 +7,17 @@
 
     <include layout="@layout/toolbar" />
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        style="@style/TmhMaterialEditText"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/name"
-        android:hint="@string/name" />
+        android:layout_height="wrap_content">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            style="@style/TmhMaterialEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name"
+            android:hint="@string/name" />
+
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

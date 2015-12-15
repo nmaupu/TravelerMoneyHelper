@@ -2,6 +2,7 @@ package org.maupu.android.tmh.core;
 
 import org.maupu.android.tmh.FirstActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 
 import android.app.Application;

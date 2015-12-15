@@ -56,14 +56,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
         Log.d(TAG, "Calling onCreate");
         super.onCreate(savedInstanceState);
 
-		// actionbar items
-		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Cancel), TmhApplication.ACTION_BAR_CANCEL);
-		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Edit), TmhApplication.ACTION_BAR_EDIT);
-		//addActionBarItem(CustomActionBarItem.createActionBarItemFromType(getGDActionBar(), CustomType.Add), TmhApplication.ACTION_BAR_ADD);
-
-		//quickActionGrid = createQuickActionGridEdition();
-
-
 		this.tvEmpty = (TextView) findViewById(R.id.empty);
 
 		this.listView = (ListView) findViewById(R.id.list);

@@ -46,8 +46,24 @@ public class Operation extends BaseObject {
 		this();
 		this.filter = filter;
 	}
-	
-	@Override
+
+    @Override
+    public BaseObject copy() {
+        Operation o = new Operation();
+        o._id = super.getId();
+        o.setAmount(amount);
+        o.setDescription(description);
+        o.setDate((Date) date.clone());
+        o.setAccount((Account) account.copy());
+        o.setCategory((Category) category.copy());
+        o.setCurrency((Currency) currency.copy());
+        o.setCurrencyValueOnCreated(currencyValueOnCreation);
+        o.setType(type);
+        o.setLinkToOperation(linkToOperation);
+        return o;
+    }
+
+    @Override
 	public String getDefaultOrder() {
 		return "DESC";
 	}

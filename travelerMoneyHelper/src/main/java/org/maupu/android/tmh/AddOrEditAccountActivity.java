@@ -26,6 +26,7 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
+    private static final String TAG = AddOrEditAccountActivity.class.getName();
 	private ImageView imageViewIcon;
 	private TextView textViewName;
 	private SpinnerManager spinnerCurrencyManager;
@@ -139,7 +141,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
             case MENU_ITEM_FLAGS:
                 return createDialogFromFlags();
             case MENU_ITEM_DEFAULT:
-                imageViewIcon.setImageResource(R.drawable.icon_default);
+                imageViewIcon.setImageResource(R.drawable.tmh_icon_48);
                 imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
                 return null;
             default:
@@ -252,7 +254,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 	protected void baseObjectToFields(Account obj) {
 		if(obj == null) {
 			textViewName.setText("");
-			imageViewIcon.setImageResource(R.drawable.icon_default);
+			imageViewIcon.setImageResource(R.drawable.tmh_icon_48);
 		} else {
 			textViewName.setText(obj.getName());
 			

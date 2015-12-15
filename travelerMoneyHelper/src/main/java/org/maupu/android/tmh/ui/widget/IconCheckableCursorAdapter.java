@@ -6,11 +6,13 @@ import org.maupu.android.tmh.ui.ImageViewHelper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
+    private static final String TAG = IconCheckableCursorAdapter.class.getName();
 	private Cursor cursor;
 	private Context context;
 	
@@ -23,7 +25,7 @@ public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = super.getView(position, convertView, parent);
-		
+
 		ImageView icon = (ImageView)v.findViewById(R.id.icon);
 		
 		int oldPosition = cursor.getPosition();
@@ -33,7 +35,7 @@ public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
 		
 		// restore initial cursor position
 		cursor.moveToPosition(oldPosition);
-		
+
 		ImageViewHelper.setIcon(context, icon, iconFilename);
 		
 		return v;

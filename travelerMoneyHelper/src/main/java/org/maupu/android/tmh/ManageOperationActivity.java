@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
@@ -115,8 +114,8 @@ public class ManageOperationActivity extends ManageableObjectActivity<Operation>
 		iconCheckableCursorAdapter = new IconCheckableCursorAdapter(this, 
 				R.layout.operation_item,
 				c,
-				new String[]{"icon", "account", "category", "dateStringHours", "amountString", "convertedAmount"},
-				new int[]{R.id.icon, R.id.account, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
+				new String[]{"icon", "category", "dateStringHours", "amountString", "convertedAmount"},
+				new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
 		super.setAdapter(iconCheckableCursorAdapter);
 	}
 	

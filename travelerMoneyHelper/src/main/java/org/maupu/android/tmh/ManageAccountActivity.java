@@ -12,9 +12,11 @@ import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.util.Log;
 
 @SuppressLint("UseSparseArrays")
 public class ManageAccountActivity extends ManageableObjectActivity<Account>{
+    private static final String TAG = ManageAccountActivity.class.getName();
 	private IconCheckableCursorAdapter iconCheckableCursorAdapter = null;
 	
 	public ManageAccountActivity() {
@@ -62,8 +64,8 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account>{
 		closeIconCheckableCursorAdapterIfNeeded();
 		
 		// custom custom cursor adapter lol :D
-		 iconCheckableCursorAdapter = new IconCheckableCursorAdapter(
-				this, R.layout.icon_name_item,
+        iconCheckableCursorAdapter = new IconCheckableCursorAdapter(
+                this, R.layout.icon_name_item,
 				c, 
 				new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME}, 
 				new int[]{R.id.icon, R.id.name});

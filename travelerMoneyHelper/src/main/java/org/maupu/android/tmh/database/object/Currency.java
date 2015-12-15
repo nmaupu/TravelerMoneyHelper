@@ -52,8 +52,20 @@ public class Currency extends BaseObject {
 	public void setIsoCode(String isoCode) {
 		this.isoCode = isoCode;
 	}
-	
-	public ContentValues createContentValues() {
+
+    @Override
+    public BaseObject copy() {
+        Currency c = new Currency();
+        c._id = super.getId();
+        c.setLongName(longName);
+        c.setShortName(shortName);
+        c.setRateCurrencyLinked(rateCurrencyLinked);
+        c.setLastUpdate((Date)lastUpdate.clone());
+        c.setIsoCode(isoCode);
+        return c;
+    }
+
+    public ContentValues createContentValues() {
 		ContentValues cv = new ContentValues();
 		cv.put(CurrencyData.KEY_LONG_NAME, this.getLongName());
 		cv.put(CurrencyData.KEY_SHORT_NAME, this.getShortName());

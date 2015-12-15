@@ -13,12 +13,14 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.w3c.dom.Text;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -31,6 +33,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,6 +47,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -52,8 +56,10 @@ import android.widget.Toast;
 public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher {
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int TIME_DIALOG_ID = 1;
-	
+
+    private ImageView ivFrom;
 	private Spinner spinnerFrom;
+    private ImageView ivTo;
 	private Spinner spinnerTo;
 	private Spinner spinnerCurrency;
 	private Spinner spinnerCategory;
@@ -91,8 +97,10 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		mHours = cal.get(Calendar.HOUR_OF_DAY);
 		mMinutes = cal.get(Calendar.MINUTE);
 		mSeconds = cal.get(Calendar.SECOND);
-		
+
+        ivFrom = (ImageView)findViewById(R.id.account_icon_from);
 		spinnerFrom = (Spinner)findViewById(R.id.spinner_from);
+        ivTo = (ImageView)findViewById(R.id.account_icon_to);
 		spinnerTo = (Spinner)findViewById(R.id.spinner_to);
 		spinnerCurrency = (Spinner)findViewById(R.id.spinner_currency);
 		spinnerCategory = (Spinner)findViewById(R.id.spinner_category);
@@ -107,10 +115,14 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 		buttonToday = (Button)findViewById(R.id.button_today);
 		buttonToday.setOnClickListener(this);
 
+        spinnerFrom.setOnItemSelectedListener(this);
 		spinnerTo.setOnItemSelectedListener(this);
-		
+
 		initSpinnerManagers();
 		initDatePickerTextView(Calendar.getInstance().getTime());
+
+        updateAccountInfo(ivFrom, spinnerManagerFrom.getSelectedItem());
+        updateAccountInfo(ivTo, spinnerManagerTo.getSelectedItem());
 
         // Force edit text to get focus on startup
         amount.requestFocus();
@@ -256,22 +268,35 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		if(parent.getId() == R.id.spinner_to) {
-			// Select corresponding currency to 'to' account
+        if (parent.getId() == R.id.spinner_from) {
+            updateAccountInfo(ivFrom, spinnerManagerFrom.getSelectedItem());
+        } else if (parent.getId() == R.id.spinner_to) {
+            Cursor item = spinnerManagerTo.getSelectedItem();
 
-			Cursor item = spinnerManagerTo.getSelectedItem();
-			int idxCurrencyId = item.getColumnIndexOrThrow(AccountData.KEY_ID_CURRENCY);
-			int currencyId = item.getInt(idxCurrencyId);
+            // Set icon and text to this account
+            updateAccountInfo(ivTo, item);
 
-			Currency currency = new Currency();
-			Cursor c = currency.fetch(currencyId);
-			currency.toDTO(c);
-			c.close();
+            // Select corresponding currency to 'to' account
+            int idxCurrencyId = item.getColumnIndexOrThrow(AccountData.KEY_ID_CURRENCY);
+            int currencyId = item.getInt(idxCurrencyId);
+            Currency currency = new Currency();
+            Cursor c = currency.fetch(currencyId);
+            currency.toDTO(c);
+            c.close();
 
-			spinnerManagerCurrency.setSpinnerPositionCursor(currency.getLongName(), new Currency());
-			updateConvertedAmount();
-		}
+            spinnerManagerCurrency.setSpinnerPositionCursor(currency.getLongName(), new Currency());
+            updateConvertedAmount();
+        }
 	}
+
+    private void updateAccountInfo(ImageView ivAccount, Cursor cursorItem) {
+        if(cursorItem == null || ivAccount == null)
+            return;
+
+        Account a = new Account();
+        a.toDTO(cursorItem);
+        ImageViewHelper.setIcon(this, ivAccount, a.getIcon());
+    }
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {}

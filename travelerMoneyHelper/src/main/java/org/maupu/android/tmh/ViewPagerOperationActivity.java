@@ -4,14 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.UUID;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.ui.NavigationDrawerIconItem;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
-import org.maupu.android.tmh.ui.widget.IconArrayAdapter;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 

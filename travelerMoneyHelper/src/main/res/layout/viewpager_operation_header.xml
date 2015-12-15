@@ -44,7 +44,7 @@
             android:layout_gravity="center_horizontal"
             android:maxHeight="40dip"
             android:scaleType="centerInside"
-            android:src="@drawable/icon_default" />
+            android:src="@drawable/tmh_icon_48" />
 
         <TextView
             android:id="@+id/account_name"

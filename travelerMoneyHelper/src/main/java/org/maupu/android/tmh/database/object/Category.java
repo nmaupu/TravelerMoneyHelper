@@ -20,8 +20,16 @@ public class Category extends BaseObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public ContentValues createContentValues() {
+
+    @Override
+    public BaseObject copy() {
+        Category c = new Category();
+        c._id = super.getId();
+        c.setName(name);
+        return c;
+    }
+
+    public ContentValues createContentValues() {
 		ContentValues cv = new ContentValues();
 		cv.put(CategoryData.KEY_NAME, this.getName());
 		

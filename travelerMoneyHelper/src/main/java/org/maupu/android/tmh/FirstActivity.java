@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
 import java.util.Map;
 import java.util.UUID;
@@ -46,6 +47,9 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
 
         /** Events **/
         goBtn.setOnClickListener(this);
+
+        // Ensure keyboard is down
+        SoftKeyboardHelper.hide(this);
     }
 
     @Override

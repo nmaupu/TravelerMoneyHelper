@@ -30,12 +30,12 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 
 	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
-		super(context, layout, c, from, to);
+		super(context, layout, c, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 	}
 	
 	public CheckableCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, Integer[] toCheck) {
-		super(context, layout, c, from, to);
+		super(context, layout, c, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setToCheck(toCheck);
 	}
 

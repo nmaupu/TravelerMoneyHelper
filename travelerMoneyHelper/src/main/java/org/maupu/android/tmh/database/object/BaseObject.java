@@ -29,6 +29,7 @@ public abstract class BaseObject implements Validator, Serializable {
 	public abstract ContentValues createContentValues();
 	public abstract String getTableName();
 	public abstract void reset();
+    public abstract BaseObject copy();
 
 	/**
 	 * Convert database cursor to dto and set all attributes to local instance

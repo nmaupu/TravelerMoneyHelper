@@ -7,43 +7,54 @@
 
     <include layout="@layout/toolbar" />
 
-    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
-        style="@style/TmhMaterialEditText"
-        android:id="@+id/currency_code"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:completionThreshold="1"
-        android:inputType="text|textAutoCorrect|textAutoComplete"
-        android:maxLines="1"
-        android:hint="@string/currency"/>
+        android:layout_height="wrap_content">
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        style="@style/TmhMaterialEditText"
-        android:id="@+id/long_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/long_name"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        style="@style/TmhMaterialEditText"
-        android:id="@+id/short_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/short_name"/>
+            <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+                style="@style/TmhMaterialEditText"
+                android:id="@+id/currency_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="1"
+                android:inputType="text|textAutoCorrect|textAutoComplete"
+                android:maxLines="1"
+                android:hint="@string/currency"/>
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        style="@style/TmhMaterialEditText"
-        android:id="@+id/rate_value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/form_addedit_value"
-        android:numeric="integer|decimal"/>
+            <com.rengwuxian.materialedittext.MaterialEditText
+                style="@style/TmhMaterialEditText"
+                android:id="@+id/long_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/long_name"/>
 
-    <CheckBox
-        android:id="@+id/checkbox_last_update"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:text="@string/form_addedit_update" />
+            <com.rengwuxian.materialedittext.MaterialEditText
+                style="@style/TmhMaterialEditText"
+                android:id="@+id/short_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/short_name"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                style="@style/TmhMaterialEditText"
+                android:id="@+id/rate_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/form_addedit_value"
+                android:numeric="integer|decimal"/>
+
+            <CheckBox
+                android:id="@+id/checkbox_last_update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/form_addedit_update" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

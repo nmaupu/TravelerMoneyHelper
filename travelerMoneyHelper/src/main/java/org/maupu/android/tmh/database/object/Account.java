@@ -48,7 +48,19 @@ public class Account extends BaseObject {
 		balance += b;
 	}
 
-	public ContentValues createContentValues() {
+    @Override
+    public BaseObject copy() {
+        Account a = new Account();
+        a._id = super.getId();
+        a.setName(name);
+        a.setIcon(icon);
+        a.setCurrency((Currency)currency.copy());
+        a.setBalance(balance);
+
+        return a;
+    }
+
+    public ContentValues createContentValues() {
 		ContentValues cv = new ContentValues();
 		cv.put(AccountData.KEY_NAME, this.getName());
 		cv.put(AccountData.KEY_ICON, this.getIcon());

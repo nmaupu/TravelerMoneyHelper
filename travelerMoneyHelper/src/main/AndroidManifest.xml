@@ -12,7 +12,7 @@
 
     <application
         android:name="org.maupu.android.tmh.core.TmhApplication"
-        android:icon="@drawable/tmh_icon"
+        android:icon="@drawable/tmh_icon_128"
         android:label="@string/app_name"
         android:theme="@style/TmhTheme"
         android:allowBackup="true" >

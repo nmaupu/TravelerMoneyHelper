@@ -2,247 +2,221 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dip"
-        android:layout_weight="1" >
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/layout_root"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/layout_currency_chooser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
+                android:orientation="horizontal">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/debit" />
-
-                <Spinner
-                    android:id="@+id/spinner_from"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_currency_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_currency_chooser"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/credit" />
-
-                <Spinner
-                    android:id="@+id/spinner_to"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_amount_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_currency_info"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/currency" />
-
-                <Spinner
-                    android:id="@+id/spinner_currency"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout_amount_edit"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:text="@string/amount" />
-
-                <org.maupu.android.tmh.ui.widget.NumberEditText
-                    android:id="@+id/amount"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view_separator1"
-                android:layout_width="match_parent"
-                android:layout_below="@id/layout4"
-                android:layout_alignParentLeft="true"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-
-            <LinearLayout
-                android:id="@+id/layout5"
-                android:layout_width="match_parent"
-                android:layout_below="@id/view_separator1"
-                android:layout_alignParentLeft="true"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="3dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="3dip" >
-
-                <TextView
-                    android:id="@+id/text_amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right|center_vertical"
                     android:layout_weight="1"
-                    android:text="0.00" />
+                    android:orientation="horizontal">
+                    <fr.ganfra.materialspinner.MaterialSpinner
+                        style="@style/TmhMaterialSpinner"
+                        android:id="@+id/spinner_from"
+                        android:layout_marginRight="0px"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:ms_floatingLabelText="@string/debit" />
+
+                    <ImageView
+                        android:id="@+id/account_icon_from"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dip"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:maxHeight="40dip"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/tmh_icon_48" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="->"
                     android:textStyle="bold"
-                    android:text=" -> " />
+                    android:textColor="@color/colorPrimary"/>
 
-                <TextView
-                    android:id="@+id/converted_amount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="left|center_vertical"
                     android:layout_weight="1"
-                    android:text="0.00" />
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/account_icon_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dip"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:maxHeight="40dip"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/tmh_icon_48" />
+
+
+                    <fr.ganfra.materialspinner.MaterialSpinner
+                        style="@style/TmhMaterialSpinner"
+                        android:id="@+id/spinner_to"
+                        android:layout_marginLeft="0px"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:ms_floatingLabelText="@string/credit" />
+                </LinearLayout>
+
+
+
+
+
+
+
             </LinearLayout>
 
+            <fr.ganfra.materialspinner.MaterialSpinner
+                style="@style/TmhMaterialSpinner"
+                android:id="@+id/spinner_currency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:ms_floatingLabelText="@string/currency" />
+
+            <org.maupu.android.tmh.ui.widget.NumberEditText
+                style="@style/TmhMaterialEditText"
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:hint="@string/amount" />
+
             <View
-                android:id="@+id/view_separator2"
-                android:layout_below="@id/layout5"
-                android:layout_alignParentLeft="true"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
 
-            <LinearLayout
-                android:id="@+id/layout6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/view_separator2"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
-
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/category" />
+                    android:orientation="horizontal"
+                    android:paddingBottom="3dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip"
+                    android:paddingTop="3dip" >
 
-                <Spinner
+                    <TextView
+                        android:id="@+id/text_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right|center_vertical"
+                        android:layout_weight="1"
+                        android:text="0.00" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:text=" -> " />
+
+                    <TextView
+                        android:id="@+id/converted_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:layout_weight="1"
+                        android:text="0.00" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginLeft="5sp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="3sp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_marginRight="40sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:src="@drawable/ic_event_black" />
+
+                        <TextView
+                            android:id="@+id/date"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3sp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <ImageView
+                            android:layout_marginRight="40sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:src="@drawable/ic_watch_black" />
+
+                        <TextView
+                            android:id="@+id/time"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/button_today"
+                    android:layout_marginTop="10sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_to_today_button" />
+
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    style="@style/TmhMaterialSpinner"
                     android:id="@+id/spinner_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                    app:ms_floatingLabelText="@string/category" />
 
-            <LinearLayout
-                android:id="@+id/layout7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/layout6"
-                android:orientation="horizontal"
-                android:paddingBottom="2dip"
-                android:paddingTop="2dip" >
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:text="@string/date" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" >
-
-                    <TextView
-                        android:id="@+id/date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="false"
-                        android:textColor="@color/blue"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/button_today"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignRight="@id/date"
-                        android:layout_centerVertical="true"
-                        android:text="@string/set_to_today_button" />
-
-                    <TextView
-                        android:id="@+id/time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignRight="@id/date"
-                        android:layout_below="@id/date"
-                        android:layout_centerVertical="false"
-                        android:textColor="@color/blue"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
-                </RelativeLayout>
-            </LinearLayout>
-        </RelativeLayout>
-
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

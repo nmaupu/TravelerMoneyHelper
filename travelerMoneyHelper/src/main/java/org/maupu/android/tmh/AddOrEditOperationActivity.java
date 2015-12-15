@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.UUID;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -12,21 +11,21 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
-import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.w3c.dom.Text;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -35,7 +34,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
@@ -43,6 +41,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -61,7 +60,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
     private int mSeconds = 0;
 
     private CustomDatePickerDialog customDatePickerDialog = null;
-	private SpinnerManager smAccount;
+	//private SpinnerManager smAccount;
+    private Account account;
+    private ImageView accountIcon;
+    private TextView accountName;
 	private SpinnerManager smCategory;
 	private SpinnerManager smCurrency;
 	private NumberEditText amount;
@@ -95,7 +97,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		mMinutes = cal.get(Calendar.MINUTE);
 		mSeconds = cal.get(Calendar.SECOND);
 		
-		smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
+		//smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
+        accountIcon = (ImageView)findViewById(R.id.account_icon);
+        accountName = (TextView)findViewById(R.id.account_name);
 		smCategory = new SpinnerManager(this, (Spinner)findViewById(R.id.category));
 		amount = (NumberEditText)findViewById(R.id.amount);
 		amount.addTextChangedListener(this);
@@ -121,13 +125,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		// Set spinners content
 		Cursor c;
 
-		Account dummyAccount = new Account();
-		c = dummyAccount.fetchAll();
-		smAccount.setAdapter(c, AccountData.KEY_NAME);
-		
-		Account currentAccount = StaticData.getCurrentAccount();
-		if(currentAccount != null)
-			smAccount.setSpinnerPositionCursor(currentAccount.toString(), new Account());
+        // Init on current account
+		account = StaticData.getCurrentAccount();
+        accountName.setText(account.getName());
+        ImageViewHelper.setIcon(this, accountIcon, account.getIcon());
 
 		Category dummyCategory = new Category();
 		Category withdrawalCat = StaticData.getWithdrawalCategory();
@@ -166,8 +167,8 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		Currency dummyCurrency = new Currency();
 		c = dummyCurrency.fetchAll();
 		smCurrency.setAdapter(c, CurrencyData.KEY_LONG_NAME);
-		if(currentAccount != null && currentAccount.getCurrency() != null)
-			smCurrency.setSpinnerPositionCursor(currentAccount.getCurrency().toString(), new Currency());
+		if(account != null && account.getCurrency() != null)
+			smCurrency.setSpinnerPositionCursor(account.getCurrency().getLongName(), new Currency());
 
         // Force edit text to get focus on startup
         return amount;
@@ -180,7 +181,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
     @Override
 	protected void onDestroy() {
-		smAccount.closeAdapterCursor();
 		smCategory.closeAdapterCursor();
 		smCurrency.closeAdapterCursor();
 		
@@ -212,7 +212,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 	@Override
 	protected void baseObjectToFields(Operation obj) {
 		if(obj != null) {
-			Date d = null;
+			Date d;
 			
 			if(obj.getId() != null) {
 				// Updating
@@ -225,8 +225,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			}
 			
 			initDatePickerTextView(d);
-			if(obj.getAccount() !=null)
-				smAccount.setSpinnerPositionCursor(obj.getAccount().getName(), new Account());
+			if(obj.getAccount() !=null) {
+                account = obj.getAccount();
+                accountName.setText(account.getName());
+                ImageViewHelper.setIcon(this, accountIcon, account.getIcon());
+            }
 			if(obj.getCategory() != null)
 				smCategory.setSpinnerPositionCursor(obj.getCategory().getName(), new Category());
 			if(obj.getCurrency() != null)
@@ -257,12 +260,9 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		if(obj != null) {
 			obj.setDate(new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime());
 
-			Cursor c = null;
+			Cursor c;
 
-			c = smAccount.getSelectedItem();
-			Account u = new Account();
-			u.toDTO(c);
-			obj.setAccount(u);
+			obj.setAccount((Account)account.copy());
 
 			c = smCategory.getSelectedItem();
 			Category cat = new Category();
