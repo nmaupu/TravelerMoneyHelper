@@ -208,7 +208,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
                 Flag flag = Flag.getFlagFromCountry(mContext, (String)item);
                 if(flag != null) {
                     flagImageView.setImageDrawable(
-                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_DEFAULT_SIZE)));
+                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
                 }
 
                 return null;

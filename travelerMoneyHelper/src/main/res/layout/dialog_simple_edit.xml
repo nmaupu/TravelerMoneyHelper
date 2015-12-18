@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:text="" />
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
+            style="@style/TmhMaterialEditText"
             android:id="@+id/simple_dialog_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -39,31 +39,24 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/hint"
-            android:weightSum="10"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/text_auto_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dip"
-                android:layout_weight="1"
-                android:text="@string/country" />
-
             <org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon
+                style="@style/TmhMaterialEditText"
                 android:id="@+id/edit"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:completionThreshold="1"
                 android:inputType="text|textAutoCorrect|textAutoComplete"
-                android:layout_weight="8"
+                android:hint="@string/country"
                 android:maxLines="1" />
 
             <ImageView
                 android:id="@+id/flag_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_height="match_parent"
+                android:src="@drawable/tmh_icon_48"/>
         </LinearLayout>
 
         <Button

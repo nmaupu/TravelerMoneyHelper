@@ -9,7 +9,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -124,19 +128,19 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	public void onCheckedItem(int numberItemsChecked) {
 		// Change state of buttonEdit and buttonDelete
 		switch(numberItemsChecked) {
-		case 0:
-			buttonsBarGone();
-			break;
-		case 1:
-			setEnabledDeleteButton(true);
-			setEnabledEditButton(true);
-			setEnabledUpdateButton(true);
-			buttonsBarVisible();
-			break;
-		default:
-			deleteButton.setEnabled(true);
-			editButton.setEnabled(false);
-			updateButton.setEnabled(true);
+            case 0:
+                buttonsBarGone();
+			    break;
+            case 1:
+                setEnabledDeleteButton(true);
+                setEnabledEditButton(true);
+                setEnabledUpdateButton(true);
+                buttonsBarVisible();
+                break;
+            default:
+                setEnabledDeleteButton(true);
+                setEnabledEditButton(false);
+                setEnabledUpdateButton(true);;
 		}
 	}
 
@@ -200,24 +204,30 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 		}
 	}
 
+    private void setEnabledButton(Button btn, boolean enabled) {
+        if(btn != null) {
+            btn.setEnabled(enabled);
+            btn.setAlpha(enabled ? 1f : .4f);
+        }
+    }
+
 	private void setEnabledDeleteButton(boolean enabled) {
-		if(this.deleteButton != null)
-			this.deleteButton.setEnabled(enabled);
+		setEnabledButton(this.deleteButton, enabled);
 	}
 
 	private void setEnabledEditButton(boolean enabled) {
-		if(this.editButton != null)
-			this.editButton.setEnabled(enabled);
+        setEnabledButton(this.editButton, enabled);
 	}
 	
 	private void setEnabledUpdateButton(boolean enabled) {
-		if(this.updateButton != null)
-			this.updateButton.setEnabled(enabled);
+        setEnabledButton(this.updateButton, enabled);
 	}
 	
 	public void activateUpdateButton() {
-		if(this.updateButton != null)
-			this.updateButton.setVisibility(View.VISIBLE);
+		if(this.updateButton != null) {
+            this.updateButton.setVisibility(View.VISIBLE);
+            setEnabledUpdateButton(true);
+        }
 	}
 
 	private void initButtons() {
@@ -236,7 +246,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 	}
 
 	private void setVisibilityButtonsBar(int anim, boolean visible) {
-		View v = (View)findViewById(R.id.layout_root_footer);
+		View v = findViewById(R.id.layout_root_footer);
 
 		// Already ok
 		if((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))

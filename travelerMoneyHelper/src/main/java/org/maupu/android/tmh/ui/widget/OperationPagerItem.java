@@ -177,13 +177,17 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	}
 
 	private void setEnabledDeleteButton(boolean enabled) {
-		if(this.deleteButton != null)
-			this.deleteButton.setEnabled(enabled);
+		if(this.deleteButton != null) {
+            this.deleteButton.setEnabled(enabled);
+            this.deleteButton.setAlpha(enabled ? 1f : 0.4f);
+        }
 	}
 
 	private void setEnabledEditButton(boolean enabled) {
-		if(this.editButton != null)
-			this.editButton.setEnabled(enabled);
+		if(this.editButton != null) {
+            this.editButton.setEnabled(enabled);
+            this.editButton.setAlpha(enabled ? 1f : 0.4f);
+        }
 	}
 
 	private void initButtons() {
@@ -268,8 +272,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 			buttonsBarVisible();
 			break;
 		default:
-			deleteButton.setEnabled(true);
-			editButton.setEnabled(false);
+            setEnabledDeleteButton(true);
+            setEnabledEditButton(false);
 		}
 	}
 

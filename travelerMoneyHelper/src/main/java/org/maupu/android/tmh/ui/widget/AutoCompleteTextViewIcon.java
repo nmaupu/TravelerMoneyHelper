@@ -2,7 +2,9 @@ package org.maupu.android.tmh.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.AutoCompleteTextView;
+
+import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
+
 import org.maupu.android.tmh.ui.ICallback;
 
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
  *   "name" -> item name to display (String)
  *   "icon" -> item resource id (String)
  */
-public class AutoCompleteTextViewIcon extends AutoCompleteTextView {
+public class AutoCompleteTextViewIcon extends MaterialAutoCompleteTextView {
     private ICallback<?> onUpdateListener;
 
     public AutoCompleteTextViewIcon(Context context) {
