@@ -412,13 +412,35 @@ public class Operation extends BaseObject {
 		}
 		
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString").append(" "); // group by dateString instead of date because of hours and minutes
-		qb.append("ORDER BY o."+OperationData.KEY_DATE+" DESC ");
+		qb.append("ORDER BY o." + OperationData.KEY_DATE + " DESC ");
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		return c;
 	}
-	
+
+    /**
+     * Sum all operations and group by categories for a specific account.
+     * Begin date and end date are automatically computed.
+     * @param account
+     * @param exceptCategories
+     * @return A cursor corresponding to the request
+     */
+    public Cursor sumOperationsGroupByCategory(Account account, Integer[] exceptCategories) {
+        Operation o = new Operation();
+        Date dateBegin = o.getFirstDate(account, exceptCategories);
+        Date dateEnd = o.getLastDate(account, exceptCategories);
+        return sumOperationsGroupByCategory(account, dateBegin, dateEnd, exceptCategories);
+    }
+
+    /**
+     * Sum all operations and group by categories for a specific account.
+     * @param account
+     * @param dateBegin
+     * @param dateEnd
+     * @param exceptCategories
+     * @return A cursor corresponding to the request
+     */
 	public Cursor sumOperationsGroupByCategory(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
 		if(account == null || account.getId() == null || dateBegin == null || dateEnd == null)
 			return null;
@@ -470,6 +492,7 @@ public class Operation extends BaseObject {
 	public boolean validate() {
 		return true;
 	}
+
 	@Override
 	public void reset() {
 		super._id = null;
@@ -487,6 +510,7 @@ public class Operation extends BaseObject {
 	public String toString() {
 		return ""+this.getId();
 	}
+
 	@Override
 	public String getDefaultOrderColumn() {
 		return OperationData.KEY_DATE;

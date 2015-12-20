@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.StatsActivity;
 import org.maupu.android.tmh.TmhActivity;
-import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
