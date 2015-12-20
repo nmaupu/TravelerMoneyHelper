@@ -24,7 +24,7 @@ public abstract class StaticData {
 	private static boolean isValidCurrentAccount = false;
 	private static Integer defaultAccountId;
 	private static Category currentSelectedCategory = new Category();
-	private static Set<Integer> statsExceptedCategories = new HashSet<Integer>();
+	private static Set<Integer> statsExceptedCategories = new HashSet<>();
 	private static boolean statsAdvancedFilter = false;
 	private static Date currentOperationDatePickerDate = null;
 	private static Currency mainCurrency = null;

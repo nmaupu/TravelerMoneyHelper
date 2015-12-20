@@ -199,29 +199,47 @@ public class Operation extends BaseObject {
 		return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
 	}
 
-	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
-		return fetchByPeriod(dateBegin, dateEnd, "o." + OperationData.KEY_DATE + " DESC", -1);
+    public Cursor fetchByPeriod(Date dateBegin, Date dateEnd) {
+        return fetchByPeriod(null, dateBegin, dateEnd);
+    }
+
+    public Cursor fetchByPeriod(Account account, Date dateBegin, Date dateEnd) {
+        return fetchByPeriod(account, dateBegin, dateEnd, "o." + OperationData.KEY_DATE + " DESC", -1);
+    }
+
+    public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
+        return fetchByPeriod(null, dateBegin, dateEnd, order, limit);
+    }
+
+	public Cursor fetchByPeriod(Account account, Date dateBegin, Date dateEnd, String order, int limit) {
+        return fetchByPeriod(account, null, dateBegin, dateEnd, order, limit);
 	}
-	
-	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
+
+    public Cursor fetchByPeriod(Account account, Category category, Date dateBegin, Date dateEnd, String order, int limit) {
         if(dateBegin == null || dateEnd == null)
             return null;
 
-		QueryBuilder qsb = filter.getQueryBuilder();
-		//QueryBuilder myQsb = new QueryBuilder(qsb.getStringBuilder());
+        QueryBuilder qsb = filter.getQueryBuilder();
 
-		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
-		String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
-		//qsb.append("AND a."+AccountData.KEY_ID+"="+accountId+" ");
-		qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
-		String sLimit = limit > 0 ? " limit "+limit : "";
-		qsb.append("ORDER BY " + order + " " + sLimit);
+        String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+        String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
 
-		Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
-		Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
-		
-		return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
-	}
+        qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+
+        if(account != null && account.getId() != null)
+            qsb.append("AND a."+AccountData.KEY_ID+"="+account.getId()+" ");
+
+        if(category != null && category.getId() != null)
+            qsb.append("AND c."+CategoryData.KEY_ID+"="+category.getId()+" ");
+
+        String sLimit = limit > 0 ? " limit "+limit : "";
+        qsb.append("ORDER BY " + order + " " + sLimit);
+
+        Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
+        Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
+
+        return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
+    }
 
 	public Cursor fetchByMonth(Date date) {
 		Date dateBegin = DateUtil.getFirstDayOfMonth(date);
@@ -378,8 +396,16 @@ public class Operation extends BaseObject {
 
 		return d;
 	}
+
+    public Cursor sumOperationsGroupByDayOrderDateAsc(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
+        return sumOperationsGroupByDay(account, dateBegin, dateEnd, exceptCategories, false);
+    }
+
+    public Cursor sumOperationsGroupByDayOrderDateDesc(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
+        return sumOperationsGroupByDay(account, dateBegin, dateEnd, exceptCategories, true);
+    }
 	
-	public Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
+	private Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories, boolean isOrderDesc) {
 		if(account == null || account.getId() == null || dateBegin == null || dateEnd == null)
 			return null;
 		
@@ -389,6 +415,7 @@ public class Operation extends BaseObject {
 		QueryBuilder qb = new QueryBuilder(new StringBuilder("SELECT "));
 		qb.append("o."+OperationData.KEY_ID+", ");
 		qb.append("o."+OperationData.KEY_DATE+", ");
+        qb.append("o."+OperationData.KEY_ID_CATEGORY+", ");
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
@@ -397,7 +424,7 @@ public class Operation extends BaseObject {
 		qb.append("WHERE a."+AccountData.KEY_ID+"="+account.getId()+" ");
 		qb.append("AND o."+OperationData.KEY_DATE+" BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
 		qb.append("AND o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID+" ");
-		qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
+        qb.append("AND o."+OperationData.KEY_ID_CURRENCY+"=c."+CurrencyData.KEY_ID+" ");
 		
 		if(exceptCategories != null && exceptCategories.length > 0) {
 			StringBuilder b = new StringBuilder();
@@ -411,8 +438,9 @@ public class Operation extends BaseObject {
 			qb.append("AND o."+OperationData.KEY_ID_CATEGORY+" NOT IN("+b.toString()+") ");
 		}
 		
-		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString").append(" "); // group by dateString instead of date because of hours and minutes
-		qb.append("ORDER BY o." + OperationData.KEY_DATE + " DESC ");
+		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString, "+OperationData.KEY_ID_CATEGORY).append(" "); // group by dateString instead of date because of hours and minutes
+        String order = isOrderDesc ? "DESC" : "ASC";
+		qb.append("ORDER BY o." + OperationData.KEY_DATE + " " + order + " ");
 		
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
@@ -456,6 +484,7 @@ public class Operation extends BaseObject {
 		qb.append("sum("+OperationData.KEY_AMOUNT+") / " + nbDays + " avg, ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
+        qb.append("cat."+CategoryData.KEY_ID+", ");
 		qb.append("cat."+CategoryData.KEY_NAME+", ");
 		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
 		qb.append("FROM "+OperationData.TABLE_NAME+" o, "+AccountData.TABLE_NAME+" a, "+CurrencyData.TABLE_NAME+" c, "+CategoryData.TABLE_NAME+" cat ");

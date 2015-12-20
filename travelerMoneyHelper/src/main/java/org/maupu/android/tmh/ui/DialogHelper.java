@@ -193,6 +193,7 @@ public abstract class DialogHelper {
             Category ca = new Category();
             Cursor cu = ca.fetch(cats[i]);
             ca.toDTO(cu);
+            cu.close();
             posToCheck.add(getCategoryPositionInCursor(cursor, ca));
             Log.d(DialogHelper.class.getName(), "  - Auto checked category : "+cats[i]+" ("+ca.getName()+")");
         }
@@ -221,6 +222,7 @@ public abstract class DialogHelper {
 		if(catName != null && !"".equals(catName)) {
 			Cursor cursorCat = dummyCat.fetchByName(catName);
 			dummyCat.toDTO(cursorCat);
+            cursorCat.close();
 		}
 		
 		if(dummyCat.getId() != null)

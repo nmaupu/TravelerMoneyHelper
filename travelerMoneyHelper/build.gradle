@@ -62,4 +62,7 @@ dependencies {
 
     // https://github.com/PhilJay/MPAndroidChart
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+
+    // https://github.com/ApmeM/android-flowlayout
+    compile 'org.apmem.tools:layouts:1.10@aar'
 }

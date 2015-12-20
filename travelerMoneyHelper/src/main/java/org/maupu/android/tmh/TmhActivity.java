@@ -155,6 +155,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                 accountHeader.addProfile(profile, i);
                 cursor.moveToNext();
             }
+            cursor.close();
 
             if (profileToActivate != null)
                 accountHeader.setActiveProfile(profileToActivate);

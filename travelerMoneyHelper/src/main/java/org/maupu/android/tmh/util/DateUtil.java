@@ -59,8 +59,13 @@ public abstract class DateUtil {
 		
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
+        int minDay = cal.getActualMinimum(Calendar.DAY_OF_MONTH);
 
-		return new GregorianCalendar(year, month, 1, 0, 0, 0).getTime();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, minDay);
+
+        return resetDateToBeginingOfDay(cal.getTime());
 	}
 	
 	public static Date getLastDayOfMonth(Date date) {
@@ -71,8 +76,19 @@ public abstract class DateUtil {
 		int month = cal.get(Calendar.MONTH);
 		int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-		return new GregorianCalendar(year, month, maxDay, 23, 59, 59).getTime();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, maxDay);
+
+        return resetDateToEndOfDay(cal.getTime());
 	}
+
+    public static Date addDays(Date date, int nbDays) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, nbDays);
+        return cal.getTime();
+    }
 	
 	public static int getNumberOfDaysBetweenDates(Date date1, Date date2) {
 		Date d1 = (Date)date1.clone();
@@ -81,23 +97,37 @@ public abstract class DateUtil {
 		d1 = DateUtil.resetDateToBeginingOfDay(d1);
 		d2 = DateUtil.resetDateToEndOfDay(d2);
 		
-		return (int)Math.ceil(Math.abs((double) ( (double)(d1.getTime()-d2.getTime()) / 86400000d)));
+		return (int)Math.ceil(Math.abs(((double)(d1.getTime()-d2.getTime()) / 86400000d)));
 	}
 	
 	public static Date resetDateToBeginingOfDay(Date d) {
-		d.setHours(0);
-		d.setMinutes(0);
-		d.setSeconds(0);
-		
-		return d;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+
+        int minH = cal.getActualMinimum(Calendar.HOUR);
+        int minM = cal.getActualMinimum(Calendar.MINUTE);
+        int minS = cal.getActualMinimum(Calendar.SECOND);
+
+        cal.set(Calendar.HOUR, minH);
+        cal.set(Calendar.MINUTE, minM);
+        cal.set(Calendar.SECOND, minS);
+
+        return cal.getTime();
 	}
 	
 	public static Date resetDateToEndOfDay(Date d) {
-		d.setHours(23);
-		d.setMinutes(59);
-		d.setSeconds(59);
-		
-		return d;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+
+        int maxH = cal.getActualMaximum(Calendar.HOUR);
+        int maxM = cal.getActualMaximum(Calendar.MINUTE);
+        int maxS = cal.getActualMaximum(Calendar.SECOND);
+
+        cal.set(Calendar.HOUR, maxH);
+        cal.set(Calendar.MINUTE, maxM);
+        cal.set(Calendar.SECOND, maxS);
+
+        return cal.getTime();
 	}
 
     public static Date getCurrentDate() {
