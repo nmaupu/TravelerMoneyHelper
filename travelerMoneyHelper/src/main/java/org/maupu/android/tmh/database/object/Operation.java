@@ -204,6 +204,9 @@ public class Operation extends BaseObject {
 	}
 	
 	public Cursor fetchByPeriod(Date dateBegin, Date dateEnd, String order, int limit) {
+        if(dateBegin == null || dateEnd == null)
+            return null;
+
 		QueryBuilder qsb = filter.getQueryBuilder();
 		//QueryBuilder myQsb = new QueryBuilder(qsb.getStringBuilder());
 
@@ -377,7 +380,7 @@ public class Operation extends BaseObject {
 	}
 	
 	public Cursor sumOperationsGroupByDay(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
-		if(account == null || account.getId() == null)
+		if(account == null || account.getId() == null || dateBegin == null || dateEnd == null)
 			return null;
 		
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
@@ -439,7 +442,7 @@ public class Operation extends BaseObject {
      * @return A cursor corresponding to the request
      */
 	public Cursor sumOperationsGroupByCategory(Account account, Date dateBegin, Date dateEnd, Integer[] exceptCategories) {
-		if(account == null || account.getId() == null)
+		if(account == null || account.getId() == null || dateBegin == null || dateEnd == null)
 			return null;
 		
 		String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
