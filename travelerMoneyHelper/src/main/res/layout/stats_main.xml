@@ -7,30 +7,43 @@
 
     <include layout="@layout/toolbar"/>
 
-    <RelativeLayout
-        android:id="@+id/stats_main_layout"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pie_chart"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:minHeight="200dp"
-            android:minWidth="200dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/marker"
-            android:layout_toRightOf="@id/pie_chart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="test text"/>
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    </RelativeLayout>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pie_chart"
+                    android:minHeight="200dp"
+                    android:minWidth="200dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/bar_chart"
+                    android:minHeight="200dp"
+                    android:minWidth="280dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+            </org.apmem.tools.layouts.FlowLayout>
+
+            <TextView
+                android:id="@+id/marker"
+                android:layout_toRightOf="@id/pie_chart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="test text"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

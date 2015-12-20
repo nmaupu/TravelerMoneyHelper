@@ -127,7 +127,12 @@ public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnCli
 
     @Override
     public void changeCursor(Cursor c) {
+        Cursor oldCursor = super.getCursor();
+
         super.changeCursor(c);
+
+        if(oldCursor != null)
+            oldCursor.close();
     }
 
     public Integer[] getCheckedPositions() {

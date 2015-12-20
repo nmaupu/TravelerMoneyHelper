@@ -457,7 +457,7 @@ public class StatsActivityOld extends TmhActivity implements OnItemSelectedListe
 		Log.d(StatsActivityOld.class.getName(), "Nb days = "+nbDays+" (dateBeg="+beg+", dateEnd="+end+")");
 		switch(currentGroupBy) {
             case GROUP_BY_DATE:
-                cursorData = dummyOp.sumOperationsGroupByDay(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
+                cursorData = dummyOp.sumOperationsGroupByDayOrderDateDesc(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
                 break;
 		    case GROUP_BY_CATEGORY:
 			    cursorData = dummyOp.sumOperationsGroupByCategory(account, beg, end, StaticData.getStatsExceptedCategoriesToArray());
