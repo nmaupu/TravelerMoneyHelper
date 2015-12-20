@@ -2,25 +2,19 @@ package org.maupu.android.tmh;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.util.SortedList;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.maupu.android.tmh.database.CategoryData;
@@ -29,11 +23,9 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
-import org.maupu.android.tmh.util.NumberUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -143,9 +135,10 @@ public class StatsActivity extends TmhActivity {
                 currentAccount,
                 StaticData.getStatsExceptedCategories().toArray(new Integer[0])
         );
+        if(c==null)
+            return;
 
         List<ValNames> entries = new ArrayList<>();
-        int xIndex = 0;
         c.moveToFirst();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
@@ -197,9 +190,6 @@ public class StatsActivity extends TmhActivity {
         pd.setValueFormatter(new PercentFormatter());
 
         pieChart.setData(pd);
-        //pieChart.offsetLeftAndRight(0);
-        //pieChart.offsetTopAndBottom(0);
-        //pieChart.setExtraOffsets(0,0,0,0);
         pieChart.animateY(1000);
         pieChart.setTransparentCircleAlpha(150);
         pieChart.setCenterText(getResources().getString(R.string.categories));
