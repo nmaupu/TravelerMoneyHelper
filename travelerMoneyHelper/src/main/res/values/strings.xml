@@ -133,6 +133,7 @@
     <string name="rates_last_update">Last update :</string>
     <string name="update_rates_failed">Error updating rates from the internet</string>
     <string name="update_rates_success">Rates updated ok</string>
+    <string name="misc">Misc</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>

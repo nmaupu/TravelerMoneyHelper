@@ -131,6 +131,7 @@
     <string name="rates_last_update">Dernière mise à jour :</string>
     <string name="update_rates_failed">Erreur lors de la mise à jour des taux de conversion via internet</string>
     <string name="update_rates_success">Mise à jour ok</string>
+    <string name="misc">Divers</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>

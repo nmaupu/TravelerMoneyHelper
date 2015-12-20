@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar"/>
+
+    <RelativeLayout
+        android:id="@+id/stats_main_layout"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pie_chart"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:minHeight="240dp"
+            android:minWidth="240dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/marker"
+            android:layout_toRightOf="@id/pie_chart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="test text"/>
+
+    </RelativeLayout>
+</LinearLayout>

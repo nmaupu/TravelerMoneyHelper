@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
-public class StatsGraphView {
+public class StatsGraphViewOld {
 	private DefaultRenderer mRenderer = null;
 	private GraphicalView mGraphicalView = null;
 	private LinearLayout mLayout = null;
@@ -21,7 +21,7 @@ public class StatsGraphView {
 	// Warning : Even if we may draw categories, nothing related to TMH here ;)
 	private CategorySeries mSeries = new CategorySeries("");
 	
-	public StatsGraphView(Context ctx, LinearLayout layout) {
+	public StatsGraphViewOld(Context ctx, LinearLayout layout) {
 		mLayout = layout;
 		mCtx = ctx;
 		
@@ -90,7 +90,7 @@ public class StatsGraphView {
 	}*/
 	
 	public void addToSeries(int color, String name, double value) {
-		Log.d(StatsGraphView.class.getName(), "Pushing serie : name="+name+", value="+value+", color="+color);
+		Log.d(StatsGraphViewOld.class.getName(), "Pushing serie : name="+name+", value="+value+", color="+color);
 		
 		mSeries.add(name, value);
 		SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();

@@ -77,7 +77,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         this.contentView = contentView;
         this.title = title;
     }
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,11 +87,13 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             setTitle(this.title);
 
         toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white);
-            getSupportActionBar().setHomeButtonEnabled(false);
+        if(toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white);
+                getSupportActionBar().setHomeButtonEnabled(false);
+            }
         }
 
         initNavigationDrawer();
@@ -217,9 +219,11 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             // Update all badges in the drawer
             updateDrawerBadges();
 
-            // Order and boolean are important to have custom icon as home up indicator
-            navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if(toolbar != null) {
+                // Order and boolean are important to have custom icon as home up indicator
+                navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
         }
 
         /** Select good item in nav drawer **/
