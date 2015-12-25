@@ -6,13 +6,12 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
@@ -29,10 +28,10 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.stats.StatsData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +56,7 @@ public class StatsActivity extends TmhActivity {
 
     // Charts
     private PieChart pieChart;
-    private BarChart barChart;
+    private LineChart detailsChart;
 
     public StatsActivity() {
         super(R.layout.stats, R.string.activity_title_statistics);
@@ -81,9 +80,54 @@ public class StatsActivity extends TmhActivity {
         tvDateEnd = (TextView)findViewById(R.id.date_end);
 
         // Charts
+        initPieChart();
+        initDetailsChart();
+    }
+
+    private void initPieChart() {
         pieChart = (PieChart)findViewById(R.id.pie_chart);
         marker = (TextView)findViewById(R.id.marker);
-        barChart = (BarChart)findViewById(R.id.bar_chart);
+        pieChart.setHardwareAccelerationEnabled(true);
+        pieChart.setTransparentCircleAlpha(150);
+        pieChart.setCenterText(getResources().getString(R.string.categories));
+        pieChart.setCenterTextSize(20f);
+        pieChart.setUsePercentValues(true);
+        pieChart.setDescription("");
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+                Log.d(TAG, "Highlight : " + h.getDataSetIndex() + " " + h.getXIndex());
+                StatsData<Integer> sd = (StatsData<Integer>) e.getData();
+                StringBuilder sb = new StringBuilder();
+                Iterator<String> it = sd.getNames().iterator();
+                while (it.hasNext()) {
+                    sb.append(it.next());
+                    sb.append("\n");
+                }
+
+                marker.setText(sb.toString());
+
+                Integer catId = sd.getObj();
+                if (catId != null) {
+                    Cursor c = currentSelectedCategory.fetch(catId);
+                    currentSelectedCategory.toDTO(c);
+                    c.close();
+                    refreshDetailsChart();
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                marker.setText("Nothing selected");
+            }
+        });
+
+        pieChart.getLegend().setEnabled(false);
+    }
+
+    private void initDetailsChart() {
+        detailsChart = (LineChart)findViewById(R.id.details_chart);
+        detailsChart.setHardwareAccelerationEnabled(true);
     }
 
     @Override
@@ -99,7 +143,7 @@ public class StatsActivity extends TmhActivity {
         reinitializeData();
         refreshDates();
         refreshPieChart();
-        refreshBarChart();
+        refreshDetailsChart();
     }
 
     @Override
@@ -188,7 +232,7 @@ public class StatsActivity extends TmhActivity {
         if(c==null)
             return;
 
-        List<ValNames> entries = new ArrayList<>();
+        List<StatsData<Integer>> entries = new ArrayList<>();
         c.moveToFirst();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
@@ -197,7 +241,7 @@ public class StatsActivity extends TmhActivity {
 
             int catId = c.getInt(idxCategory);
             String catName = c.getString(idxCategoryName);
-            entries.add(new ValNames(Math.abs(c.getFloat(idxAmount)), catId, catName));
+            entries.add(new StatsData(Math.abs(c.getFloat(idxAmount)), catId, catName));
 
         } while(c.moveToNext());
 
@@ -209,24 +253,24 @@ public class StatsActivity extends TmhActivity {
         List<String> xEntries = new ArrayList<>();
         List<Entry> yEntries = new ArrayList<>();
         final int MAX = 4;
-        ValNames aggregated = new ValNames(0, null, null);
+        StatsData<Integer> aggregated = new StatsData<>(0f, null, null);
         int highlighted = 0;
         for(int i=0; i<size; i++) {
-            ValNames vn = entries.get(i);
+            StatsData<Integer> sd = entries.get(i);
             if(i<MAX) {
                 // Store the value
-                yEntries.add(new Entry(vn.value, i, vn));
-                xEntries.add(vn.names.get(0));
+                yEntries.add(new Entry(sd.getStatValue(), i, sd));
+                xEntries.add(sd.getName(0));
             } else {
                 // Aggregate the value
-                aggregated.value += vn.value;
-                aggregated.names.add(vn.names.get(0));
+                aggregated.addStatValue(sd.getStatValue());
+                aggregated.addName(sd.getName(0));
             }
         }
         if(size > MAX) {
             // Adding aggregated values, index is MAX
             xEntries.add(getResources().getString(R.string.misc));
-            yEntries.add(new Entry(aggregated.value, MAX, aggregated));
+            yEntries.add(new Entry(aggregated.getStatValue(), MAX, aggregated));
             highlighted = MAX;
         }
 
@@ -242,47 +286,11 @@ public class StatsActivity extends TmhActivity {
 
         pieChart.setData(pd);
         pieChart.animateY(1000);
-        pieChart.setTransparentCircleAlpha(150);
-        pieChart.setCenterText(getResources().getString(R.string.categories));
-        pieChart.setCenterTextSize(20f);
-        pieChart.setUsePercentValues(true);
-        pieChart.setDescription("");
-        pieChart.setHardwareAccelerationEnabled(true);
-        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-                Log.d(TAG, "Highlight : " + h.getDataSetIndex() + " " + h.getXIndex());
-                ValNames vn = (ValNames) e.getData();
-                StringBuilder sb = new StringBuilder();
-                Iterator<String> it = vn.names.iterator();
-                while (it.hasNext()) {
-                    sb.append(it.next());
-                    sb.append("\n");
-                }
-
-                marker.setText(sb.toString());
-
-                Integer catId = vn.catId;
-                if(catId != null) {
-                    Cursor c = currentSelectedCategory.fetch(catId);
-                    currentSelectedCategory.toDTO(c);
-                    c.close();
-                    refreshBarChart();
-                }
-            }
-
-            @Override
-            public void onNothingSelected() {
-                marker.setText("Nothing selected");
-            }
-        });
-
-        pieChart.getLegend().setEnabled(false);
         pieChart.highlightValue(new Highlight(highlighted, 0), true);
         pieChart.invalidate();
     }
 
-    public void refreshBarChart() {
+    public void refreshDetailsChart() {
         if(currentSelectedCategory == null || currentSelectedCategory.getId() == null)
             return;
 
@@ -302,7 +310,7 @@ public class StatsActivity extends TmhActivity {
         c.moveToFirst();
 
         /** Filling values with some real data **/
-        Map<String, Float> values = new HashMap<>();
+        Map<Integer, Map<String, Float>> values = new HashMap<>();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxDate = c.getColumnIndexOrThrow("dateString");
@@ -319,15 +327,18 @@ public class StatsActivity extends TmhActivity {
             try {
                 float amount = Math.abs(Float.parseFloat(amountString));
 
-                // Adding only corresponding category to entries
-                if(currentSelectedCategory.getId() == cat.getId()) {
-                    values.put(dateString, amount);
+                Map<String, Float> curVal = values.get(catId);
+                if(curVal == null) {
+                    curVal = new HashMap<>();
+                    values.put(catId, curVal);
                 }
+                Float f = curVal.get(dateString);
+                if(f == null || f == 0f)
+                    curVal.put(dateString, amount);
+                else
+                    curVal.put(dateString, f+amount);
             } catch(NullPointerException npe) {
-
-            } catch(NumberFormatException nfe) {
-
-            }
+            } catch(NumberFormatException nfe) {}
         } while(c.moveToNext());
 
         // Closing cursor !
@@ -337,54 +348,57 @@ public class StatsActivity extends TmhActivity {
         /** Chart is labeled by day **/
         int nbDaysTotal = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
         List<String> xEntries = new ArrayList<>();
-        List<BarEntry> yEntries = new ArrayList<>();
-
+        Map<Integer, List<Entry>> yEntries = new HashMap<>();
         Date d = (Date)dateBegin.clone();
         for(int x=0; x<nbDaysTotal; x++) {
             String dateString = DateUtil.dateToStringNoTime(d);
-            Float a = values.get(dateString);
-            float amount = a == null ? 0f : a;
-
             xEntries.add(dateString);
-            yEntries.add(new BarEntry(amount, x));
 
-            // Go to next day
+            Iterator it = values.keySet().iterator();
+            while(it.hasNext()) {
+                int catId = (int)it.next();
+                Map<String, Float> v = values.get(catId);
+                Float f = v.get(dateString) == null ? 0f : v.get(dateString);
+                List<Entry> curEntries = yEntries.get(catId);
+                if(curEntries == null) {
+                    curEntries = new ArrayList<>();
+                    yEntries.put(catId, curEntries);
+                }
+                curEntries.add(new Entry(f, x));
+            }
+
             d = DateUtil.addDays(d, 1);
         }
 
         /** Creating chart based on entries **/
-        BarDataSet dataSet = new BarDataSet(yEntries, currentSelectedCategory.getName());
-        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-
-        BarData bd = new BarData(xEntries, dataSet);
-        bd.setValueTextSize(10f);
-
-        barChart.setData(bd);
-        barChart.animateY(1000);
-        barChart.setDescription("description = " + currentSelectedCategory.getName());
-        barChart.setHardwareAccelerationEnabled(true);
-
-        barChart.invalidate();
-    }
-
-    private class ValNames implements Comparable {
-        public Integer catId;
-        public float value;
-        public List<String> names = new ArrayList<>();
-
-        public ValNames(float value, Integer catId, String name) {
-            this.value = value;
-            this.catId = catId;
-            if(name != null)
-                names.add(name);
+        int[] colors = ColorTemplate.JOYFUL_COLORS;
+        int xColor = 0;
+        List<LineDataSet> dataSets = new ArrayList<>();
+        Iterator it = yEntries.keySet().iterator();
+        while(it.hasNext()) {
+            Integer key = (Integer)it.next();
+            List<Entry> vals = yEntries.get(key);
+            Category cat = new Category();
+            Cursor cursor = cat.fetch(key);
+            cat.toDTO(cursor);
+            cursor.close();
+            LineDataSet lds = new LineDataSet(vals, cat.getName());
+            lds.setAxisDependency(YAxis.AxisDependency.LEFT);
+            lds.setColor(colors[(xColor++) % colors.length]);
+            if(key == currentSelectedCategory.getId()) {
+                lds.setLineWidth(2);
+            }
+            dataSets.add(lds);
         }
 
-        @Override
-        public int compareTo(Object another) {
-            ValNames vn = (ValNames)another;
-            int val1 = (int)vn.value;
-            return (int)(val1 - this.value);
-        }
+
+        LineData data = new LineData(xEntries, dataSets);
+        data.setValueTextSize(10f);
+
+        detailsChart.setData(data);
+        //detailsChart.animateY(1000);
+        detailsChart.setDescription("description = " + currentSelectedCategory.getName());
+
+        detailsChart.invalidate();
     }
 }
