@@ -1,6 +1,7 @@
 package org.maupu.android.tmh;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -17,10 +18,8 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
@@ -28,7 +27,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
-import org.maupu.android.tmh.util.stats.StatsData;
+import org.maupu.android.tmh.util.stats.StatsCategoryValues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,17 +45,27 @@ import java.util.Set;
  */
 public class StatsActivity extends TmhActivity {
     private static final String TAG = StatsActivity.class.getName();
+    private static final int LINE_WIDTH = 1;
+    private int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
     private ImageView accountImage;
     private Date dateBegin, dateEnd;
     private Set<Integer> exceptedCategories;
     private TextView tvDateBegin, tvDateEnd;
     private TextView marker;
-    private Category currentSelectedCategory = new Category();
+    private Category currentSelectedCategory;
 
     // Charts
     private PieChart pieChart;
     private LineChart detailsChart;
+
+    // Charts data handling
+    public static final int[] MY_JOYFUL_COLORS = {
+            Color.rgb(217, 80, 138), Color.rgb(254, 149, 7), Color.rgb(170, 164, 80),
+            Color.rgb(106, 167, 134), Color.rgb(53, 194, 209)
+    };
+    private static final int[] COLORS = MY_JOYFUL_COLORS;
+    private Map<Integer, StatsCategoryValues> chartsData = new HashMap<>();
 
     public StatsActivity() {
         super(R.layout.stats, R.string.activity_title_statistics);
@@ -69,6 +78,7 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
 
         slidingPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
@@ -82,6 +92,7 @@ public class StatsActivity extends TmhActivity {
         // Charts
         initPieChart();
         initDetailsChart();
+        reinitializeData();
     }
 
     private void initPieChart() {
@@ -90,35 +101,32 @@ public class StatsActivity extends TmhActivity {
         pieChart.setHardwareAccelerationEnabled(true);
         pieChart.setTransparentCircleAlpha(150);
         pieChart.setCenterText(getResources().getString(R.string.categories));
-        pieChart.setCenterTextSize(20f);
+        pieChart.setCenterTextSize(16f);
         pieChart.setUsePercentValues(true);
         pieChart.setDescription("");
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
                 Log.d(TAG, "Highlight : " + h.getDataSetIndex() + " " + h.getXIndex());
-                StatsData<Integer> sd = (StatsData<Integer>) e.getData();
+                StatsCategoryValues scv = (StatsCategoryValues) e.getData();
                 StringBuilder sb = new StringBuilder();
-                Iterator<String> it = sd.getNames().iterator();
+                Iterator<Category> it = scv.getCategories().iterator();
                 while (it.hasNext()) {
-                    sb.append(it.next());
+                    sb.append(it.next().getName());
                     sb.append("\n");
                 }
 
                 marker.setText(sb.toString());
 
-                Integer catId = sd.getObj();
-                if (catId != null) {
-                    Cursor c = currentSelectedCategory.fetch(catId);
-                    currentSelectedCategory.toDTO(c);
-                    c.close();
-                    refreshDetailsChart();
-                }
+                currentSelectedCategory = scv.getFirstCategory();
+                refreshDetailsChart();
             }
 
             @Override
             public void onNothingSelected() {
                 marker.setText("Nothing selected");
+                currentSelectedCategory = null;
+                refreshDetailsChart();
             }
         });
 
@@ -142,6 +150,7 @@ public class StatsActivity extends TmhActivity {
 
         reinitializeData();
         refreshDates();
+        buildChartsData();
         refreshPieChart();
         refreshDetailsChart();
     }
@@ -222,86 +231,15 @@ public class StatsActivity extends TmhActivity {
         StaticData.getStatsExceptedCategories().addAll(exceptedCategories);
     }
 
-    private void refreshPieChart() {
-        Account currentAccount = StaticData.getCurrentAccount();
-
-        Cursor c = new Operation().sumOperationsGroupByCategory(
-                currentAccount,
-                StaticData.getStatsExceptedCategories().toArray(new Integer[0])
-        );
-        if(c==null)
-            return;
-
-        List<StatsData<Integer>> entries = new ArrayList<>();
-        c.moveToFirst();
-        do {
-            int idxAmount = c.getColumnIndexOrThrow("amountString");
-            int idxCategoryName = c.getColumnIndexOrThrow(CategoryData.KEY_NAME);
-            int idxCategory = c.getColumnIndexOrThrow(CategoryData.KEY_ID);
-
-            int catId = c.getInt(idxCategory);
-            String catName = c.getString(idxCategoryName);
-            entries.add(new StatsData(Math.abs(c.getFloat(idxAmount)), catId, catName));
-
-        } while(c.moveToNext());
-
-        // Closing cursor
-        c.close();
-
-        Collections.sort(entries);
-        int size = entries.size();
-        List<String> xEntries = new ArrayList<>();
-        List<Entry> yEntries = new ArrayList<>();
-        final int MAX = 4;
-        StatsData<Integer> aggregated = new StatsData<>(0f, null, null);
-        int highlighted = 0;
-        for(int i=0; i<size; i++) {
-            StatsData<Integer> sd = entries.get(i);
-            if(i<MAX) {
-                // Store the value
-                yEntries.add(new Entry(sd.getStatValue(), i, sd));
-                xEntries.add(sd.getName(0));
-            } else {
-                // Aggregate the value
-                aggregated.addStatValue(sd.getStatValue());
-                aggregated.addName(sd.getName(0));
-            }
-        }
-        if(size > MAX) {
-            // Adding aggregated values, index is MAX
-            xEntries.add(getResources().getString(R.string.misc));
-            yEntries.add(new Entry(aggregated.getStatValue(), MAX, aggregated));
-            highlighted = MAX;
-        }
-
-        PieDataSet dataSet = new PieDataSet(yEntries, getResources().getString(R.string.categories));
-        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        dataSet.setSliceSpace(1.5f);
-        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-        dataSet.setSelectionShift(10f);
-
-        PieData pd = new PieData(xEntries, dataSet);
-        pd.setValueTextSize(10f);
-        pd.setValueFormatter(new PercentFormatter());
-
-        pieChart.setData(pd);
-        pieChart.animateY(1000);
-        pieChart.highlightValue(new Highlight(highlighted, 0), true);
-        pieChart.invalidate();
-    }
-
-    public void refreshDetailsChart() {
-        if(currentSelectedCategory == null || currentSelectedCategory.getId() == null)
-            return;
-
+    private void buildChartsData() {
         Integer[] exceptedCats = null;
         if(exceptedCategories != null)
             exceptedCats = exceptedCategories.toArray(new Integer[0]);
 
         Cursor c = new Operation().sumOperationsGroupByDayOrderDateAsc(
                 StaticData.getCurrentAccount(),
-                StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG),
-                StaticData.getDateField(StaticData.PREF_STATS_DATE_END),
+                dateBegin,
+                dateEnd,
                 exceptedCats
         );
         if(c == null)
@@ -309,8 +247,7 @@ public class StatsActivity extends TmhActivity {
 
         c.moveToFirst();
 
-        /** Filling values with some real data **/
-        Map<Integer, Map<String, Float>> values = new HashMap<>();
+        chartsData = new HashMap<>();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxDate = c.getColumnIndexOrThrow("dateString");
@@ -325,80 +262,121 @@ public class StatsActivity extends TmhActivity {
             cursorCat.close();
 
             try {
-                float amount = Math.abs(Float.parseFloat(amountString));
-
-                Map<String, Float> curVal = values.get(catId);
-                if(curVal == null) {
-                    curVal = new HashMap<>();
-                    values.put(catId, curVal);
+                StatsCategoryValues scv = chartsData.get(catId);
+                if(scv == null) {
+                    scv = new StatsCategoryValues(cat, dateBegin, dateEnd);
+                    chartsData.put(catId, scv);
                 }
-                Float f = curVal.get(dateString);
-                if(f == null || f == 0f)
-                    curVal.put(dateString, amount);
-                else
-                    curVal.put(dateString, f+amount);
+
+                float amount = Math.abs(Float.parseFloat(amountString));
+                scv.addValue(dateString, amount);
             } catch(NullPointerException npe) {
             } catch(NumberFormatException nfe) {}
         } while(c.moveToNext());
 
-        // Closing cursor !
         c.close();
 
-        /** Constructing x labels and y entries **/
-        /** Chart is labeled by day **/
-        int nbDaysTotal = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
-        List<String> xEntries = new ArrayList<>();
-        Map<Integer, List<Entry>> yEntries = new HashMap<>();
-        Date d = (Date)dateBegin.clone();
-        for(int x=0; x<nbDaysTotal; x++) {
-            String dateString = DateUtil.dateToStringNoTime(d);
-            xEntries.add(dateString);
+        List<StatsCategoryValues> chartsDataList = new ArrayList<>(chartsData.values());
+        Collections.sort(chartsDataList);
+        int n = chartsDataList.size();
 
-            Iterator it = values.keySet().iterator();
-            while(it.hasNext()) {
-                int catId = (int)it.next();
-                Map<String, Float> v = values.get(catId);
-                Float f = v.get(dateString) == null ? 0f : v.get(dateString);
-                List<Entry> curEntries = yEntries.get(catId);
-                if(curEntries == null) {
-                    curEntries = new ArrayList<>();
-                    yEntries.put(catId, curEntries);
-                }
-                curEntries.add(new Entry(f, x));
-            }
-
-            d = DateUtil.addDays(d, 1);
+        Iterator<StatsCategoryValues> it = chartsDataList.iterator();
+        int x = 0;
+        while(it.hasNext()) {
+            it.next().setColor(COLORS[x % COLORS.length]);
+            x++;
         }
 
-        /** Creating chart based on entries **/
-        int[] colors = ColorTemplate.JOYFUL_COLORS;
-        int xColor = 0;
-        List<LineDataSet> dataSets = new ArrayList<>();
-        Iterator it = yEntries.keySet().iterator();
-        while(it.hasNext()) {
-            Integer key = (Integer)it.next();
-            List<Entry> vals = yEntries.get(key);
-            Category cat = new Category();
-            Cursor cursor = cat.fetch(key);
-            cat.toDTO(cursor);
-            cursor.close();
-            LineDataSet lds = new LineDataSet(vals, cat.getName());
-            lds.setAxisDependency(YAxis.AxisDependency.LEFT);
-            lds.setColor(colors[(xColor++) % colors.length]);
-            if(key == currentSelectedCategory.getId()) {
-                lds.setLineWidth(2);
+        if(n > max_cat_displayed) {
+            StatsCategoryValues scv = chartsDataList.get(max_cat_displayed);
+            scv.setName(getResources().getString(R.string.misc));
+            // Remove from charts data, fusion everything and reintegrate it
+            chartsData.remove(scv.getFirstCategory().getId());
+            for(int i= max_cat_displayed +1; i<n; i++) {
+                StatsCategoryValues curScv = chartsDataList.get(i);
+                scv.fusionWith(curScv);
+                chartsData.remove(curScv.getFirstCategory().getId());
             }
+            chartsData.put(scv.getFirstCategory().getId(), scv);
+        }
+    }
+
+    private void refreshPieChart() {
+        if(chartsData == null || chartsData.keySet() == null || chartsData.size() ==0)
+            return;
+
+        List<String> xEntries = new ArrayList<>();
+        List<Entry> yEntries = new ArrayList<>();
+        int[] colors = new int[chartsData.size()];
+        int i = 0;
+        Iterator<StatsCategoryValues> it = chartsData.values().iterator();
+        while(it.hasNext()) {
+            StatsCategoryValues scv = it.next();
+            colors[i] = scv.getColor();
+            xEntries.add(scv.getName());
+            yEntries.add(new Entry(scv.summarize(), i, scv));
+            i++;
+        }
+
+        PieDataSet dataSet = new PieDataSet(yEntries, getResources().getString(R.string.categories));
+        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSet.setSliceSpace(1.5f);
+        dataSet.setColors(colors);
+        dataSet.setSelectionShift(10f);
+
+        PieData pd = new PieData(xEntries, dataSet);
+        pd.setValueTextSize(10f);
+        pd.setValueFormatter(new PercentFormatter());
+
+        pieChart.setData(pd);
+        pieChart.animateY(1000);
+        pieChart.highlightValue(new Highlight(0, 0), true);
+        pieChart.invalidate();
+    }
+
+    public void refreshDetailsChart() {
+        /** Construct all curves from chartsData **/
+        List<String> xEntries = StatsCategoryValues.buildXEntries(dateBegin, dateEnd);
+        List<LineDataSet> dataSets = new ArrayList<>();
+
+        /** First, draw others categories **/
+        List<StatsCategoryValues> scvs = new ArrayList<>(chartsData.values());
+        Iterator<StatsCategoryValues> it = scvs.iterator();
+        while(it.hasNext()) {
+            StatsCategoryValues scv = it.next();
+
+            LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
+            if(currentSelectedCategory == null || currentSelectedCategory.getId() != scv.getFirstCategory().getId()) {
+                lds.setColor(scv.getColor());
+                lds.setLineWidth(LINE_WIDTH);
+                lds.setDrawCircleHole(true);
+                lds.setCircleColor(scv.getColor());
+                lds.setCircleSize(2f);
+                dataSets.add(lds);
+            }
+        }
+
+        /** Last, draw selected category (displayed on top of others curves) **/
+        if(currentSelectedCategory != null && currentSelectedCategory.getId() != null) {
+            StatsCategoryValues scv = chartsData.get(currentSelectedCategory.getId());
+            LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
+            lds.setColor(scv.getColor());
+            lds.setCircleColor(scv.getColor());
+            lds.setLineWidth(LINE_WIDTH * 2);
+            lds.setDrawCircleHole(false);
+            lds.setCircleSize(3f);
+            lds.enableDashedLine(20f, 8f, 0f);
             dataSets.add(lds);
         }
 
-
-        LineData data = new LineData(xEntries, dataSets);
-        data.setValueTextSize(10f);
-
-        detailsChart.setData(data);
-        //detailsChart.animateY(1000);
-        detailsChart.setDescription("description = " + currentSelectedCategory.getName());
-
+        detailsChart.clear();
+        detailsChart.notifyDataSetChanged();
+        detailsChart.setData(new LineData(xEntries, dataSets));
+        if(currentSelectedCategory != null && currentSelectedCategory.getName() != null)
+            detailsChart.setDescription(currentSelectedCategory.getName());
+        else
+            detailsChart.setDescription("");
+        detailsChart.setGridBackgroundColor(Color.WHITE);
         detailsChart.invalidate();
     }
 }
