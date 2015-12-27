@@ -80,7 +80,7 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
     	StringBuilder builderJson = super.loadFromCache(OER_CACHE_CURRENCIES, 2592000); // Cache valid for 30j
     	//StringBuilder builderJson = super.loadFromCache(OER_CACHE_CURRENCIES, 10);
     	
-    	if(builderJson == null || !"".equals(builderJson.toString())) {
+    	if(builderJson == null || "".equals(builderJson.toString())) {
     		StringBuilder sbUrl = super.getUrl(ACTION_CURRENCY_LIST, null);
 
     		HttpClient httpClient = new DefaultHttpClient();
