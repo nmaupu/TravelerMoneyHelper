@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" tools:showIn="@layout/stats">
 
     <include layout="@layout/toolbar"/>
@@ -141,11 +141,9 @@
                             </TableRow>
 
                             <TableRow android:layout_marginBottom="3sp">
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:background="@android:color/darker_gray"
-                                    android:layout_span="3"/>
+                                <LinearLayout android:layout_span="3">
+                                    <include layout="@layout/separator" />
+                                </LinearLayout>
                             </TableRow>
 
                             <TableRow android:layout_marginBottom="3sp">
@@ -258,12 +256,63 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/marker"
-                android:layout_toRightOf="@id/pie_chart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="test text"/>
+            <include layout="@layout/separator" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginRight="5sp"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_misc_category"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center_horizontal"/>
+                    <TextView
+                        android:id="@+id/misc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:text="Misc content" />
+                </LinearLayout>
+                <View android:layout_width="1dp"
+                      android:layout_height="match_parent"
+                      android:background="@android:color/darker_gray" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_filter_cat_title"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center_horizontal"/>
+                    <org.apmem.tools.layouts.FlowLayout
+                        android:id="@+id/layout_categories"
+                        android:orientation="horizontal"
+                        android:gravity="fill"
+                        app:layoutDirection="ltr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

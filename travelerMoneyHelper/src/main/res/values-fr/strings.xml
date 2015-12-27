@@ -3,7 +3,6 @@
 
     <string name="about">Par @bicnicfr</string>
     <string name="about_title">A propos de TMH</string>
-    <string name="stats_filter_cat_title">Exception de catégories</string>
     <string name="back">Retour</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -132,6 +131,7 @@
     <string name="update_rates_failed">Erreur lors de la mise à jour des taux de conversion via internet</string>
     <string name="update_rates_success">Mise à jour ok</string>
     <string name="misc">Divers</string>
+    <string name="NA">N/A</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
@@ -145,5 +145,8 @@
     <!-- Stats relative strings -->
     <string name="stats_avg_day">Moy/jour</string>
     <string name="stats_total">Total</string>
+    <string name="stats_misc_category">Catégorie divers</string>
+    <string name="stats_filter_cat_title">Filtre de catégories</string>
+    <string name="stats_item_cat_auto">Reset filtre de catégories</string>
 
 </resources>
