@@ -82,8 +82,6 @@
     <string name="withdrawal">Withdrawal</string>
     <string name="default_account_name">Account1</string>
     <string name="confirm_modification">Do you confirm modification ?</string>
-    <string name="total">Total:</string>
-    <string name="total_">Total</string>
     <string name="average">Average:</string>
     <string name="average_">Average</string>
     <string name="averageByDay">Average / day:</string>
@@ -143,5 +141,9 @@
     <string name="toolbar_swap_mode">Swap</string>
     <string name="toolbar_graph_info">Graph or info</string>
     <string name="toolbar_account">Account</string>
+
+    <!-- Stats relative strings -->
+    <string name="stats_avg_day">Avg/day</string>
+    <string name="stats_total">Total</string>
 
 </resources>
