@@ -86,16 +86,14 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="20dp"
-        android:drawableTop="@drawable/ic_action_send"
         android:gravity="center"
         android:paddingLeft="45dp"
         android:paddingRight="45dp"
-        android:text="@string/welcome_button" android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"/>
+        android:text="@string/welcome_button" android:layout_centerVertical="true"/>
 
 </LinearLayout>

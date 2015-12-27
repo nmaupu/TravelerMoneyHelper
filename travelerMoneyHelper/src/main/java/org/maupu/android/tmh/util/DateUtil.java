@@ -91,6 +91,9 @@ public abstract class DateUtil {
     }
 	
 	public static int getNumberOfDaysBetweenDates(Date date1, Date date2) {
+        if(date1 == null || date2 == null)
+            return 0;
+
 		Date d1 = (Date)date1.clone();
 		Date d2 = (Date)date2.clone();
 		
