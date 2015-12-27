@@ -20,13 +20,16 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.stats.StatsCategoryValues;
 
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ public class StatsActivity extends TmhActivity {
     private Date dateBegin, dateEnd;
     private Set<Integer> exceptedCategories;
     private TextView tvDateBegin, tvDateEnd;
+    private TextView tvDuration;
     private TextView marker;
     private Category currentSelectedCategory;
 
@@ -65,7 +69,13 @@ public class StatsActivity extends TmhActivity {
             Color.rgb(106, 167, 134), Color.rgb(53, 194, 209)
     };
     private static final int[] COLORS = MY_JOYFUL_COLORS;
-    private Map<Integer, StatsCategoryValues> chartsData = new HashMap<>();
+    private Map<Integer, StatsCategoryValues> statsData = new HashMap<>();
+
+    // Avg / total info
+    private TextView tvAvg1Currency, tvAvg1Amount, tvAvg2Currency, tvAvg2Amount;
+    private TextView tvAvg1Cat, tvAvg1CatCurrency, tvAvg1CatAmount, tvAvg2CatCurrency, tvAvg2CatAmount;
+    private TextView tvTotal1Currency, tvTotal1Amount, tvTotal2Currency, tvTotal2Amount;
+    private TextView tvTotal1Cat, tvTotal1CatCurrency, tvTotal1CatAmount, tvTotal2CatCurrency, tvTotal2CatAmount;
 
     public StatsActivity() {
         super(R.layout.stats, R.string.activity_title_statistics);
@@ -88,11 +98,33 @@ public class StatsActivity extends TmhActivity {
 
         tvDateBegin = (TextView)findViewById(R.id.date_begin);
         tvDateEnd = (TextView)findViewById(R.id.date_end);
+        tvDuration = (TextView)findViewById(R.id.duration);
+
+        // Info
+        tvAvg1Currency = (TextView)findViewById(R.id.text_avg1_currency);
+        tvAvg1Amount = (TextView)findViewById(R.id.text_avg1_amount);
+        tvAvg2Currency = (TextView)findViewById(R.id.text_avg2_currency);
+        tvAvg2Amount = (TextView)findViewById(R.id.text_avg2_amount);
+        tvAvg1Cat = (TextView)findViewById(R.id.text_avg1_cat);
+        tvAvg1CatCurrency = (TextView)findViewById(R.id.text_avg1_cat_currency);
+        tvAvg1CatAmount = (TextView)findViewById(R.id.text_avg1_cat_amount);
+        tvAvg2CatCurrency = (TextView)findViewById(R.id.text_avg2_cat_currency);
+        tvAvg2CatAmount = (TextView)findViewById(R.id.text_avg2_cat_amount);
+        tvTotal1Currency = (TextView)findViewById(R.id.text_total1_currency);
+        tvTotal1Amount = (TextView)findViewById(R.id.text_total1_amount);
+        tvTotal2Currency = (TextView)findViewById(R.id.text_total2_currency);
+        tvTotal2Amount = (TextView)findViewById(R.id.text_total2_amount);
+        tvTotal1Cat = (TextView)findViewById(R.id.text_total1_cat);
+        tvTotal1CatCurrency = (TextView)findViewById(R.id.text_total1_cat_currency);
+        tvTotal1CatAmount = (TextView)findViewById(R.id.text_total1_cat_amount);
+        tvTotal2CatCurrency = (TextView)findViewById(R.id.text_total2_cat_currency);
+        tvTotal2CatAmount = (TextView)findViewById(R.id.text_total2_cat_amount);
 
         // Charts
         initPieChart();
         initDetailsChart();
         reinitializeData();
+        buildChartsData();
     }
 
     private void initPieChart() {
@@ -101,7 +133,7 @@ public class StatsActivity extends TmhActivity {
         pieChart.setHardwareAccelerationEnabled(true);
         pieChart.setTransparentCircleAlpha(150);
         pieChart.setCenterText(getResources().getString(R.string.categories));
-        pieChart.setCenterTextSize(16f);
+        pieChart.setCenterTextSize(15f);
         pieChart.setUsePercentValues(true);
         pieChart.setDescription("");
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -120,6 +152,7 @@ public class StatsActivity extends TmhActivity {
 
                 currentSelectedCategory = scv.getFirstCategory();
                 refreshDetailsChart();
+                refreshInfo();
             }
 
             @Override
@@ -127,6 +160,7 @@ public class StatsActivity extends TmhActivity {
                 marker.setText("Nothing selected");
                 currentSelectedCategory = null;
                 refreshDetailsChart();
+                refreshInfo();
             }
         });
 
@@ -150,13 +184,15 @@ public class StatsActivity extends TmhActivity {
 
         reinitializeData();
         refreshDates();
-        buildChartsData();
         refreshPieChart();
         refreshDetailsChart();
+        refreshInfo();
     }
 
     @Override
     public void refreshAfterCurrentAccountChanged() {
+        reinitializeData();
+        buildChartsData();
         refreshDisplay();
     }
 
@@ -168,7 +204,7 @@ public class StatsActivity extends TmhActivity {
             autoSetExceptedCategories();
 
 //        if(! loadDates())
-            autoSetDates();
+        autoSetDates();
     }
 
     private void autoSetDates() {
@@ -189,6 +225,7 @@ public class StatsActivity extends TmhActivity {
         if(dateBegin != null && dateEnd != null) {
             tvDateBegin.setText(DateUtil.dateToStringNoTime(dateBegin));
             tvDateEnd.setText(DateUtil.dateToStringNoTime(dateEnd));
+            tvDuration.setText("Duration : " + DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd)+" day(s)");
         }
     }
 
@@ -231,6 +268,92 @@ public class StatsActivity extends TmhActivity {
         StaticData.getStatsExceptedCategories().addAll(exceptedCategories);
     }
 
+    /**
+     * Refresh information panel (avg, total, etc ...)
+     */
+    private void refreshInfo() {
+        double total = 0d;
+        double avg = 0d;
+        double totalCat = 0d;
+        double avgCat = 0d;
+        double totalConv = 0d;
+        double avgConv = 0d;
+        double totalCatConv = 0d;
+        double avgCatConv = 0d;
+        double rate = 0d;
+        Currency mainCur = StaticData.getMainCurrency();
+        Account currentAcc = StaticData.getCurrentAccount();
+        String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : "N/A";
+        String currencySymbol = currentAcc != null ? currentAcc.getCurrency().getShortName() : "N/A";
+
+        String currentCatName = "N/A";
+        if(currentSelectedCategory != null && currentSelectedCategory.getName() != null) {
+            // Getting possible aggregated name if needed
+            StatsCategoryValues scv = statsData.get(currentSelectedCategory.getId());
+            currentCatName = scv != null ? scv.getName() : currentSelectedCategory.getName();
+
+            if(currentCatName.length() > 11) {
+                currentCatName = currentSelectedCategory.getName().substring(0, 11);
+                if (!currentCatName.equals(currentSelectedCategory.getName()))
+                    currentCatName += ".";
+            }
+        }
+
+        if(statsData.values() != null || statsData.values().size() > 0) {
+            /** Gran total **/
+            Iterator<StatsCategoryValues> it = statsData.values().iterator();
+            while(it.hasNext()) {
+                StatsCategoryValues scv = it.next();
+                total += scv.summarize();
+                rate += scv.getRate();
+            }
+            // Get the average of all rates
+            rate /= statsData.size();
+
+            /** Avg by day **/
+            int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
+            avg = total / nbDays;
+
+            /** Total and avg by day by category **/
+            if(currentSelectedCategory != null && currentSelectedCategory.getId() != null) {
+                StatsCategoryValues scv = statsData.get(currentSelectedCategory.getId());
+                if (scv != null) {
+                    totalCat = scv.summarize();
+                    avgCat = scv.average(dateBegin, dateEnd);
+                }
+            }
+
+            /** Gran total conversion to main currency **/
+            totalConv = total / rate;
+            totalCatConv = totalCat / rate;
+            avgConv = avg / rate;
+            avgCatConv = avgCat / rate;
+        }
+
+        /** Setting all data to TextViews **/
+        tvAvg1Currency.setText(currencySymbol);
+        tvAvg1Amount.setText(NumberUtil.formatDecimal(avg));
+        tvAvg2Currency.setText(mainCurrencySymbol);
+        tvAvg2Amount.setText(NumberUtil.formatDecimal(avgConv));
+
+        tvAvg1Cat.setText(currentCatName);
+        tvAvg1CatCurrency.setText(currencySymbol);
+        tvAvg1CatAmount.setText(NumberUtil.formatDecimal(avgCat));
+        tvAvg2CatCurrency.setText(mainCurrencySymbol);
+        tvAvg2CatAmount.setText(NumberUtil.formatDecimal(avgCatConv));
+
+        tvTotal1Currency.setText(currencySymbol);
+        tvTotal1Amount.setText(NumberUtil.formatDecimal(total));
+        tvTotal2Currency.setText(mainCurrencySymbol);
+        tvTotal2Amount.setText(NumberUtil.formatDecimal(totalConv));
+
+        tvTotal1Cat.setText(currentCatName);
+        tvTotal1CatCurrency.setText(currencySymbol);
+        tvTotal1CatAmount.setText(NumberUtil.formatDecimal(totalCat));
+        tvTotal2CatCurrency.setText(mainCurrencySymbol);
+        tvTotal2CatAmount.setText(NumberUtil.formatDecimal(totalCatConv));
+    }
+
     private void buildChartsData() {
         Integer[] exceptedCats = null;
         if(exceptedCategories != null)
@@ -247,14 +370,16 @@ public class StatsActivity extends TmhActivity {
 
         c.moveToFirst();
 
-        chartsData = new HashMap<>();
+        statsData = new HashMap<>();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxDate = c.getColumnIndexOrThrow("dateString");
             int idxCatId = c.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
+            int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
             String amountString = c.getString(idxAmount);
             String dateString = c.getString(idxDate);
             int catId = c.getInt(idxCatId);
+            double rate = c.getDouble(idxRate);
 
             Category cat = new Category();
             Cursor cursorCat = cat.fetch(catId);
@@ -262,10 +387,10 @@ public class StatsActivity extends TmhActivity {
             cursorCat.close();
 
             try {
-                StatsCategoryValues scv = chartsData.get(catId);
+                StatsCategoryValues scv = statsData.get(catId);
                 if(scv == null) {
-                    scv = new StatsCategoryValues(cat, dateBegin, dateEnd);
-                    chartsData.put(catId, scv);
+                    scv = new StatsCategoryValues(cat, dateBegin, dateEnd, rate);
+                    statsData.put(catId, scv);
                 }
 
                 float amount = Math.abs(Float.parseFloat(amountString));
@@ -276,7 +401,7 @@ public class StatsActivity extends TmhActivity {
 
         c.close();
 
-        List<StatsCategoryValues> chartsDataList = new ArrayList<>(chartsData.values());
+        List<StatsCategoryValues> chartsDataList = new ArrayList<>(statsData.values());
         Collections.sort(chartsDataList);
         int n = chartsDataList.size();
 
@@ -291,25 +416,25 @@ public class StatsActivity extends TmhActivity {
             StatsCategoryValues scv = chartsDataList.get(max_cat_displayed);
             scv.setName(getResources().getString(R.string.misc));
             // Remove from charts data, fusion everything and reintegrate it
-            chartsData.remove(scv.getFirstCategory().getId());
+            statsData.remove(scv.getFirstCategory().getId());
             for(int i= max_cat_displayed +1; i<n; i++) {
                 StatsCategoryValues curScv = chartsDataList.get(i);
                 scv.fusionWith(curScv);
-                chartsData.remove(curScv.getFirstCategory().getId());
+                statsData.remove(curScv.getFirstCategory().getId());
             }
-            chartsData.put(scv.getFirstCategory().getId(), scv);
+            statsData.put(scv.getFirstCategory().getId(), scv);
         }
     }
 
     private void refreshPieChart() {
-        if(chartsData == null || chartsData.keySet() == null || chartsData.size() ==0)
+        if(statsData == null || statsData.keySet() == null || statsData.size() ==0)
             return;
 
         List<String> xEntries = new ArrayList<>();
         List<Entry> yEntries = new ArrayList<>();
-        int[] colors = new int[chartsData.size()];
+        int[] colors = new int[statsData.size()];
         int i = 0;
-        Iterator<StatsCategoryValues> it = chartsData.values().iterator();
+        Iterator<StatsCategoryValues> it = statsData.values().iterator();
         while(it.hasNext()) {
             StatsCategoryValues scv = it.next();
             colors[i] = scv.getColor();
@@ -335,12 +460,12 @@ public class StatsActivity extends TmhActivity {
     }
 
     public void refreshDetailsChart() {
-        /** Construct all curves from chartsData **/
+        /** Construct all curves from statsData **/
         List<String> xEntries = StatsCategoryValues.buildXEntries(dateBegin, dateEnd);
         List<LineDataSet> dataSets = new ArrayList<>();
 
         /** First, draw others categories **/
-        List<StatsCategoryValues> scvs = new ArrayList<>(chartsData.values());
+        List<StatsCategoryValues> scvs = new ArrayList<>(statsData.values());
         Iterator<StatsCategoryValues> it = scvs.iterator();
         while(it.hasNext()) {
             StatsCategoryValues scv = it.next();
@@ -358,7 +483,7 @@ public class StatsActivity extends TmhActivity {
 
         /** Last, draw selected category (displayed on top of others curves) **/
         if(currentSelectedCategory != null && currentSelectedCategory.getId() != null) {
-            StatsCategoryValues scv = chartsData.get(currentSelectedCategory.getId());
+            StatsCategoryValues scv = statsData.get(currentSelectedCategory.getId());
             LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
             lds.setColor(scv.getColor());
             lds.setCircleColor(scv.getColor());

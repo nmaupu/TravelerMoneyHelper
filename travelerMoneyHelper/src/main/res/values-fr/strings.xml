@@ -142,4 +142,8 @@
     <string name="toolbar_graph_info">Graph ou info</string>
     <string name="toolbar_account">Compte</string>
 
+    <!-- Stats relative strings -->
+    <string name="stats_avg_day">Avg/day</string>
+    <string name="stats_total">Total</string>
+
 </resources>

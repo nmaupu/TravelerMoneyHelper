@@ -25,12 +25,15 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     Date dateBegin;
     Date dateEnd;
     int color = ColorTemplate.COLOR_NONE;
+    Float sum, avg;
+    Double rate = 1d;
 
-    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd) {
+    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate) {
         categories.add(category);
         name = category.getName();
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
+        this.rate = rate;
     }
 
     public void setName(String name) {
@@ -49,7 +52,12 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return color;
     }
 
+    private void invalidateCache() {
+        avg = sum = null;
+    }
+
     public void addValue(String key, Float value) {
+        invalidateCache();
         Float curVal = values.get(key);
         if(curVal == null)
             values.put(key, value);
@@ -68,6 +76,14 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
 
     public Set<Category> getCategories() {
         return categories;
+    }
+
+    public Double getRate() {
+        return rate;
+    }
+
+    public void setRate(Double rate) {
+        this.rate = rate;
     }
 
     public Category getFirstCategory() {
@@ -114,13 +130,28 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         if(values == null || values.size() == 0)
             return 0f;
 
-        Float ret = 0f;
+        if(sum != null)
+            return sum;
+
+        sum = 0f;
         Iterator<Float> it = values.values().iterator();
         while(it.hasNext()) {
-            ret += it.next();
+            sum += it.next();
         }
 
-        return ret;
+        return sum;
+    }
+
+    public Float average(Date dateBegin, Date dateEnd) {
+        if(values == null || values.size() == 0)
+            return 0f;
+
+        if(avg != null)
+            return avg;
+
+        int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
+        avg = nbDays == 0 ? 0f : summarize()/nbDays;
+        return avg;
     }
 
     public void fusionWith(final StatsCategoryValues scv) {
