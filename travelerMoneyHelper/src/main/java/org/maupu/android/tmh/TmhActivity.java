@@ -133,10 +133,11 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                         }
                     }).build();
 
-            Account account = new Account();
-            Cursor cursor = account.fetchAll();
+            Cursor cursor = new Account().fetchAll();
             cursor.moveToFirst();
-            int currentAccountId = StaticData.getCurrentAccount().getId();
+            int currentAccountId = -1;
+            if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
+                currentAccountId = StaticData.getCurrentAccount().getId();
             IProfile profileToActivate = null;
             for (int i = 0; i < cursor.getCount(); i++) {
                 int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);

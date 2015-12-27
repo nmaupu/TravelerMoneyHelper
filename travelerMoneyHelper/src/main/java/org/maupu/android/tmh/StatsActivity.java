@@ -284,7 +284,7 @@ public class StatsActivity extends TmhActivity {
         Currency mainCur = StaticData.getMainCurrency();
         Account currentAcc = StaticData.getCurrentAccount();
         String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : "N/A";
-        String currencySymbol = currentAcc != null ? currentAcc.getCurrency().getShortName() : "N/A";
+        String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : "N/A";
 
         String currentCatName = "N/A";
         if(currentSelectedCategory != null && currentSelectedCategory.getName() != null) {
@@ -462,6 +462,10 @@ public class StatsActivity extends TmhActivity {
     public void refreshDetailsChart() {
         /** Construct all curves from statsData **/
         List<String> xEntries = StatsCategoryValues.buildXEntries(dateBegin, dateEnd);
+        // No data
+        if(xEntries == null)
+            return;
+
         List<LineDataSet> dataSets = new ArrayList<>();
 
         /** First, draw others categories **/
