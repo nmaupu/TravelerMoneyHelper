@@ -3,7 +3,6 @@
 
     <string name="about">By @bicnicfr</string>
     <string name="about_title">About TMH</string>
-    <string name="stats_filter_cat_title">Categories exception</string>
     <string name="back">Back</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -132,6 +131,7 @@
     <string name="update_rates_failed">Error updating rates from the internet</string>
     <string name="update_rates_success">Rates updated ok</string>
     <string name="misc">Misc</string>
+    <string name="NA">N/A</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>
@@ -145,5 +145,8 @@
     <!-- Stats relative strings -->
     <string name="stats_avg_day">Avg/day</string>
     <string name="stats_total">Total</string>
+    <string name="stats_misc_category">Misc category</string>
+    <string name="stats_filter_cat_title">Categories filtering</string>
+    <string name="stats_item_cat_auto">Reset categories filtering</string>
 
 </resources>

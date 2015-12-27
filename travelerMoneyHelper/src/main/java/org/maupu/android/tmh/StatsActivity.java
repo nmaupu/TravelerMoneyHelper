@@ -4,7 +4,12 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -18,8 +23,11 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.apmem.tools.layouts.FlowLayout;
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
@@ -31,6 +39,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.stats.StatsCategoryValues;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +58,7 @@ import java.util.Set;
 public class StatsActivity extends TmhActivity {
     private static final String TAG = StatsActivity.class.getName();
     private static final int LINE_WIDTH = 1;
+    private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
     private int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
     private ImageView accountImage;
@@ -56,8 +66,9 @@ public class StatsActivity extends TmhActivity {
     private Set<Integer> exceptedCategories;
     private TextView tvDateBegin, tvDateEnd;
     private TextView tvDuration;
-    private TextView marker;
+    private TextView tvMisc;
     private Category currentSelectedCategory;
+    private boolean animDetailsChart = true;
 
     // Charts
     private PieChart pieChart;
@@ -76,6 +87,9 @@ public class StatsActivity extends TmhActivity {
     private TextView tvAvg1Cat, tvAvg1CatCurrency, tvAvg1CatAmount, tvAvg2CatCurrency, tvAvg2CatAmount;
     private TextView tvTotal1Currency, tvTotal1Amount, tvTotal2Currency, tvTotal2Amount;
     private TextView tvTotal1Cat, tvTotal1CatCurrency, tvTotal1CatAmount, tvTotal2CatCurrency, tvTotal2CatAmount;
+
+    // Categories list and chooser
+    private FlowLayout layoutCategories;
 
     public StatsActivity() {
         super(R.layout.stats, R.string.activity_title_statistics);
@@ -96,6 +110,7 @@ public class StatsActivity extends TmhActivity {
 
         accountImage = (ImageView)findViewById(R.id.account_image);
 
+        tvMisc = (TextView)findViewById(R.id.misc);
         tvDateBegin = (TextView)findViewById(R.id.date_begin);
         tvDateEnd = (TextView)findViewById(R.id.date_end);
         tvDuration = (TextView)findViewById(R.id.duration);
@@ -120,16 +135,39 @@ public class StatsActivity extends TmhActivity {
         tvTotal2CatCurrency = (TextView)findViewById(R.id.text_total2_cat_currency);
         tvTotal2CatAmount = (TextView)findViewById(R.id.text_total2_cat_amount);
 
+        // Categories chooser
+        layoutCategories = (FlowLayout)findViewById(R.id.layout_categories);
+
         // Charts
+        animDetailsChart = true;
         initPieChart();
         initDetailsChart();
         reinitializeData();
         buildChartsData();
     }
 
+    @Override
+    public IDrawerItem[] buildNavigationDrawer() {
+        return new IDrawerItem[] {
+                createSecondaryDrawerItem(
+                        DRAWER_ITEM_AUTO,
+                        R.drawable.ic_cat_except_black,
+                        R.string.stats_item_cat_auto),
+        };
+    }
+
+    @Override
+    public boolean onItemClick(View view, int position, IDrawerItem item) {
+        if(item.getIdentifier() == DRAWER_ITEM_AUTO) {
+            // Same as changing account
+            refreshAfterCurrentAccountChanged();
+        }
+
+        return super.onItemClick(view, position, item);
+    }
+
     private void initPieChart() {
         pieChart = (PieChart)findViewById(R.id.pie_chart);
-        marker = (TextView)findViewById(R.id.marker);
         pieChart.setHardwareAccelerationEnabled(true);
         pieChart.setTransparentCircleAlpha(150);
         pieChart.setCenterText(getResources().getString(R.string.categories));
@@ -148,7 +186,7 @@ public class StatsActivity extends TmhActivity {
                     sb.append("\n");
                 }
 
-                marker.setText(sb.toString());
+                //tvMisc.setText(sb.toString());
 
                 currentSelectedCategory = scv.getFirstCategory();
                 refreshDetailsChart();
@@ -157,7 +195,7 @@ public class StatsActivity extends TmhActivity {
 
             @Override
             public void onNothingSelected() {
-                marker.setText("Nothing selected");
+                //tvMisc.setText("Nothing selected");
                 currentSelectedCategory = null;
                 refreshDetailsChart();
                 refreshInfo();
@@ -182,9 +220,9 @@ public class StatsActivity extends TmhActivity {
             accountImage.setImageResource(R.drawable.tmh_icon_48);
         }
 
-        reinitializeData();
+        animDetailsChart = true;
         refreshDates();
-        refreshPieChart();
+        refreshPieChart(true, new Highlight(0, 0));
         refreshDetailsChart();
         refreshInfo();
     }
@@ -193,6 +231,7 @@ public class StatsActivity extends TmhActivity {
     public void refreshAfterCurrentAccountChanged() {
         reinitializeData();
         buildChartsData();
+        buildLayoutCategories();
         refreshDisplay();
     }
 
@@ -201,10 +240,11 @@ public class StatsActivity extends TmhActivity {
      */
     public void reinitializeData() {
 //        if(! loadExceptedCategories())
-            autoSetExceptedCategories();
+        autoSetExceptedCategories();
 
 //        if(! loadDates())
         autoSetDates();
+        buildLayoutCategories();
     }
 
     private void autoSetDates() {
@@ -245,10 +285,25 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void autoSetExceptedCategories() {
+        autoSetExceptedCategories(null);
+    }
+
+    private void autoSetExceptedCategories(Set<Integer> currentExceptedToKeep) {
+
         try {
             Operation o = new Operation();
             Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
-            exceptedCategories = new HashSet<>(Arrays.asList(cats));
+            Set<Integer> exceptedCats = new HashSet<>(Arrays.asList(cats));
+
+            if(currentExceptedToKeep != null && currentExceptedToKeep.size() > 0)
+                exceptedCats.addAll(currentExceptedToKeep);
+
+            if(exceptedCategories == null)
+                exceptedCategories = new HashSet<>();
+            else
+                exceptedCategories.clear();
+            exceptedCategories.addAll(exceptedCats);
+
             saveExceptedCategories();
         } catch (NullPointerException npe) {
             // Nothing to do here if null
@@ -281,12 +336,13 @@ public class StatsActivity extends TmhActivity {
         double totalCatConv = 0d;
         double avgCatConv = 0d;
         double rate = 0d;
+        String nonAvailable = getResources().getString(R.string.NA);
         Currency mainCur = StaticData.getMainCurrency();
         Account currentAcc = StaticData.getCurrentAccount();
-        String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : "N/A";
-        String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : "N/A";
+        String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : nonAvailable;
+        String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : nonAvailable;
 
-        String currentCatName = "N/A";
+        String currentCatName = nonAvailable;
         if(currentSelectedCategory != null && currentSelectedCategory.getName() != null) {
             // Getting possible aggregated name if needed
             StatsCategoryValues scv = statsData.get(currentSelectedCategory.getId());
@@ -367,6 +423,10 @@ public class StatsActivity extends TmhActivity {
         );
         if(c == null)
             return;
+        if(c.getCount() == 0) {
+            c.close();
+            return;
+        }
 
         c.moveToFirst();
 
@@ -412,23 +472,29 @@ public class StatsActivity extends TmhActivity {
             x++;
         }
 
+        StatsCategoryValues scvMisc = null;
         if(n > max_cat_displayed) {
-            StatsCategoryValues scv = chartsDataList.get(max_cat_displayed);
-            scv.setName(getResources().getString(R.string.misc));
+            scvMisc = chartsDataList.get(max_cat_displayed);
+            scvMisc.setName(getResources().getString(R.string.misc));
             // Remove from charts data, fusion everything and reintegrate it
-            statsData.remove(scv.getFirstCategory().getId());
-            for(int i= max_cat_displayed +1; i<n; i++) {
+            statsData.remove(scvMisc.getFirstCategory().getId());
+            for(int i=max_cat_displayed+1; i<n; i++) {
                 StatsCategoryValues curScv = chartsDataList.get(i);
-                scv.fusionWith(curScv);
+                scvMisc.fusionWith(curScv);
                 statsData.remove(curScv.getFirstCategory().getId());
             }
-            statsData.put(scv.getFirstCategory().getId(), scv);
+            statsData.put(scvMisc.getFirstCategory().getId(), scvMisc);
         }
+
+        // Finally, set text for misc category
+        tvMisc.setText(getMiscCategoryText(scvMisc));
     }
 
-    private void refreshPieChart() {
-        if(statsData == null || statsData.keySet() == null || statsData.size() ==0)
+    private void refreshPieChart(boolean anim, Highlight highlight) {
+        if(statsData == null || statsData.keySet() == null || statsData.size() ==0) {
+            pieChart.invalidate();
             return;
+        }
 
         List<String> xEntries = new ArrayList<>();
         List<Entry> yEntries = new ArrayList<>();
@@ -454,8 +520,10 @@ public class StatsActivity extends TmhActivity {
         pd.setValueFormatter(new PercentFormatter());
 
         pieChart.setData(pd);
-        pieChart.animateY(1000);
-        pieChart.highlightValue(new Highlight(0, 0), true);
+        if(anim)
+            pieChart.animateY(1000);
+        if(highlight != null)
+            pieChart.highlightValue(highlight, true);
         pieChart.invalidate();
     }
 
@@ -463,8 +531,10 @@ public class StatsActivity extends TmhActivity {
         /** Construct all curves from statsData **/
         List<String> xEntries = StatsCategoryValues.buildXEntries(dateBegin, dateEnd);
         // No data
-        if(xEntries == null)
+        if(xEntries == null) {
+            detailsChart.invalidate();
             return;
+        }
 
         List<LineDataSet> dataSets = new ArrayList<>();
 
@@ -488,16 +558,22 @@ public class StatsActivity extends TmhActivity {
         /** Last, draw selected category (displayed on top of others curves) **/
         if(currentSelectedCategory != null && currentSelectedCategory.getId() != null) {
             StatsCategoryValues scv = statsData.get(currentSelectedCategory.getId());
-            LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
-            lds.setColor(scv.getColor());
-            lds.setCircleColor(scv.getColor());
-            lds.setLineWidth(LINE_WIDTH * 2);
-            lds.setDrawCircleHole(false);
-            lds.setCircleSize(3f);
-            lds.enableDashedLine(20f, 8f, 0f);
-            dataSets.add(lds);
+            if(scv != null) {
+                LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
+                lds.setColor(scv.getColor());
+                lds.setCircleColor(scv.getColor());
+                lds.setLineWidth(LINE_WIDTH * 2);
+                lds.setDrawCircleHole(false);
+                lds.setCircleSize(3f);
+                lds.enableDashedLine(20f, 8f, 0f);
+                dataSets.add(lds);
+            }
         }
 
+        if(animDetailsChart) {
+            animDetailsChart = false;
+            detailsChart.animateXY(1000, 1000);
+        }
         detailsChart.clear();
         detailsChart.notifyDataSetChanged();
         detailsChart.setData(new LineData(xEntries, dataSets));
@@ -507,5 +583,88 @@ public class StatsActivity extends TmhActivity {
             detailsChart.setDescription("");
         detailsChart.setGridBackgroundColor(Color.WHITE);
         detailsChart.invalidate();
+    }
+
+    protected String getMiscCategoryText(StatsCategoryValues scvMisc) {
+        if(scvMisc == null || scvMisc.getCategories() == null || scvMisc.getCategories().size() == 0)
+            return getResources().getString(R.string.NA);
+        else if(scvMisc.getCategories().size() == 1)
+            return scvMisc.getFirstCategory().getName();
+
+        StringBuilder sb = null;
+
+        Iterator<Category> it = scvMisc.getCategories().iterator();
+        while(it.hasNext()) {
+            Category cat = it.next();
+            if (sb == null) {
+                sb = new StringBuilder();
+                sb.append(cat.getName());
+            } else {
+                sb.append("\n").append(cat.getName());
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private void buildLayoutCategories() {
+        layoutCategories.removeAllViews();
+        Cursor c;
+        if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
+            c = new Category().fetchAllCategoriesUsedByAccountOperations(StaticData.getCurrentAccount().getId());
+        else
+            c = new Category().fetchAll();
+        if(c == null)
+            return;
+
+        c.moveToFirst();
+        do {
+            Category cat = new Category();
+            cat.toDTO(c);
+
+            int drawableBg = R.drawable.shape_button_rounded_ok;
+            if(exceptedCategories.contains(cat.getId()))
+                drawableBg = R.drawable.shape_button_rounded_ko;
+
+            // View
+            final View buttonView = LayoutInflater.from(this).inflate(R.layout.shape_button_rounded, null);
+
+            // Root layout = button
+            final LinearLayout ll = (LinearLayout)buttonView.findViewById(R.id.button);
+            //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            int m = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
+            Log.d(TAG, "Margin calculated = " + m + " px");
+            //lp.setMargins(m, m, m, m);
+            ll.setBackground(buttonView.getResources().getDrawable(drawableBg));
+            ll.setTag(cat);
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Category cat = (Category)v.getTag();
+                    if(exceptedCategories.contains(cat.getId())) {
+                        exceptedCategories.remove(cat.getId());
+                        ll.setBackground(getResources().getDrawable(R.drawable.shape_button_rounded_ok));
+                    } else {
+                        exceptedCategories.add(cat.getId());
+                        ll.setBackground(getResources().getDrawable(R.drawable.shape_button_rounded_ko));
+                    }
+
+                    buildChartsData();
+                    // Rehighlight previous category
+                    refreshPieChart(false, null);
+                    refreshDetailsChart();
+                    refreshInfo();
+                }
+            });
+
+            // TextView
+            TextView tvText = (TextView)buttonView.findViewById(R.id.text);
+            tvText.setText(cat.getName());
+
+            //layoutCategories.addView(buttonView, lp);
+            layoutCategories.addView(buttonView);
+        } while(c.moveToNext());
+
+        c.close();
     }
 }
