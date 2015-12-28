@@ -91,6 +91,20 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return catIt.next();
     }
 
+    public boolean contains(Integer catId) {
+        if(catId == null || catId < 0 || categories == null || categories.size() == 0)
+            return false;
+
+        Iterator<Category> it = categories.iterator();
+        while(it.hasNext()) {
+            Category c = it.next();
+            if(c.getId() == catId)
+                return true;
+        }
+
+        return false;
+    }
+
     public static List<String> buildXEntries(Date dateBegin, Date dateEnd) {
         if(dateBegin == null || dateEnd == null)
             return null;
