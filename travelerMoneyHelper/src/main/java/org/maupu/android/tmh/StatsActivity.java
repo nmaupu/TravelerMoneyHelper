@@ -7,7 +7,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,10 +38,10 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.stats.StatsCategoryValues;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,7 +66,6 @@ public class StatsActivity extends TmhActivity {
     private TextView tvDateBegin, tvDateEnd;
     private TextView tvDuration;
     private TextView tvMisc;
-    private Category currentSelectedCategory;
     private boolean animDetailsChart = true;
 
     // Charts
@@ -81,6 +79,8 @@ public class StatsActivity extends TmhActivity {
     };
     private static final int[] COLORS = MY_JOYFUL_COLORS;
     private Map<Integer, StatsCategoryValues> statsData = new HashMap<>();
+    private Category currentSelectedCategory;
+    private Category biggestCategory;
 
     // Avg / total info
     private TextView tvAvg1Currency, tvAvg1Amount, tvAvg2Currency, tvAvg2Amount;
@@ -143,7 +143,6 @@ public class StatsActivity extends TmhActivity {
         initPieChart();
         initDetailsChart();
         reinitializeData();
-        buildChartsData();
     }
 
     @Override
@@ -177,17 +176,8 @@ public class StatsActivity extends TmhActivity {
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-                Log.d(TAG, "Highlight : " + h.getDataSetIndex() + " " + h.getXIndex());
-                StatsCategoryValues scv = (StatsCategoryValues) e.getData();
-                StringBuilder sb = new StringBuilder();
-                Iterator<Category> it = scv.getCategories().iterator();
-                while (it.hasNext()) {
-                    sb.append(it.next().getName());
-                    sb.append("\n");
-                }
-
-                //tvMisc.setText(sb.toString());
-
+                Log.d(TAG, "Highlight : x=" + h.getXIndex() + ", dataset=" + h.getDataSetIndex());
+                StatsCategoryValues scv = (StatsCategoryValues)e.getData();
                 currentSelectedCategory = scv.getFirstCategory();
                 refreshDetailsChart();
                 refreshInfo();
@@ -222,16 +212,17 @@ public class StatsActivity extends TmhActivity {
 
         animDetailsChart = true;
         refreshDates();
-        refreshPieChart(true, new Highlight(0, 0));
+        refreshPieChart(true, currentSelectedCategory);
         refreshDetailsChart();
+        refreshLayoutCategories();
         refreshInfo();
     }
 
     @Override
     public void refreshAfterCurrentAccountChanged() {
+        currentSelectedCategory = null;
+        biggestCategory = null;
         reinitializeData();
-        buildChartsData();
-        buildLayoutCategories();
         refreshDisplay();
     }
 
@@ -239,12 +230,13 @@ public class StatsActivity extends TmhActivity {
      * Reinit all data in the view
      */
     public void reinitializeData() {
-//        if(! loadExceptedCategories())
+        //if(! loadExceptedCategories())
         autoSetExceptedCategories();
 
-//        if(! loadDates())
+        //if(! loadDates())
         autoSetDates();
-        buildLayoutCategories();
+        buildChartsData();
+        refreshLayoutCategories();
     }
 
     private void autoSetDates() {
@@ -463,8 +455,13 @@ public class StatsActivity extends TmhActivity {
 
         List<StatsCategoryValues> chartsDataList = new ArrayList<>(statsData.values());
         Collections.sort(chartsDataList);
-        int n = chartsDataList.size();
+        int nbElts = chartsDataList.size();
 
+        // Biggest category is the first one after sorting the list
+        if(chartsDataList != null && chartsDataList.size() > 0)
+            biggestCategory = chartsDataList.get(0).getFirstCategory();
+
+        // Put color from an array on each stats category value
         Iterator<StatsCategoryValues> it = chartsDataList.iterator();
         int x = 0;
         while(it.hasNext()) {
@@ -472,13 +469,14 @@ public class StatsActivity extends TmhActivity {
             x++;
         }
 
+        // If max nb of displayed slice is reach, gather remaining categories together
         StatsCategoryValues scvMisc = null;
-        if(n > max_cat_displayed) {
+        if(nbElts > max_cat_displayed) {
             scvMisc = chartsDataList.get(max_cat_displayed);
             scvMisc.setName(getResources().getString(R.string.misc));
             // Remove from charts data, fusion everything and reintegrate it
             statsData.remove(scvMisc.getFirstCategory().getId());
-            for(int i=max_cat_displayed+1; i<n; i++) {
+            for(int i=max_cat_displayed+1; i<nbElts; i++) {
                 StatsCategoryValues curScv = chartsDataList.get(i);
                 scvMisc.fusionWith(curScv);
                 statsData.remove(curScv.getFirstCategory().getId());
@@ -490,7 +488,7 @@ public class StatsActivity extends TmhActivity {
         tvMisc.setText(getMiscCategoryText(scvMisc));
     }
 
-    private void refreshPieChart(boolean anim, Highlight highlight) {
+    private void refreshPieChart(boolean anim, Category catToHighlight) {
         if(statsData == null || statsData.keySet() == null || statsData.size() ==0) {
             pieChart.invalidate();
             return;
@@ -499,21 +497,41 @@ public class StatsActivity extends TmhActivity {
         List<String> xEntries = new ArrayList<>();
         List<Entry> yEntries = new ArrayList<>();
         int[] colors = new int[statsData.size()];
-        int i = 0;
-        Iterator<StatsCategoryValues> it = statsData.values().iterator();
-        while(it.hasNext()) {
-            StatsCategoryValues scv = it.next();
-            colors[i] = scv.getColor();
-            xEntries.add(scv.getName());
-            yEntries.add(new Entry(scv.summarize(), i, scv));
-            i++;
+
+        // Getting value and sorting it from biggest to smallest
+        List<StatsCategoryValues> values = new ArrayList<>(statsData.values());
+        Collections.sort(values);
+
+        // Mixing list taking big element with smaller one to avoid having all small elts stuck together
+        // in pie chart
+        // Instead of having in order 1 2 3 4 5 6, we have : 1 4 2 5 3 6
+        // 1 -> lim=0; i=(0) j=(1) - ok
+        // 1 2 -> lim=1; i=(0,1) j=(2,3)
+        // 1 2 3 -> lim=1; i=(0,1) j=(2,3)
+        // 1 2 3 4 -> lim=2; i=(0,1,2) j=(3,4,5)
+        // 1 2 3 4 5 -> lim=2; i=(0,1,2) j=(3,4,5) - ok
+        int nbElts = values.size();
+        int lim = nbElts / 2;
+        int xIndex = 0;
+        for(int i=0; i<=lim; i++) {
+            int j = i + lim + 1;
+            StatsCategoryValues scvi = values.get(i);
+            colors[xIndex] = scvi.getColor();
+            xEntries.add(scvi.getName());
+            yEntries.add(new Entry(scvi.summarize(), xIndex++, scvi));
+            if(j<nbElts) {
+                StatsCategoryValues scvj = values.get(j);
+                colors[xIndex] = scvj.getColor();
+                xEntries.add(scvj.getName());
+                yEntries.add(new Entry(scvj.summarize(), xIndex++, scvj));
+            }
         }
 
         PieDataSet dataSet = new PieDataSet(yEntries, getResources().getString(R.string.categories));
         dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         dataSet.setSliceSpace(1.5f);
         dataSet.setColors(colors);
-        dataSet.setSelectionShift(10f);
+        dataSet.setSelectionShift(5f);
 
         PieData pd = new PieData(xEntries, dataSet);
         pd.setValueTextSize(10f);
@@ -522,8 +540,7 @@ public class StatsActivity extends TmhActivity {
         pieChart.setData(pd);
         if(anim)
             pieChart.animateY(1000);
-        if(highlight != null)
-            pieChart.highlightValue(highlight, true);
+        highlightInPieChart(catToHighlight, biggestCategory);
         pieChart.invalidate();
     }
 
@@ -607,7 +624,7 @@ public class StatsActivity extends TmhActivity {
         return sb.toString();
     }
 
-    private void buildLayoutCategories() {
+    private void refreshLayoutCategories() {
         layoutCategories.removeAllViews();
         Cursor c;
         if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
@@ -650,8 +667,8 @@ public class StatsActivity extends TmhActivity {
                     }
 
                     buildChartsData();
-                    // Rehighlight previous category
-                    refreshPieChart(false, null);
+                    // refresh pie chart and highlight previous category if exists
+                    refreshPieChart(false, currentSelectedCategory);
                     refreshDetailsChart();
                     refreshInfo();
                 }
@@ -666,5 +683,46 @@ public class StatsActivity extends TmhActivity {
         } while(c.moveToNext());
 
         c.close();
+    }
+
+    /**
+     * Highlight specified category in pie chart. If not found, highlight another category.
+     * If neither found, highlight nothing.
+     * 1) If both catToLookFor and catIfNotFound are null, don't highlight anything
+     * 2) If catToLookFor is null, try to highlight catIfNotFound (recursive call)
+     * 3) If catToLookFor is not found and catIfNotFound is set, trying to highlight catIfNotFound (recursive call)
+     * 4) If catToLookFor is not found and catIfNotFound is null, don't highlight anything (recursive call)
+     * @param catToLookFor Category to highlight in first priority
+     * @param catIfNotFound Category to highlight if catToLookFor is not found
+     */
+    private void highlightInPieChart(final Category catToLookFor, final Category catIfNotFound) {
+        if(catToLookFor == null && catIfNotFound == null) {
+            /** Case number 1) **/
+            pieChart.highlightValue(null, true);
+        } else if(catToLookFor == null) {
+            /** Case number 2) **/
+            highlightInPieChart(catIfNotFound, null);
+        } else {
+            /** Case number 3 - Trying to find catToLookFor **/
+            // Getting index of element in dataset
+            // new Highlight(x axis element, x of the dataset - 0 for my case, I only have one dataset inside
+            PieDataSet pds = pieChart.getData().getDataSetByLabel(getResources().getString(R.string.categories), false);
+            List<Entry> yEntries = pds.getYVals();
+            int x;
+            int yEntriesSize = yEntries.size();
+            for(x=0; x<yEntriesSize; x++) {
+                Entry entry = yEntries.get(x);
+                StatsCategoryValues scv = (StatsCategoryValues)entry.getData();
+
+                if(scv != null && scv.contains(catToLookFor.getId())) {
+                    // Highlighting found element
+                    pieChart.highlightValue(new Highlight(x, 0), true);
+                    return;
+                }
+            }
+
+            // Nothing found, trying catIfNotFound
+            highlightInPieChart(catIfNotFound, null);
+        }
     }
 }
