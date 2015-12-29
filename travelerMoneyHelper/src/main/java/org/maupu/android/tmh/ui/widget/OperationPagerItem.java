@@ -121,11 +121,14 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 	public void onClick(View v) {
 		final Operation obj = new Operation();
 		Intent intent = null;
+        CheckableCursorAdapter checkableCursorAdapter = null;
 		// Bug fix : when changing account name, listview is null
 		if(listView == null)
 			refreshDisplay();
-		CheckableCursorAdapter checkableCursorAdapter = (CheckableCursorAdapter)listView.getAdapter();
-		final Integer[] posChecked;
+        else
+		    checkableCursorAdapter = (CheckableCursorAdapter)listView.getAdapter();
+
+        final Integer[] posChecked;
 		if(checkableCursorAdapter != null)
 			posChecked = checkableCursorAdapter.getCheckedPositions();
 		else
