@@ -37,11 +37,10 @@ import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
-import org.maupu.android.tmh.util.stats.StatsCategoryValues;
+import org.maupu.android.tmh.stats.StatsCategoryValues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -644,13 +643,13 @@ public class StatsActivity extends TmhActivity {
                 drawableBg = R.drawable.shape_button_rounded_ko;
 
             // View
-            final View buttonView = LayoutInflater.from(this).inflate(R.layout.shape_button_rounded, null);
+            final View buttonView = LayoutInflater.from(this).inflate(R.layout.stats_shape_button_rounded, null);
 
             // Root layout = button
             final LinearLayout ll = (LinearLayout)buttonView.findViewById(R.id.button);
             //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             int m = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
-            Log.d(TAG, "Margin calculated = " + m + " px");
+            Log.d(TAG, "Margin calculated (not used yet) = " + m + " px");
             //lp.setMargins(m, m, m, m);
             ll.setBackground(buttonView.getResources().getDrawable(drawableBg));
             ll.setTag(cat);

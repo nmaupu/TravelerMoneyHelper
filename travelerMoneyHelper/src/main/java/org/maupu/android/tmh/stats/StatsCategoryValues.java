@@ -1,4 +1,4 @@
-package org.maupu.android.tmh.util.stats;
+package org.maupu.android.tmh.stats;
 
 import android.util.Log;
 
