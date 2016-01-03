@@ -7,36 +7,54 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public abstract class DateUtil {
-	private static final String SDF_FORMAT = "dd-MM-yyyy HH:mm:ss";
-	private static final String SDF_FORMAT_TO_DATE = "yyyy-MM-dd HH:mm:ss";
+    private static final String SDF_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final String SDF_FORMAT_NO_TIME = "dd-MM-yyyy";
+	private static final String SDF_FORMAT_TO_SQL_DATE = "yyyy-MM-dd HH:mm:ss";
 	
 	/**
 	 * Transform a date string from format %d-%M-%y %H:%M:%S to a Date object 
 	 * @param date
 	 * @return a Date object or throw a ParseException
+     * @throws ParseException
 	 */
-	public static Date StringToDate(String date) throws ParseException {
-		if(date == null || "".equals(date))
-			throw new ParseException("Date "+date+" is impossible to parse", 0);
-		
-		
-		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT);
-		return sdf.parse(date);
+	public static Date stringToDate(String date) throws ParseException {
+		return stringToDate(date, SDF_FORMAT);
 	}
+
+    /**
+     * Transform a date string from format %d-%M-%y to a Date object
+     * @param dateNoTime
+     * @return a Date object or throw a ParseException
+     * @throws ParseException
+     */
+    public static Date stringNoTimeToDate(String dateNoTime) throws ParseException {
+        return stringToDate(dateNoTime, SDF_FORMAT_NO_TIME);
+    }
 	
 	/**
 	 * Transform a SQL date string from format %y-%M-%d %H:%M:%S to a Date object 
 	 * @param date
 	 * @return a Date object or throw a ParseException
+     * @throws ParseException
 	 */
-	public static Date StringSQLToDate(String date) throws ParseException {
-		if(date == null || "".equals(date))
-			throw new ParseException("Date "+date+" is impossible to parse", 0);
-		
-		
-		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT_TO_DATE);
-		return sdf.parse(date);
+	public static Date stringSQLToDate(String date) throws ParseException {
+		return stringToDate(date, SDF_FORMAT_TO_SQL_DATE);
 	}
+
+    /**
+     * Transform a date string from a given SimpleDateFormat format to a Date object
+     * @param date
+     * @param sdfPattern
+     * @return a Date object or throw a ParseException
+     * @throws ParseException
+     */
+    private static Date stringToDate(String date, String sdfPattern) throws ParseException {
+        if(date == null || "".equals(date))
+            throw new ParseException("Date "+date+" is impossible to parse", 0);
+
+        SimpleDateFormat sdf = new SimpleDateFormat(sdfPattern);
+        return sdf.parse(date);
+    }
 	
 	public static String dateToStringNoTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -107,11 +125,11 @@ public abstract class DateUtil {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
 
-        int minH = cal.getActualMinimum(Calendar.HOUR);
+        int minH = cal.getActualMinimum(Calendar.HOUR_OF_DAY);
         int minM = cal.getActualMinimum(Calendar.MINUTE);
         int minS = cal.getActualMinimum(Calendar.SECOND);
 
-        cal.set(Calendar.HOUR, minH);
+        cal.set(Calendar.HOUR_OF_DAY, minH);
         cal.set(Calendar.MINUTE, minM);
         cal.set(Calendar.SECOND, minS);
 
@@ -122,11 +140,11 @@ public abstract class DateUtil {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
 
-        int maxH = cal.getActualMaximum(Calendar.HOUR);
+        int maxH = cal.getActualMaximum(Calendar.HOUR_OF_DAY);
         int maxM = cal.getActualMaximum(Calendar.MINUTE);
         int maxS = cal.getActualMaximum(Calendar.SECOND);
 
-        cal.set(Calendar.HOUR, maxH);
+        cal.set(Calendar.HOUR_OF_DAY, maxH);
         cal.set(Calendar.MINUTE, maxM);
         cal.set(Calendar.SECOND, maxS);
 

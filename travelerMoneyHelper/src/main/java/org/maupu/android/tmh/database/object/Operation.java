@@ -174,7 +174,7 @@ public class Operation extends BaseObject {
 			this.setAmount(cursor.getDouble(idxAmount));
 			this.setDescription(cursor.getString(idxDesctipion));
 			try {
-				this.setDate(DateUtil.StringSQLToDate(cursor.getString(idxDate)));
+				this.setDate(DateUtil.stringSQLToDate(cursor.getString(idxDate)));
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
@@ -387,7 +387,7 @@ public class Operation extends BaseObject {
 		int idxDate = c.getColumnIndexOrThrow(OperationData.KEY_DATE);
 		Date d;
 		try {
-			d = DateUtil.StringSQLToDate(c.getString(idxDate));
+			d = DateUtil.stringSQLToDate(c.getString(idxDate));
 		} catch(ParseException pe) {
 			d = null;
 		} catch(CursorIndexOutOfBoundsException cioobe) {

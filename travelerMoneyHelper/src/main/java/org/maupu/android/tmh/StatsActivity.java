@@ -48,7 +48,6 @@ public class StatsActivity extends TmhActivity {
     private int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
     private Date dateBegin, dateEnd;
-    private Set<Integer> exceptedCategories;
 
     /** Primary panel **/
     private TextView tvMisc;
@@ -108,8 +107,6 @@ public class StatsActivity extends TmhActivity {
         // Charts
         initPieChart();
         initDetailsChart();
-        // Same as refreshing when account is changing
-        refreshAfterCurrentAccountChanged();
 
         /** Secondary panel **/
         accountImage = (ImageView)findViewById(R.id.account_image);
@@ -119,6 +116,18 @@ public class StatsActivity extends TmhActivity {
         tabLayout = (TabLayout)findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(statsViewPager);
         statsData.addOnStatsDataChangedListener(statsViewPager);
+
+        statsData.setCatToHighlight(null);
+        reloadInputData();
+        rebuildStatsData(true, false);
+        refreshDisplay();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy called");
+        // Called when exiting / changing screen orientation
+        super.onDestroy();
     }
 
     private void initPieChart() {
@@ -172,8 +181,10 @@ public class StatsActivity extends TmhActivity {
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
         if(item.getIdentifier() == DRAWER_ITEM_AUTO) {
-            // Same as changing account
-            refreshAfterCurrentAccountChanged();
+            statsData.setCatToHighlight(null);
+            autoSetExceptedCategories();
+            rebuildStatsData(true, false);
+            refreshDisplay();
         }
 
         return super.onItemClick(view, position, item);
@@ -183,11 +194,20 @@ public class StatsActivity extends TmhActivity {
      * Reinit all inputs in the view (exceptedCategories, dates)
      */
     public void resetInputData() {
-        //if(! loadExceptedCategories())
         autoSetExceptedCategories();
-
-        //if(! loadDates())
         autoSetDates();
+    }
+
+    /**
+     * Reload input data from saved changes (exceptedCategories, dates)
+     */
+    public void reloadInputData() {
+        if(! loadDates())
+            autoSetDates();
+
+        // If excepted cat is null, trying to auto set them
+        if(StaticData.getStatsExceptedCategories().size() == 0)
+            autoSetExceptedCategories();
     }
 
     @Override
@@ -207,6 +227,7 @@ public class StatsActivity extends TmhActivity {
         pieChart.refreshPanel(statsData);
         detailsChart.refreshPanel(statsData);
         infoPanel.refreshPanel(statsData);
+        statsViewPager.refreshPanel(statsData);
         refreshLayoutCategories();
     }
 
@@ -236,7 +257,10 @@ public class StatsActivity extends TmhActivity {
         if(dateBegin != null && dateEnd != null) {
             tvDateBegin.setText(DateUtil.dateToStringNoTime(dateBegin));
             tvDateEnd.setText(DateUtil.dateToStringNoTime(dateEnd));
-            tvDuration.setText("Duration : " + DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd)+" day(s)");
+            tvDuration.setText(
+                    getResources().getString(R.string.duration) + " : " +
+                            DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd) + " " +
+                            getResources().getString(R.string.day_));
         }
     }
 
@@ -260,7 +284,6 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void autoSetExceptedCategories(Set<Integer> currentExceptedToKeep) {
-
         try {
             Operation o = new Operation();
             Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
@@ -269,32 +292,15 @@ public class StatsActivity extends TmhActivity {
             if(currentExceptedToKeep != null && currentExceptedToKeep.size() > 0)
                 exceptedCats.addAll(currentExceptedToKeep);
 
-            if(exceptedCategories == null)
-                exceptedCategories = new HashSet<>();
-            else
-                exceptedCategories.clear();
-            exceptedCategories.addAll(exceptedCats);
-
-            saveExceptedCategories();
+            StaticData.getStatsExceptedCategories().clear();
+            StaticData.getStatsExceptedCategories().addAll(exceptedCats);
         } catch (NullPointerException npe) {
             // Nothing to do here if null
         }
     }
 
-    private boolean loadExceptedCategories() {
-        Set<Integer> cats = StaticData.getStatsExceptedCategories();
-
-        boolean isOk = cats != null && cats.size() > 0;
-        if(isOk)
-            exceptedCategories = cats;
-        return isOk;
-    }
-    private void saveExceptedCategories() {
-        StaticData.getStatsExceptedCategories().clear();
-        StaticData.getStatsExceptedCategories().addAll(exceptedCategories);
-    }
-
     private void refreshLayoutCategories() {
+        final Set<Integer> exceptedCategories = StaticData.getStatsExceptedCategories();
         layoutCategories.removeAllViews();
         Cursor c;
         if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
@@ -359,11 +365,12 @@ public class StatsActivity extends TmhActivity {
         Log.d(TAG, "rebuildStatsData called with chartAnim="+chartAnim);
         statsData.setChartAnim(chartAnim);
         statsData.rebuildChartsData(
-                exceptedCategories,
+                StaticData.getStatsExceptedCategories(),
                 dateBegin, dateEnd,
                 max_cat_displayed,
                 getResources().getString(R.string.misc),
                 forwardEvent);
+
         String miscCatText = statsData.getMiscCategoryText();
         if(miscCatText == null)
             miscCatText = getResources().getString(R.string.NA);

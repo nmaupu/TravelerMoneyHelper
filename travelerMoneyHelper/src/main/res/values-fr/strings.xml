@@ -150,5 +150,7 @@
     <string name="stats_item_cat_auto">Reset filtre de catégories</string>
     <string name="stats_tab_by_categories">Par catégorie</string>
     <string name="stats_tab_by_days">Par jour</string>
+    <string name="duration">Durée</string>
+    <string name="day_">jour(s)</string>
 
 </resources>

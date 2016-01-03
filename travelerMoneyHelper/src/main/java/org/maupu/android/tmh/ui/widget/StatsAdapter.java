@@ -56,6 +56,10 @@ public class StatsAdapter extends BaseAdapter {
         TextView tvCurrency = (TextView)row.findViewById(R.id.currency);
         TextView tvAmountConverted = (TextView)row.findViewById(R.id.amount_converted);
         TextView tvCurrencyConverted = (TextView)row.findViewById(R.id.currency_converted);
+        TextView tvCurrencyAvg = (TextView)row.findViewById(R.id.currency_avg);
+        TextView tvAmountAvg = (TextView)row.findViewById(R.id.amount_avg);
+        TextView tvCurrencyConvertedAvg = (TextView)row.findViewById(R.id.currency_converted_avg);
+        TextView tvAmountConvertedAvg = (TextView)row.findViewById(R.id.amount_converted_avg);
 
         StatsCategoryValues scv = (StatsCategoryValues)getItem(position);
         if(scv == null)
@@ -64,23 +68,42 @@ public class StatsAdapter extends BaseAdapter {
         if(type == TYPE_CATEGORY) {
             Double sum = scv.summarize().doubleValue();
             tvText.setText(scv.getName());
-            tvAmount.setText(NumberUtil.formatDecimal(sum));
-            tvCurrency.setText(scv.getCurrency().getShortName());
 
-            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+            int nbDays = DateUtil.getNumberOfDaysBetweenDates(scv.getDateBegin(), scv.getDateEnd());
+
+            /** Column 1 **/
+            tvCurrency.setText(scv.getCurrency().getShortName());
+            tvAmount.setText(NumberUtil.formatDecimal(sum));
+
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
+            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+
+            /** Column 2 **/
+            Double avg = sum / nbDays;
+            tvCurrencyAvg.setText(scv.getCurrency().getShortName());
+            tvAmountAvg.setText(NumberUtil.formatDecimal(avg));
+
+            tvCurrencyConvertedAvg.setText(StaticData.getMainCurrency().getShortName());
+            tvAmountConvertedAvg.setText(NumberUtil.formatDecimal(avg / scv.getRate()));
         } else if (type == TYPE_DAY) {
             String dateString = scv.getName();
             Double sum = scv.summarize().doubleValue(); // Summarize only one element
             tvText.setText(dateString);
+
+            /** Column 1 **/
             tvAmount.setText(NumberUtil.formatDecimal(sum));
             tvCurrency.setText(scv.getCurrency().getShortName());
 
             tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
 
+            /** Column 2 **/
+            tvCurrencyAvg.setVisibility(View.GONE);
+            tvAmountAvg.setVisibility(View.GONE);
+            tvCurrencyConvertedAvg.setVisibility(View.GONE);
+            tvAmountConvertedAvg.setVisibility(View.GONE);
         }
-
+        
         return row;
     }
 

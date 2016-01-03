@@ -11,7 +11,6 @@
 
     <TextView
         android:id="@+id/text"
-        android:text="blablabla"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"/>
@@ -24,37 +23,83 @@
         android:layout_height="match_parent">
         <TableRow android:gravity="right">
             <TextView
+                android:paddingLeft="3dp"
                 android:id="@+id/currency"
-                android:background="@color/md_green_300"
-                android:textSize="16dp"
+                android:background="@color/md_green_200"
+                android:textSize="12dp"
                 android:textStyle="bold"
-                android:gravity="right"
+                android:gravity="right|center_vertical"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
             <TextView
                 android:id="@+id/amount"
-                android:background="@color/md_green_300"
+                android:background="@color/md_green_200"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:gravity="right|center_vertical"
+                android:paddingRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:paddingLeft="3dp"
+                android:id="@+id/currency_avg"
+                android:text="€"
+                android:background="@color/md_blue_200"
                 android:textSize="16dp"
                 android:textStyle="bold"
-                android:gravity="right"
+                android:gravity="right|center_vertical"
+                android:paddingRight="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/amount_avg"
+                android:text="123.99"
+                android:background="@color/md_blue_200"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:gravity="right|center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>
         </TableRow>
         <TableRow android:gravity="right">
             <TextView
                 android:id="@+id/currency_converted"
-                android:background="@color/very_light_gray"
+                android:paddingLeft="3dp"
+                android:background="@color/md_green_50"
                 android:textStyle="italic"
-                android:gravity="right"
+                android:gravity="right|center_vertical"
+                android:textSize="10dp"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
             <TextView
                 android:id="@+id/amount_converted"
-                android:background="@color/very_light_gray"
+                android:background="@color/md_green_50"
                 android:textStyle="italic"
-                android:gravity="right"
+                android:textSize="10dp"
+                android:paddingRight="10dp"
+                android:gravity="right|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/currency_converted_avg"
+                android:paddingLeft="3dp"
+                android:text="$"
+                android:background="@color/md_blue_50"
+                android:textStyle="italic"
+                android:textSize="10dp"
+                android:gravity="right|center_vertical"
+                android:paddingRight="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/amount_converted_avg"
+                android:text="123.99"
+                android:background="@color/md_blue_50"
+                android:textSize="10dp"
+                android:textStyle="italic"
+                android:gravity="right|center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>
         </TableRow>

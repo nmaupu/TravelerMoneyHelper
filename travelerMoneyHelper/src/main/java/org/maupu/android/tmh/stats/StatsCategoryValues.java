@@ -20,15 +20,15 @@ import java.util.Set;
 
 public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCategoryValues> {
     private static final String TAG = StatsCategoryValues.class.getName();
-    Set<Category> categories = new HashSet<>();
-    String name = null;
-    Map<String, Float> values = new HashMap<>();
-    Date dateBegin;
-    Date dateEnd;
-    int color = ColorTemplate.COLOR_NONE;
-    Float sum, avg;
-    Double rate = 1d;
-    Currency currency;
+    private Set<Category> categories = new HashSet<>();
+    private String name = null;
+    private Map<String, Float> values = new HashMap<>();
+    private Date dateBegin;
+    private Date dateEnd;
+    private int color = ColorTemplate.COLOR_NONE;
+    private Float sum, avg;
+    private Double rate = 1d;
+    private Currency currency;
 
     public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate, Currency currency) {
         categories.add(category);
@@ -57,6 +57,14 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
 
     public Currency getCurrency() {
         return currency;
+    }
+
+    public Date getDateBegin() {
+        return dateBegin;
+    }
+
+    public Date getDateEnd() {
+        return dateEnd;
     }
 
     private void invalidateCache() {
@@ -206,5 +214,17 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     public int compareTo(StatsCategoryValues another) {
         // Order by biggest to smallest
         return (int)(another.summarize() - summarize());
+    }
+
+    public Integer[] getCategoryIds() {
+        if(getCategories() == null || getCategories().size() == 0)
+            return null;
+
+        Integer[] cats = new Integer[getCategories().size()];
+        int i = 0;
+        for(Category cat : getCategories()) {
+            cats[i++] = cat.getId();
+        }
+        return cats;
     }
 }
