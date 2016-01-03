@@ -118,7 +118,7 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxDate = c.getColumnIndexOrThrow("dateString");
             int idxCatId = c.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
-            int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+            int idxRate = c.getColumnIndexOrThrow("rateAvg");
             int idxCurrencyId = c.getColumnIndexOrThrow(CurrencyData.KEY_ID);
             String amountString = c.getString(idxAmount);
             String dateString = c.getString(idxDate);
@@ -220,7 +220,7 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
 
         for(int k : keySet()) {
             StatsCategoryValues scv = get(k);
-            ret.addValue(dateString, (Float)scv.getValues().get(dateString));
+            ret.addValue(dateString, (Float) scv.getValues().get(dateString));
         }
 
         return ret;
