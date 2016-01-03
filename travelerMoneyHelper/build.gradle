@@ -54,9 +54,6 @@ dependencies {
     // https://github.com/umano/AndroidSlidingUpPanel
     compile 'com.sothree.slidinguppanel:library:3.2.0'
 
-    // Old graphs
-    compile files('libs/achartengine-1.0.0.jar')
-
     // Json parsing
     compile files('libs/jackson-core-asl-1.8.5.jar')
     compile files('libs/jackson-mapper-asl-1.8.5.jar')
