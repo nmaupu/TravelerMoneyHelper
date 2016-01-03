@@ -16,6 +16,7 @@ import org.maupu.android.tmh.util.NumberUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class StatsAdapter extends BaseAdapter {
         this.type = displayType;
 
         statsList = new ArrayList<>(statsData.values());
+        Collections.sort(statsList);
         dates = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
     }
 

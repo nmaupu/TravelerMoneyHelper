@@ -4,8 +4,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -72,6 +70,7 @@ public class StatsActivity extends TmhActivity {
     private TextView tvDateBegin, tvDateEnd;
     private TextView tvDuration;
     private ImageView accountImage;
+    private TextView accountName;
     private TabLayout tabLayout;
     private StatsViewPager statsViewPager;
 
@@ -90,7 +89,7 @@ public class StatsActivity extends TmhActivity {
         super.onCreate(savedInstanceState);
 
         slidingPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
-        //slidingPanel.setAnchorPoint(0.50f);
+        slidingPanel.setDragView(R.id.layout_title);
 
         /** Primary panel **/
         tvMisc = (TextView)findViewById(R.id.misc);
@@ -114,6 +113,7 @@ public class StatsActivity extends TmhActivity {
 
         /** Secondary panel **/
         accountImage = (ImageView)findViewById(R.id.account_image);
+        accountName = (TextView)findViewById(R.id.account_name);
         statsViewPager = (StatsViewPager)findViewById(R.id.viewpager);
         statsViewPager.initPanel();
         tabLayout = (TabLayout)findViewById(R.id.tab_layout);
@@ -196,8 +196,10 @@ public class StatsActivity extends TmhActivity {
 
         if(currentAccount != null) {
             ImageViewHelper.setIcon(this, accountImage, currentAccount.getIcon());
+            accountName.setText(currentAccount.getName());
         } else {
             accountImage.setImageResource(R.drawable.tmh_icon_48);
+            accountName.setText("");
         }
 
         refreshDates();
