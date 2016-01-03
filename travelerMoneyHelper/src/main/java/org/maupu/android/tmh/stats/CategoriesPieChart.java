@@ -80,12 +80,12 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
             StatsCategoryValues scvi = values.get(i);
             colors[xIndex] = scvi.getColor();
             xEntries.add(scvi.getName());
-            yEntries.add(new Entry(scvi.summarize(), xIndex++, scvi));
+            yEntries.add(new Entry(scvi.summarize().floatValue(), xIndex++, scvi));
             if(j<nbElts) {
                 StatsCategoryValues scvj = values.get(j);
                 colors[xIndex] = scvj.getColor();
                 xEntries.add(scvj.getName());
-                yEntries.add(new Entry(scvj.summarize(), xIndex++, scvj));
+                yEntries.add(new Entry(scvj.summarize().floatValue(), xIndex++, scvj));
             }
         }
 

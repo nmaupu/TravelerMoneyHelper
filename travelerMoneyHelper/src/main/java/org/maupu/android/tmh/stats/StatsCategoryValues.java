@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.stats;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.github.mikephil.charting.data.Entry;
@@ -7,9 +8,11 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,20 +25,18 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     private static final String TAG = StatsCategoryValues.class.getName();
     private Set<Category> categories = new HashSet<>();
     private String name = null;
-    private Map<String, Float> values = new HashMap<>();
+    //private Map<String, Float> values = new HashMap<>();
+    private Set<Operation> operations = new HashSet<>();
     private Date dateBegin;
     private Date dateEnd;
     private int color = ColorTemplate.COLOR_NONE;
-    private Float sum, avg;
-    private Double rate = 1d;
     private Currency currency;
 
-    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate, Currency currency) {
+    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Currency currency) {
         categories.add(category);
         name = category.getName();
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-        this.rate = rate;
         this.currency = currency;
     }
 
@@ -67,24 +68,12 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return dateEnd;
     }
 
-    private void invalidateCache() {
-        avg = sum = null;
+    public void addOperation(Operation operation) {
+        operations.add(operation);
     }
 
-    public void addValue(String key, Float value) {
-        if(value == null)
-            return;
-
-        invalidateCache();
-        Float curVal = values.get(key);
-        if(curVal == null)
-            values.put(key, value);
-        else
-            values.put(key, curVal + value);
-    }
-
-    public Map<String, Float> getValues() {
-        return values;
+    public Set<Operation> getOperations() {
+        return operations;
     }
 
     public void addCategory(Category category) {
@@ -94,14 +83,6 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
 
     public Set<Category> getCategories() {
         return categories;
-    }
-
-    public Double getRate() {
-        return rate;
-    }
-
-    public void setRate(Double rate) {
-        this.rate = rate;
     }
 
     public Category getFirstCategory() {
@@ -149,41 +130,73 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
 
         for(int x=0; x<nbDays+1; x++) {
-            String dateString = DateUtil.dateToStringNoTime(d);
-            Float v = values.get(dateString) == null ? 0f : values.get(dateString);
-            entries.add((T)new Entry(v, x));
+            Double v = summarize(d);
+            entries.add((T)new Entry(v.floatValue(), x));
             d = DateUtil.addDays(d, 1);
         }
 
         return entries;
     }
 
-    public Float summarize() {
-        if(values == null || values.size() == 0)
-            return 0f;
+    @NonNull
+    public Double summarize(Date day, boolean convert) {
+        double sum = 0d;
+        for(Operation o : operations) {
+            if(day != null) {
+                Date opDate = o.getDate();
 
-        if(sum != null)
-            return sum;
+                Calendar calOp = Calendar.getInstance();
+                calOp.setTime(opDate);
 
-        sum = 0f;
-        Iterator<Float> it = values.values().iterator();
-        while(it.hasNext()) {
-            sum += it.next();
+                Calendar calDate = Calendar.getInstance();
+                calDate.setTime(day);
+
+                if (calOp.get(Calendar.YEAR) == calDate.get(Calendar.YEAR) &&
+                        calOp.get(Calendar.MONTH) == calDate.get(Calendar.MONTH) &&
+                        calOp.get(Calendar.DAY_OF_MONTH) == calDate.get(Calendar.DAY_OF_MONTH)) {
+                    if(convert)
+                        sum += o.getAmount() / o.getCurrencyValueOnCreated();
+                    else
+                        sum += o.getAmount();
+                }
+            } else {
+                if(convert)
+                    sum += o.getAmount() / o.getCurrencyValueOnCreated();
+                else
+                    sum += o.getAmount();
+            }
         }
 
         return sum;
     }
 
-    public Float average(Date dateBegin, Date dateEnd) {
-        if(values == null || values.size() == 0)
-            return 0f;
+    @NonNull
+    public Double summarize(boolean convert) {
+        return summarize(null, convert);
+    }
 
-        if(avg != null)
-            return avg;
+    @NonNull
+    public Double summarize() {
+        return summarize(false);
+    }
 
+    @NonNull
+    public Double summarize(Date day) {
+        return summarize(day, false);
+    }
+
+    @NonNull
+    public Double average(boolean convert) {
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
-        avg = nbDays == 0 ? 0f : summarize()/nbDays;
-        return avg;
+        if(convert)
+            return summarize(true) / nbDays;
+        else
+            return nbDays == 0 ? 0d : summarize() / nbDays;
+    }
+
+    @NonNull
+    public Double average() {
+        return average(false);
     }
 
     public void fusionWith(final StatsCategoryValues scv) {
@@ -196,18 +209,7 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         if(de.after(dateEnd))
             dateEnd = de;
 
-        if(scv.values == null || scv.values.size() == 0)
-            return;
-
-        Iterator<String> it = scv.values.keySet().iterator();
-        while(it.hasNext()) {
-            String key = it.next();
-            Float value = (Float)scv.getValues().get(key);
-            if(value != null) {
-                Float curVal = values.get(key) == null ? 0f : values.get(key);
-                values.put(key, curVal+value);
-            }
-        }
+        operations.addAll(scv.getOperations());
     }
 
     @Override

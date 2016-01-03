@@ -66,7 +66,8 @@ public class StatsAdapter extends BaseAdapter {
             return null;
 
         if(type == TYPE_CATEGORY) {
-            Double sum = scv.summarize().doubleValue();
+            Double sum = scv.summarize();
+            Double sumConv = scv.summarize(true);
             tvText.setText(scv.getName());
 
             int nbDays = DateUtil.getNumberOfDaysBetweenDates(scv.getDateBegin(), scv.getDateEnd());
@@ -76,25 +77,26 @@ public class StatsAdapter extends BaseAdapter {
             tvAmount.setText(NumberUtil.formatDecimal(sum));
 
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
-            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+            tvAmountConverted.setText(NumberUtil.formatDecimal(sumConv));
 
             /** Column 2 **/
-            Double avg = sum / nbDays;
+            Double avg = scv.average();
+            Double avgConv = scv.average(true);
             tvCurrencyAvg.setText(scv.getCurrency().getShortName());
             tvAmountAvg.setText(NumberUtil.formatDecimal(avg));
 
             tvCurrencyConvertedAvg.setText(StaticData.getMainCurrency().getShortName());
-            tvAmountConvertedAvg.setText(NumberUtil.formatDecimal(avg / scv.getRate()));
+            tvAmountConvertedAvg.setText(NumberUtil.formatDecimal(avgConv));
         } else if (type == TYPE_DAY) {
-            String dateString = scv.getName();
-            Double sum = scv.summarize().doubleValue(); // Summarize only one element
-            tvText.setText(dateString);
+            Double sum = scv.summarize();
+            Double sumConv = scv.summarize(true);
+            tvText.setText(scv.getName());
 
             /** Column 1 **/
             tvAmount.setText(NumberUtil.formatDecimal(sum));
             tvCurrency.setText(scv.getCurrency().getShortName());
 
-            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+            tvAmountConverted.setText(NumberUtil.formatDecimal(sumConv));
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
 
             /** Column 2 **/
@@ -123,7 +125,12 @@ public class StatsAdapter extends BaseAdapter {
             case TYPE_CATEGORY:
                 return statsList.get(position);
             case TYPE_DAY:
-                return statsData.sumForDate(dates.get(position));
+                try {
+                    return statsData.sumForDate(DateUtil.stringNoTimeToDate(dates.get(position)));
+                } catch (ParseException pe) {
+                    pe.printStackTrace();
+                    return null;
+                }
             default:
                 return null;
         }

@@ -98,11 +98,13 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         if(exceptedCategories != null)
             exceptedCats = exceptedCategories.toArray(new Integer[exceptedCategories.size()]);
 
-        Cursor c = new Operation().sumOperationsGroupByDayOrderDateAsc(
+        Cursor c = new Operation().fetchByPeriod(
                 StaticData.getCurrentAccount(),
+                exceptedCats,
                 dateBegin,
                 dateEnd,
-                exceptedCats
+                OperationData.KEY_DATE,
+                -1
         );
         if(c == null)
             return;
@@ -115,36 +117,17 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
 
         this.clear();
         do {
-            int idxAmount = c.getColumnIndexOrThrow("amountString");
-            int idxDate = c.getColumnIndexOrThrow("dateString");
-            int idxCatId = c.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
-            int idxRate = c.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
-            int idxCurrencyId = c.getColumnIndexOrThrow(CurrencyData.KEY_ID);
-            String amountString = c.getString(idxAmount);
-            String dateString = c.getString(idxDate);
-            int catId = c.getInt(idxCatId);
-            double rate = c.getDouble(idxRate);
-            int curId = c.getInt(idxCurrencyId);
-
-            Category cat = new Category();
-            Cursor cursorCat = cat.fetch(catId);
-            cat.toDTO(cursorCat);
-            cursorCat.close();
-
-            Currency currency = new Currency();
-            Cursor cursorCur = currency.fetch(curId);
-            currency.toDTO(cursorCur);
-            cursorCur.close();
+            Operation op = new Operation();
+            op.toDTO(c);
 
             try {
-                StatsCategoryValues scv = this.get(catId);
+                StatsCategoryValues scv = this.get(op.getCategory().getId());
                 if(scv == null) {
-                    scv = new StatsCategoryValues(cat, dateBegin, dateEnd, rate, currency);
-                    this.put(catId, scv);
+                    scv = new StatsCategoryValues(op.getCategory(), dateBegin, dateEnd, op.getCurrency());
+                    this.put(op.getCategory().getId(), scv);
                 }
 
-                float amount = Math.abs(Float.parseFloat(amountString));
-                scv.addValue(dateString, amount);
+                scv.addOperation(op);
             } catch(NullPointerException | NumberFormatException ex) {}
         } while(c.moveToNext());
 
@@ -207,20 +190,20 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         return sb.toString();
     }
 
-    public StatsCategoryValues sumForDate(String dateString) {
+    public StatsCategoryValues sumForDate(Date date) {
         Category dummyCat = new Category();
-        dummyCat.setName(dateString);
+        dummyCat.setName(DateUtil.dateToStringNoTime(date));
+
+        Date db = DateUtil.resetDateToBeginingOfDay(date);
+        Date de = DateUtil.resetDateToEndOfDay(date);
 
         int firstKey = keySet().iterator().next();
         StatsCategoryValues firstScv = get(firstKey);
-        Double rate = firstScv.getRate();
-        Currency currency = firstScv.getCurrency();
-
-        StatsCategoryValues ret = new StatsCategoryValues(dummyCat, null, null, rate, currency);
+        StatsCategoryValues ret = new StatsCategoryValues(dummyCat, db, de, firstScv.getCurrency());
 
         for(int k : keySet()) {
             StatsCategoryValues scv = get(k);
-            ret.addValue(dateString, (Float)scv.getValues().get(dateString));
+            ret.fusionWith(scv);
         }
 
         return ret;

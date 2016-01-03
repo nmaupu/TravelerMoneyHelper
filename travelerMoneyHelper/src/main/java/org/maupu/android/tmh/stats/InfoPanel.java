@@ -65,7 +65,6 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
         double avgConv = 0d;
         double totalCatConv = 0d;
         double avgCatConv = 0d;
-        double rate = 0d;
         String nonAvailable = getResources().getString(R.string.NA);
         Currency mainCur = StaticData.getMainCurrency();
         Account currentAcc = StaticData.getCurrentAccount();
@@ -87,33 +86,26 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
 
         if(statsData.values().size() > 0) {
             /** Gran total **/
-            Iterator<StatsCategoryValues> it = statsData.values().iterator();
-            while(it.hasNext()) {
-                StatsCategoryValues scv = it.next();
+            for(StatsCategoryValues scv : statsData.values()) {
                 total += scv.summarize();
-                rate += scv.getRate();
+                totalConv += scv.summarize(true);
             }
-            // Get the average of all rates
-            rate /= statsData.size();
 
             /** Avg by day **/
             int nbDays = DateUtil.getNumberOfDaysBetweenDates(statsData.getDateBegin(), statsData.getDateEnd());
             avg = total / nbDays;
+            avgConv = totalConv / nbDays;
 
             /** Total and avg by day by category **/
             if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getId() != null) {
                 StatsCategoryValues scv = statsData.get(statsData.getCatToHighlight().getId());
                 if (scv != null) {
                     totalCat = scv.summarize();
-                    avgCat = scv.average(statsData.getDateBegin(), statsData.getDateEnd());
+                    totalCatConv = scv.summarize(true);
+                    avgCat = scv.average();
+                    avgCatConv = scv.average(true);
                 }
             }
-
-            /** Gran total conversion to main currency **/
-            totalConv = total / rate;
-            totalCatConv = totalCat / rate;
-            avgConv = avg / rate;
-            avgCatConv = avgCat / rate;
         }
 
         /** Setting all data to TextViews **/

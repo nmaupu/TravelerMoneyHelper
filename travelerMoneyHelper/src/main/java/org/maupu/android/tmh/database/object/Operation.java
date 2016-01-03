@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class Operation extends BaseObject {
@@ -157,7 +158,7 @@ public class Operation extends BaseObject {
 		this.reset();
 		int idxId = cursor.getColumnIndexOrThrow(OperationData.KEY_ID);
 		int idxAmount = cursor.getColumnIndexOrThrow(OperationData.KEY_AMOUNT);
-		int idxDesctipion = cursor.getColumnIndexOrThrow(OperationData.KEY_DESCRIPTION);
+		int idxDescription = cursor.getColumnIndexOrThrow(OperationData.KEY_DESCRIPTION);
 		int idxDate = cursor.getColumnIndexOrThrow(OperationData.KEY_DATE);
 		int idxAccount = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_ACCOUNT);
 		int idxCategory = cursor.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
@@ -172,15 +173,22 @@ public class Operation extends BaseObject {
 		if(! cursor.isClosed() && ! cursor.isBeforeFirst() && ! cursor.isAfterLast()) {
 			this._id = cursor.getInt(idxId);
 			this.setAmount(cursor.getDouble(idxAmount));
-			this.setDescription(cursor.getString(idxDesctipion));
+			this.setDescription(cursor.getString(idxDescription));
 			try {
 				this.setDate(DateUtil.stringSQLToDate(cursor.getString(idxDate)));
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
-			account = (Account)account.toDTOWithDb(db, account.fetch(cursor.getInt(idxAccount)));
-			category = (Category)category.toDTOWithDb(db, category.fetch(cursor.getInt(idxCategory)));
-			currency = (Currency)currency.toDTOWithDb(db, currency.fetch(cursor.getInt(idxCurrency)));
+            Cursor tmpCursor;
+            tmpCursor = account.fetch(cursor.getInt(idxAccount));
+			account = (Account)account.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
+            tmpCursor = category.fetch(cursor.getInt(idxCategory));
+			category = (Category)category.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
+            tmpCursor = currency.fetch(cursor.getInt(idxCurrency));
+			currency = (Currency)currency.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
 
 			this.setAccount(account);
 			this.setCategory(category);
@@ -212,7 +220,7 @@ public class Operation extends BaseObject {
     }
 
 	public Cursor fetchByPeriod(Account account, Date dateBegin, Date dateEnd, String order, int limit) {
-        return fetchByPeriod(account, null, dateBegin, dateEnd, order, limit);
+        return fetchByPeriod(account, (Category)null, dateBegin, dateEnd, order, limit);
 	}
 
     public Cursor fetchByPeriod(Account account, Category category, Date dateBegin, Date dateEnd, String order, int limit) {
@@ -231,6 +239,32 @@ public class Operation extends BaseObject {
 
         if(category != null && category.getId() != null)
             qsb.append("AND c."+CategoryData.KEY_ID+"="+category.getId()+" ");
+
+        String sLimit = limit > 0 ? " limit "+limit : "";
+        qsb.append("ORDER BY " + order + " " + sLimit);
+
+        Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
+        Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
+
+        return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
+    }
+
+    public Cursor fetchByPeriod(Account account, Integer[] exceptedCategories, Date dateBegin, Date dateEnd, String order, int limit) {
+        if(dateBegin == null || dateEnd == null)
+            return null;
+
+        QueryBuilder qsb = filter.getQueryBuilder();
+
+        String sBeg = DatabaseHelper.formatDateForSQL(dateBegin);
+        String sEnd = DatabaseHelper.formatDateForSQL(dateEnd);
+
+        qsb.append("AND o.date BETWEEN '"+sBeg+"' AND '"+sEnd+"' ");
+
+        if(account != null && account.getId() != null)
+            qsb.append("AND a."+AccountData.KEY_ID+"="+account.getId()+" ");
+
+        if(exceptedCategories != null && exceptedCategories.length > 0)
+            qsb.append("AND c."+CategoryData.KEY_ID + " NOT IN(" + TextUtils.join(",", exceptedCategories) + ") ");
 
         String sLimit = limit > 0 ? " limit "+limit : "";
         qsb.append("ORDER BY " + order + " " + sLimit);
