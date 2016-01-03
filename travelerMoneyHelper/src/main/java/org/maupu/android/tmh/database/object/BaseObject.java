@@ -10,7 +10,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public abstract class BaseObject implements Validator, Serializable {
+public abstract class BaseObject implements Validator, Serializable, Comparable {
 	private static final long serialVersionUID = 1L;
 	protected static SimpleObjectCache cache;
 	protected Integer _id;

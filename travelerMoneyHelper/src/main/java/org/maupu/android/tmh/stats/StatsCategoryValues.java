@@ -6,6 +6,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.util.DateUtil;
 
 import java.util.ArrayList;
@@ -27,13 +28,15 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     int color = ColorTemplate.COLOR_NONE;
     Float sum, avg;
     Double rate = 1d;
+    Currency currency;
 
-    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate) {
+    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate, Currency currency) {
         categories.add(category);
         name = category.getName();
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
         this.rate = rate;
+        this.currency = currency;
     }
 
     public void setName(String name) {
@@ -52,11 +55,18 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return color;
     }
 
+    public Currency getCurrency() {
+        return currency;
+    }
+
     private void invalidateCache() {
         avg = sum = null;
     }
 
     public void addValue(String key, Float value) {
+        if(value == null)
+            return;
+
         invalidateCache();
         Float curVal = values.get(key);
         if(curVal == null)

@@ -148,5 +148,7 @@
     <string name="stats_misc_category">Misc category</string>
     <string name="stats_filter_cat_title">Categories filtering</string>
     <string name="stats_item_cat_auto">Reset categories filtering</string>
+    <string name="stats_tab_by_categories">By category</string>
+    <string name="stats_tab_by_days">By day</string>
 
 </resources>

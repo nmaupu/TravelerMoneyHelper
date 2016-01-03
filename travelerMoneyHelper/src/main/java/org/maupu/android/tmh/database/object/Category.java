@@ -104,4 +104,10 @@ public class Category extends BaseObject {
 	public String getDefaultOrderColumn() {
 		return CategoryData.KEY_NAME;
 	}
+
+    @Override
+    public int compareTo(Object another) {
+        Category a = (Category)another;
+        return name.compareTo(a.getName());
+    }
 }

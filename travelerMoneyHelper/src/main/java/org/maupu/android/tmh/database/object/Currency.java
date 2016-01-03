@@ -127,8 +127,15 @@ public class Currency extends BaseObject {
 	public String toString() {
 		return this.getLongName();
 	}
+
 	@Override
 	public String getDefaultOrderColumn() {
 		return CurrencyData.KEY_LONG_NAME;
 	}
+
+    @Override
+    public int compareTo(Object another) {
+        Currency a = (Currency)another;
+        return longName.compareTo(a.getLongName());
+    }
 }

@@ -244,8 +244,15 @@ public class Account extends BaseObject {
 	public String toString() {
 		return this.getName();
 	}
+
 	@Override
 	public String getDefaultOrderColumn() {
 		return AccountData.KEY_NAME;
 	}
+
+    @Override
+    public int compareTo(Object another) {
+        Account a = (Account)another;
+        return name.compareTo(a.getName());
+    }
 }
