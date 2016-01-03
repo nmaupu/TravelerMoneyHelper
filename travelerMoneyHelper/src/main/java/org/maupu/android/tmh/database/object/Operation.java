@@ -423,7 +423,8 @@ public class Operation extends BaseObject {
 		qb.append("o."+OperationData.KEY_ID+", ");
 		qb.append("o."+OperationData.KEY_DATE+", ");
         qb.append("o."+OperationData.KEY_ID_CATEGORY+", ");
-		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+        qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+        qb.append("avg("+OperationData.KEY_CURRENCY_VALUE+") rateAvg, ");
         qb.append("c."+CurrencyData.KEY_ID+", ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
