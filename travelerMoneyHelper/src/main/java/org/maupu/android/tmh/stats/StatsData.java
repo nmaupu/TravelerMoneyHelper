@@ -88,8 +88,8 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
      * @param aggregationName Name of the aggregated category
      * @param forwardEvent Specify whether event are forwarded to listeners or not
      */
-    public void rebuildChartsData(Set<Integer> exceptedCategories,
-                                  Date dateBegin, Date dateEnd,
+    public void rebuildChartsData(final Set<Integer> exceptedCategories,
+                                  final Date dateBegin, final Date dateEnd,
                                   int limitBeforeAggregation, String aggregationName,
                                   boolean forwardEvent) {
         this.dateBegin = dateBegin;
@@ -177,6 +177,8 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
                 this.remove(curScv.getFirstCategory().getId());
             }
             this.put(miscCategory.getFirstCategory().getId(), miscCategory);
+        } else {
+            miscCategory = null;
         }
 
         if(forwardEvent)

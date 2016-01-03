@@ -18,7 +18,10 @@ import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -201,11 +204,11 @@ public abstract class DialogHelper {
         return posToCheck.toArray(new Integer[0]);
     }
 
-	public static Dialog popupDialogStatsDetails(final TmhActivity tmhActivity, Date beg, Date end, String catName, Integer[] exceptCategories) {
-		if(tmhActivity == null)
+	public static Dialog popupDialogStatsDetails(Context context, Date beg, Date end, Integer[] categories, Integer[] exceptCategories) {
+		if(context == null)
 			return null;
 		
-		final Dialog dialog = new Dialog(tmhActivity);
+		final Dialog dialog = new Dialog(context);
 		dialog.setCancelable(true);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setCanceledOnTouchOutside(true);
@@ -217,39 +220,26 @@ public abstract class DialogHelper {
 		Account currentAccount = StaticData.getCurrentAccount();
 		dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
 		
-		// Fitering category if needed
-		Category dummyCat = new Category();
-		if(catName != null && !"".equals(catName)) {
-			Cursor cursorCat = dummyCat.fetchByName(catName);
-			dummyCat.toDTO(cursorCat);
-            cursorCat.close();
-		}
-		
-		if(dummyCat.getId() != null)
-			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_CATEGORY, String.valueOf(dummyCat.getId()));
-		
-		StringBuilder b = new StringBuilder("");
-		for(int i=0; i<exceptCategories.length; i++) {
-			int catId = exceptCategories[i];
-			b.append(catId);
-			if(i<exceptCategories.length-1)
-				b.append(",");
-		}
-		
-		if(exceptCategories.length > 0)
-			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, b.toString());
+		// Filtering category if needed
+        if(categories != null && categories.length > 0)
+            dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_IN, OperationData.KEY_ID_CATEGORY, TextUtils.join(",", categories));
+		if(exceptCategories != null && exceptCategories.length > 0)
+			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, TextUtils.join(",", exceptCategories));
 		
 		// Getting cursor
 		Cursor cursor = dummyOp.fetchByPeriod(beg, end, "o."+OperationData.KEY_AMOUNT+" ASC", -1);
-		
-		OperationCursorAdapter sca = new OperationCursorAdapter(tmhActivity, 
-				R.layout.operation_item_nocheckbox, 
-				cursor, 
-				new String[]{"dateStringHours", "category", "amountString", "convertedAmount"}, 
-				new int[]{R.id.date, R.id.category, R.id.amount, R.id.convAmount});
-		list.setAdapter(sca);
-		
-		dialog.show();
-		return dialog;
+        if(cursor != null && cursor.getCount() > 0) {
+            OperationCursorAdapter sca = new OperationCursorAdapter(context,
+                    R.layout.operation_item_nocheckbox,
+                    cursor,
+                    new String[]{"dateStringHours", "category", "amountString", "convertedAmount"},
+                    new int[]{R.id.date, R.id.category, R.id.amount, R.id.convAmount});
+            list.setAdapter(sca);
+
+            dialog.show();
+            return dialog;
+        } else {
+            return null;
+        }
 	}
 }
