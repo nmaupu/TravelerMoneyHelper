@@ -29,7 +29,7 @@
                     android:layout_marginLeft="5sp"
                     android:layout_marginTop="5sp">
 
-                    <com.github.mikephil.charting.charts.PieChart
+                    <org.maupu.android.tmh.stats.CategoriesPieChart
                         android:id="@+id/pie_chart"
                         android:minHeight="190dp"
                         android:minWidth="190dp"
@@ -245,7 +245,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <com.github.mikephil.charting.charts.LineChart
+                <org.maupu.android.tmh.stats.CategoriesLineChart
                     android:id="@+id/details_chart"
                     android:minHeight="200dp"
                     android:minWidth="280dp"

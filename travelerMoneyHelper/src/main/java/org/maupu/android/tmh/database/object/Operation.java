@@ -417,6 +417,7 @@ public class Operation extends BaseObject {
 		qb.append("o."+OperationData.KEY_DATE+", ");
         qb.append("o."+OperationData.KEY_ID_CATEGORY+", ");
 		qb.append("sum("+OperationData.KEY_AMOUNT+") amountString, ");
+        qb.append("c."+CurrencyData.KEY_ID+", ");
 		qb.append("c."+CurrencyData.KEY_CURRENCY_LINKED+", ");
 		qb.append("c."+CurrencyData.KEY_SHORT_NAME+", ");
 		qb.append("strftime('%d-%m-%Y', o."+OperationData.KEY_DATE+") dateString ");
@@ -590,4 +591,10 @@ public class Operation extends BaseObject {
 	private boolean deleteWithoutLink() {
 		return super.delete();
 	}
+
+    @Override
+    public int compareTo(Object another) {
+        Operation a = (Operation)another;
+        return (int)(amount - a.getAmount());
+    }
 }

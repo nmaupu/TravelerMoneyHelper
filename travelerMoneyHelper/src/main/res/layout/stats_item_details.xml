@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/item_layout"
+                android:orientation="horizontal"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text"
+        android:text="blablabla"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+
+    <TableLayout
+        android:layout_toRightOf="@id/text"
+        android:layout_marginLeft="5sp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TableRow android:gravity="right">
+            <TextView
+                android:id="@+id/currency"
+                android:background="@color/md_green_300"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:paddingRight="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/amount"
+                android:background="@color/md_green_300"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+        </TableRow>
+        <TableRow android:gravity="right">
+            <TextView
+                android:id="@+id/currency_converted"
+                android:background="@color/very_light_gray"
+                android:textStyle="italic"
+                android:gravity="right"
+                android:paddingRight="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/amount_converted"
+                android:background="@color/very_light_gray"
+                android:textStyle="italic"
+                android:gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
