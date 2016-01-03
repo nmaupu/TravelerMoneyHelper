@@ -178,9 +178,16 @@ public class Operation extends BaseObject {
 			} catch(ParseException pe) {
 				this.setDate(null);
 			}
-			account = (Account)account.toDTOWithDb(db, account.fetch(cursor.getInt(idxAccount)));
-			category = (Category)category.toDTOWithDb(db, category.fetch(cursor.getInt(idxCategory)));
-			currency = (Currency)currency.toDTOWithDb(db, currency.fetch(cursor.getInt(idxCurrency)));
+            Cursor tmpCursor;
+            tmpCursor = account.fetch(cursor.getInt(idxAccount));
+			account = (Account)account.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
+            tmpCursor = category.fetch(cursor.getInt(idxCategory));
+			category = (Category)category.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
+            tmpCursor = currency.fetch(cursor.getInt(idxCurrency));
+			currency = (Currency)currency.toDTOWithDb(db, tmpCursor);
+            tmpCursor.close();
 
 			this.setAccount(account);
 			this.setCategory(category);
@@ -230,7 +237,7 @@ public class Operation extends BaseObject {
             qsb.append("AND a."+AccountData.KEY_ID+"="+account.getId()+" ");
 
         if(category != null && category.getId() != null)
-            qsb.append("AND c."+CategoryData.KEY_ID+"="+category.getId()+" ");
+            qsb.append("AND c." +CategoryData.KEY_ID+"="+category.getId()+" ");
 
         String sLimit = limit > 0 ? " limit "+limit : "";
         qsb.append("ORDER BY " + order + " " + sLimit);
