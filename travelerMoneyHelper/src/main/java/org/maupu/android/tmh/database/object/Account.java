@@ -100,6 +100,7 @@ public class Account extends BaseObject {
 			Currency c = new Currency();
 			Cursor cursorCurrency = c.fetchWithDB(db, cursor.getInt(idxCurrency));
 			c.toDTOWithDb(db, cursorCurrency);
+            cursorCurrency.close();
 			this.setCurrency(c);
 		}
 
