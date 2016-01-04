@@ -34,6 +34,9 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
 
     @Override
     public void initPanel() {
+        this.setDrawMarkerViews(false);
+        this.setHighlightPerDragEnabled(false);
+        this.setHighlightPerTapEnabled(false);
         this.setHardwareAccelerationEnabled(true);
     }
 
@@ -68,6 +71,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
                 lds.setDrawCircleHole(true);
                 lds.setCircleColor(scv.getColor());
                 lds.setCircleSize(2f);
+                lds.setDrawValues(false);
                 dataSets.add(lds);
             }
         }
@@ -83,6 +87,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
                 lds.setDrawCircleHole(false);
                 lds.setCircleSize(3f);
                 lds.enableDashedLine(20f, 8f, 0f);
+                lds.setDrawValues(false);
                 dataSets.add(lds);
             }
         }
