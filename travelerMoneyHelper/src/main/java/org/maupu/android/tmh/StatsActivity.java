@@ -119,6 +119,8 @@ public class StatsActivity extends TmhActivity {
 
         statsData.setCatToHighlight(null);
         reloadInputData();
+        // auto set dates for now because of a bug when changing account
+        autoSetDates();
         rebuildStatsData(true, false);
         refreshDisplay();
     }
