@@ -76,7 +76,7 @@ public class StatsAdapter extends BaseAdapter {
             tvAmount.setText(NumberUtil.formatDecimal(sum));
 
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
-            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRateAvg()));
 
             /** Column 2 **/
             Double avg = sum / nbDays;
@@ -84,7 +84,7 @@ public class StatsAdapter extends BaseAdapter {
             tvAmountAvg.setText(NumberUtil.formatDecimal(avg));
 
             tvCurrencyConvertedAvg.setText(StaticData.getMainCurrency().getShortName());
-            tvAmountConvertedAvg.setText(NumberUtil.formatDecimal(avg / scv.getRate()));
+            tvAmountConvertedAvg.setText(NumberUtil.formatDecimal(avg / scv.getRateAvg()));
         } else if (type == TYPE_DAY) {
             String dateString = scv.getName();
             Double sum = scv.summarize().doubleValue(); // Summarize only one element
@@ -94,7 +94,7 @@ public class StatsAdapter extends BaseAdapter {
             tvAmount.setText(NumberUtil.formatDecimal(sum));
             tvCurrency.setText(scv.getCurrency().getShortName());
 
-            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRate()));
+            tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRateAvg()));
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
 
             /** Column 2 **/

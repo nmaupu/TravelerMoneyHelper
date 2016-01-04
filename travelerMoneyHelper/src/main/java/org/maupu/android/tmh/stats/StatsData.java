@@ -116,11 +116,13 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         this.clear();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
+            int idxAmountConv = c.getColumnIndexOrThrow("amountConv");
             int idxDate = c.getColumnIndexOrThrow("dateString");
             int idxCatId = c.getColumnIndexOrThrow(OperationData.KEY_ID_CATEGORY);
             int idxRate = c.getColumnIndexOrThrow("rateAvg");
             int idxCurrencyId = c.getColumnIndexOrThrow(CurrencyData.KEY_ID);
-            String amountString = c.getString(idxAmount);
+            Double amount = c.getDouble(idxAmount);
+            Double amountConv = c.getDouble(idxAmountConv);
             String dateString = c.getString(idxDate);
             int catId = c.getInt(idxCatId);
             double rate = c.getDouble(idxRate);
@@ -143,8 +145,8 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
                     this.put(catId, scv);
                 }
 
-                float amount = Math.abs(Float.parseFloat(amountString));
-                scv.addValue(dateString, amount);
+                scv.addValue(dateString, Math.abs(amount.floatValue()));
+                scv.addValueConv(dateString, Math.abs(amountConv.floatValue()));
             } catch(NullPointerException | NumberFormatException ex) {}
         } while(c.moveToNext());
 
@@ -208,12 +210,15 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
     }
 
     public StatsCategoryValues sumForDate(String dateString) {
+        if(size() == 0)
+            return null;
+
         Category dummyCat = new Category();
         dummyCat.setName(dateString);
 
         int firstKey = keySet().iterator().next();
         StatsCategoryValues firstScv = get(firstKey);
-        Double rate = firstScv.getRate();
+        Double rate = firstScv.getRateAvg();
         Currency currency = firstScv.getCurrency();
 
         StatsCategoryValues ret = new StatsCategoryValues(dummyCat, null, null, rate, currency);
