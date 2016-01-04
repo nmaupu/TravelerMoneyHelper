@@ -42,9 +42,14 @@ public class StatsViewPager extends ViewPager implements IStatsPanel, IStatsData
     }
 
     @Override
-    public void refreshPanel(StatsData data) {
-        statsFragmentPagerAdapter.setData(data);
-        statsFragmentPagerAdapter.notifyDataSetChanged();
+    public void refreshPanel(final StatsData data) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                statsFragmentPagerAdapter.setData(data);
+                statsFragmentPagerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

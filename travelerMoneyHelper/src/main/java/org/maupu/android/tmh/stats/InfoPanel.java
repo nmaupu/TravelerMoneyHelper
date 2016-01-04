@@ -65,11 +65,11 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
         double avgConv = 0d;
         double totalCatConv = 0d;
         double avgCatConv = 0d;
-        String nonAvailable = getResources().getString(R.string.NA);
-        Currency mainCur = StaticData.getMainCurrency();
-        Account currentAcc = StaticData.getCurrentAccount();
-        String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : nonAvailable;
-        String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : nonAvailable;
+        final String nonAvailable = getResources().getString(R.string.NA);
+        final Currency mainCur = StaticData.getMainCurrency();
+        final Account currentAcc = StaticData.getCurrentAccount();
+        final String mainCurrencySymbol = mainCur != null ? mainCur.getShortName() : nonAvailable;
+        final String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : nonAvailable;
 
         String currentCatName = nonAvailable;
         if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null) {
@@ -110,27 +110,42 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
             }
         }
 
-        /** Setting all data to TextViews **/
-        tvAvg1Currency.setText(currencySymbol);
-        tvAvg1Amount.setText(NumberUtil.formatDecimal(avg));
-        tvAvg2Currency.setText(mainCurrencySymbol);
-        tvAvg2Amount.setText(NumberUtil.formatDecimal(avgConv));
+        final double fAvg = avg;
+        final double fAvgConv = avgConv;
+        final String fCurrentCatName = currentCatName;
+        final double fAvgCat = avgCat;
+        final double fAvgCatConv = avgCatConv;
+        final double fTotal = total;
+        final double fTotalConv = totalConv;
+        final double fTotalCat = totalCat;
+        final double fTotalCatConv = totalCatConv;
 
-        tvAvg1Cat.setText(currentCatName);
-        tvAvg1CatCurrency.setText(currencySymbol);
-        tvAvg1CatAmount.setText(NumberUtil.formatDecimal(avgCat));
-        tvAvg2CatCurrency.setText(mainCurrencySymbol);
-        tvAvg2CatAmount.setText(NumberUtil.formatDecimal(avgCatConv));
+        this.ctx.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                /** Setting all data to TextViews **/
+                tvAvg1Currency.setText(currencySymbol);
+                tvAvg1Amount.setText(NumberUtil.formatDecimal(fAvg));
+                tvAvg2Currency.setText(mainCurrencySymbol);
+                tvAvg2Amount.setText(NumberUtil.formatDecimal(fAvgConv));
 
-        tvTotal1Currency.setText(currencySymbol);
-        tvTotal1Amount.setText(NumberUtil.formatDecimal(total));
-        tvTotal2Currency.setText(mainCurrencySymbol);
-        tvTotal2Amount.setText(NumberUtil.formatDecimal(totalConv));
+                tvAvg1Cat.setText(fCurrentCatName);
+                tvAvg1CatCurrency.setText(currencySymbol);
+                tvAvg1CatAmount.setText(NumberUtil.formatDecimal(fAvgCat));
+                tvAvg2CatCurrency.setText(mainCurrencySymbol);
+                tvAvg2CatAmount.setText(NumberUtil.formatDecimal(fAvgCatConv));
 
-        tvTotal1Cat.setText(currentCatName);
-        tvTotal1CatCurrency.setText(currencySymbol);
-        tvTotal1CatAmount.setText(NumberUtil.formatDecimal(totalCat));
-        tvTotal2CatCurrency.setText(mainCurrencySymbol);
-        tvTotal2CatAmount.setText(NumberUtil.formatDecimal(totalCatConv));
+                tvTotal1Currency.setText(currencySymbol);
+                tvTotal1Amount.setText(NumberUtil.formatDecimal(fTotal));
+                tvTotal2Currency.setText(mainCurrencySymbol);
+                tvTotal2Amount.setText(NumberUtil.formatDecimal(fTotalConv));
+
+                tvTotal1Cat.setText(fCurrentCatName);
+                tvTotal1CatCurrency.setText(currencySymbol);
+                tvTotal1CatAmount.setText(NumberUtil.formatDecimal(fTotalCat));
+                tvTotal2CatCurrency.setText(mainCurrencySymbol);
+                tvTotal2CatAmount.setText(NumberUtil.formatDecimal(fTotalCatConv));
+            }
+        });
     }
 }

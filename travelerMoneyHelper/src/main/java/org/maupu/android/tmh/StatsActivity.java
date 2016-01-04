@@ -213,6 +213,15 @@ public class StatsActivity extends TmhActivity {
     }
 
     @Override
+    public Map<Integer, Object> handleRefreshBackground() {
+        // Trying to do as much as possible in background ...
+        infoPanel.refreshPanel(statsData);
+        statsViewPager.refreshPanel(statsData);
+
+        return null;
+    }
+
+    @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
         Account currentAccount = StaticData.getCurrentAccount();
 
@@ -228,8 +237,6 @@ public class StatsActivity extends TmhActivity {
         statsData.enableChartAnim();
         pieChart.refreshPanel(statsData);
         detailsChart.refreshPanel(statsData);
-        infoPanel.refreshPanel(statsData);
-        statsViewPager.refreshPanel(statsData);
         refreshLayoutCategories();
     }
 
