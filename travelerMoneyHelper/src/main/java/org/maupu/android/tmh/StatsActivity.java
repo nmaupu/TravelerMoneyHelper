@@ -37,8 +37,10 @@ import org.maupu.android.tmh.util.DateUtil;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -143,23 +145,25 @@ public class StatsActivity extends TmhActivity {
             @Override
             public void onValueSelected(final Entry e, int dataSetIndex, Highlight h) {
                 Log.d(TAG, "Highlight : x=" + h.getXIndex() + ", dataset=" + h.getDataSetIndex());
+                final boolean cur = statsData.isChartAnim();
+                statsData.disableChartAnim();
+
                 IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
                     @Override
                     public Map<Integer, Object> handleRefreshBackground() {
                         StatsCategoryValues scv = (StatsCategoryValues) e.getData();
                         statsData.setCatToHighlight(scv.getFirstCategory());
                         // TODO : Don't redraw everything but replace by a highlight method
-                        boolean cur = statsData.isChartAnim();
-                        statsData.disableChartAnim();
                         detailsChart.refreshPanel(statsData);
                         infoPanel.refreshPanel(statsData);
-                        statsData.setChartAnim(cur);
 
                         return null;
                     }
 
                     @Override
-                    public void handleRefreshEnding(Map<Integer, Object> results) {}
+                    public void handleRefreshEnding(Map<Integer, Object> results) {
+                        statsData.setChartAnim(cur);
+                    }
                 };
 
                 AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(thisInstance, refresher, false);
@@ -168,24 +172,28 @@ public class StatsActivity extends TmhActivity {
 
             @Override
             public void onNothingSelected() {
+                final boolean cur = statsData.isChartAnim();
+                statsData.disableChartAnim();
+
                 IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
                     @Override
                     public Map<Integer, Object> handleRefreshBackground() {
                         statsData.setCatToHighlight(null);
                         // TODO : Don't redraw everything but replace by a highlight method
-                        boolean cur = statsData.isChartAnim();
-                        statsData.disableChartAnim();
                         detailsChart.refreshPanel(statsData);
                         infoPanel.refreshPanel(statsData);
-                        statsData.setChartAnim(cur);
+
                         return null;
                     }
 
                     @Override
-                    public void handleRefreshEnding(Map<Integer, Object> results) {}
+                    public void handleRefreshEnding(Map<Integer, Object> results) {
+                        statsData.setChartAnim(cur);
+                    }
                 };
 
                 AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(thisInstance, refresher, false);
+                asyncTask.execute();
             }
         });
     }
