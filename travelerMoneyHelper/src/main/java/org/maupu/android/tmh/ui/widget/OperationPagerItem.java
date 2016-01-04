@@ -97,7 +97,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		textViewTitleYear = (TextView)headerContent.findViewById(R.id.title_year);
 		textViewAccountName = (TextView)headerContent.findViewById(R.id.account_name); 
 		imageViewIcon = (ImageView)headerContent.findViewById(R.id.account_icon);
-		imageViewIcon.setOnClickListener(this);
+		//imageViewIcon.setOnClickListener(this);
 
 		// Adding content to viewpager header
 		header.setVisibility(View.VISIBLE);
@@ -133,6 +133,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
 		switch(v.getId()) {
             case R.id.account_icon:
+                // Disabled due to a bug when switching to stats (current account changed does not reset dates)
                 Log.d(OperationPagerItem.class.getName(), "Icon clicked");
                 DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
                 break;

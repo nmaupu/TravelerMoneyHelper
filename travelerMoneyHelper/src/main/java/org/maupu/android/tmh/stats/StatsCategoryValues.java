@@ -23,19 +23,20 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     private Set<Category> categories = new HashSet<>();
     private String name = null;
     private Map<String, Float> values = new HashMap<>();
+    private Map<String, Float> valuesConv = new HashMap<>();
     private Date dateBegin;
     private Date dateEnd;
     private int color = ColorTemplate.COLOR_NONE;
-    private Float sum, avg;
-    private Double rate = 1d;
+    private Float sum, avg, sumConv, avgConv;
+    private Double rateAvg = 1d;
     private Currency currency;
 
-    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rate, Currency currency) {
+    public StatsCategoryValues(Category category, Date dateBegin, Date dateEnd, Double rateAvg, Currency currency) {
         categories.add(category);
         name = category.getName();
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-        this.rate = rate;
+        this.rateAvg = rateAvg;
         this.currency = currency;
     }
 
@@ -68,7 +69,7 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
     }
 
     private void invalidateCache() {
-        avg = sum = null;
+        avg = sum = avgConv = sumConv = null;
     }
 
     public void addValue(String key, Float value) {
@@ -83,8 +84,24 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
             values.put(key, curVal + value);
     }
 
+    public void addValueConv(String key, Float value) {
+        if(valuesConv == null)
+            return;
+
+        invalidateCache();
+        Float curVal = valuesConv.get(key);
+        if(curVal == null)
+            valuesConv.put(key, value);
+        else
+            valuesConv.put(key, curVal + value);
+    }
+
     public Map<String, Float> getValues() {
         return values;
+    }
+
+    public Map<String, Float> getValuesConv() {
+        return valuesConv;
     }
 
     public void addCategory(Category category) {
@@ -96,12 +113,12 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return categories;
     }
 
-    public Double getRate() {
-        return rate;
+    public Double getRateAvg() {
+        return rateAvg;
     }
 
-    public void setRate(Double rate) {
-        this.rate = rate;
+    public void setRateAvg(Double rateAvg) {
+        this.rateAvg = rateAvg;
     }
 
     public Category getFirstCategory() {
@@ -113,12 +130,9 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         if(catId == null || catId < 0 || categories == null || categories.size() == 0)
             return false;
 
-        Iterator<Category> it = categories.iterator();
-        while(it.hasNext()) {
-            Category c = it.next();
+        for(Category c : categories)
             if(c.getId() == catId)
                 return true;
-        }
 
         return false;
     }
@@ -174,7 +188,23 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         return sum;
     }
 
-    public Float average(Date dateBegin, Date dateEnd) {
+    public Float summarizeConv() {
+        if(valuesConv == null || valuesConv.size() == 0)
+            return 0f;
+
+        if(sumConv != null)
+            return sumConv;
+
+        sumConv = 0f;
+        Iterator<Float> it = valuesConv.values().iterator();
+        while(it.hasNext()) {
+            sumConv += it.next();
+        }
+
+        return sumConv;
+    }
+
+    public Float average() {
         if(values == null || values.size() == 0)
             return 0f;
 
@@ -184,6 +214,18 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
         avg = nbDays == 0 ? 0f : summarize()/nbDays;
         return avg;
+    }
+
+    public Float averageConv() {
+        if(valuesConv == null || valuesConv.size() == 0)
+            return 0f;
+
+        if(avgConv != null)
+            return avgConv;
+
+        int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
+        avgConv = nbDays == 0 ? 0f : summarizeConv()/nbDays;
+        return avgConv;
     }
 
     public void fusionWith(final StatsCategoryValues scv) {
@@ -206,6 +248,16 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
             if(value != null) {
                 Float curVal = values.get(key) == null ? 0f : values.get(key);
                 values.put(key, curVal+value);
+            }
+        }
+
+        it = scv.valuesConv.keySet().iterator();
+        while(it.hasNext()) {
+            String key = it.next();
+            Float value = (Float)scv.getValuesConv().get(key);
+            if(value != null) {
+                Float curVal = valuesConv.get(key) == null ? 0f : valuesConv.get(key);
+                valuesConv.put(key, curVal+value);
             }
         }
     }

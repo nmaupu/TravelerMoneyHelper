@@ -105,6 +105,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 		amount.addTextChangedListener(this);
 		linearLayoutRateUpdater = (LinearLayout)findViewById(R.id.ll_exchange_rate);
 		checkboxUpdateRate = (CheckBox)findViewById(R.id.checkbox_update_rate);
+        checkboxUpdateRate.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateConvertedAmount();
+            }
+        });
 		smCurrency = new SpinnerManager(this, (Spinner)findViewById(R.id.currency));
 		smCurrency.getSpinner().setOnItemSelectedListener(this);
 
@@ -392,8 +398,13 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			Double currentAmount = 0d;
 			if (a != null && ! "".equals(a))
 				currentAmount = Math.abs(Double.parseDouble(a));
-				
-			Double rate = dummyCur.getRateCurrencyLinked();
+
+            Double rate;
+            if(checkboxUpdateRate.isChecked())
+                rate = dummyCur.getRateCurrencyLinked();
+            else
+                rate = getObj().getCurrencyValueOnCreated();
+
 			textViewConvertedAmount.setText(""+NumberUtil.formatDecimal(currentAmount / rate)+" "+StaticData.getMainCurrency().getShortName());
             textViewAmount.setText(""+NumberUtil.formatDecimal(currentAmount)+" "+dummyCur.getShortName());
 		} catch (NumberFormatException nfe) {
