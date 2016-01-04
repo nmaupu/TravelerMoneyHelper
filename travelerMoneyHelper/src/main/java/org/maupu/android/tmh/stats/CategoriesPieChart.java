@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.stats;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -50,7 +51,7 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
     }
 
     @Override
-    public void refreshPanel(StatsData statsData) {
+    public void refreshPanel(final StatsData statsData) {
         if(statsData == null || statsData.size() == 0) {
             this.invalidate();
             return;
@@ -100,10 +101,17 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
         pd.setValueFormatter(new PercentFormatter());
 
         this.setData(pd);
-        if(statsData.isChartAnim())
-            this.animateY(1000);
-        highlightInPieChart(statsData.getCatToHighlight(), statsData.getBiggestCategory());
-        this.invalidate();
+
+        final CategoriesPieChart thisInstance = this;
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (statsData.isChartAnim())
+                    thisInstance.animateY(1000);
+                highlightInPieChart(statsData.getCatToHighlight(), statsData.getBiggestCategory());
+                thisInstance.invalidate();
+            }
+        });
     }
 
     /**

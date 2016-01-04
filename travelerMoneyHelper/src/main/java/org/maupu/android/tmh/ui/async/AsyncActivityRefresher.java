@@ -21,7 +21,8 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
 		
 		if(displayPopup) {
 			waitSpinner = new ProgressDialog(this.context);
-			waitSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			waitSpinner.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            waitSpinner.setIndeterminate(true);
 			waitSpinner.setTitle(R.string.refreshing);
 			waitSpinner.setCancelable(true);
 			waitSpinner.setCanceledOnTouchOutside(true);

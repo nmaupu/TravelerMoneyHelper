@@ -31,6 +31,8 @@ import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.stats.StatsViewPager;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
+import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
 
 import java.util.Arrays;
@@ -136,30 +138,54 @@ public class StatsActivity extends TmhActivity {
         pieChart = (CategoriesPieChart)findViewById(R.id.pie_chart);
         statsData.addOnStatsDataChangedListener(pieChart);
         pieChart.initPanel();
+        final TmhActivity thisInstance = this;
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
-            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+            public void onValueSelected(final Entry e, int dataSetIndex, Highlight h) {
                 Log.d(TAG, "Highlight : x=" + h.getXIndex() + ", dataset=" + h.getDataSetIndex());
-                StatsCategoryValues scv = (StatsCategoryValues) e.getData();
-                statsData.setCatToHighlight(scv.getFirstCategory());
-                // TODO : Don't redraw everything but replace by a highlight method
-                boolean cur = statsData.isChartAnim();
-                statsData.disableChartAnim();
-                detailsChart.refreshPanel(statsData);
-                infoPanel.refreshPanel(statsData);
-                statsData.setChartAnim(cur);
+                IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
+                    @Override
+                    public Map<Integer, Object> handleRefreshBackground() {
+                        StatsCategoryValues scv = (StatsCategoryValues) e.getData();
+                        statsData.setCatToHighlight(scv.getFirstCategory());
+                        // TODO : Don't redraw everything but replace by a highlight method
+                        boolean cur = statsData.isChartAnim();
+                        statsData.disableChartAnim();
+                        detailsChart.refreshPanel(statsData);
+                        infoPanel.refreshPanel(statsData);
+                        statsData.setChartAnim(cur);
+
+                        return null;
+                    }
+
+                    @Override
+                    public void handleRefreshEnding(Map<Integer, Object> results) {}
+                };
+
+                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(thisInstance, refresher, false);
+                asyncTask.execute();
             }
 
             @Override
             public void onNothingSelected() {
-                //tvMisc.setText("Nothing selected");
-                statsData.setCatToHighlight(null);
-                // TODO : Don't redraw everything but replace by a highlight method
-                boolean cur = statsData.isChartAnim();
-                statsData.disableChartAnim();
-                detailsChart.refreshPanel(statsData);
-                infoPanel.refreshPanel(statsData);
-                statsData.setChartAnim(cur);
+                IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
+                    @Override
+                    public Map<Integer, Object> handleRefreshBackground() {
+                        statsData.setCatToHighlight(null);
+                        // TODO : Don't redraw everything but replace by a highlight method
+                        boolean cur = statsData.isChartAnim();
+                        statsData.disableChartAnim();
+                        detailsChart.refreshPanel(statsData);
+                        infoPanel.refreshPanel(statsData);
+                        statsData.setChartAnim(cur);
+                        return null;
+                    }
+
+                    @Override
+                    public void handleRefreshEnding(Map<Integer, Object> results) {}
+                };
+
+                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(thisInstance, refresher, false);
             }
         });
     }
@@ -213,15 +239,6 @@ public class StatsActivity extends TmhActivity {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
-        // Trying to do as much as possible in background ...
-        infoPanel.refreshPanel(statsData);
-        statsViewPager.refreshPanel(statsData);
-
-        return null;
-    }
-
-    @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
         Account currentAccount = StaticData.getCurrentAccount();
 
@@ -233,11 +250,13 @@ public class StatsActivity extends TmhActivity {
             accountName.setText("");
         }
 
-        refreshDates();
         statsData.enableChartAnim();
+        infoPanel.refreshPanel(statsData);
+        statsViewPager.refreshPanel(statsData);
         pieChart.refreshPanel(statsData);
         detailsChart.refreshPanel(statsData);
         refreshLayoutCategories();
+        refreshDates();
     }
 
     @Override
@@ -321,7 +340,7 @@ public class StatsActivity extends TmhActivity {
 
         c.moveToFirst();
         do {
-            Category cat = new Category();
+            final Category cat = new Category();
             cat.toDTO(c);
 
             int drawableBg = R.drawable.shape_button_rounded_ok;
@@ -342,8 +361,8 @@ public class StatsActivity extends TmhActivity {
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Category cat = (Category)v.getTag();
-                    if(exceptedCategories.contains(cat.getId())) {
+                    Category cat = (Category) v.getTag();
+                    if (exceptedCategories.contains(cat.getId())) {
                         exceptedCategories.remove(cat.getId());
                         ll.setBackground(getResources().getDrawable(R.drawable.shape_button_rounded_ok));
                     } else {
@@ -356,11 +375,16 @@ public class StatsActivity extends TmhActivity {
             });
 
             // TextView
-            TextView tvText = (TextView)buttonView.findViewById(R.id.text);
-            tvText.setText(cat.getName());
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView tvText = (TextView) buttonView.findViewById(R.id.text);
+                    tvText.setText(cat.getName());
+                    //layoutCategories.addView(buttonView, lp);
+                    layoutCategories.addView(buttonView);
+                }
+            });
 
-            //layoutCategories.addView(buttonView, lp);
-            layoutCategories.addView(buttonView);
         } while(c.moveToNext());
 
         c.close();
@@ -370,19 +394,32 @@ public class StatsActivity extends TmhActivity {
         rebuildStatsData(chartAnim, true);
     }
 
-    private void rebuildStatsData(boolean chartAnim, boolean forwardEvent) {
+    private void rebuildStatsData(final boolean chartAnim, final boolean forwardEvent) {
         Log.d(TAG, "rebuildStatsData called with chartAnim="+chartAnim);
-        statsData.setChartAnim(chartAnim);
-        statsData.rebuildChartsData(
-                StaticData.getStatsExceptedCategories(),
-                dateBegin, dateEnd,
-                max_cat_displayed,
-                getResources().getString(R.string.misc),
-                forwardEvent);
 
-        String miscCatText = statsData.getMiscCategoryText();
-        if(miscCatText == null)
-            miscCatText = getResources().getString(R.string.NA);
-        tvMisc.setText(miscCatText);
+        /* Handle that big process in a thread */
+        IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
+            @Override
+            public Map<Integer, Object> handleRefreshBackground() {
+                statsData.setChartAnim(chartAnim);
+                statsData.rebuildChartsData(
+                        StaticData.getStatsExceptedCategories(),
+                        dateBegin, dateEnd,
+                        max_cat_displayed,
+                        getResources().getString(R.string.misc),
+                        forwardEvent);
+                return null;
+            }
+
+            @Override
+            public void handleRefreshEnding(Map<Integer, Object> results) {
+                String miscCatText = statsData.getMiscCategoryText();
+                if(miscCatText == null)
+                    miscCatText = getResources().getString(R.string.NA);
+                tvMisc.setText(miscCatText);
+            }
+        };
+        AsyncActivityRefresher asyncRefresher = new AsyncActivityRefresher(this, refresher, true);
+        asyncRefresher.execute();
     }
 }

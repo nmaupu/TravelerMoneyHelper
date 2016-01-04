@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.stats;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -8,6 +9,8 @@ import android.util.Log;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+
+import org.maupu.android.tmh.TmhActivity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,17 +43,17 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
     }
 
     @Override
-    public void refreshPanel(StatsData statsData) {
+    public void refreshPanel(final StatsData statsData) {
         Log.d(TAG, "refreshPanel called with animChart = "+statsData.isChartAnim());
         /** Construct all curves from statsData **/
-        List<String> xEntries = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
+        final List<String> xEntries = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
         // No data
         if(xEntries == null) {
             this.invalidate();
             return;
         }
 
-        List<LineDataSet> dataSets = new ArrayList<>();
+        final List<LineDataSet> dataSets = new ArrayList<>();
 
         /** First, draw others categories **/
         List<StatsCategoryValues> scvs = new ArrayList<>(statsData.values());
@@ -84,16 +87,22 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
             }
         }
 
-        if(statsData.isChartAnim())
-            this.animateXY(1000, 1000);
-        this.clear();
-        this.notifyDataSetChanged();
-        this.setData(new LineData(xEntries, dataSets));
-        if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null)
-            this.setDescription(statsData.getCatToHighlight().getName());
-        else
-            this.setDescription("");
-        this.setGridBackgroundColor(Color.WHITE);
-        this.invalidate();
+        final CategoriesLineChart thisInstance = this;
+        ((Activity)getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (statsData.isChartAnim())
+                    thisInstance.animateXY(1000, 1000);
+                thisInstance.clear();
+                thisInstance.notifyDataSetChanged();
+                thisInstance.setData(new LineData(xEntries, dataSets));
+                if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null)
+                    thisInstance.setDescription(statsData.getCatToHighlight().getName());
+                else
+                    thisInstance.setDescription("");
+                thisInstance.setGridBackgroundColor(Color.WHITE);
+                thisInstance.invalidate();
+            }
+        });
     }
 }
