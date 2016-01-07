@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.maupu.android.tmh.ViewPagerOperationActivity;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,6 +25,7 @@ import android.view.View;
  */
 @SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
+    private static final Class TAG = ViewPagerOperationAdapter.class;
 	private ViewPagerOperationActivity ctx;
 	public final static int DEFAULT_COUNT = 25;
 	private Map<Integer, OperationPagerItem> items = new HashMap<Integer, OperationPagerItem>();
@@ -104,7 +106,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 	private void doRefreshItemView(int position) {
 		OperationPagerItem item = items.get(position);
 		if(item != null) {
-            Log.d(ViewPagerOperationAdapter.class.getName(), "Refreshing item number "+position);
+            TmhLogger.d(TAG, "Refreshing item number " + position);
 			item.refreshDisplay();
 		}
 	}

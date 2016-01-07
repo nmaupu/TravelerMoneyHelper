@@ -4,6 +4,7 @@ import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -30,7 +31,7 @@ import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public abstract class ManageableObjectActivity<T extends BaseObject> extends TmhActivity implements NumberCheckedListener, OnClickListener {
-    private static final String TAG = ManageableObjectActivity.class.getName();
+    private static final Class TAG = ManageableObjectActivity.class;
 	private static final int ACTIVITY_ADD = 0;
 	private static final int ACTIVITY_EDIT = 1;
 	private ListView listView;
@@ -57,7 +58,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "Calling onCreate");
+        TmhLogger.d(TAG, "Calling onCreate");
         super.onCreate(savedInstanceState);
 
 		this.tvEmpty = (TextView) findViewById(R.id.empty);

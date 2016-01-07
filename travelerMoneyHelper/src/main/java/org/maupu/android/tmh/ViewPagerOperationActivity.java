@@ -11,6 +11,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -26,7 +27,7 @@ import android.widget.DatePicker;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener, DatePickerDialog.OnDateSetListener {
-
+    private static final Class TAG = ViewPagerOperationActivity.class;
     private ViewPagerOperationAdapter adapter;
     private ViewPagerOperationAdapter adapterRaw;
 	private int currentPosition;
@@ -116,7 +117,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
     @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(ViewPagerOperationActivity.class.getName(), "onActivityResult resultCode : " + resultCode);
+		TmhLogger.d(TAG, "onActivityResult resultCode : " + resultCode);
 		refreshDisplay();
 	}
 
@@ -147,12 +148,12 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
 
         switch(statusType) {
             case LIST_BY_MONTH:
-                Log.d(ViewPagerOperationActivity.class.getName(), "Setting list type to By month");
+                TmhLogger.d(TAG, "Setting list type to By month");
                 StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
                 a = this.adapter;
                 break;
             case LIST_RAW:
-                Log.d(ViewPagerOperationActivity.class.getName(), "Setting list type to All");
+                TmhLogger.d(TAG, "Setting list type to All");
                 StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_RAW);
                 a = this.adapterRaw;
                 break;
@@ -248,7 +249,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements OnPageCha
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int realMonth = monthOfYear+1;
-        Log.d(ViewPagerOperationActivity.class.getName(), "Date has been set to : " + year + "/" + realMonth + "/" + dayOfMonth);
+        TmhLogger.d(TAG, "Date has been set to : " + year + "/" + realMonth + "/" + dayOfMonth);
         StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN, monthOfYear);
         StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN, year);
         StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN, dayOfMonth);

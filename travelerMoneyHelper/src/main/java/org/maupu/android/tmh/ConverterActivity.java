@@ -33,6 +33,7 @@ import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.Date;
 import java.util.List;
@@ -40,7 +41,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ConverterActivity extends TmhActivity implements View.OnClickListener, IAsync, TextWatcher {
-    public static final String TAG = ConverterActivity.class.getName();
+    public static final Class TAG = ConverterActivity.class;
     public static final int TYPE_LEFT = 0;
     public static final int TYPE_RIGHT = 1;
     public static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";
@@ -166,7 +167,7 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
         if(item.getIdentifier() == DRAWER_ITEM_UPDATE_RATES) {
-            Log.d(TAG, "Forcing rates update from the internet");
+            TmhLogger.d(TAG, "Forcing rates update from the internet");
             ratesCacheEnabled = false;
             updateConvertedAmounts();
             refreshDisplay();
@@ -307,7 +308,7 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     @Override
     public void afterTextChanged(Editable s) {
-        Log.d(TAG, "afterTextChanged called");
+        TmhLogger.d(TAG, "afterTextChanged called");
         updateConvertedAmounts();
         refreshDisplay();
     }
@@ -332,8 +333,8 @@ public class ConverterActivity extends TmhActivity implements View.OnClickListen
                                 // rates are calculated against main currency
                                 rate1 = dummyCurrency1.getRateCurrencyLinked();
                                 rate2 = dummyCurrency2.getRateCurrencyLinked();
-                                Log.d(TAG, "Setting rate1 = " + rate1);
-                                Log.d(TAG, "Setting rate2 = " + rate2);
+                                TmhLogger.d(TAG, "Setting rate1 = " + rate1);
+                                TmhLogger.d(TAG, "Setting rate2 = " + rate2);
                                 rateConverter = rate2 / rate1;
                                 convertedAmount1 = amount;
                                 convertedAmount2 = amount * rateConverter;

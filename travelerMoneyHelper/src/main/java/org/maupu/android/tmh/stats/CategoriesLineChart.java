@@ -11,13 +11,14 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import org.maupu.android.tmh.TmhActivity;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class CategoriesLineChart extends LineChart implements IStatsPanel, IStatsDataChangedListener {
-    private static final String TAG = CategoriesLineChart.class.getName();
+    private static final Class TAG = CategoriesLineChart.class;
     private static final int LINE_WIDTH = 1;
 
     public CategoriesLineChart(Context context) {
@@ -47,7 +48,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
 
     @Override
     public void refreshPanel(final StatsData statsData) {
-        Log.d(TAG, "refreshPanel called with animChart = "+statsData.isChartAnim());
+        TmhLogger.d(TAG, "refreshPanel called with animChart = " + statsData.isChartAnim());
         /** Construct all curves from statsData **/
         final List<String> xEntries = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
         // No data

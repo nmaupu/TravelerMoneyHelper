@@ -3,6 +3,7 @@ package org.maupu.android.tmh.ui;
 import java.io.FileInputStream;
 
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,10 +12,10 @@ import android.util.Log;
 import android.widget.ImageView;
 
 public abstract class ImageViewHelper {
-    private static final String TAG = ImageViewHelper.class.getName();
+    private static final Class TAG = ImageViewHelper.class;
 
 	public static void setIcon(Context ctx, ImageView imageView, String filename) {
-        Log.d(TAG, "Setting icon " + filename);
+        TmhLogger.d(TAG, "Setting icon " + filename);
 		try {
 			FileInputStream fIn = ctx.openFileInput(filename);
 			imageView.setImageBitmap(BitmapFactory.decodeStream(fIn));

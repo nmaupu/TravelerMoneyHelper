@@ -5,12 +5,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.util.Log;
 
 
 public abstract class CurrencyHelper {
+    private static final Class TAG = CurrencyHelper.class;
 	private static NumberFormat numberFormat = NumberFormat.getInstance();
 	private static List<CurrencyISO4217> currencyISO4217List;
 
@@ -24,7 +28,7 @@ public abstract class CurrencyHelper {
             @Override
             public CurrencyISO4217 callback(Object item) {
                 String line = (String) item;
-                Log.d("CurrencyHelper", "Current line = " + line);
+                TmhLogger.d(TAG, "CurrencyHelper" + "Current line = " + line);
                 StringTokenizer st = new StringTokenizer(line, "|");
                 return new CurrencyISO4217(st.nextToken(), st.nextToken());
             }
@@ -36,7 +40,17 @@ public abstract class CurrencyHelper {
 	}
 
 	public static String currencyConversion(Double value, Double rate) {
-		numberFormat.setMinimumFractionDigits(2);
-		return numberFormat.format(value / rate);
+		return NumberUtil.formatDecimal(value / rate);
 	}
+
+    public static String currencyConversionToMainCurrency(Double value, Currency currency) {
+        if(currency == null)
+            return null;
+
+        Double rate = currency.getRateCurrencyLinked();
+        if(rate == null)
+            return null;
+
+        return NumberUtil.formatDecimal(value / rate);
+    }
 }

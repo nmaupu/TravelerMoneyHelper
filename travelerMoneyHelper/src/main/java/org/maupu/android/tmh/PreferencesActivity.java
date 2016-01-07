@@ -14,6 +14,7 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
+    private static final Class TAG = PreferencesActivity.class;
 	//private static final String FILENAME = "mainPrefs";
 	private boolean dbChanged = false;
 
@@ -170,13 +172,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
         //CharSequence[] ret = new CharSequence[list.length];
         List<String> listEntries = new ArrayList<String>();
 
-        Log.d(PreferencesActivity.class.getName(), "Number of databases returned : " + list.length);
+        TmhLogger.d(TAG, "Number of databases returned : " + list.length);
         for(int i=0; i<list.length; i++) {
             String[] vals = ((String)list[i]).split(DatabaseHelper.DATABASE_PREFIX);
             // If database name is not correct (no prefix), array is wrong so we denied this DB
             // We also discard journal DB
             if(vals.length == 2 && ! vals[1].contains("-journal")) {
-                Log.d(PreferencesActivity.class.getName(), "Database filename : " + list[i] + " - database name : " + vals[1]);
+                TmhLogger.d(TAG, "Database filename : " + list[i] + " - database name : " + vals[1]);
                 if(prettyPrint)
                     listEntries.add(vals[1]);
                 else
@@ -210,14 +212,14 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if(StaticData.PREF_DATABASE.equals(preference.getKey())) {
-			Log.d(PreferencesActivity.class.getName(), "Opening database " + newValue);
+			TmhLogger.d(TAG, "Opening database " + newValue);
 			TmhApplication.changeOrCreateDatabase((String) newValue);
             Currency cur = StaticData.getDefaultMainCurrency();
             if(cur != null)
                 StaticData.setMainCurrency(cur.getId());
 		} else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			if(! "".equals(newValue)) {
-				Log.d(PreferencesActivity.class.getName(), "Creating new database "+newValue);
+				TmhLogger.d(TAG, "Creating new database "+newValue);
 
 				String dbName = DatabaseHelper.DATABASE_PREFIX+(newValue);
 

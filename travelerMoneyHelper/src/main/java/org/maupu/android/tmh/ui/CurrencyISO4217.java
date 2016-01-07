@@ -2,8 +2,10 @@ package org.maupu.android.tmh.ui;
 
 import android.util.Log;
 
+import org.maupu.android.tmh.util.TmhLogger;
+
 public final class CurrencyISO4217 {
-    public static final String TAG = CurrencyISO4217.class.getName();
+    public static final Class TAG = CurrencyISO4217.class;
 	private String code;
 	private String name;
 	
@@ -28,7 +30,7 @@ public final class CurrencyISO4217 {
             return cur.getSymbol();
         } catch (IllegalArgumentException iae) {
             // Not a supported ISO4217, so we do not have a symbol available
-            Log.e(TAG, code + "/" + name + " is not a valid ISO4217 currency !");
+            TmhLogger.e(TAG, code + "/" + name + " is not a valid ISO4217 currency !");
             return code;
         }
     }

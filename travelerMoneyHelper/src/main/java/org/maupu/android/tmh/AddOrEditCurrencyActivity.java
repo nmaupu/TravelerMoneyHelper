@@ -11,6 +11,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -194,7 +195,7 @@ public class AddOrEditCurrencyActivity extends AddOrEditActivity<Currency> imple
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-		Log.d(AddOrEditCurrencyActivity.class.getName(), "on item clicked called !");
+		TmhLogger.d(AddOrEditCurrencyActivity.class, "on item clicked called !");
 
 		String isoCode = actvCurrencyCode.getText().toString();
 		CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);

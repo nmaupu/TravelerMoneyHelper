@@ -18,10 +18,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.util.Log;
 
 public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
+    private final static Class TAG = OpenExchangeRatesAsyncUpdater.class;
 	private final static String OER_CACHE_CURRENCIES_LATEST = "OpenExchangeRatesLatest.json";
     /**
      *  Stored as a long in StaticData for further reference. Corresponds to the freshness of rates
@@ -98,7 +100,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 					// Cache json values
 					saveToCache(builderJson.toString(), OER_CACHE_CURRENCIES_LATEST);
 				} else {
-					Log.e(OpenExchangeRatesAsyncUpdater.class.getName(), "Unable to get rate list, verify your api key");
+					TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
 					throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
 				}
 			} catch (ClientProtocolException cpe) {

@@ -24,6 +24,7 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
+    private static final Class TAG = OperationPagerItem.class;
 	private ViewPagerOperationActivity viewPagerOperationActivity;
 	private View view;
 	private Date date;
@@ -137,7 +139,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 		switch(v.getId()) {
             case R.id.account_icon:
                 // Disabled due to a bug when switching to stats (current account changed does not reset dates)
-                Log.d(OperationPagerItem.class.getName(), "Icon clicked");
+                TmhLogger.d(TAG, "Icon clicked");
                 DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
                 break;
             case R.id.button_edit:
@@ -250,7 +252,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         if(this.date != null) {
             SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM");
             String dateString = sdfMonth.format(this.date);
-            Log.d("OperationPagerItem", "month displayed : " + dateString);
+            TmhLogger.d(TAG, "OperationPagerItem - month displayed : " + dateString);
             textViewTitleMonth.setText(dateString);
 
             SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");

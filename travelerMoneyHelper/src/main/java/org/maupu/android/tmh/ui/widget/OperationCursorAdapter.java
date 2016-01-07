@@ -8,6 +8,7 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class OperationCursorAdapter extends SimpleCursorAdapter {
+    private static final Class TAG = OperationCursorAdapter.class;
 
 	public OperationCursorAdapter(Context context, int layout,
 			Cursor c, String[] from, int[] to) {
@@ -45,7 +47,7 @@ public class OperationCursorAdapter extends SimpleCursorAdapter {
                     Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol());
         } catch (NullPointerException npe) {
             // Nothing done
-            Log.e(OperationCursorAdapter.class.getName(), "Main currency is null or not set yet !");
+            TmhLogger.e(TAG, "Main currency is null or not set yet !");
         }
 		
 		// Set color for amount

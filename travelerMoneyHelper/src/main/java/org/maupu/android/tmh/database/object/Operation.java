@@ -14,6 +14,7 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.OperationFilter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.QueryBuilder;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,6 +24,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 public class Operation extends BaseObject {
+    private static final Class TAG = Operation.class;
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_SUM="sum";
 	public static final int COLOR_POSITIVE_AMOUNT = Color.parseColor("#3fab37");
@@ -242,8 +244,8 @@ public class Operation extends BaseObject {
         String sLimit = limit > 0 ? " limit "+limit : "";
         qsb.append("ORDER BY " + order + " " + sLimit);
 
-        Log.d(Operation.class.getName(), "fetching by date : begin = "+sBeg+", end="+sEnd);
-        Log.d(Operation.class.getName(), qsb.getStringBuilder().toString());
+        TmhLogger.d(TAG, "fetching by date : begin = " + sBeg + ", end=" + sEnd);
+        TmhLogger.d(TAG, qsb.getStringBuilder().toString());
 
         return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
     }
@@ -335,7 +337,7 @@ public class Operation extends BaseObject {
 		qb.append("AND a."+AccountData.KEY_ID+"="+account.getId()+" ");
 		qb.append("AND o." + OperationData.KEY_AMOUNT + ">0 ");
 
-		Log.d(Operation.class.getName(), qb.getStringBuilder().toString());
+		TmhLogger.d(TAG, qb.getStringBuilder().toString());
 
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
@@ -347,7 +349,7 @@ public class Operation extends BaseObject {
             } while (c.moveToNext());
         } catch(CursorIndexOutOfBoundsException cioobe) {
             // Cursor is empty, nothing special to do
-            Log.e(Operation.class.getName(), "Error in calling getExceptCategoriesAuto, cursor empty ?");
+            TmhLogger.e(TAG, "Error in calling getExceptCategoriesAuto, cursor empty ?");
         }
 
 		return exceptCategories.toArray(new Integer[0]);
@@ -387,7 +389,7 @@ public class Operation extends BaseObject {
 		qb.append("ORDER BY o." + OperationData.KEY_DATE + " " + order + " ");
 		qb.append("LIMIT 1 ");
 
-		Log.d(Operation.class.getName(), qb.getStringBuilder().toString());
+		TmhLogger.d(TAG, qb.getStringBuilder().toString());
 
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();

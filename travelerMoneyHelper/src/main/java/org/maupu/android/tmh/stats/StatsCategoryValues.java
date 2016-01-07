@@ -8,6 +8,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCategoryValues> {
-    private static final String TAG = StatsCategoryValues.class.getName();
+    private static final Class TAG = StatsCategoryValues.class;
     private Set<Category> categories = new HashSet<>();
     private String name = null;
     private Map<String, Float> values = new HashMap<>();
@@ -144,7 +145,7 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         List<String> xEntries = new ArrayList<>();
         Date d = (Date)dateBegin.clone();
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
-        Log.d(TAG, "Number of days between "+dateBegin+" and "+dateEnd+" = "+nbDays);
+        TmhLogger.d(TAG, "Number of days between " + dateBegin + " and " + dateEnd + " = " + nbDays);
         for(int x=0; x<nbDays+1; x++) {
             xEntries.add(DateUtil.dateToStringNoTime(d));
             d = DateUtil.addDays(d, 1);

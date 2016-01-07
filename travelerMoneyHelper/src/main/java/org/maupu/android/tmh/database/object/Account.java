@@ -1,5 +1,6 @@
 package org.maupu.android.tmh.database.object;
 
+import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -7,6 +8,7 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.ui.AccountBalance;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.QueryBuilder;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -134,7 +136,7 @@ public class Account extends BaseObject {
 		.append("o."+OperationData.KEY_ID_ACCOUNT+"=a."+AccountData.KEY_ID).append(" AND ")
 		.append("c."+CurrencyData.KEY_ID+"=o."+OperationData.KEY_ID_CURRENCY);
 		
-		Log.d("Account.getBalance", b.getStringBuilder().toString());
+		TmhLogger.d(AddOrEditOperationActivity.class, "Account.getBalance" + b.getStringBuilder().toString());
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(b.getStringBuilder().toString(), null); 
 		c.moveToFirst();
 		

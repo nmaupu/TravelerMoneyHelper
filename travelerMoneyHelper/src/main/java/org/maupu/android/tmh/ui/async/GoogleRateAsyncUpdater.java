@@ -20,6 +20,7 @@ import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -27,6 +28,7 @@ import android.util.Log;
 
 @Deprecated
 public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer> {
+    private static final Class TAG = GoogleRateAsyncUpdater.class;
 	private final static StringBuilder googleUpdateRateURL = new StringBuilder();
 	private TmhActivity context;
 	private ProgressDialog waitSpinner;
@@ -116,7 +118,7 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 					builder.append(line);
 				}
 			} else {
-				Log.e(Currency.class.toString(), "Unable to get rate for "+isoCode);
+				TmhLogger.e(TAG, "Unable to get rate for " + isoCode);
 				throw new Exception("An error occured getting rate for "+isoCode+" - Status code not 200");
 			}
 			
@@ -126,7 +128,7 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 			ioe.printStackTrace();
 		}
 		
-		Log.i(Currency.class.toString(), "Result = "+builder.toString());
+		TmhLogger.i(TAG, "Result = "+builder.toString());
 		try {
 			JSONObject jsonObj = new JSONObject(builder.toString());
 			
@@ -158,12 +160,12 @@ public class GoogleRateAsyncUpdater extends AsyncTask<Currency, Integer, Integer
 				if(cur.getId() != null)
 					cur.update();
 				
-				Log.d(Currency.class.toString(), "Rate for "+isoCode+" = "+sRate);
+				TmhLogger.d(TAG, "Rate for "+isoCode+" = "+sRate);
 			} else {
 				throw new Exception("Response is unreadable for "+isoCode);
 			}
 			
-			Log.d(Currency.class.toString(), "JSON : "+jsonObj.getString("rhs"));
+			TmhLogger.d(TAG, "JSON : "+jsonObj.getString("rhs"));
 		} catch (JSONException je) {
 			throw je;
 		}

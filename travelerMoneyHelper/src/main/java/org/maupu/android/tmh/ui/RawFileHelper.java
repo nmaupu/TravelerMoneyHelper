@@ -10,7 +10,10 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
+import org.maupu.android.tmh.util.TmhLogger;
+
 public final class RawFileHelper<T extends Object> {
+    private static final Class TAG = RawFileHelper.class;
     public static final String FIELD_SEPARATOR = "|";
 	private Context ctx;
 	private int rawFileId;
@@ -36,7 +39,7 @@ public final class RawFileHelper<T extends Object> {
 		try {
 			String line;
 			while ((line = br.readLine()) != null) {
-				Log.d("", "Current line = " + line);
+				TmhLogger.d(TAG, "Current line = " + line);
 				if(listener != null)
 					ret.add(listener.callback(line));
 				else
@@ -44,7 +47,7 @@ public final class RawFileHelper<T extends Object> {
 			}
 			br.close();
 		} catch (IOException ioe) {
-			Log.e("RawFileHelper", ioe.getMessage());
+			TmhLogger.e(TAG, "RawFileHelper" + ioe.getMessage());
 		}
 		
 		return ret;

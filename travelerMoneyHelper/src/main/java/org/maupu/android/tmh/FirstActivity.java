@@ -11,6 +11,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * or first database init.
  */
 public class FirstActivity extends TmhActivity implements View.OnClickListener {
+    private static final Class TAG = FirstActivity.class;
     private ImageView categoryImg, currencyImg, accountImg;
     private Button goBtn;
     private int nbCat = 0;
@@ -59,10 +61,10 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
         nbCur = new Currency().getCount();
         nbAcc = new Account().getCount();
 
-        Log.d(FirstActivity.class.getName(), "Init :");
-        Log.d(FirstActivity.class.getName(), "  nb cat = "+nbCat);
-        Log.d(FirstActivity.class.getName(), "  nb cur = "+nbCur);
-        Log.d(FirstActivity.class.getName(), "  nb acc = "+nbAcc);
+        TmhLogger.d(TAG, "Init :");
+        TmhLogger.d(TAG, "  nb cat = "+nbCat);
+        TmhLogger.d(TAG, "  nb cur = "+nbCur);
+        TmhLogger.d(TAG, "  nb acc = "+nbAcc);
 
         if(nbCat > 0 && nbCur > 0 && nbAcc > 0) {
             startActivity(new Intent(this, ViewPagerOperationActivity.class));

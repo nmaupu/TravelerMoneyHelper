@@ -9,11 +9,13 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.maupu.android.tmh.R;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.util.Log;
 
 public final class Flag {
+    private static final Class TAG = Flag.class;
     private String isoCode;
 	private String country;
 	private static List<Flag> listFlags;
@@ -67,7 +69,7 @@ public final class Flag {
                 String isoCode = tok.nextToken();
                 String countryName = tok.nextToken();
 
-                Log.d(Flag.class.getName(), "new flag : " + isoCode + " -> " + countryName);
+                TmhLogger.d(TAG, "new flag : " + isoCode + " -> " + countryName);
 
                 return new Flag(isoCode, countryName);
             }

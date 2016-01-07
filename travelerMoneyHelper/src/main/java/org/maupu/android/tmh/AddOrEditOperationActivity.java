@@ -19,6 +19,7 @@ import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 import org.w3c.dom.Text;
 
 import android.app.Activity;
@@ -300,7 +301,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		Log.d(AddOrEditOperationActivity.class.getName(), "RadioButton check changed");
+		TmhLogger.d(AddOrEditOperationActivity.class, "RadioButton check changed");
 		if(radioButtonCredit.isChecked()) {
 			textViewSign.setText(PLUS);
 			textViewSign.setTextColor(Operation.COLOR_POSITIVE_AMOUNT);
@@ -392,7 +393,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 			dummyCur.toDTO(c);
 
 			String a = amount.getStringText();
-			Log.d(AddOrEditOperationActivity.class.getName(), "Current amount to convert = "+a);
+			TmhLogger.d(AddOrEditOperationActivity.class, "Current amount to convert = "+a);
 			a = a != null ? a.trim() : a;
 			
 			Double currentAmount = 0d;
@@ -409,7 +410,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
             textViewAmount.setText(""+NumberUtil.formatDecimal(currentAmount)+" "+dummyCur.getShortName());
 		} catch (NumberFormatException nfe) {
 			// No conversion
-			Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");
+			TmhLogger.d(AddOrEditOperationActivity.class, "NumberFormatException occured, no conversion is done");
 		}
 	}
 

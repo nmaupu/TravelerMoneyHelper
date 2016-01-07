@@ -15,13 +15,14 @@ import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.StatsAdapter;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Set;
 
 public class StatsFragment extends Fragment {
-    private final static String TAG = StatsFragment.class.getName();
+    private final static Class TAG = StatsFragment.class;
     public static final String ARG_TYPE = "ARG_TYPE";
 
     private StatsData statsData;
@@ -47,7 +48,7 @@ public class StatsFragment extends Fragment {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG, "onItemClick called - type=" + type + ", position=" + position);
+                    TmhLogger.d(TAG, "onItemClick called - type=" + type + ", position=" + position);
 
                     // Getting corresponding StatsCategoryValues elements
                     StatsAdapter adapter = (StatsAdapter)listView.getAdapter();

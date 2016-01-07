@@ -22,6 +22,7 @@ import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import android.util.Log;
 
@@ -30,6 +31,7 @@ import android.util.Log;
  * @author bicnic
  */
 public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
+    private static final Class TAG = OpenExchangeRatesAsyncFetcher.class;
 	private final static String OER_CACHE_CURRENCIES = "OpenExchangeRates.json";
 	private List<CurrencyISO4217> currencies = null;
 	
@@ -106,7 +108,7 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
     				// Save builder to cache file
     				saveToCache(builderJson.toString(), OER_CACHE_CURRENCIES);
     			} else {
-    				Log.e(OpenExchangeRatesAsyncUpdater.class.getName(), "Unable to get rate list, verify your api key");
+    				TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
     				throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
     			}
     		} catch (ClientProtocolException cpe) {

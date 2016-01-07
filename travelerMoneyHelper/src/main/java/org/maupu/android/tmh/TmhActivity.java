@@ -2,17 +2,24 @@ package org.maupu.android.tmh;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.util.TmhLogger;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -51,7 +58,7 @@ import java.util.Map;
 
 
 public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, Drawer.OnDrawerItemClickListener {
-    private static final String TAG = TmhActivity.class.getName();
+    private static final Class TAG = TmhActivity.class;
 	public AccountHeader accountHeader;
     public Drawer navigationDrawer;
 
@@ -64,6 +71,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     protected static final int DRAWER_ITEM_CURRENCIES = TmhApplication.getIdentifier("DRAWER_ITEM_CURRENCIES");
     protected static final int DRAWER_ITEM_PARAMETERS = TmhApplication.getIdentifier("DRAWER_ITEM_PARAMETERS");
     protected static final int DRAWER_ITEM_REFRESH = TmhApplication.getIdentifier("DRAWER_ITEM_REFRESH");
+    protected static final int DRAWER_ITEM_ABOUT = TmhApplication.getIdentifier("DRAWER_ITEM_ABOUT");
 
     protected Integer contentView;
     protected Integer title;
@@ -185,6 +193,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             /** Last items : refresh, parameters, etc ... **/
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, R.string.parameters));
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, R.string.refresh));
+            items.add(createSecondaryDrawerItem(DRAWER_ITEM_ABOUT, R.drawable.ic_info_black, R.string.about_title));
 
             final TmhActivity thisActivity = this;
             /** Navigation drawer itself **/
@@ -194,7 +203,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                     .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                         @Override
                         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                            Log.d(TAG, "Drawer item clicked");
+                            TmhLogger.d(TAG, "Drawer item clicked");
                             return false;
                         }
                     })
@@ -273,6 +282,8 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             intent = new Intent(this, ManageCategoryActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_CURRENCIES) {
             intent = new Intent(this, ManageCurrencyActivity.class);
+        } else if (item.getIdentifier() == DRAWER_ITEM_ABOUT) {
+            DialogHelper.popupDialogAbout(this);
         }
 
         /** Launch corresponding activity if recognized **/
@@ -359,7 +370,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     public IDrawerItem createPrimaryDrawerItem(int identifier, int iconRes, int textRes) {
-        Log.d(TAG, "Creating primary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
+        TmhLogger.d(TAG, "Creating primary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
         return new PrimaryDrawerItem()
                 .withIdentifier(identifier)
                 .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.blue))
@@ -368,7 +379,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     public IDrawerItem createSecondaryDrawerItem(int identifier, int iconRes, int textRes) {
-        Log.d(TAG, "Creating secondary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
+        TmhLogger.d(TAG, "Creating secondary drawer item (" + getResources().getString(textRes) + ") with identifier=" + identifier);
         return new SecondaryDrawerItem()
                 .withIdentifier(identifier)
                 .withIcon(iconRes)

@@ -34,6 +34,7 @@ import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -47,7 +48,7 @@ import java.util.Set;
  * Class representing stats activity
  */
 public class StatsActivity extends TmhActivity {
-    private static final String TAG = StatsActivity.class.getName();
+    private static final Class TAG = StatsActivity.class;
     private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
     private int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
@@ -88,7 +89,7 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate called");
+        TmhLogger.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
 
         slidingPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
@@ -131,7 +132,7 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy called");
+        TmhLogger.d(TAG, "onDestroy called");
         // Called when exiting / changing screen orientation
         super.onDestroy();
     }
@@ -144,7 +145,7 @@ public class StatsActivity extends TmhActivity {
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(final Entry e, int dataSetIndex, Highlight h) {
-                Log.d(TAG, "Highlight : x=" + h.getXIndex() + ", dataset=" + h.getDataSetIndex());
+                TmhLogger.d(TAG, "Highlight : x=" + h.getXIndex() + ", dataset=" + h.getDataSetIndex());
                 final boolean cur = statsData.isChartAnim();
                 statsData.disableChartAnim();
 
@@ -285,7 +286,7 @@ public class StatsActivity extends TmhActivity {
         dateEnd = dummyOp.getLastDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
         saveDates();
 
-        Log.d(TAG, "Auto dates computed beg=" + dateBegin + ", end=" + dateEnd);
+        TmhLogger.d(TAG, "Auto dates computed beg=" + dateBegin + ", end=" + dateEnd);
         refreshDates();
     }
 
@@ -362,7 +363,7 @@ public class StatsActivity extends TmhActivity {
             final LinearLayout ll = (LinearLayout)buttonView.findViewById(R.id.button);
             //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             int m = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
-            Log.d(TAG, "Margin calculated (not used yet) = " + m + " px");
+            TmhLogger.d(TAG, "Margin calculated (not used yet) = " + m + " px");
             //lp.setMargins(m, m, m, m);
             ll.setBackground(buttonView.getResources().getDrawable(drawableBg));
             ll.setTag(cat);
@@ -403,7 +404,7 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void rebuildStatsData(final boolean chartAnim, final boolean forwardEvent) {
-        Log.d(TAG, "rebuildStatsData called with chartAnim="+chartAnim);
+        TmhLogger.d(TAG, "rebuildStatsData called with chartAnim="+chartAnim);
 
         /* Handle that big process in a thread */
         IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {

@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
+import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.OperationFilter;
 import org.maupu.android.tmh.database.object.Account;
@@ -16,11 +18,16 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
+import org.maupu.android.tmh.util.TmhLogger;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +36,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 public abstract class DialogHelper {
+    private static final Class TAG = DialogHelper.class;
 	private static CheckableCursorAdapter categoryChooserAdapter = null;
 	
 	public static boolean isCheckableCursorAdapterInit() {
@@ -56,7 +64,7 @@ public abstract class DialogHelper {
                 new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
                     @Override
                     public View callback(Object item) {
-                        Log.d(DialogHelper.class.getName(), "popupDialogAccountChooser : callback called");
+                        TmhLogger.d(TAG, "popupDialogAccountChooser : callback called");
 
                         int position = (Integer)((View)item).getTag();
                         int oldPosition = cursorAllAccounts.getPosition();
@@ -136,7 +144,7 @@ public abstract class DialogHelper {
         btnAutosel.setOnClickListener(listener);
 
 		if(categoryChooserAdapter == null || resetPopup) {
-            Log.d(DialogHelper.class.getName(), "categoryChooserAdapter creation from scratch");
+            TmhLogger.d(TAG, "categoryChooserAdapter creation from scratch");
 			categoryChooserAdapter = new CheckableCursorAdapter(
 					tmhActivity, 
 					R.layout.category_item,
@@ -145,7 +153,7 @@ public abstract class DialogHelper {
 					new int[]{R.id.name},
                     getAutoExceptCategoriesPositions(cursor));
 		} else {
-            Log.d(DialogHelper.class.getName(), "categoryChooserAdapter reused but cursor changed");
+            TmhLogger.d(TAG, "categoryChooserAdapter reused but cursor changed");
 			categoryChooserAdapter.changeCursor(cursor);
 		}
 
@@ -198,7 +206,7 @@ public abstract class DialogHelper {
             ca.toDTO(cu);
             cu.close();
             posToCheck.add(getCategoryPositionInCursor(cursor, ca));
-            Log.d(DialogHelper.class.getName(), "  - Auto checked category : "+cats[i]+" ("+ca.getName()+")");
+            TmhLogger.d(TAG, "  - Auto checked category : " + cats[i] + " (" + ca.getName() + ")");
         }
 
         return posToCheck.toArray(new Integer[0]);
@@ -242,4 +250,41 @@ public abstract class DialogHelper {
             return null;
         }
 	}
+
+    public static void popupDialogAbout(final TmhActivity tmhActivity) {
+        // Popup about dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(tmhActivity);
+
+        PackageInfo pInfo = null;
+        try {
+            pInfo = TmhApplication.getAppContext().getPackageManager().getPackageInfo(tmhActivity.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException nnfe) {
+            nnfe.printStackTrace();
+        }
+
+        String appVersion = pInfo.versionName;
+        int appCode = pInfo.versionCode;
+        StringBuilder sb = new StringBuilder();
+        sb.append(tmhActivity.getString(R.string.about))
+                .append("\n")
+                .append("App ver: ").append(appVersion)
+                .append("\n")
+                .append("Code ver: ").append(appCode)
+                .append("\n")
+                .append("DB ver: ").append(DatabaseHelper.DATABASE_VERSION)
+                .append("\n")
+                .append(tmhActivity.getString(R.string.about_flags_copyright)).append(" ").append("www.icondrawer.com");
+
+        builder.setMessage(sb.toString())
+                .setTitle(tmhActivity.getString(R.string.about_title))
+                .setIcon(R.drawable.tmh_icon_48)
+                .setCancelable(true)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        builder.create().show();
+    }
 }

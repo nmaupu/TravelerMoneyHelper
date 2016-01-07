@@ -20,6 +20,7 @@ import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 import org.w3c.dom.Text;
 
 import android.annotation.SuppressLint;
@@ -54,7 +55,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher {
-	private static final int DATE_DIALOG_ID = 0;
+	private static final Class TAG = WithdrawalActivity.class;
+    private static final int DATE_DIALOG_ID = 0;
 	private static final int TIME_DIALOG_ID = 1;
 
     private ImageView ivFrom;
@@ -340,7 +342,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
             dummyCur.toDTO(c);
 
             String a = amount.getStringText();
-            Log.d(AddOrEditOperationActivity.class.getName(), "Current amount to convert = " + a);
+            TmhLogger.d(TAG, "Current amount to convert = " + a);
             a = a != null ? a.trim() : a;
 
             Double currentAmount = 0d;
@@ -352,7 +354,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
             textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());
         } catch (NumberFormatException nfe) {
             // No conversion
-            Log.d(AddOrEditOperationActivity.class.getName(), "NumberFormatException occured, no conversion is done");
+            TmhLogger.d(TAG, "NumberFormatException occured, no conversion is done");
         }
     }
 
