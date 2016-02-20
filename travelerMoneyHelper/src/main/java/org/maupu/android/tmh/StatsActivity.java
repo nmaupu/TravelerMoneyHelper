@@ -370,6 +370,7 @@ public class StatsActivity extends TmhActivity {
         dateBegin = dummyOp.getFirstDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
         if(dateBegin == null) // No operation yet
             return;
+        dateBegin = DateUtil.resetDateToBeginingOfDay(dateBegin);
 
         // Set end date to yesterday (avoid computing averages with current day as it is not finished yet)
         Date d = dummyOp.getLastDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
@@ -383,6 +384,7 @@ public class StatsActivity extends TmhActivity {
         Otherwise, this means that operations are on only one day
         */
         dateEnd = dateToSet.after(dateBegin) ? dateToSet : d;
+        dateEnd = DateUtil.resetDateToEndOfDay(dateEnd);
 
         // Save dates for further use
         saveDates();
