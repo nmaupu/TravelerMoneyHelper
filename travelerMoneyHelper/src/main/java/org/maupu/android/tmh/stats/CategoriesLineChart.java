@@ -97,17 +97,21 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
         ((Activity)getContext()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (statsData.isChartAnim())
-                    thisInstance.animateXY(1000, 1000);
-                thisInstance.clear();
-                thisInstance.notifyDataSetChanged();
-                thisInstance.setData(new LineData(xEntries, dataSets));
-                if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null)
-                    thisInstance.setDescription(statsData.getCatToHighlight().getName());
-                else
-                    thisInstance.setDescription("");
-                thisInstance.setGridBackgroundColor(Color.WHITE);
-                thisInstance.invalidate();
+                try {
+                    if (statsData.isChartAnim())
+                        thisInstance.animateXY(1000, 1000);
+                    thisInstance.clear();
+                    thisInstance.notifyDataSetChanged();
+                    thisInstance.setData(new LineData(xEntries, dataSets));
+                    if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null)
+                        thisInstance.setDescription(statsData.getCatToHighlight().getName());
+                    else
+                        thisInstance.setDescription("");
+                    thisInstance.setGridBackgroundColor(Color.WHITE);
+                    thisInstance.invalidate();
+                } catch(IllegalArgumentException iae) {
+                    TmhLogger.e(TAG, "Problem with chart entries, refresh not executed correctly");
+                }
             }
         });
     }

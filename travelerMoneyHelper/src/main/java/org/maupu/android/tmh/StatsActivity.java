@@ -1,16 +1,20 @@
 package org.maupu.android.tmh;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
@@ -33,15 +37,15 @@ import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -49,7 +53,12 @@ import java.util.Set;
  */
 public class StatsActivity extends TmhActivity {
     private static final Class TAG = StatsActivity.class;
-    private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
+    private final static int DRAWER_ITEM_STATS_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_AUTO");
+    private final static int DRAWER_ITEM_STATS_DATE_BEGIN = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_BEGIN");
+    private final static int DRAWER_ITEM_STATS_DATE_END = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_END");
+    private final static int DRAWER_ITEM_STATS_DATE_RESET = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_RESET");
+    private final static int DIALOG_DATE_BEGIN = TmhApplication.getIdentifier("DIALOG_DATE_BEGIN");
+    private final static int DIALOG_DATE_END = TmhApplication.getIdentifier("DIALOG_DATE_END");
     private int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
     private Date dateBegin, dateEnd;
@@ -124,8 +133,8 @@ public class StatsActivity extends TmhActivity {
 
         statsData.setCatToHighlight(null);
         reloadInputData();
-        // auto set dates for now because of a bug when changing account
-        autoSetDates();
+        if(! loadDates())
+            autoSetDates();
         rebuildStatsData(true, false);
         refreshDisplay();
     }
@@ -209,7 +218,19 @@ public class StatsActivity extends TmhActivity {
     public IDrawerItem[] buildNavigationDrawer() {
         return new IDrawerItem[] {
                 createSecondaryDrawerItem(
-                        DRAWER_ITEM_AUTO,
+                        DRAWER_ITEM_STATS_DATE_BEGIN,
+                        R.drawable.ic_today_black,
+                        R.string.date_change_begin),
+                createSecondaryDrawerItem(
+                        DRAWER_ITEM_STATS_DATE_END,
+                        R.drawable.ic_event_black,
+                        R.string.date_change_end),
+                createSecondaryDrawerItem(
+                        DRAWER_ITEM_STATS_DATE_RESET,
+                        R.drawable.ic_refresh_black,
+                        R.string.date_change_reset),
+                createSecondaryDrawerItem(
+                        DRAWER_ITEM_STATS_AUTO,
                         R.drawable.ic_cat_except_black,
                         R.string.stats_item_cat_auto),
         };
@@ -217,15 +238,77 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
-        if(item.getIdentifier() == DRAWER_ITEM_AUTO) {
+        if(item.getIdentifier() == DRAWER_ITEM_STATS_AUTO) {
             statsData.setCatToHighlight(null);
             autoSetExceptedCategories();
+            rebuildStatsData(true, false);
+            refreshDisplay();
+        } else if (item.getIdentifier() == DRAWER_ITEM_STATS_DATE_BEGIN) {
+            showDialog(DIALOG_DATE_BEGIN);
+        } else if (item.getIdentifier() == DRAWER_ITEM_STATS_DATE_END) {
+            showDialog(DIALOG_DATE_END);
+        } else if(item.getIdentifier() == DRAWER_ITEM_STATS_DATE_RESET) {
+            autoSetDates();
+            refreshDates();
             rebuildStatsData(true, false);
             refreshDisplay();
         }
 
         return super.onItemClick(view, position, item);
     }
+
+    @Override
+    protected Dialog onCreateDialog(final int id) {
+        int y, m, d;
+
+        Calendar cal = Calendar.getInstance();
+
+        if(id == DIALOG_DATE_BEGIN) {
+            cal.setTime(dateBegin);
+        } else if (id == DIALOG_DATE_END) {
+            cal.setTime(dateEnd);
+        }
+
+        y = cal.get(Calendar.YEAR);
+        m = cal.get(Calendar.MONTH);
+        d = cal.get(Calendar.DAY_OF_MONTH);
+
+        final Context thisInstance = this;
+        DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.YEAR, year);
+                cal.set(Calendar.MONTH, monthOfYear);
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                Date d = cal.getTime();
+
+                if(id == DIALOG_DATE_BEGIN) {
+                    Date dateToSet = DateUtil.resetDateToBeginingOfDay(d);
+                    if(dateToSet.before(dateEnd))
+                        dateBegin = dateToSet;
+                    else
+                        Toast.makeText(thisInstance, getString(R.string.error_date_begin_after_end), Toast.LENGTH_SHORT).show();
+                    TmhLogger.d(TAG, "Changing date begin to : " + dateBegin);
+                } else if (id == DIALOG_DATE_END) {
+                    Date dateToSet = DateUtil.resetDateToEndOfDay(d);
+                    if(dateToSet.after(dateBegin))
+                        dateEnd = dateToSet;
+                    else
+                        Toast.makeText(thisInstance, getString(R.string.error_date_end_before_begin), Toast.LENGTH_SHORT).show();
+                    TmhLogger.d(TAG, "Changing date end to : " + dateEnd);
+                }
+
+                saveDates();
+                refreshDates();
+                rebuildStatsData(true, false);
+                refreshDisplay();
+            }
+        };
+
+        return new CustomDatePickerDialog(this, listener, y, m, d);
+    }
+
 
     /**
      * Reinit all inputs in the view (exceptedCategories, dates)
@@ -270,6 +353,7 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     public void refreshAfterCurrentAccountChanged() {
+        autoSetDates();
         statsData.setCatToHighlight(null);
         resetInputData();
         rebuildStatsData(true, false);
@@ -281,13 +365,32 @@ public class StatsActivity extends TmhActivity {
         if(currentAccount == null)
             return;
 
+        // Begin date
         Operation dummyOp = new Operation();
         dateBegin = dummyOp.getFirstDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
-        dateEnd = dummyOp.getLastDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
+        if(dateBegin == null) // No operation yet
+            return;
+
+        // Set end date to yesterday (avoid computing averages with current day as it is not finished yet)
+        Date d = dummyOp.getLastDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date dateToSet = cal.getTime();
+
+        /*
+        Setting dateEnd to yesterday if we are still after dateBegin
+        Otherwise, this means that operations are on only one day
+        */
+        dateEnd = dateToSet.after(dateBegin) ? dateToSet : d;
+
+        // Save dates for further use
         saveDates();
 
-        TmhLogger.d(TAG, "Auto dates computed beg=" + dateBegin + ", end=" + dateEnd);
+        // Refresh dates display
         refreshDates();
+
+        TmhLogger.d(TAG, "Auto dates computed beg=" + dateBegin + ", end=" + dateEnd);
     }
 
     private void refreshDates() {
@@ -309,7 +412,7 @@ public class StatsActivity extends TmhActivity {
             dateEnd = de;
         }
 
-        return db != null && de != null;
+        return db != null && de != null && de.after(db);
     }
     private void saveDates() {
         StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, dateBegin);

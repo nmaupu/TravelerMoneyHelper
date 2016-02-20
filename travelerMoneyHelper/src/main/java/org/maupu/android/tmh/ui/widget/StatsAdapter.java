@@ -37,9 +37,11 @@ public class StatsAdapter extends BaseAdapter {
         this.statsData = statsData;
         this.type = displayType;
 
-        statsList = new ArrayList<>(statsData.values());
-        Collections.sort(statsList);
-        dates = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
+        if(statsData != null) {
+            statsList = new ArrayList<>(statsData.values());
+            Collections.sort(statsList);
+            dates = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
+        }
     }
 
     @Override
@@ -110,9 +112,9 @@ public class StatsAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         if(type == TYPE_CATEGORY)
-            return statsList.size();
+            return statsList == null ? 0 : statsList.size();
         else if(type == TYPE_DAY)
-            return DateUtil.getNumberOfDaysBetweenDates(statsData.getDateBegin(), statsData.getDateEnd());
+            return statsData == null ? 0 : DateUtil.getNumberOfDaysBetweenDates(statsData.getDateBegin(), statsData.getDateEnd());
 
         return 0;
     }
@@ -121,9 +123,9 @@ public class StatsAdapter extends BaseAdapter {
     public Object getItem(int position) {
         switch (type) {
             case TYPE_CATEGORY:
-                return statsList.get(position);
+                return statsList == null ? null : statsList.get(position);
             case TYPE_DAY:
-                return statsData.sumForDate(dates.get(position));
+                return statsData == null ? null : statsData.sumForDate(dates.get(position));
             default:
                 return null;
         }

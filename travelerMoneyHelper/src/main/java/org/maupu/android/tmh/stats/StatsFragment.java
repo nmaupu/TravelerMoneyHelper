@@ -79,6 +79,9 @@ public class StatsFragment extends Fragment {
                     }
                 }
             });
+        } else {
+            StatsAdapter statsAdapter = new StatsAdapter(rootView.getContext(), statsData, type);
+            listView.setAdapter(statsAdapter);
         }
 
         return rootView;

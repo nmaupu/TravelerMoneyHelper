@@ -107,13 +107,16 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         if(c == null)
             return;
         if(c.getCount() == 0) {
+            this.clearData();
+            if(forwardEvent)
+                notifyStatsDataChanged();
             c.close();
             return;
         }
 
         c.moveToFirst();
 
-        this.clear();
+        this.clearData();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxAmountConv = c.getColumnIndexOrThrow("amountConv");
@@ -185,6 +188,13 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
 
         if(forwardEvent)
             notifyStatsDataChanged();
+    }
+
+    public void clearData() {
+        this.clear();
+        biggestCategory = null;
+        miscCategory = null;
+        catToHighlight = null;
     }
 
     public String getMiscCategoryText() {

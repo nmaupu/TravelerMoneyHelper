@@ -6,6 +6,7 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;

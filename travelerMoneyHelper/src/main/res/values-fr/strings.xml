@@ -153,5 +153,10 @@
     <string name="stats_tab_by_days">Par jour</string>
     <string name="duration">Durée</string>
     <string name="day_">jour(s)</string>
+    <string name="date_change_begin">Changer date de début</string>
+    <string name="date_change_end">Change date de fin</string>
+    <string name="date_change_reset">Reset dates de début / fin</string>
+    <string name="error_date_begin_after_end">Érreur, la date de début ne peut pas être après la date de fin</string>
+    <string name="error_date_end_before_begin">Érreur, la date de fin ne peut pas être après la date de début</string>
 
 </resources>

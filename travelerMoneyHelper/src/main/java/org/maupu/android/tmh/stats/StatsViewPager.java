@@ -43,6 +43,9 @@ public class StatsViewPager extends ViewPager implements IStatsPanel, IStatsData
 
     @Override
     public void refreshPanel(final StatsData data) {
+        if(data == null || data.size() == 0)
+            return;
+
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {

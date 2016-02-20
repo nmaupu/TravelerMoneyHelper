@@ -14,7 +14,7 @@ import org.maupu.android.tmh.util.NumberUtil;
 import java.util.Iterator;
 
 public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedListener {
-    private static final String TAG = InfoPanel.class.getName();
+    private static final Class TAG = InfoPanel.class;
     private TmhActivity ctx;
 
     // Avg / total info
