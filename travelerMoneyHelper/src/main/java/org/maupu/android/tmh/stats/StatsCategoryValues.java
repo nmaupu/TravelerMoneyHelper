@@ -1,7 +1,5 @@
 package org.maupu.android.tmh.stats;
 
-import android.util.Log;
-
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -116,10 +114,6 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
 
     public Double getRateAvg() {
         return rateAvg;
-    }
-
-    public void setRateAvg(Double rateAvg) {
-        this.rateAvg = rateAvg;
     }
 
     public Category getFirstCategory() {
@@ -239,28 +233,33 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         if(de.after(dateEnd))
             dateEnd = de;
 
-        if(scv.values == null || scv.values.size() == 0)
-            return;
-
-        Iterator<String> it = scv.values.keySet().iterator();
-        while(it.hasNext()) {
-            String key = it.next();
-            Float value = (Float)scv.getValues().get(key);
-            if(value != null) {
-                Float curVal = values.get(key) == null ? 0f : values.get(key);
-                values.put(key, curVal+value);
+        if(scv.values != null && scv.values.size() > 0) {
+            Iterator<String> it = scv.values.keySet().iterator();
+            while (it.hasNext()) {
+                String key = it.next();
+                Float value = (Float) scv.getValues().get(key);
+                if (value != null) {
+                    Float curVal = values.get(key) == null ? 0f : values.get(key);
+                    values.put(key, curVal + value);
+                }
             }
         }
 
-        it = scv.valuesConv.keySet().iterator();
-        while(it.hasNext()) {
-            String key = it.next();
-            Float value = (Float)scv.getValuesConv().get(key);
-            if(value != null) {
-                Float curVal = valuesConv.get(key) == null ? 0f : valuesConv.get(key);
-                valuesConv.put(key, curVal+value);
+        if(scv.valuesConv != null && scv.valuesConv.size() > 0) {
+            Iterator<String> it = scv.valuesConv.keySet().iterator();
+            while (it.hasNext()) {
+                String key = it.next();
+                Float value = (Float) scv.getValuesConv().get(key);
+                if (value != null) {
+                    Float curVal = valuesConv.get(key) == null ? 0f : valuesConv.get(key);
+                    valuesConv.put(key, curVal + value);
+                }
             }
         }
+
+        // Very important : clear caches to avoid wrong calculations of sums !
+        invalidateCache();
+        scv.invalidateCache();
     }
 
     @Override

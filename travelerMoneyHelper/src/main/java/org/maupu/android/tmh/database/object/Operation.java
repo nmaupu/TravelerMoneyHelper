@@ -454,7 +454,7 @@ public class Operation extends BaseObject {
 		qb.append("GROUP BY o."+OperationData.KEY_ID_CURRENCY+", dateString, "+OperationData.KEY_ID_CATEGORY).append(" "); // group by dateString instead of date because of hours and minutes
         String order = isOrderDesc ? "DESC" : "ASC";
 		qb.append("ORDER BY o." + OperationData.KEY_DATE + " " + order + " ");
-		
+
 		Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(qb.getStringBuilder().toString(), null);
 		c.moveToFirst();
 		return c;
