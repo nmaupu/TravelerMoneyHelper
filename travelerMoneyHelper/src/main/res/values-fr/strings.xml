@@ -108,6 +108,8 @@
     <string name="default_account_title">Compte par défaut</string>
     <string name="oer_api_key_summary">Entrez la clé API Open Exchange Rates</string>
     <string name="oer_api_key_title">API Open Exchange Rates</string>
+    <string name="export_db_title">Exporter la BD</string>
+    <string name="export_db_summary">Exporter la BD dans un fichier</string>
     <string name="warning">Attention</string>
     <string name="default_category_warning">Sélectionnez une catégorie pour les retraits (dans les préférences)</string>
     <string name="set_to_today_button">Aujourd\'hui</string>

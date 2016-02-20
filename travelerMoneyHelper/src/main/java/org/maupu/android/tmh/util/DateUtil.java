@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public abstract class DateUtil {
+    private static final String SDF_FORMAT_FILENAME = "yyyyMMdd_HHmmss";
     private static final String SDF_FORMAT = "dd-MM-yyyy HH:mm:ss";
     private static final String SDF_FORMAT_NO_TIME = "dd-MM-yyyy";
 	private static final String SDF_FORMAT_TO_SQL_DATE = "yyyy-MM-dd HH:mm:ss";
@@ -70,6 +71,11 @@ public abstract class DateUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT);
 		return sdf.format(date);
 	}
+
+    public static String dateToStringForFilename(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT_FILENAME);
+        return sdf.format(date);
+    }
 	
 	public static Date getFirstDayOfMonth(Date date) {
 		Calendar cal = Calendar.getInstance();

@@ -64,6 +64,10 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	public SQLiteDatabase getDb() {
 		return super.getWritableDatabase();
 	}
+
+    public String getCurrentDbName() {
+        return getDb().getPath();
+    }
 	
 	public static String formatDateForSQL(Date date) {
 		return dateFormat.format(date);

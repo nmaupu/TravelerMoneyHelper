@@ -40,7 +40,8 @@ public abstract class StaticData {
 	public static final String PREF_STATS_DATE_BEG = "statsDateBeg";
 	public static final String PREF_STATS_DATE_END = "statsDateEnd";
 	public static final String PREF_OER_EDIT = "oer_apikey_edit_text";
-	public static final String PREF_OER_VALID = "oer_apikey_valid";
+    public static final String PREF_OER_VALID = "oer_apikey_valid";
+    public static final String PREF_EXPORT_DB = "export_filename";
 
 	// Keep tracking item selected in navigation drawer
 	public static int navigationDrawerItemSelected = 0;

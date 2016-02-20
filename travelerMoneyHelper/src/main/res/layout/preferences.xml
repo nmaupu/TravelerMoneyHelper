@@ -53,4 +53,14 @@
             android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Debugging">
+        <EditTextPreference
+            android:id="@+id/export_filename"
+            android:defaultValue="tmh.db"
+            android:enabled="true"
+            android:key="export_filename"
+            android:summary="@string/export_db_summary"
+            android:title="@string/export_db_title" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

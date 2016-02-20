@@ -9,6 +9,8 @@ import android.app.Application;
 import android.content.Context;
 
 public class TmhApplication extends Application {
+    public static final String APP_NAME = "TravelerMoneyHelper";
+    public static final String APP_NAME_SHORT = "tmh";
     public static final boolean LOGGING = false;
 	private static Context applicationContext;
 	private static DatabaseHelper dbHelper;

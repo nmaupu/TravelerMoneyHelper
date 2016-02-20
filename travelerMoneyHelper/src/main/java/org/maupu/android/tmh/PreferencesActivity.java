@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -14,6 +15,8 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
+import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.ExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.DialogInterface;
@@ -65,6 +68,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		EditTextPreference editTextPreference = (EditTextPreference)findPreference(StaticData.PREF_OER_EDIT);
 		editTextPreference.setOnPreferenceChangeListener(this);
 		editTextPreference.setOnPreferenceClickListener(this);
+
+        EditTextPreference editTextExportDb = (EditTextPreference)findPreference(StaticData.PREF_EXPORT_DB);
+        editTextExportDb.setOnPreferenceChangeListener(this);
+        editTextExportDb.setOnPreferenceClickListener(this);
 	}
 	
 	@Override
@@ -204,7 +211,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			((EditTextPreference)preference).getEditText().setText("");
 		} else if(StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
 			((EditTextPreference)preference).getEditText().requestFocus();
-		}
+		} else if(StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
+            Calendar cal = Calendar.getInstance();
+            String dateString = DateUtil.dateToStringForFilename(cal.getTime());
+            String filename = new StringBuilder("tmh-").append(dateString).append(".db").toString();
+            ((EditTextPreference)preference).getEditText().setText(filename);
+            ((EditTextPreference)preference).getEditText().requestFocus();
+        }
 
 		return true;
 	}
@@ -263,7 +276,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 					}
 				}).show();
 			}
-		}
+		} else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
+            TmhLogger.d(TAG, "Calling export db " + newValue);
+            ExportUtil.exportCurrentDatabase(newValue.toString());
+        }
 
 		if(StaticData.PREF_DATABASE.equals(preference.getKey()) || StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
 			dbChanged = true;

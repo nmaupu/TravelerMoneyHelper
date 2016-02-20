@@ -110,6 +110,8 @@
     <string name="default_account_title">Default account</string>
     <string name="oer_api_key_summary">Enter Open Exchange Rates API key</string>
     <string name="oer_api_key_title">Open Exchange Rates API</string>
+    <string name="export_db_title">Export database</string>
+    <string name="export_db_summary">Export current database to a file</string>
     <string name="warning">Warning</string>
     <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
     <string name="set_to_today_button">Today\'s date</string>
