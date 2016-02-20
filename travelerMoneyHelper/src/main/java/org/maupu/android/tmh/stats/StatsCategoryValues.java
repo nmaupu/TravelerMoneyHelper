@@ -146,7 +146,7 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         Date d = (Date)dateBegin.clone();
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
         TmhLogger.d(TAG, "Number of days between " + dateBegin + " and " + dateEnd + " = " + nbDays);
-        for(int x=0; x<nbDays+1; x++) {
+        for(int x=0; x<nbDays; x++) {
             xEntries.add(DateUtil.dateToStringNoTime(d));
             d = DateUtil.addDays(d, 1);
         }
@@ -163,7 +163,7 @@ public class StatsCategoryValues<T extends Entry> implements Comparable<StatsCat
         Date d = (Date)dateBegin.clone();
         int nbDays = DateUtil.getNumberOfDaysBetweenDates(dateBegin, dateEnd);
 
-        for(int x=0; x<nbDays+1; x++) {
+        for(int x=0; x<nbDays; x++) {
             String dateString = DateUtil.dateToStringNoTime(d);
             Float v = values.get(dateString) == null ? 0f : values.get(dateString);
             entries.add((T)new Entry(v, x));
