@@ -249,7 +249,6 @@ public class StatsActivity extends TmhActivity {
             showDialog(DIALOG_DATE_END);
         } else if(item.getIdentifier() == DRAWER_ITEM_STATS_DATE_RESET) {
             autoSetDates();
-            refreshDates();
             rebuildStatsData(true, false);
             refreshDisplay();
         }
@@ -372,16 +371,24 @@ public class StatsActivity extends TmhActivity {
             return;
         dateBegin = DateUtil.resetDateToBeginingOfDay(dateBegin);
 
+        Date now = DateUtil.getCurrentDate();
+        DateUtil.resetDateToEndOfDay(now);
+
         // Set end date to yesterday (avoid computing averages with current day as it is not finished yet)
         Date d = dummyOp.getLastDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
         cal.add(Calendar.DAY_OF_MONTH, -1);
-        Date dateToSet = cal.getTime();
+        /*
+        In the case of last date is before now, we have to include the last day and not
+        sub 1 to it (no more data in db and now > d)
+        (perhaps travel finished or too early in the next day and no new data available yet)
+        */
+        Date dateToSet = d.before(now) ? d : cal.getTime();
 
         /*
         Setting dateEnd to yesterday if we are still after dateBegin
-        Otherwise, this means that operations are on only one day
+        Otherwise, this means that operations are on only one day.
         */
         dateEnd = dateToSet.after(dateBegin) ? dateToSet : d;
         dateEnd = DateUtil.resetDateToEndOfDay(dateEnd);
