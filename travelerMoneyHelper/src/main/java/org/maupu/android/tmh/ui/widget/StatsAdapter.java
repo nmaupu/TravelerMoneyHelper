@@ -13,6 +13,7 @@ import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
+import org.maupu.android.tmh.util.TmhLogger;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -63,9 +64,14 @@ public class StatsAdapter extends BaseAdapter {
         TextView tvCurrencyConvertedAvg = (TextView)row.findViewById(R.id.currency_converted_avg);
         TextView tvAmountConvertedAvg = (TextView)row.findViewById(R.id.amount_converted_avg);
 
-        StatsCategoryValues scv = (StatsCategoryValues)getItem(position);
-        if(scv == null)
-            return null;
+        StatsCategoryValues scv = null;
+        try {
+            scv = (StatsCategoryValues) getItem(position);
+            if (scv == null)
+                return row;
+        } catch(IndexOutOfBoundsException ioobe) {
+            return row; // trying to refresh too much
+        }
 
         if(type == TYPE_CATEGORY) {
             Double sum = scv.summarize().doubleValue();
