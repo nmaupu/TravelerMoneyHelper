@@ -161,6 +161,6 @@
     <string name="date_change_end">Change end date</string>
     <string name="date_change_reset">Reset begin / end dates</string>
     <string name="error_date_begin_after_end">Error, cannot set date begin after current date end</string>
-    <string name="error_date_end_after_begin">Error, cannot set date end before current date begin</string>
+    <string name="error_date_end_before_begin">Error, cannot set date end before current date begin</string>
 
 </resources>

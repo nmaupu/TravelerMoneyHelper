@@ -159,6 +159,6 @@
     <string name="date_change_end">Changer date de fin</string>
     <string name="date_change_reset">Reset dates de début / fin</string>
     <string name="error_date_begin_after_end">Érreur, la date de début ne peut pas être après la date de fin</string>
-    <string name="error_date_end_before_begin">Érreur, la date de fin ne peut pas être après la date de début</string>
+    <string name="error_date_end_before_begin">Érreur, la date de fin ne peut pas être avant la date de début</string>
 
 </resources>
