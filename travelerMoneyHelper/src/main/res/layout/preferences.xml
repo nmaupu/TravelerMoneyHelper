@@ -53,7 +53,7 @@
             android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Debugging">
+    <PreferenceCategory android:title="Import / export">
         <EditTextPreference
             android:id="@+id/export_filename"
             android:defaultValue="tmh.db"
@@ -61,6 +61,13 @@
             android:key="export_filename"
             android:summary="@string/export_db_summary"
             android:title="@string/export_db_title" />
+        <org.maupu.android.tmh.ui.ImportPreference
+            android:id="@+id/import_db"
+            android:key="import_db"
+            android:title="@string/import_db_title"
+            android:summary="@string/import_db_summary"
+            android:dialogMessage="@string/import_db_summary"
+            android:negativeButtonText="@string/cancel"
+            android:positiveButtonText="ok" />
     </PreferenceCategory>
-
 </PreferenceScreen>

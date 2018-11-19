@@ -12,17 +12,20 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.ImportPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
 import org.maupu.android.tmh.util.DateUtil;
-import org.maupu.android.tmh.util.ExportUtil;
+import org.maupu.android.tmh.util.ImportExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -32,12 +35,15 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
     private static final Class TAG = PreferencesActivity.class;
 	//private static final String FILENAME = "mainPrefs";
 	private boolean dbChanged = false;
+
+	private ImportPreference importPreference;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +78,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
         EditTextPreference editTextExportDb = (EditTextPreference)findPreference(StaticData.PREF_EXPORT_DB);
         editTextExportDb.setOnPreferenceChangeListener(this);
         editTextExportDb.setOnPreferenceClickListener(this);
+
+        importPreference = (ImportPreference)findPreference(StaticData.PREF_IMPORT_DB);
+        importPreference.setOnPreferenceChangeListener(this);
+        importPreference.setParentActivity(this);
 	}
-	
-	@Override
+
+    @Override
 	protected void onDestroy() {
 		TmhApplication.getDatabaseHelper().close();
 		super.onDestroy();
@@ -278,10 +288,27 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			}
 		} else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Calling export db " + newValue);
-            ExportUtil.exportCurrentDatabase(newValue.toString());
+            ImportExportUtil.exportCurrentDatabase(newValue.toString());
+		} else if (StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+            // After importing the db, reload it
+            String db = DatabaseHelper.DATABASE_PREFIX+(newValue);
+            TmhApplication.changeOrCreateDatabase(db);
+
+            // Resetting edit text to emtpy string
+            ListPreference dbPref = (ListPreference)findPreference(StaticData.PREF_DATABASE);
+            dbPref.setEntries(getAllDatabasesListEntries());
+            dbPref.setEntryValues(getAllDatabasesListEntryValues());
+            dbPref.setValue(db);
+
+            Toast.makeText(
+                    TmhApplication.getAppContext(),
+                    getString(R.string.database_created_successfuly)+" ["+newValue+"]",
+                    Toast.LENGTH_LONG).show();
         }
 
-		if(StaticData.PREF_DATABASE.equals(preference.getKey()) || StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
+		if(StaticData.PREF_DATABASE.equals(preference.getKey()) ||
+                StaticData.PREF_NEW_DATABASE.equals(preference.getKey()) ||
+                StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
 			dbChanged = true;
 			// Update categories for this db 
 			ListPreference catPref = (ListPreference)findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
@@ -295,7 +322,21 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 		return true;
 	}
 
-	public static String getStringValue(String key) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                TmhLogger.d(TAG, "Uri: "+uri.toString());
+                importPreference.getDbFilename().setText(uri.toString(), TextView.BufferType.EDITABLE);
+                importPreference.setDatabaseUri(uri);
+            }
+        }
+    }
+
+    public static String getStringValue(String key) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TmhApplication.getAppContext());
 		return sharedPreferences.getString(key, "");
 	}
