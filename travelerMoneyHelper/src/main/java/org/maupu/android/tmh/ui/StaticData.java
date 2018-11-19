@@ -42,6 +42,7 @@ public abstract class StaticData {
 	public static final String PREF_OER_EDIT = "oer_apikey_edit_text";
     public static final String PREF_OER_VALID = "oer_apikey_valid";
     public static final String PREF_EXPORT_DB = "export_filename";
+    public static final String PREF_IMPORT_DB = "import_db";
 
 	// Keep tracking item selected in navigation drawer
 	public static int navigationDrawerItemSelected = 0;

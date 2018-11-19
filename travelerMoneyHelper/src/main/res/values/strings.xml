@@ -44,9 +44,11 @@
     <string name="category">Category</string>
     <string name="amount">Amount</string>
     <string name="currency">Currency</string>
+    <string name="accountname">Account name</string>
     <string name="icon">Icon</string>
     <string name="cancel">Cancel</string>
     <string name="close">X</string>
+    <string name="browse">...</string>
     <string name="dialog_choose_icon">Choose an icon</string>
     <string name="dialog_choose_account">Choose an account</string>
     <string name="dialog_choose_currency">Choose a currency</string>
@@ -112,6 +114,8 @@
     <string name="oer_api_key_title">Open Exchange Rates API</string>
     <string name="export_db_title">Export database</string>
     <string name="export_db_summary">Export current database to a file</string>
+    <string name="import_db_title">Import database</string>
+    <string name="import_db_summary">Import a backuped database</string>
     <string name="warning">Warning</string>
     <string name="default_category_warning">Choose a default category for withdrawal (inside preferences)</string>
     <string name="set_to_today_button">Today\'s date</string>
@@ -163,4 +167,7 @@
     <string name="error_date_begin_after_end">Error, cannot set date begin after current date end</string>
     <string name="error_date_end_before_begin">Error, cannot set date end before current date begin</string>
 
+    <!-- Preferences import / export -->
+    <string name="pref_import_db_filename">File path to import</string>
+    <string name="pref_import_db_name">DB name to create</string>
 </resources>
