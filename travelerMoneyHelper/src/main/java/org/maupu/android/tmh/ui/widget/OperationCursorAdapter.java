@@ -12,10 +12,10 @@ import org.maupu.android.tmh.util.TmhLogger;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
 public class OperationCursorAdapter extends SimpleCursorAdapter {
     private static final Class TAG = OperationCursorAdapter.class;

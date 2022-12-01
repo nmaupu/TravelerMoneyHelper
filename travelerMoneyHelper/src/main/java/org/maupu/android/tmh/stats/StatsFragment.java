@@ -1,13 +1,13 @@
 package org.maupu.android.tmh.stats;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import androidx.fragment.app.Fragment;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.object.Category;
@@ -19,7 +19,6 @@ import org.maupu.android.tmh.util.TmhLogger;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Set;
 
 public class StatsFragment extends Fragment {
     private final static Class TAG = StatsFragment.class;

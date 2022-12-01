@@ -12,11 +12,11 @@ import org.maupu.android.tmh.util.TmhLogger;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * A ViewPagerAdapter to display operations by month
@@ -28,7 +28,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
     private static final Class TAG = ViewPagerOperationAdapter.class;
 	private ViewPagerOperationActivity ctx;
 	public final static int DEFAULT_COUNT = 25;
-	private Map<Integer, OperationPagerItem> items = new HashMap<Integer, OperationPagerItem>();
+	private Map<Integer, OperationPagerItem> items = new HashMap<>();
     private int count;
     private int offset;
     private Date startDate;

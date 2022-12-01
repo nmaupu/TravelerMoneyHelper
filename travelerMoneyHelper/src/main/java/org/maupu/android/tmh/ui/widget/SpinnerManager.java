@@ -1,6 +1,7 @@
 package org.maupu.android.tmh.ui.widget;
 
-import org.maupu.android.tmh.database.object.BaseObject;
+import
+		org.maupu.android.tmh.database.object.BaseObject;
 
 import android.content.Context;
 import android.database.Cursor;

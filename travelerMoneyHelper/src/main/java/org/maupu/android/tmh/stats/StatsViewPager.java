@@ -3,20 +3,16 @@ package org.maupu.android.tmh.stats;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
-import com.google.gson.Gson;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StatsViewPager extends ViewPager implements IStatsPanel, IStatsDataChangedListener {
     private static final String TAG = StatsViewPager.class.getName();

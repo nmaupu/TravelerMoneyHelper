@@ -7,11 +7,12 @@ import org.maupu.android.tmh.ui.ImageViewHelper;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
 /**
  * A cursor adapter with an ImageView named 'icon'

@@ -7,12 +7,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Currency;
@@ -21,6 +15,10 @@ import org.maupu.android.tmh.ui.StaticData;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Integer, Integer> {
 	public static final int DEFAULT_CACHE_LIMIT_TIME = 3600; // 1h
@@ -179,22 +177,20 @@ class VerifApiKey extends AsyncTask<String, Integer, Boolean> {
 		
 		StringBuilder sbUrl = AbstractOpenExchangeRates.getUrl(AbstractOpenExchangeRates.ACTION_CURRENCY_LATEST, key);
 
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(sbUrl.toString());
+		OkHttpClient client = new OkHttpClient();
+		Request req = new Request.Builder()
+				.url(sbUrl.toString())
+				.build();
 
 		int statusCode = -1;
-		try {
-
-			HttpResponse r = httpClient.execute(httpGet);
-			StatusLine status = r.getStatusLine();
-			statusCode = status.getStatusCode();
-
-		} catch(ClientProtocolException cpe) {
-			cpe.printStackTrace();
+		try(Response response = client.newCall(req).execute()) {
+			statusCode = response.code();
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 			publishProgress(100);
 			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		Boolean ret = statusCode == 200;

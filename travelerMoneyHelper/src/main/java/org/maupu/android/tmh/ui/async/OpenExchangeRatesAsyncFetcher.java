@@ -9,13 +9,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.maupu.android.tmh.TmhActivity;
@@ -24,7 +17,10 @@ import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.TmhLogger;
 
-import android.util.Log;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.internal.http.StatusLine;
 
 /**
  * Fetch all currency list - no api key needed
@@ -80,44 +76,38 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
 
     	// Load from cache if possible
     	StringBuilder builderJson = super.loadFromCache(OER_CACHE_CURRENCIES, 2592000); // Cache valid for 30j
-    	//StringBuilder builderJson = super.loadFromCache(OER_CACHE_CURRENCIES, 10);
     	
     	if(builderJson == null || "".equals(builderJson.toString())) {
     		StringBuilder sbUrl = super.getUrl(ACTION_CURRENCY_LIST, null);
+			OkHttpClient client = new OkHttpClient();
+			Request req = new Request.Builder()
+					.url(sbUrl.toString())
+					.build();
 
-    		HttpClient httpClient = new DefaultHttpClient();
-    		HttpGet httpGet = new HttpGet(sbUrl.toString());
+			try (Response response = client.newCall(req).execute()) {
+				int statusCode = response.code();
 
-    		// get json from server
-    		try {
-    			HttpResponse r = httpClient.execute(httpGet);
-    			StatusLine status = r.getStatusLine();
-    			int statusCode = status.getStatusCode();
+				if(statusCode == 200){
+					InputStream content = response.body().byteStream();
+					BufferedReader bufReader = new BufferedReader(new InputStreamReader(content));
+					String line;
+					builderJson = new StringBuilder();
+					while((line = bufReader.readLine()) != null) {
+						builderJson.append(line);
+					}
 
-    			if(statusCode == 200) {
-    				HttpEntity httpEntity = r.getEntity();
-    				InputStream content = httpEntity.getContent();
-    				BufferedReader bufReader = new BufferedReader(new InputStreamReader(content));
-    				String line;
-    				
-    				builderJson = new StringBuilder();
-    				while((line = bufReader.readLine()) != null) {
-    					builderJson.append(line);
-    				}
-
-    				// Save builder to cache file
-    				saveToCache(builderJson.toString(), OER_CACHE_CURRENCIES);
-    			} else {
-    				TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
-    				throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
-    			}
-    		} catch (ClientProtocolException cpe) {
-    			cpe.printStackTrace();
-    		} catch (IOException ioe) {
-    			//ioe.printStackTrace();
-    			// Network problem ? Load from cache anyway
-    			builderJson = loadFromCache(OER_CACHE_CURRENCIES, -1);
-    		}
+					// Save builder to cache file
+					saveToCache(builderJson.toString(), OER_CACHE_CURRENCIES);
+				} else {
+					TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
+					throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
+				}
+			} catch (IOException ioe) {
+				// Network problem ? Load from cache anyway
+				builderJson = loadFromCache(OER_CACHE_CURRENCIES, -1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
     	}
 
     	if(builderJson != null && ! "".equals(builderJson.toString())) {

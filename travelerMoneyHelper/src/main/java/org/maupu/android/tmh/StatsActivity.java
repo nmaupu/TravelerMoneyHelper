@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.Toast;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.tabs.TabLayout;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -52,14 +52,14 @@ import java.util.Set;
  * Class representing stats activity
  */
 public class StatsActivity extends TmhActivity {
-    private static final Class TAG = StatsActivity.class;
+    private static final Class<StatsActivity> TAG = StatsActivity.class;
     private final static int DRAWER_ITEM_STATS_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_AUTO");
     private final static int DRAWER_ITEM_STATS_DATE_BEGIN = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_BEGIN");
     private final static int DRAWER_ITEM_STATS_DATE_END = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_END");
     private final static int DRAWER_ITEM_STATS_DATE_RESET = TmhApplication.getIdentifier("DRAWER_ITEM_STATS_DATE_RESET");
     private final static int DIALOG_DATE_BEGIN = TmhApplication.getIdentifier("DIALOG_DATE_BEGIN");
     private final static int DIALOG_DATE_END = TmhApplication.getIdentifier("DIALOG_DATE_END");
-    private int max_cat_displayed = 4;
+    private final int max_cat_displayed = 4;
     private SlidingUpPanelLayout slidingPanel;
     private Date dateBegin, dateEnd;
 
@@ -74,7 +74,7 @@ public class StatsActivity extends TmhActivity {
             Color.rgb(217, 80, 138), Color.rgb(254, 149, 7), Color.rgb(170, 164, 80),
             Color.rgb(106, 167, 134), Color.rgb(53, 194, 209)
     };
-    private StatsData statsData = new StatsData(MY_JOYFUL_COLORS);
+    private final StatsData statsData = new StatsData(MY_JOYFUL_COLORS);
 
     // Categories list and chooser
     private FlowLayout layoutCategories;
@@ -99,7 +99,12 @@ public class StatsActivity extends TmhActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         TmhLogger.d(TAG, "onCreate called");
-        super.onCreate(savedInstanceState);
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (RuntimeException re) {
+            re.printStackTrace();
+        }
+
 
         slidingPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         slidingPanel.setDragView(R.id.layout_title);
@@ -127,7 +132,7 @@ public class StatsActivity extends TmhActivity {
         accountName = (TextView)findViewById(R.id.account_name);
         statsViewPager = (StatsViewPager)findViewById(R.id.viewpager);
         statsViewPager.initPanel();
-        tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(statsViewPager);
         statsData.addOnStatsDataChangedListener(statsViewPager);
 

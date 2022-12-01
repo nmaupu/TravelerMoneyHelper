@@ -1,18 +1,13 @@
 package org.maupu.android.tmh.ui.async;
 
+import android.renderscript.ScriptGroup;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.maupu.android.tmh.TmhActivity;
@@ -20,7 +15,9 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.TmhLogger;
 
-import android.util.Log;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
     private final static Class TAG = OpenExchangeRatesAsyncUpdater.class;
@@ -28,7 +25,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
     /**
      *  Stored as a long in StaticData for further reference. Corresponds to the freshness of rates
      *  given by OpenExchangeRates api (field timestamp)
-     *  @see https://openexchangerates.org/documentation
+     *  @see <a href="https://openexchangerates.org/documentation">https://openexchangerates.org/documentation</a>
      */
     private final static String OER_CURRENCIES_TIMESTAMP = "OERCurrenciesTimestamp";
 	private String apiKey = null;
@@ -77,38 +74,33 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 		
 		// Load from internet
 		if(builderJson == null || "".equals(builderJson.toString())) {
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpGet httpGet = new HttpGet(url.toString());
+			OkHttpClient client = new OkHttpClient();
+			Request req = new Request.Builder()
+					.url(url.toString())
+					.build();
 
-			// get json from server - all rates on USD basis
-			try {
-				HttpResponse r = httpClient.execute(httpGet);
-				StatusLine status = r.getStatusLine();
-				int statusCode = status.getStatusCode();
-
-				if(statusCode == 200) {
-					HttpEntity httpEntity = r.getEntity();
-					InputStream content = httpEntity.getContent();
+			try (Response response = client.newCall(req).execute()) {
+				int statusCode = response.code();
+				if (statusCode == 200) {
+					InputStream content = response.body().byteStream();
 					BufferedReader bufReader = new BufferedReader(new InputStreamReader(content));
 					String line;
-					
 					builderJson = new StringBuilder();
-					while((line = bufReader.readLine()) != null) {
+					while ((line = bufReader.readLine()) != null) {
 						builderJson.append(line);
 					}
-					
+
 					// Cache json values
 					saveToCache(builderJson.toString(), OER_CACHE_CURRENCIES_LATEST);
-				} else {
-					TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
-					throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
-				}
-			} catch (ClientProtocolException cpe) {
-				cpe.printStackTrace();
+			} else {
+				TmhLogger.e(TAG, "Unable to get rate list, verify your api key");
+				throw new Exception("Unable to get rate list, verify your api key - Status code not 200");
+			}
 			} catch (IOException ioe) {
-				//ioe.printStackTrace();
 				// Network problem ? Load from cache anyway
 				builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, -1);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 

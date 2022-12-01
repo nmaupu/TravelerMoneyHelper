@@ -7,7 +7,7 @@
 
     <include layout="@layout/toolbar" />
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -55,6 +55,6 @@
                 android:layout_gravity="center_vertical"
                 android:text="@string/form_addedit_update" />
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

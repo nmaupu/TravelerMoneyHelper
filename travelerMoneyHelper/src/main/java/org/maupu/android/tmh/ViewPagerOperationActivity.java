@@ -16,17 +16,16 @@ import org.maupu.android.tmh.util.TmhLogger;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.viewpager.widget.ViewPager;
+
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-public class ViewPagerOperationActivity extends TmhActivity implements OnPageChangeListener, DatePickerDialog.OnDateSetListener {
+public class ViewPagerOperationActivity extends TmhActivity implements ViewPager.OnPageChangeListener, DatePickerDialog.OnDateSetListener {
     private static final Class TAG = ViewPagerOperationActivity.class;
     private ViewPagerOperationAdapter adapter;
     private ViewPagerOperationAdapter adapterRaw;
