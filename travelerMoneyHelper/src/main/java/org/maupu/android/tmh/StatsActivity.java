@@ -426,7 +426,18 @@ public class StatsActivity extends TmhActivity {
             dateEnd = de;
         }
 
-        return db != null && de != null && de.after(db);
+        // Verifying if saved dates are within account dates range
+        Operation dummyOp = new Operation();
+        Date dateFirstOperation = dummyOp.getFirstDate(StaticData.getCurrentAccount(), null);
+        Date dateLastOperation = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+        if(dateFirstOperation != null) { // Some operations on that account
+            dateFirstOperation = DateUtil.resetDateToBeginingOfDay(dateFirstOperation);
+        }
+        if (dateLastOperation != null) {
+            dateLastOperation = DateUtil.resetDateToEndOfDay(dateLastOperation);
+        }
+
+        return db != null && de != null && de.after(db) && (dateFirstOperation==null || (dateFirstOperation.after(de))) && (dateLastOperation == null || dateLastOperation.before(db));
     }
     private void saveDates() {
         StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, dateBegin);
