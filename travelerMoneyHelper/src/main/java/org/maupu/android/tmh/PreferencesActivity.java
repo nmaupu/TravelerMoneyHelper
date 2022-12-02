@@ -314,9 +314,17 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
 			ListPreference catPref = (ListPreference)findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
 			catPref.setEntries(getAllCategoriesEntries());
 			catPref.setEntryValues(getAllCategoriesEntryValues());
-			catPref.setValue(null);
-			
-			SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
+
+			// At this stage the StaticData should be loaded from db
+			// Selecting correct value or null if undefined
+			CharSequence wcIndex = null;
+			if (StaticData.getWithdrawalCategory() != null && StaticData.getWithdrawalCategory().getId() != null) {
+				wcIndex = String.valueOf(StaticData.getWithdrawalCategory().getId());
+				catPref.setValue(wcIndex.toString());
+			} else {
+				catPref.setValue(null);
+				SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
+			}
 		}
 
 		return true;

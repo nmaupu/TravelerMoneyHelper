@@ -186,7 +186,10 @@ public abstract class StaticData {
 	}
 	
 	public static void setCurrentSelectedCategory(Category category) {
-		int catId = category == null ? -1 : category.getId();
+		int catId = -1;
+		if (category != null && category.getId() != null) {
+			catId = category.getId();
+		}
 		
 		setPreferenceValueInt(PREF_CURRENT_SELECTED_CATEGORY, catId);
 		
@@ -201,9 +204,14 @@ public abstract class StaticData {
 	// Here, we store a String because PreferenceActivity use string as entryValues
 	public static Category getWithdrawalCategory() {
 		String result = getPreferenceValueString(StaticData.PREF_WITHDRAWAL_CATEGORY); 
-		
-		if(result == null || Integer.parseInt(result) < 0)
+
+		try {
+			if(result == null || Integer.parseInt(result) < 0)
+				return null;
+		} catch (NumberFormatException nfe) {
+			// result does not contain a correct id
 			return null;
+		}
 		
 		Category category = null;
 		Cursor cursor = null;

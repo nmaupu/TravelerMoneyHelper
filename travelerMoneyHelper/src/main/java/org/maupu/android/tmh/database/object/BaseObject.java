@@ -71,10 +71,14 @@ public abstract class BaseObject implements Validator, Serializable, Comparable 
 	}
 
 	public boolean insert() {
+		return insertWithDb(TmhApplication.getDatabaseHelper().getDb());
+	}
+
+	public boolean insertWithDb(SQLiteDatabase db) {
 		if(! validate())
 			return false;
 		
-		long id = TmhApplication.getDatabaseHelper().getDb().insert(getTableName(), null, createContentValues());
+		long id = db.insert(getTableName(), null, createContentValues());
 		boolean b = id > 0;
 		
 		if(b) {
@@ -95,6 +99,18 @@ public abstract class BaseObject implements Validator, Serializable, Comparable 
 			return false;
 		
 		return db.update(getTableName(), createContentValues(), APersistedData.KEY_ID+"="+getId(), null) > 0;
+	}
+
+	public boolean insertOrUpdate() {
+		return insertOrUpdateWithDb(TmhApplication.getDatabaseHelper().getDb());
+	}
+
+	public boolean insertOrUpdateWithDb(SQLiteDatabase db) {
+		Cursor c = fetchWithDB(db, getId());
+		if(c.getCount() > 0) {
+			return updateWithDb(db);
+		}
+		return insertWithDb(db);
 	}
 
 	public boolean delete() {

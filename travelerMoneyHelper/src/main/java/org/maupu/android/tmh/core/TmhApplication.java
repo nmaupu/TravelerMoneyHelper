@@ -2,8 +2,7 @@ package org.maupu.android.tmh.core;
 
 import org.maupu.android.tmh.FirstActivity;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.ui.SoftKeyboardHelper;
-import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.database.object.StaticPrefs;
 
 import android.app.Application;
 import android.content.Context;
@@ -37,16 +36,18 @@ public class TmhApplication extends Application {
 		if(dbName != null && !"".equals(dbName) && ! dbName.startsWith(DatabaseHelper.DATABASE_PREFIX)) {
 			name = DatabaseHelper.DATABASE_PREFIX+dbName;
 		}
+
+		// Loading and saving current
+		StaticPrefs.saveCurrentStaticPrefs();
 		
 		dbHelper.close();
 		dbHelper = new DatabaseHelper(name);
 		dbHelper.getDb();
-		
-		// Invalidate StaticData
-		StaticData.setCurrentAccount(null);
-		StaticData.setCurrentSelectedCategory(null);
-		StaticData.setWithdrawalCategory(null);
-		StaticData.setMainCurrency(null);
+
+		// Load stored StaticData
+		StaticPrefs.toStaticData(
+				StaticPrefs.loadCurrentStaticPrefs()
+		);
 	}
 
     public static int getIdentifier(String s) {
