@@ -1,8 +1,17 @@
 package org.maupu.android.tmh.ui;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ListView;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
@@ -20,89 +29,78 @@ import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
 import org.maupu.android.tmh.util.TmhLogger;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.text.Html;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.ListView;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public abstract class DialogHelper {
     private static final Class TAG = DialogHelper.class;
-	private static CheckableCursorAdapter categoryChooserAdapter = null;
-	
-	public static boolean isCheckableCursorAdapterInit() {
-		return categoryChooserAdapter != null;
-	}
-	
-	public static Dialog popupDialogAccountChooser(final TmhActivity tmhActivity) {
-		if(tmhActivity == null)
-			return null;
-		
-		final Dialog dialog = new Dialog(tmhActivity);
+    private static CheckableCursorAdapter categoryChooserAdapter = null;
 
-		dialog.setContentView(R.layout.dialog_listview);
-		dialog.setTitle(tmhActivity.getString(R.string.pick_account));
+    public static boolean isCheckableCursorAdapterInit() {
+        return categoryChooserAdapter != null;
+    }
 
-		ListView listAccount = (ListView)dialog.findViewById(R.id.list);
-		Account dummyAccount = new Account();
-		final Cursor cursorAllAccounts = dummyAccount.fetchAll();
+    public static Dialog popupDialogAccountChooser(final TmhActivity tmhActivity) {
+        if (tmhActivity == null)
+            return null;
 
-		final IconCursorAdapter adapter = new IconCursorAdapter(
+        final Dialog dialog = new Dialog(tmhActivity);
+
+        dialog.setContentView(R.layout.dialog_listview);
+        dialog.setTitle(tmhActivity.getString(R.string.pick_account));
+
+        ListView listAccount = (ListView) dialog.findViewById(R.id.list);
+        Account dummyAccount = new Account();
+        final Cursor cursorAllAccounts = dummyAccount.fetchAll();
+
+        final IconCursorAdapter adapter = new IconCursorAdapter(
                 tmhActivity,
                 R.layout.icon_name_item_no_checkbox,
                 cursorAllAccounts,
                 new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME},
                 new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
-                    @Override
-                    public View callback(Object item) {
-                        TmhLogger.d(TAG, "popupDialogAccountChooser : callback called");
+            @Override
+            public View callback(Object item) {
+                TmhLogger.d(TAG, "popupDialogAccountChooser : callback called");
 
-                        int position = (Integer)((View)item).getTag();
-                        int oldPosition = cursorAllAccounts.getPosition();
-                        cursorAllAccounts.moveToPosition(position);
+                int position = (Integer) ((View) item).getTag();
+                int oldPosition = cursorAllAccounts.getPosition();
+                cursorAllAccounts.moveToPosition(position);
 
-                        Account account = new Account();
-                        account.toDTO(cursorAllAccounts);
+                Account account = new Account();
+                account.toDTO(cursorAllAccounts);
 
-                        cursorAllAccounts.moveToPosition(oldPosition);
+                cursorAllAccounts.moveToPosition(oldPosition);
 
-                        /** Replacing preferences account (excepted categories are also reset to auto) **/
-                        /** Setting some specific stuff as well **/
-                        StaticData.setCurrentAccount(account);
-                        tmhActivity.refreshAfterCurrentAccountChanged();
-                        tmhActivity.refreshDisplay();
-                        dialog.dismiss();
+                /** Replacing preferences account (excepted categories are also reset to auto) **/
+                /** Setting some specific stuff as well **/
+                StaticData.setCurrentAccount(account);
+                tmhActivity.refreshAfterCurrentAccountChanged();
+                tmhActivity.refreshDisplay();
+                dialog.dismiss();
 
-                        return (View)item;
-                    }
+                return (View) item;
+            }
         });
-		listAccount.setAdapter(adapter);
-		dialog.show();
+        listAccount.setAdapter(adapter);
+        dialog.show();
 
-		return dialog;
-	}
-	
-	public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
-		if(tmhActivity == null)
-			return null;
-		
-		final Dialog dialog = new Dialog(tmhActivity);
-		dialog.setCancelable(true);
-		dialog.setTitle(R.string.stats_filter_cat_title);
-		dialog.setContentView(R.layout.category_chooser_activity);
+        return dialog;
+    }
 
-        Button btnValidate = (Button)dialog.findViewById(R.id.btn_validate);
-        Button btnAutosel = (Button)dialog.findViewById(R.id.btn_autosel);
-		final ListView list = (ListView)dialog.findViewById(R.id.list);
+    public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
+        if (tmhActivity == null)
+            return null;
+
+        final Dialog dialog = new Dialog(tmhActivity);
+        dialog.setCancelable(true);
+        dialog.setTitle(R.string.stats_filter_cat_title);
+        dialog.setContentView(R.layout.category_chooser_activity);
+
+        Button btnValidate = (Button) dialog.findViewById(R.id.btn_validate);
+        Button btnAutosel = (Button) dialog.findViewById(R.id.btn_autosel);
+        final ListView list = (ListView) dialog.findViewById(R.id.list);
 
         /**
          * Adapter for category chooser
@@ -110,7 +108,7 @@ public abstract class DialogHelper {
         Category cat = new Category();
         Account currentAccount = StaticData.getCurrentAccount();
         final Cursor cursor;
-        if(hideUnusedCat)
+        if (hideUnusedCat)
             cursor = cat.fetchAllCategoriesUsedByAccountOperations(currentAccount.getId());
         else
             cursor = cat.fetchAll();
@@ -119,52 +117,54 @@ public abstract class DialogHelper {
         /**
          * Buttons' listener
          */
-		Button.OnClickListener listener = new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (v.getId() == R.id.btn_validate) {
-					StaticData.getStatsExceptedCategories().clear();
-					CheckableCursorAdapter adapter = (CheckableCursorAdapter)list.getAdapter(); 
-					Integer[] ints = adapter.getCheckedPositions();
-					for(int i : ints) {
-						Cursor c = (Cursor)adapter.getItem(i);
-						Category cat = new Category();
-						cat.toDTO(c);
-						StaticData.getStatsExceptedCategories().add(cat.getId());
-					}
+        Button.OnClickListener listener = new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.btn_validate) {
+                    StaticData.getStatsExceptedCategories().clear();
+                    CheckableCursorAdapter adapter = (CheckableCursorAdapter) list.getAdapter();
+                    Integer[] ints = adapter.getCheckedPositions();
+                    for (int i : ints) {
+                        Cursor c = (Cursor) adapter.getItem(i);
+                        Category cat = new Category();
+                        cat.toDTO(c);
+                        StaticData.getStatsExceptedCategories().add(cat.getId());
+                    }
+
                     dialog.dismiss();
-					tmhActivity.refreshDisplay();
-				} else if (v.getId() == R.id.btn_autosel) {
+                    tmhActivity.refreshDisplay();
+                } else if (v.getId() == R.id.btn_autosel) {
                     categoryChooserAdapter.setToCheck(getAutoExceptCategoriesPositions(cursor));
                     categoryChooserAdapter.notifyDataSetChanged();
                 }
-			}
-		};
-		btnValidate.setOnClickListener(listener);
+            }
+        };
+        btnValidate.setOnClickListener(listener);
         btnAutosel.setOnClickListener(listener);
 
-		if(categoryChooserAdapter == null || resetPopup) {
+        if (categoryChooserAdapter == null || resetPopup) {
             TmhLogger.d(TAG, "categoryChooserAdapter creation from scratch");
-			categoryChooserAdapter = new CheckableCursorAdapter(
-					tmhActivity, 
-					R.layout.category_item,
-					cursor,
-					new String[]{CategoryData.KEY_NAME}, 
-					new int[]{R.id.name},
+            categoryChooserAdapter = new CheckableCursorAdapter(
+                    tmhActivity,
+                    R.layout.category_item,
+                    cursor,
+                    new String[]{CategoryData.KEY_NAME},
+                    new int[]{R.id.name},
                     getAutoExceptCategoriesPositions(cursor));
-		} else {
+        } else {
             TmhLogger.d(TAG, "categoryChooserAdapter reused but cursor changed");
-			categoryChooserAdapter.changeCursor(cursor);
-		}
+            categoryChooserAdapter.changeCursor(cursor);
+        }
 
-		list.setAdapter(categoryChooserAdapter);
-		dialog.show();
+        list.setAdapter(categoryChooserAdapter);
+        dialog.show();
 
-		return dialog;
-	}
+        return dialog;
+    }
 
     /**
      * Get position of category in a cursor. Useful to know position on a list (cursor adapter)
+     *
      * @param cursor
      * @param category
      * @return the position of the category inside cursor
@@ -175,10 +175,10 @@ public abstract class DialogHelper {
         Integer resPos = null;
 
         cursor.moveToFirst();
-        while(! cursor.isAfterLast()) {
+        while (!cursor.isAfterLast()) {
             int idxId = cursor.getColumnIndexOrThrow(CategoryData.KEY_ID);
             int id = cursor.getInt(idxId);
-            if(id == category.getId()) {
+            if (id == category.getId()) {
                 resPos = new Integer(pos);
                 break;
             }
@@ -193,6 +193,7 @@ public abstract class DialogHelper {
 
     /**
      * Get all categories to except automatically (categories that have credit)
+     *
      * @param cursor
      * @return List of all category position (in a cursor) to except. Those categories are taken in db automatically.
      */
@@ -200,7 +201,7 @@ public abstract class DialogHelper {
         final List<Integer> posToCheck = new ArrayList<Integer>();
         Operation o = new Operation();
         Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
-        for(int i=0; i<cats.length; i++) {
+        for (int i = 0; i < cats.length; i++) {
             Category ca = new Category();
             Cursor cu = ca.fetch(cats[i]);
             ca.toDTO(cu);
@@ -212,31 +213,31 @@ public abstract class DialogHelper {
         return posToCheck.toArray(new Integer[0]);
     }
 
-	public static Dialog popupDialogStatsDetails(Context context, Date beg, Date end, Integer[] categories, Integer[] exceptCategories) {
-		if(context == null)
-			return null;
-		
-		final Dialog dialog = new Dialog(context);
-		dialog.setCancelable(true);
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dialog.setCanceledOnTouchOutside(true);
-		dialog.setContentView(R.layout.dialog_listview);
-		final ListView list = (ListView)dialog.findViewById(R.id.list);
-		
-		// Adapter
-		Operation dummyOp = new Operation();
-		Account currentAccount = StaticData.getCurrentAccount();
-		dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
-		
-		// Filtering category if needed
-        if(categories != null && categories.length > 0)
+    public static Dialog popupDialogStatsDetails(Context context, Date beg, Date end, Integer[] categories, Integer[] exceptCategories) {
+        if (context == null)
+            return null;
+
+        final Dialog dialog = new Dialog(context);
+        dialog.setCancelable(true);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(R.layout.dialog_listview);
+        final ListView list = (ListView) dialog.findViewById(R.id.list);
+
+        // Adapter
+        Operation dummyOp = new Operation();
+        Account currentAccount = StaticData.getCurrentAccount();
+        dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
+
+        // Filtering category if needed
+        if (categories != null && categories.length > 0)
             dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_IN, OperationData.KEY_ID_CATEGORY, TextUtils.join(",", categories));
-		if(exceptCategories != null && exceptCategories.length > 0)
-			dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, TextUtils.join(",", exceptCategories));
-		
-		// Getting cursor
-		Cursor cursor = dummyOp.fetchByPeriod(beg, end, "o."+OperationData.KEY_AMOUNT+" ASC", -1);
-        if(cursor != null && cursor.getCount() > 0) {
+        if (exceptCategories != null && exceptCategories.length > 0)
+            dummyOp.getFilter().addFilter(OperationFilter.FUNCTION_NOTIN, OperationData.KEY_ID_CATEGORY, TextUtils.join(",", exceptCategories));
+
+        // Getting cursor
+        Cursor cursor = dummyOp.fetchByPeriod(beg, end, "o." + OperationData.KEY_AMOUNT + " ASC", -1);
+        if (cursor != null && cursor.getCount() > 0) {
             OperationCursorAdapter sca = new OperationCursorAdapter(context,
                     R.layout.operation_item_nocheckbox,
                     cursor,
@@ -249,7 +250,7 @@ public abstract class DialogHelper {
         } else {
             return null;
         }
-	}
+    }
 
     public static void popupDialogAbout(final TmhActivity tmhActivity) {
         // Popup about dialog

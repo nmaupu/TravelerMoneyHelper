@@ -12,7 +12,7 @@
     <string name="currency_code">Code</string>
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Error</string>
-    <string name="error_add_object">Impossible to add object, error in fields !</string>
+    <string name="error_add_object">Unable to add object, errors in fields !</string>
     <string name="error_no_category">No category is defined, please create one !</string>
     <string name="error_currency_update">Error updating currency, code not found</string>
     <string name="error_no_oer_api_key">To use currencies, please create an account on the following website : http://openexchangerates.org (it is free for personal use) and copy API key you will get on the next screen.</string>
@@ -31,6 +31,7 @@
     <string name="activity_title_statistics">Statistics</string>
     <string name="activity_title_category_chooser">Categories</string>
     <string name="activity_title_currency_converter">Currency converter</string>
+    <string name="activity_title_preferences">Settings</string>
     <string name="account_icon_edit_dialog_title">Choose an icon from …</string>
     <string name="manageable_obj_del_confirm_question">Are you sure you want to delete these objects ?</string>
     <string name="manageable_obj_del_error">One or more objects could not be deleted</string>
@@ -83,7 +84,7 @@
     <string name="country_not_found">Country not found !</string>
     <string name="withdrawal">Withdrawal</string>
     <string name="default_account_name">Account1</string>
-    <string name="confirm_modification">Do you confirm modification ?</string>
+    <string name="confirm_modification">Do you confirm the modification ?</string>
     <string name="total">Total:</string>
     <string name="total_">Total</string>
     <string name="average">Average:</string>

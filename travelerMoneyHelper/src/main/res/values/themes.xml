@@ -9,6 +9,5 @@
         <item name="android:textStyle">normal</item>
         <item name="android:colorBackground">@color/white</item>
     </style>
-
-
+    
 </resources>

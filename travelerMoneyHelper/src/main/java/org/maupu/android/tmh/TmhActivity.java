@@ -1,27 +1,11 @@
 package org.maupu.android.tmh;
 
-import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.AccountData;
-import org.maupu.android.tmh.database.object.Account;
-import org.maupu.android.tmh.database.object.Category;
-import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.ui.DialogHelper;
-import org.maupu.android.tmh.ui.ImageViewHelper;
-import org.maupu.android.tmh.ui.SoftKeyboardHelper;
-import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
-import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
-import org.maupu.android.tmh.util.TmhLogger;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +15,9 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -45,9 +32,21 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.database.AccountData;
+import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.DialogHelper;
+import org.maupu.android.tmh.ui.ImageViewHelper;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
+import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
+import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.util.TmhLogger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +54,12 @@ import java.util.Map;
 
 public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, Drawer.OnDrawerItemClickListener {
     private static final Class TAG = TmhActivity.class;
-	public AccountHeader accountHeader;
+    public AccountHeader accountHeader;
     public Drawer navigationDrawer;
 
-    /** Navigation drawer items **/
+    /**
+     * Navigation drawer items
+     **/
     protected static final int DRAWER_ITEM_OPERATIONS = TmhApplication.getIdentifier("DRAWER_ITEM_OPERATIONS");
     protected static final int DRAWER_ITEM_STATS = TmhApplication.getIdentifier("DRAWER_ITEM_STATS");
     protected static final int DRAWER_ITEM_CONVERTER = TmhApplication.getIdentifier("DRAWER_ITEM_CONVERTER");
@@ -82,16 +83,16 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         this.title = title;
     }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        if(this.contentView != null)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (this.contentView != null)
             setContentView(this.contentView);
-        if(this.title != null)
+        if (this.title != null)
             setTitle(this.title);
 
-        toolbar = (Toolbar)findViewById(R.id.tmh_toolbar);
-        if(toolbar != null) {
+        toolbar = findViewById(R.id.tmh_toolbar);
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -102,15 +103,15 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
 
         initNavigationDrawer();
         //TmhApplication.getDatabaseHelper().createSampleData();
-	}
+    }
 
     public static LayoutInflater getInflater(Context ctx) {
-        return (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, ViewPagerOperationActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -122,25 +123,22 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     private void initNavigationDrawer() {
-        if(accountHeader == null) {
+        if (accountHeader == null) {
             /** Header **/
             accountHeader = new AccountHeaderBuilder()
                     .withActivity(this)
                     .withHeaderBackground(R.drawable.navigation_drawer_header)
-                    .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                        @Override
-                        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-                            Account a = (Account) ((ProfileDrawerItem) profile).getTag();
-                            StaticData.setCurrentAccount(a);
-                            refreshAfterCurrentAccountChanged();
-                            return false;
-                        }
+                    .withOnAccountHeaderListener((view, profile, current) -> {
+                        Account a = (Account) ((ProfileDrawerItem) profile).getTag();
+                        StaticData.setCurrentAccount(a);
+                        refreshAfterCurrentAccountChanged();
+                        return false;
                     }).build();
 
             Cursor cursor = new Account().fetchAll();
             cursor.moveToFirst();
             int currentAccountId = -1;
-            if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
+            if (StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
                 currentAccountId = StaticData.getCurrentAccount().getId();
             IProfile profileToActivate = null;
             for (int i = 0; i < cursor.getCount(); i++) {
@@ -166,7 +164,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                 accountHeader.setActiveProfile(profileToActivate);
         }
 
-        if(navigationDrawer == null) {
+        if (navigationDrawer == null) {
             /** Items **/
             List<IDrawerItem> items = new ArrayList<>();
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, R.string.dashboard_operation));
@@ -213,7 +211,8 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                         }
 
                         @Override
-                        public void onDrawerClosed(View drawerView) {}
+                        public void onDrawerClosed(View drawerView) {
+                        }
 
                         @Override
                         public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -226,7 +225,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             // Update all badges in the drawer
             updateDrawerBadges();
 
-            if(toolbar != null) {
+            if (toolbar != null) {
                 // Order and boolean are important to have custom icon as home up indicator
                 navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -240,16 +239,17 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     public void refreshAfterCurrentAccountChanged() {
         List<IProfile> profiles = accountHeader.getProfiles();
         Iterator<IProfile> it = profiles.iterator();
-        while(it.hasNext()) {
-            ProfileDrawerItem p = (ProfileDrawerItem)it.next();
-            Account a = (Account)p.getTag();
-            if(StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId())
+        while (it.hasNext()) {
+            ProfileDrawerItem p = (ProfileDrawerItem) it.next();
+            Account a = (Account) p.getTag();
+            if (StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId())
                 accountHeader.setActiveProfile(p);
         }
     }
 
     /**
      * Called when navigation drawer's item is clicked
+     *
      * @param view
      * @param position
      * @param item
@@ -257,20 +257,20 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
      */
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
-		Intent intent = null;
+        Intent intent = null;
         boolean killCurrentActivity = true;
 
         /** Determine what item has been clicked **/
         if (item.getIdentifier() == DRAWER_ITEM_REFRESH) {
             refreshDisplay();
         } else if (item.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
-            intent = new Intent(this, PreferencesActivity.class);
+            intent = new Intent(this, PreferencesNewActivity.class);
             killCurrentActivity = false;
         } else if (item.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
             intent = new Intent(this, ViewPagerOperationActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_STATS) {
             intent = new Intent(this, StatsActivity.class);
-        } else if(item.getIdentifier() == DRAWER_ITEM_CONVERTER) {
+        } else if (item.getIdentifier() == DRAWER_ITEM_CONVERTER) {
             intent = new Intent(this, ConverterActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_ACCOUNTS) {
             intent = new Intent(this, ManageAccountActivity.class);
@@ -283,64 +283,64 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         }
 
         /** Launch corresponding activity if recognized **/
-        if(intent != null) {
-            if(killCurrentActivity)
+        if (intent != null) {
+            if (killCurrentActivity)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             startActivity(intent);
 
-            if(killCurrentActivity)
+            if (killCurrentActivity)
                 finish();
         }
 
         return false;
-	}
+    }
 
-	@Override
+    @Override
     protected void onDestroy() {
-		super.onDestroy();
-	}
+        super.onDestroy();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		refreshDisplay();
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshDisplay();
+    }
 
-	/**
-	 * Called when click refresh button on menu
-	 */
-	public void refreshDisplay() {
-		AsyncActivityRefresher refresher = new AsyncActivityRefresher(this, this, false);
-		
-		try {
-			// Execute background task implemented by client class
-			refresher.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    /**
+     * Called when click refresh button on menu
+     */
+    public void refreshDisplay() {
+        AsyncActivityRefresher refresher = new AsyncActivityRefresher(this, this, false);
+
+        try {
+            // Execute background task implemented by client class
+            refresher.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         updateDrawerBadges();
-	}
+    }
 
-	public static void setListViewAnimation(ListView listView) {
-		// Setting animation
-		AnimationSet set = new AnimationSet(true);
+    public static void setListViewAnimation(ListView listView) {
+        // Setting animation
+        AnimationSet set = new AnimationSet(true);
 
-		Animation animation = new AlphaAnimation(0.0f, 1.0f);
-		animation.setDuration(50);
-		set.addAnimation(animation);
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(50);
+        set.addAnimation(animation);
 
-		animation = new TranslateAnimation(
-				Animation.RELATIVE_TO_SELF, 0.0f,Animation.RELATIVE_TO_SELF, 0.0f,
-				Animation.RELATIVE_TO_SELF, -1.0f,Animation.RELATIVE_TO_SELF, 0.0f
-				);
-		animation.setDuration(100);
-		set.addAnimation(animation);
+        animation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
+        );
+        animation.setDuration(100);
+        set.addAnimation(animation);
 
-		LayoutAnimationController controller = new LayoutAnimationController(set, 0.5f);        
-		listView.setLayoutAnimation(controller);
-	}
+        LayoutAnimationController controller = new LayoutAnimationController(set, 0.5f);
+        listView.setLayoutAnimation(controller);
+    }
 
     @Override
     public Map<Integer, Object> handleRefreshBackground() {
@@ -348,7 +348,8 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     }
 
     @Override
-    public void handleRefreshEnding(Map<Integer, Object> results) {}
+    public void handleRefreshEnding(Map<Integer, Object> results) {
+    }
 
     protected void selectDrawerItem(int identifier) {
         navigationDrawer.setSelection(identifier, false);
@@ -359,6 +360,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     /**
      * Called when navigation drawer is created. To customize, override this and return
      * an array. Separators are already included.
+     *
      * @return an array of IDrawerItem corresponding to custom items
      */
     public IDrawerItem[] buildNavigationDrawer() {
