@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="about">Par @bicnicfr</string>
     <string name="about_title">A propos de TMH</string>
     <string name="about_flags_copyright">Drapeaux par: </string>
     <string name="back">Retour</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="minus_symbol">-</string>
+    <string name="plus_symbol">+</string>
+    <string name="currency_code">Code</string>
     <string name="app_name">Traveler Money Helper</string>
     <string name="error">Erreur</string>
     <string name="error_add_object">Impossible d\'ajouter cet objet, il y a des erreurs de saisie !</string>
@@ -45,7 +47,7 @@
     <string name="icon">Icône</string>
     <string name="cancel">Annuler</string>
     <string name="close">X</string>
-    <string name="browse">...</string>
+    <string name="browse">…</string>
     <string name="dialog_choose_icon">Choisissez une icône</string>
     <string name="dialog_choose_account">Choisissez un compte</string>
     <string name="dialog_choose_currency">Choisissez une devise</string>
@@ -91,6 +93,7 @@
     <string name="force_update_currency">Forcer màj des taux de conv.</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Base de données créée et selectionnée</string>
+    <string name="database_export_failed">Erreur lors de l\'exportation de la base de données</string>
     <string name="database">Base de données</string>
     <string name="new_database">Nouvelle base de données</string>
     <string name="select_database">Selectionner la base de données à utiliser</string>
@@ -167,4 +170,8 @@
     <!-- Preferences import / export -->
     <string name="pref_import_db_filename">Fichier à importer</string>
     <string name="pref_import_db_name">Nom de la BD à créer</string>
+    <string name="pref_title_persistence">Persistance</string>
+    <string name="pref_title_default_parameters">Paramètres par défault</string>
+    <string name="pref_title_api_configuration">Configuration API</string>
+    <string name="pref_title_import_export">Importer / exporter</string>
 </resources>

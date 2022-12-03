@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -28,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="6dip"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/account_icon"
@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
-                    android:text="@string/debit"/>
+                    android:text="@string/debit" />
 
                 <RadioButton
                     android:id="@+id/credit"
@@ -139,7 +139,7 @@
                 android:paddingBottom="3dip"
                 android:paddingLeft="5dip"
                 android:paddingRight="5dip"
-                android:paddingTop="3dip" >
+                android:paddingTop="3dip">
 
                 <TextView
                     android:id="@+id/text_amount"
@@ -175,6 +175,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone">
+
                 <CheckBox
                     android:layout_marginLeft="0px"
                     android:id="@+id/checkbox_update_rate"

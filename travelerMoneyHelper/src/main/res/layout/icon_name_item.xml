@@ -3,7 +3,7 @@
     android:id="@+id/linear_layout_root"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <include layout="@layout/checkbox_item" />
 

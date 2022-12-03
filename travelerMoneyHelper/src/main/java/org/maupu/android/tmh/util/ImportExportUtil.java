@@ -12,20 +12,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /**
  * First naive implementation of data export to help debugging other databases
  */
 public class ImportExportUtil {
-    private static final Class TAG = ImportExportUtil.class;
+    private static final Class<ImportExportUtil> TAG = ImportExportUtil.class;
 
     public static boolean exportCurrentDatabase(String filename) {
         try {
             String sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
 
             File backupDir = new File(sd, TmhApplication.APP_NAME_SHORT);
-            backupDir.mkdirs();
+            if (!backupDir.mkdirs()) {
+                return false;
+            }
 
             String currentDbPath = TmhApplication.getDatabaseHelper().getCurrentDbName();
             TmhLogger.d(TAG, "Current database path = " + currentDbPath);
@@ -37,14 +38,14 @@ public class ImportExportUtil {
 
             Toast.makeText(TmhApplication.getAppContext(), "File exported to : " + dstFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
     public static boolean importDatabase(Activity activity, Uri uri, String destinationDbName) throws IOException {
-        String dbName = DatabaseHelper.DATABASE_PREFIX+destinationDbName;
+        String dbName = DatabaseHelper.DATABASE_PREFIX + destinationDbName;
 
         // creating a new DB
         TmhApplication.changeOrCreateDatabase(dbName);

@@ -45,26 +45,22 @@ public class ImportPreference extends DialogPreference {
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
-        dbFilename = (EditText)view.findViewById(R.id.db_filename);
+        dbFilename = (EditText) view.findViewById(R.id.db_filename);
         dbFilename.setEnabled(false);
-        dbName = (EditText)view.findViewById(R.id.db_name);
+        dbName = (EditText) view.findViewById(R.id.db_name);
 
-        buttonBrowse = (Button)view.findViewById(R.id.pref_dialog_button_browse);
-        buttonBrowse.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-                if(parentActivity != null) {
-                    parentActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                            intent.addCategory(Intent.CATEGORY_OPENABLE);
-                            intent.setType("*/*");
-                            parentActivity.startActivityForResult(intent, 0);
-                        }
-                    });
-                }
+        buttonBrowse = (Button) view.findViewById(R.id.pref_dialog_button_browse);
+        buttonBrowse.setOnClickListener(v -> {
+            if (parentActivity != null) {
+                parentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("*/*");
+                        parentActivity.startActivityForResult(intent, 0);
+                    }
+                });
             }
         });
     }
@@ -85,7 +81,7 @@ public class ImportPreference extends DialogPreference {
 
                 // Notify listeners for change
                 callChangeListener(dbName.getText().toString());
-            } catch(IOException ioe) {
+            } catch (IOException ioe) {
                 TmhLogger.d(TAG, "Impossible to import database");
                 ioe.printStackTrace();
             }

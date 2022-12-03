@@ -48,7 +48,7 @@
     <string name="icon">Icon</string>
     <string name="cancel">Cancel</string>
     <string name="close">X</string>
-    <string name="browse">...</string>
+    <string name="browse">…</string>
     <string name="dialog_choose_icon">Choose an icon</string>
     <string name="dialog_choose_account">Choose an account</string>
     <string name="dialog_choose_currency">Choose a currency</string>
@@ -94,6 +94,7 @@
     <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>
+    <string name="database_export_failed">Database export failed</string>
     <string name="database">Database</string>
     <string name="new_database">New database</string>
     <string name="select_database">Select database to use</string>
@@ -138,7 +139,7 @@
     <string name="converter">Converter</string>
     <string name="rates_last_update">Last update :</string>
     <string name="update_rates_failed">Error updating rates from the internet</string>
-    <string name="update_rates_success">Rates updated ok</string>
+    <string name="update_rates_success">Rates updated OK</string>
     <string name="misc">Misc</string>
     <string name="NA">N/A</string>
 
@@ -167,7 +168,11 @@
     <string name="error_date_begin_after_end">Error, cannot set date begin after current date end</string>
     <string name="error_date_end_before_begin">Error, cannot set date end before current date begin</string>
 
-    <!-- Preferences import / export -->
+    <!-- Preferences -->
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
+    <string name="pref_title_persistence">Persistence</string>
+    <string name="pref_title_default_parameters">Default parameters</string>
+    <string name="pref_title_api_configuration">API configuration</string>
+    <string name="pref_title_import_export">Import / export</string>
 </resources>
