@@ -2,13 +2,10 @@ package org.maupu.android.tmh;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.mikepenz.materialdrawer.Drawer;
 
 public class MainFragment extends Fragment {
     public static final String BUNDLE_NAVIGATION_DRAWER_KEY = "navigationDrawerKey";
@@ -23,7 +20,7 @@ public class MainFragment extends Fragment {
 
         /*Bundle bundle = this.requireArguments();
         SerializableNavigationDrawer sDrawer = (SerializableNavigationDrawer) bundle.getSerializable(BUNDLE_NAVIGATION_DRAWER_KEY);*/
-        Drawer drawer = TmhActivity.navigationDrawer;
+        /*Drawer drawer = TmhActivity.navigationDrawer;
 
 
         drawer.setOnDrawerItemClickListener((drawerView, position, drawerItem) -> {
@@ -31,7 +28,7 @@ public class MainFragment extends Fragment {
                 Toast.makeText(getContext(), "Yolo !", Toast.LENGTH_LONG).show();
             }
             return false;
-        });
+        });*/
 
         if (savedInstanceState == null) {
             getActivity().getSupportFragmentManager()

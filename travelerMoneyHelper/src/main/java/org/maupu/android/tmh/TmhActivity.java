@@ -56,7 +56,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     private static final Class TAG = TmhActivity.class;
 
     public AccountHeader accountHeader;
-    public static Drawer navigationDrawer;
+    public Drawer navigationDrawer;
 
     /**
      * Navigation drawer items
@@ -87,6 +87,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (this.contentView != null)
             setContentView(this.contentView);
         if (this.title != null)
