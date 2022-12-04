@@ -18,6 +18,7 @@
     <string name="error_no_oer_api_key">To use currencies, please create an account on the following website : http://openexchangerates.org (it is free for personal use) and copy API key you will get on the next screen.</string>
     <string name="error_network_issue">Network problem or network not available, please retry</string>
     <string name="error_oer_apikey_invalid">API key is invalid, please correct !</string>
+    <string name="activity_title_main">Main activity</string>
     <string name="activity_title_edition_category">Category edition</string>
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>

@@ -65,9 +65,9 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
         TmhLogger.d(TAG, "  nb acc = " + nbAcc);
 
         if (nbCat > 0 && nbCur > 0 && nbAcc > 0) {
-            startActivity(new Intent(this, ViewPagerOperationActivity.class));
+            //startActivity(new Intent(this, ViewPagerOperationActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             this.finish();
-            
         }
 
         if (nbCat > 0) {

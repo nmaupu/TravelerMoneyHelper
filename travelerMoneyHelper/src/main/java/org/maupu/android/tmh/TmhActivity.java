@@ -54,8 +54,9 @@ import java.util.Map;
 
 public abstract class TmhActivity extends AppCompatActivity implements IAsyncActivityRefresher, Drawer.OnDrawerItemClickListener {
     private static final Class TAG = TmhActivity.class;
+
     public AccountHeader accountHeader;
-    public Drawer navigationDrawer;
+    public static Drawer navigationDrawer;
 
     /**
      * Navigation drawer items
@@ -194,13 +195,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             navigationDrawer = new DrawerBuilder()
                     .withActivity(this)
                     .addDrawerItems(items.toArray(new IDrawerItem[0]))
-                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                        @Override
-                        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                            TmhLogger.d(TAG, "Drawer item clicked");
-                            return false;
-                        }
-                    })
                     .withAccountHeader(accountHeader)
                     .withToolbar(toolbar)
                     .withActionBarDrawerToggle(true)
@@ -219,7 +213,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
                             SoftKeyboardHelper.hide(thisActivity);
                         }
                     })
-                    .withOnDrawerItemClickListener(this)
+                    //.withOnDrawerItemClickListener(this)
                     .build();
 
             // Update all badges in the drawer

@@ -63,7 +63,9 @@ public class StatsActivity extends TmhActivity {
     private SlidingUpPanelLayout slidingPanel;
     private Date dateBegin, dateEnd;
 
-    /** Primary panel **/
+    /**
+     * Primary panel
+     **/
     private TextView tvMisc;
     private CategoriesPieChart pieChart;
     private CategoriesLineChart detailsChart;
@@ -79,7 +81,9 @@ public class StatsActivity extends TmhActivity {
     // Categories list and chooser
     private FlowLayout layoutCategories;
 
-    /** Secondary panel **/
+    /**
+     * Secondary panel
+     **/
     private TextView tvDateBegin, tvDateEnd;
     private TextView tvDuration;
     private ImageView accountImage;
@@ -106,17 +110,17 @@ public class StatsActivity extends TmhActivity {
         }
 
 
-        slidingPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingPanel.setDragView(R.id.layout_title);
 
         /** Primary panel **/
-        tvMisc = (TextView)findViewById(R.id.misc);
-        tvDateBegin = (TextView)findViewById(R.id.date_begin);
-        tvDateEnd = (TextView)findViewById(R.id.date_end);
-        tvDuration = (TextView)findViewById(R.id.duration);
+        tvMisc = (TextView) findViewById(R.id.misc);
+        tvDateBegin = (TextView) findViewById(R.id.date_begin);
+        tvDateEnd = (TextView) findViewById(R.id.date_end);
+        tvDuration = (TextView) findViewById(R.id.duration);
 
         // Categories chooser
-        layoutCategories = (FlowLayout)findViewById(R.id.layout_categories);
+        layoutCategories = (FlowLayout) findViewById(R.id.layout_categories);
 
         // info
         infoPanel = new InfoPanel(this);
@@ -128,9 +132,9 @@ public class StatsActivity extends TmhActivity {
         initDetailsChart();
 
         /** Secondary panel **/
-        accountImage = (ImageView)findViewById(R.id.account_image);
-        accountName = (TextView)findViewById(R.id.account_name);
-        statsViewPager = (StatsViewPager)findViewById(R.id.viewpager);
+        accountImage = (ImageView) findViewById(R.id.account_image);
+        accountName = (TextView) findViewById(R.id.account_name);
+        statsViewPager = (StatsViewPager) findViewById(R.id.viewpager);
         statsViewPager.initPanel();
         tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(statsViewPager);
@@ -138,7 +142,7 @@ public class StatsActivity extends TmhActivity {
 
         statsData.setCatToHighlight(null);
         reloadInputData();
-        if(! loadDates())
+        if (!loadDates())
             autoSetDates();
         rebuildStatsData(true, false);
         refreshDisplay();
@@ -152,7 +156,7 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void initPieChart() {
-        pieChart = (CategoriesPieChart)findViewById(R.id.pie_chart);
+        pieChart = (CategoriesPieChart) findViewById(R.id.pie_chart);
         statsData.addOnStatsDataChangedListener(pieChart);
         pieChart.initPanel();
         final TmhActivity thisInstance = this;
@@ -214,14 +218,14 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void initDetailsChart() {
-        detailsChart = (CategoriesLineChart)findViewById(R.id.details_chart);
+        detailsChart = (CategoriesLineChart) findViewById(R.id.details_chart);
         statsData.addOnStatsDataChangedListener(detailsChart);
         detailsChart.initPanel();
     }
 
     @Override
     public IDrawerItem[] buildNavigationDrawer() {
-        return new IDrawerItem[] {
+        return new IDrawerItem[]{
                 createSecondaryDrawerItem(
                         DRAWER_ITEM_STATS_DATE_BEGIN,
                         R.drawable.ic_today_black,
@@ -243,7 +247,7 @@ public class StatsActivity extends TmhActivity {
 
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
-        if(item.getIdentifier() == DRAWER_ITEM_STATS_AUTO) {
+        if (item.getIdentifier() == DRAWER_ITEM_STATS_AUTO) {
             statsData.setCatToHighlight(null);
             autoSetExceptedCategories();
             rebuildStatsData(true, false);
@@ -252,7 +256,7 @@ public class StatsActivity extends TmhActivity {
             showDialog(DIALOG_DATE_BEGIN);
         } else if (item.getIdentifier() == DRAWER_ITEM_STATS_DATE_END) {
             showDialog(DIALOG_DATE_END);
-        } else if(item.getIdentifier() == DRAWER_ITEM_STATS_DATE_RESET) {
+        } else if (item.getIdentifier() == DRAWER_ITEM_STATS_DATE_RESET) {
             autoSetDates();
             rebuildStatsData(true, false);
             refreshDisplay();
@@ -267,7 +271,7 @@ public class StatsActivity extends TmhActivity {
 
         Calendar cal = Calendar.getInstance();
 
-        if(id == DIALOG_DATE_BEGIN) {
+        if (id == DIALOG_DATE_BEGIN) {
             cal.setTime(dateBegin);
         } else if (id == DIALOG_DATE_END) {
             cal.setTime(dateEnd);
@@ -287,16 +291,16 @@ public class StatsActivity extends TmhActivity {
                 cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 Date d = cal.getTime();
 
-                if(id == DIALOG_DATE_BEGIN) {
+                if (id == DIALOG_DATE_BEGIN) {
                     Date dateToSet = DateUtil.resetDateToBeginingOfDay(d);
-                    if(dateToSet.before(dateEnd))
+                    if (dateToSet.before(dateEnd))
                         dateBegin = dateToSet;
                     else
                         Toast.makeText(thisInstance, getString(R.string.error_date_begin_after_end), Toast.LENGTH_SHORT).show();
                     TmhLogger.d(TAG, "Changing date begin to : " + dateBegin);
                 } else if (id == DIALOG_DATE_END) {
                     Date dateToSet = DateUtil.resetDateToEndOfDay(d);
-                    if(dateToSet.after(dateBegin))
+                    if (dateToSet.after(dateBegin))
                         dateEnd = dateToSet;
                     else
                         Toast.makeText(thisInstance, getString(R.string.error_date_end_before_begin), Toast.LENGTH_SHORT).show();
@@ -326,11 +330,11 @@ public class StatsActivity extends TmhActivity {
      * Reload input data from saved changes (exceptedCategories, dates)
      */
     public void reloadInputData() {
-        if(! loadDates())
+        if (!loadDates())
             autoSetDates();
 
         // If excepted cat is null, trying to auto set them
-        if(StaticData.getStatsExceptedCategories().size() == 0)
+        if (StaticData.getStatsExceptedCategories().size() == 0)
             autoSetExceptedCategories();
     }
 
@@ -338,7 +342,7 @@ public class StatsActivity extends TmhActivity {
     public void handleRefreshEnding(Map<Integer, Object> results) {
         Account currentAccount = StaticData.getCurrentAccount();
 
-        if(currentAccount != null) {
+        if (currentAccount != null) {
             ImageViewHelper.setIcon(this, accountImage, currentAccount.getIcon());
             accountName.setText(currentAccount.getName());
         } else {
@@ -366,13 +370,13 @@ public class StatsActivity extends TmhActivity {
 
     private void autoSetDates() {
         Account currentAccount = StaticData.getCurrentAccount();
-        if(currentAccount == null)
+        if (currentAccount == null)
             return;
 
         // Begin date
         Operation dummyOp = new Operation();
         dateBegin = dummyOp.getFirstDate(currentAccount, StaticData.getStatsExceptedCategoriesToArray());
-        if(dateBegin == null) // No operation yet
+        if (dateBegin == null) // No operation yet
             return;
         dateBegin = DateUtil.resetDateToBeginingOfDay(dateBegin);
 
@@ -408,7 +412,7 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void refreshDates() {
-        if(dateBegin != null && dateEnd != null) {
+        if (dateBegin != null && dateEnd != null) {
             tvDateBegin.setText(DateUtil.dateToStringNoTime(dateBegin));
             tvDateEnd.setText(DateUtil.dateToStringNoTime(dateEnd));
             tvDuration.setText(
@@ -421,7 +425,7 @@ public class StatsActivity extends TmhActivity {
     private boolean loadDates() {
         Date db = StaticData.getDateField(StaticData.PREF_STATS_DATE_BEG);
         Date de = StaticData.getDateField(StaticData.PREF_STATS_DATE_END);
-        if(db != null && de != null) {
+        if (db != null && de != null) {
             dateBegin = db;
             dateEnd = de;
         }
@@ -430,15 +434,16 @@ public class StatsActivity extends TmhActivity {
         Operation dummyOp = new Operation();
         Date dateFirstOperation = dummyOp.getFirstDate(StaticData.getCurrentAccount(), null);
         Date dateLastOperation = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
-        if(dateFirstOperation != null) { // Some operations on that account
+        if (dateFirstOperation != null) { // Some operations on that account
             dateFirstOperation = DateUtil.resetDateToBeginingOfDay(dateFirstOperation);
         }
         if (dateLastOperation != null) {
             dateLastOperation = DateUtil.resetDateToEndOfDay(dateLastOperation);
         }
 
-        return db != null && de != null && de.after(db) && (dateFirstOperation==null || (dateFirstOperation.after(de))) && (dateLastOperation == null || dateLastOperation.before(db));
+        return db != null && de != null && de.after(db) && (dateFirstOperation == null || (dateFirstOperation.after(de))) && (dateLastOperation == null || dateLastOperation.before(db));
     }
+
     private void saveDates() {
         StaticData.setDateField(StaticData.PREF_STATS_DATE_BEG, dateBegin);
         StaticData.setDateField(StaticData.PREF_STATS_DATE_END, dateEnd);
@@ -454,7 +459,7 @@ public class StatsActivity extends TmhActivity {
             Integer[] cats = o.getExceptCategoriesAuto(StaticData.getCurrentAccount());
             Set<Integer> exceptedCats = new HashSet<>(Arrays.asList(cats));
 
-            if(currentExceptedToKeep != null && currentExceptedToKeep.size() > 0)
+            if (currentExceptedToKeep != null && currentExceptedToKeep.size() > 0)
                 exceptedCats.addAll(currentExceptedToKeep);
 
             StaticData.getStatsExceptedCategories().clear();
@@ -468,11 +473,11 @@ public class StatsActivity extends TmhActivity {
         final Set<Integer> exceptedCategories = StaticData.getStatsExceptedCategories();
         layoutCategories.removeAllViews();
         Cursor c;
-        if(StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
+        if (StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
             c = new Category().fetchAllCategoriesUsedByAccountOperations(StaticData.getCurrentAccount().getId());
         else
             c = new Category().fetchAll();
-        if(c == null)
+        if (c == null)
             return;
 
         c.moveToFirst();
@@ -481,16 +486,16 @@ public class StatsActivity extends TmhActivity {
             cat.toDTO(c);
 
             int drawableBg = R.drawable.shape_button_rounded_ok;
-            if(exceptedCategories.contains(cat.getId()))
+            if (exceptedCategories.contains(cat.getId()))
                 drawableBg = R.drawable.shape_button_rounded_ko;
 
             // View
             final View buttonView = LayoutInflater.from(this).inflate(R.layout.stats_shape_button_rounded, null);
 
             // Root layout = button
-            final LinearLayout ll = (LinearLayout)buttonView.findViewById(R.id.button);
+            final LinearLayout ll = (LinearLayout) buttonView.findViewById(R.id.button);
             //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            int m = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
+            int m = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
             TmhLogger.d(TAG, "Margin calculated (not used yet) = " + m + " px");
             //lp.setMargins(m, m, m, m);
             ll.setBackground(buttonView.getResources().getDrawable(drawableBg));
@@ -522,7 +527,7 @@ public class StatsActivity extends TmhActivity {
                 }
             });
 
-        } while(c.moveToNext());
+        } while (c.moveToNext());
 
         c.close();
     }
@@ -532,7 +537,7 @@ public class StatsActivity extends TmhActivity {
     }
 
     private void rebuildStatsData(final boolean chartAnim, final boolean forwardEvent) {
-        TmhLogger.d(TAG, "rebuildStatsData called with chartAnim="+chartAnim);
+        TmhLogger.d(TAG, "rebuildStatsData called with chartAnim=" + chartAnim);
 
         /* Handle that big process in a thread */
         IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
@@ -551,7 +556,7 @@ public class StatsActivity extends TmhActivity {
             @Override
             public void handleRefreshEnding(Map<Integer, Object> results) {
                 String miscCatText = statsData.getMiscCategoryText();
-                if(miscCatText == null)
+                if (miscCatText == null)
                     miscCatText = getResources().getString(R.string.NA);
                 tvMisc.setText(miscCatText);
             }

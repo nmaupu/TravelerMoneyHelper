@@ -1,30 +1,21 @@
 package org.maupu.android.tmh;
 
 import android.app.Activity;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -32,10 +23,11 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
+import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
@@ -46,7 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> implements OnCheckedChangeListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher, OnItemSelectedListener {
+public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, TextWatcher, AdapterView.OnItemSelectedListener {
     private static final int DATE_DIALOG_ID = 0;
     private static final int TIME_DIALOG_ID = 1;
     //private DatePicker datePicker;
@@ -57,8 +49,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
     private int mMinutes = 0;
     private int mSeconds = 0;
 
-    private CustomDatePickerDialog customDatePickerDialog = null;
-    //private SpinnerManager smAccount;
     private Account account;
     private ImageView accountIcon;
     private TextView accountName;
@@ -78,17 +68,12 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
     private static final String PLUS = "+";
     private static final String MINUS = "-";
 
-    public AddOrEditOperationActivity() {
+    public AddOrEditOperationFragment() {
         super(R.string.activity_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
     }
 
     @Override
-    public int whatIsMyDrawerIdentifier() {
-        return super.DRAWER_ITEM_OPERATIONS;
-    }
-
-    @Override
-    protected View initResources() {
+    protected View initResources(View view) {
         // Set current time
         Calendar cal = Calendar.getInstance();
         mHours = cal.get(Calendar.HOUR_OF_DAY);
@@ -96,35 +81,35 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         mSeconds = cal.get(Calendar.SECOND);
 
         //smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
-        accountIcon = (ImageView) findViewById(R.id.account_icon);
-        accountName = (TextView) findViewById(R.id.account_name);
-        smCategory = new SpinnerManager(this, (Spinner) findViewById(R.id.category));
-        amount = (NumberEditText) findViewById(R.id.amount);
+        accountIcon = (ImageView) view.findViewById(R.id.account_icon);
+        accountName = (TextView) view.findViewById(R.id.account_name);
+        smCategory = new SpinnerManager(getContext(), (Spinner) view.findViewById(R.id.category));
+        amount = (NumberEditText) view.findViewById(R.id.amount);
         amount.addTextChangedListener(this);
-        linearLayoutRateUpdater = (LinearLayout) findViewById(R.id.ll_exchange_rate);
-        checkboxUpdateRate = (CheckBox) findViewById(R.id.checkbox_update_rate);
-        checkboxUpdateRate.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        linearLayoutRateUpdater = (LinearLayout) view.findViewById(R.id.ll_exchange_rate);
+        checkboxUpdateRate = (CheckBox) view.findViewById(R.id.checkbox_update_rate);
+        checkboxUpdateRate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateConvertedAmount();
             }
         });
-        smCurrency = new SpinnerManager(this, (Spinner) findViewById(R.id.currency));
+        smCurrency = new SpinnerManager(getContext(), (Spinner) view.findViewById(R.id.currency));
         smCurrency.getSpinner().setOnItemSelectedListener(this);
 
-        radioButtonCredit = (RadioButton) findViewById(R.id.credit);
-        radioButtonDebit = (RadioButton) findViewById(R.id.debit);
+        radioButtonCredit = (RadioButton) view.findViewById(R.id.credit);
+        radioButtonDebit = (RadioButton) view.findViewById(R.id.debit);
         radioButtonCredit.setOnCheckedChangeListener(this);
         radioButtonDebit.setOnCheckedChangeListener(this);
-        textViewSign = (TextView) findViewById(R.id.sign);
-        textViewDate = (TextView) findViewById(R.id.date);
+        textViewSign = (TextView) view.findViewById(R.id.sign);
+        textViewDate = (TextView) view.findViewById(R.id.date);
         textViewDate.setOnClickListener(this);
-        textViewTime = (TextView) findViewById(R.id.time);
+        textViewTime = (TextView) view.findViewById(R.id.time);
         textViewTime.setOnClickListener(this);
-        buttonToday = (Button) findViewById(R.id.button_today);
+        buttonToday = (Button) view.findViewById(R.id.button_today);
         buttonToday.setOnClickListener(this);
-        textViewConvertedAmount = (TextView) findViewById(R.id.converted_amount);
-        textViewAmount = (TextView) findViewById(R.id.text_amount);
+        textViewConvertedAmount = (TextView) view.findViewById(R.id.converted_amount);
+        textViewAmount = (TextView) view.findViewById(R.id.text_amount);
 
         // Set spinners content
         Cursor c;
@@ -132,7 +117,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         // Init on current account
         account = StaticData.getCurrentAccount();
         accountName.setText(account.getName());
-        ImageViewHelper.setIcon(this, accountIcon, account.getIcon());
+        ImageViewHelper.setIcon(getContext(), accountIcon, account.getIcon());
 
         Category dummyCategory = new Category();
         Category withdrawalCat = StaticData.getWithdrawalCategory();
@@ -149,10 +134,10 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         } else {
             // Adding an operation
             c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()});
-            final Activity activity = this;
+            final Activity activity = getActivity();
             if (c.getCount() == 0) {
                 // No category created yet, cannot continue !
-                SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_no_category), new android.content.DialogInterface.OnClickListener() {
+                SimpleDialog.errorDialog(getContext(), getString(R.string.error), getString(R.string.error_no_category), new android.content.DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         startActivity(new Intent(activity, AddOrEditCategoryActivity.class));
@@ -179,12 +164,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         smCategory.closeAdapterCursor();
         smCurrency.closeAdapterCursor();
 
@@ -232,7 +212,7 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
             if (obj.getAccount() != null) {
                 account = obj.getAccount();
                 accountName.setText(account.getName());
-                ImageViewHelper.setIcon(this, accountIcon, account.getIcon());
+                ImageViewHelper.setIcon(getContext(), accountIcon, account.getIcon());
             }
             if (obj.getCategory() != null)
                 smCategory.setSpinnerPositionCursor(obj.getCategory().getName(), new Category());
@@ -310,12 +290,23 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
 
     @Override
     public void onClick(View v) {
-        //super.onClick(v);
-
         if (v.getId() == R.id.date) {
-            showDialog(DATE_DIALOG_ID);
+            new DatePickerDialogFragment(mYear, mMonth, mDay, (view, year, month, dayOfMonth) -> {
+                mYear = year;
+                mMonth = month;
+                mDay = dayOfMonth;
+                updateDatePickerTextView();
+            }).show(
+                    getChildFragmentManager(), DatePickerDialogFragment.TAG
+            );
         } else if (v.getId() == R.id.time) {
-            showDialog(TIME_DIALOG_ID);
+            new TimePickerDialogFragment(mHours, mMinutes, true, (view, hourOfDay, minute) -> {
+                mHours = hourOfDay;
+                mMinutes = minute;
+                updateDatePickerTextView();
+            }).show(
+                    getChildFragmentManager(), TimePickerDialogFragment.TAG
+            );
         } else if (v.getId() == R.id.button_today) {
             Date now = Calendar.getInstance().getTime();
             setDateTimeFields(now);
@@ -325,33 +316,11 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-                customDatePickerDialog = new CustomDatePickerDialog(this, this, mYear, mMonth, mDay);
-                return customDatePickerDialog;
-            case TIME_DIALOG_ID:
-                TimePickerDialog tpd = new TimePickerDialog(this, this, mHours, mMinutes, true);
-                return tpd;
-        }
-
-        return null;
-    }
-
     public void updateDatePickerTextView() {
         GregorianCalendar gc = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds);
 
         textViewDate.setText(DateUtil.dateToStringNoTime(gc.getTime()));
         textViewTime.setText(DateUtil.dateToStringOnlyTime(gc.getTime()));
-    }
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        mYear = year;
-        mMonth = monthOfYear;
-        mDay = dayOfMonth;
-        updateDatePickerTextView();
     }
 
     private void setDateTimeFields(Date d) {
@@ -365,13 +334,6 @@ public class AddOrEditOperationActivity extends AddOrEditActivity<Operation> imp
         mHours = cal.get(Calendar.HOUR_OF_DAY);
         mMinutes = cal.get(Calendar.MINUTE);
         mSeconds = cal.get(Calendar.SECOND);
-    }
-
-    @Override
-    public void onTimeSet(TimePicker ctx, int hours, int minutes) {
-        mHours = hours;
-        mMinutes = minutes;
-        updateDatePickerTextView();
     }
 
     @Override

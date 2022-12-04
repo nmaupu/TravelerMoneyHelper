@@ -47,6 +47,7 @@ dependencies {
     def flowlayout_version = "1.10"
     def preference_version = "1.2.0"
     def nav_version = "2.5.3"
+    def fragment_version = "1.5.4"
 
     repositories {
         mavenCentral()
@@ -58,6 +59,8 @@ dependencies {
     implementation("androidx.preference:preference:$preference_version") {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
     }
+
+    implementation "androidx.fragment:fragment:$fragment_version"
 
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
