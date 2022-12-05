@@ -4,14 +4,15 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -32,6 +33,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.databinding.ActivityMainBinding;
+import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     // drawer
-    public AccountHeader accountHeader;
-    public Drawer navigationDrawer;
+    private AccountHeader accountHeader;
+    private Drawer navigationDrawer;
+    private boolean isDrawerEnabled = true;
     /**
      * Navigation drawer items
      **/
@@ -72,24 +75,19 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.tmhToolbar);
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        setSupportActionBar(binding.toolbar);
 
         initNavigationDrawer();
-    }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp();
+        // Display initial fragment
+        if (savedInstanceState == null) {
+            changeFragment(AddOrEditOperationFragment.class, false, null);
+        }
     }
 
     private void initNavigationDrawer() {
         if (accountHeader == null) {
-            /** Header **/
+            // Header
             accountHeader = new AccountHeaderBuilder()
                     .withActivity(this)
                     .withHeaderBackground(R.drawable.navigation_drawer_header)
@@ -130,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (navigationDrawer == null) {
-            /** Items **/
+            // Items
             List<IDrawerItem> items = new ArrayList<>();
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_OPERATIONS, R.drawable.ic_account_balance_black, R.string.dashboard_operation));
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_STATS, R.drawable.ic_equalizer_black, R.string.dashboard_stats));
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_CATEGORIES, R.drawable.ic_folder_empty_black, R.string.categories));
             items.add(createPrimaryDrawerItem(DRAWER_ITEM_ACCOUNTS, R.drawable.ic_account_black, R.string.accounts));
 
-            /** Custom items **/
+            // Custom items
             //IDrawerItem[] customItems = buildNavigationDrawer();
             IDrawerItem[] customItems = null;
             if (customItems != null) {
@@ -150,19 +148,19 @@ public class MainActivity extends AppCompatActivity {
 
             items.add(new DividerDrawerItem());
 
-            /** Last items : refresh, parameters, etc ... **/
+            // Last items : refresh, parameters, etc ...
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_PARAMETERS, R.drawable.ic_settings_black, R.string.parameters));
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_REFRESH, R.drawable.ic_refresh_black, R.string.refresh));
             items.add(createSecondaryDrawerItem(DRAWER_ITEM_ABOUT, R.drawable.ic_info_black, R.string.about_title));
 
-            /** Navigation drawer itself **/
+            // Navigation drawer itself
             FragmentActivity activity = this;
             navigationDrawer = new DrawerBuilder()
                     .withActivity(this)
                     .addDrawerItems(items.toArray(new IDrawerItem[0]))
                     .withAccountHeader(accountHeader)
-                    .withToolbar(binding.tmhToolbar)
-                    .withActionBarDrawerToggle(true)
+                    // .withToolbar(binding.toolbar)
+                    .withActionBarDrawerToggle(false)
                     .withOnDrawerListener(new Drawer.OnDrawerListener() {
                         @Override
                         public void onDrawerOpened(View drawerView) {
@@ -178,17 +176,100 @@ public class MainActivity extends AppCompatActivity {
                             SoftKeyboardHelper.hide(activity);
                         }
                     })
-                    //.withOnDrawerItemClickListener(this)
                     .build();
+
 
             // Update all badges in the drawer
             updateDrawerBadges();
+        }
 
-            if (binding.tmhToolbar != null) {
-                // Order and boolean are important to have custom icon as home up indicator
-                navigationDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setNavigationBarDrawerIconToHamburger();
+
+
+        FragmentActivity activity = this;
+        navigationDrawer.setOnDrawerItemClickListener((view, position, drawerItem) -> {
+            if (drawerItem.getIdentifier() == DRAWER_ITEM_ABOUT) {
+                DialogHelper.popupDialogAbout(activity);
+            } else if (drawerItem.getIdentifier() == DRAWER_ITEM_CONVERTER) {
+
+                changeFragment(ConverterFragment.class, false, null);
+            } else if (drawerItem.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
+                changeFragment(AddOrEditOperationFragment.class, false, null);
+            } else if (drawerItem.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
+                changeFragment(PreferencesNewFragment.class, true, null);
             }
+
+            return false;
+        });
+    }
+
+    public void setNavigationBarDrawerIconToHamburger() {
+        // reactivate ability to slide drawer from the left edge of the screen
+        navigationDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24);
+        isDrawerEnabled = true;
+    }
+
+    public void setNavigationBarDrawerIconToBackArrow() {
+        // prevent being able to slide drawer from the left edge of the screen
+        navigationDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_24);
+        isDrawerEnabled = false;
+    }
+
+
+    // When clicking on the "home" button which can be hamburger or back arrow
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (isDrawerEnabled) {
+                    if (navigationDrawer.isDrawerOpen())
+                        navigationDrawer.closeDrawer();
+                    else
+                        navigationDrawer.openDrawer();
+                } else {
+                    onBackPressed();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void changeFragment(Class fragment, boolean addToBackStack, Bundle args) {
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+
+        if (addToBackStack) {
+            transaction
+                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+                    .replace(R.id.fragment_content_main, fragment, args)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null);
+
+            setNavigationBarDrawerIconToBackArrow();
+        } else {
+            transaction
+                    .replace(R.id.fragment_content_main, fragment, args)
+                    .setReorderingAllowed(true);
+        }
+
+        transaction.commit();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (navigationDrawer.isDrawerOpen()) {
+            navigationDrawer.closeDrawer();
+        } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            setNavigationBarDrawerIconToHamburger();
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
         }
     }
 

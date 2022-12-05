@@ -13,6 +13,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.fragment.app.FragmentActivity;
+
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.core.TmhApplication;
@@ -252,7 +254,7 @@ public abstract class DialogHelper {
         }
     }
 
-    public static void popupDialogAbout(final TmhActivity tmhActivity) {
+    public static void popupDialogAbout(final FragmentActivity tmhActivity) {
         // Popup about dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(tmhActivity);
 

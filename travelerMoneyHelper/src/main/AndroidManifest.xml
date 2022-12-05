@@ -44,7 +44,6 @@
         <activity android:name=".AddOrEditAccountActivity" />
         <activity android:name=".StatsActivity" />
         <activity android:name=".PreferencesActivity" />
-        <activity android:name=".PreferencesNewActivity" />
         <activity android:name=".WithdrawalActivity" />
         <activity android:name=".ConverterActivity" />
         <activity android:name=".MainActivity" />

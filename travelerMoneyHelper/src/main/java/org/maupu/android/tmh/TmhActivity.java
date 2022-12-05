@@ -259,7 +259,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         if (item.getIdentifier() == DRAWER_ITEM_REFRESH) {
             refreshDisplay();
         } else if (item.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
-            intent = new Intent(this, PreferencesNewActivity.class);
+            intent = new Intent(this, PreferencesActivity.class);
             killCurrentActivity = false;
         } else if (item.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
             intent = new Intent(this, ViewPagerOperationActivity.class);

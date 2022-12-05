@@ -101,6 +101,7 @@ public class ConverterFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle(R.string.activity_title_currency_converter);
 
         /**
          * Widgets
@@ -273,11 +274,10 @@ public class ConverterFragment extends Fragment implements View.OnClickListener,
 
     private AlertDialog createDialogCurrencyChooser(final int type) {
         AlertDialog.Builder builder;
-        final Context mContext = getContext();
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_currency_chooser, (ViewGroup) getView().findViewById(R.id.root_layout), false);
 
-        builder = new AlertDialog.Builder(mContext);
+        builder = new AlertDialog.Builder(getContext());
         builder.setView(layout);
 
         final AlertDialog dialog = builder.create();
@@ -305,7 +305,7 @@ public class ConverterFragment extends Fragment implements View.OnClickListener,
             @Override
             public void onShow(DialogInterface dialog) {
                 textView.requestFocus();
-                SoftKeyboardHelper.forceShowUp((TmhActivity) mContext);
+                SoftKeyboardHelper.forceShowUp(getActivity());
             }
         });
 
