@@ -6,18 +6,18 @@
     android:background="@android:color/background_light"
     android:orientation="horizontal"
     android:padding="0dip"
-    android:visibility="visible" >
+    android:visibility="visible">
 
     <Button
         android:id="@+id/button_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dip"
         android:layout_marginLeft="2dip"
-        android:layout_marginRight="2dip"
         android:layout_marginTop="4dip"
+        android:layout_marginRight="2dip"
+        android:layout_marginBottom="0dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/button_edit"
+        android:drawableTop="@drawable/ic_baseline_edit_24"
         android:enabled="false"
         android:padding="5dip"
         android:text="@string/edit" />
@@ -36,17 +36,17 @@
         android:visibility="gone"
         android:padding="5dip"
         android:text="@string/update" />
-    
+
     <Button
         android:id="@+id/button_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dip"
         android:layout_marginLeft="2dip"
-        android:layout_marginRight="2dip"
         android:layout_marginTop="4dip"
+        android:layout_marginRight="2dip"
+        android:layout_marginBottom="0dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/button_delete"
+        android:drawableTop="@drawable/ic_baseline_delete_24"
         android:enabled="false"
         android:padding="5dip"
         android:text="@string/delete" />

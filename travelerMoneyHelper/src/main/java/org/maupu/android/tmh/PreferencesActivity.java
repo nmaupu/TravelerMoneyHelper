@@ -1,21 +1,21 @@
 package org.maupu.android.tmh;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.widget.TextView;
+import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -24,7 +24,9 @@ import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.ui.ImportPreference;
+import org.maupu.android.tmh.database.object.StaticPrefs;
+import org.maupu.android.tmh.databinding.ActivityPreferencesBinding;
+import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
@@ -33,49 +35,90 @@ import org.maupu.android.tmh.util.ImportExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
 
-public class PreferencesActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
-    private static final Class TAG = PreferencesActivity.class;
+public class PreferencesActivity extends AppCompatActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+    private static final Class<PreferencesActivity> TAG = PreferencesActivity.class;
     //private static final String FILENAME = "mainPrefs";
     private boolean dbChanged = false;
 
-    private ImportPreference importPreference;
+    private ActivityPreferencesBinding binding;
+    private PreferencesFragment preferencesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
 
-        EditTextPreference newDatabase = (EditTextPreference) findPreference(StaticData.PREF_NEW_DATABASE);
+        binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbar);
+        setTitle(R.string.activity_title_preferences);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24);
+
+        preferencesFragment = (PreferencesFragment) getSupportFragmentManager().findFragmentById(R.id.preferences_fragment);
+
+
+        EditTextPreference newDatabase = preferencesFragment.findPreference(StaticData.PREF_NEW_DATABASE);
         newDatabase.setOnPreferenceChangeListener(this);
         newDatabase.setOnPreferenceClickListener(this);
 
-        ListPreference listDatabases = (ListPreference) findPreference(StaticData.PREF_DATABASE);
+        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
         listDatabases.setOnPreferenceClickListener(this);
         listDatabases.setOnPreferenceChangeListener(this);
-        listDatabases.setEntries(getAllDatabasesListEntries());
-        listDatabases.setEntryValues(getAllDatabasesListEntryValues());
-        listDatabases.setValue(PreferencesActivity.getStringValue(StaticData.PREF_DATABASE));
 
-        ListPreference listCategory = (ListPreference) findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
+        String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
+        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_MANAGE_DB);
+        listDatabasesForDeletion.setOnPreferenceChangeListener(this);
+        listDatabasesForDeletion.setOnPreferenceClickListener(this);
+
+        refreshDbLists(null);
+
+        ListPreference listCategory = preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
         listCategory.setOnPreferenceClickListener(this);
         listCategory.setEntries(getAllCategoriesEntries());
         listCategory.setEntryValues(getAllCategoriesEntryValues());
 
-        EditTextPreference editTextPreference = (EditTextPreference) findPreference(StaticData.PREF_OER_EDIT);
+        EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_OER_EDIT);
         editTextPreference.setOnPreferenceChangeListener(this);
         editTextPreference.setOnPreferenceClickListener(this);
 
-        EditTextPreference editTextExportDb = (EditTextPreference) findPreference(StaticData.PREF_EXPORT_DB);
+        EditTextPreference editTextExportDb = preferencesFragment.findPreference(StaticData.PREF_EXPORT_DB);
         editTextExportDb.setOnPreferenceChangeListener(this);
         editTextExportDb.setOnPreferenceClickListener(this);
 
-        importPreference = (ImportPreference) findPreference(StaticData.PREF_IMPORT_DB);
-        importPreference.setOnPreferenceChangeListener(this);
-        importPreference.setParentActivity(this);
+        ImportDBDialogPreference importDBDialogPreference = preferencesFragment.findPreference(StaticData.PREF_IMPORT_DB);
+        importDBDialogPreference.setOnPreferenceChangeListener(this);
+        importDBDialogPreference.setOnPreferenceClickListener(this);
+    }
+
+    private void refreshDbLists(String currentDB) {
+        String curDB = currentDB;
+        if (curDB == null) {
+            curDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
+        }
+        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+        listDatabases.setEntries(DatabaseHelper.getAllDatabasesListEntries());
+        listDatabases.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
+        listDatabases.setValue(PreferencesActivity.getStringValue(StaticData.PREF_DATABASE));
+
+        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_MANAGE_DB);
+        listDatabasesForDeletion.setValues(new HashSet<>());
+        listDatabasesForDeletion.setEntries(DatabaseHelper.getAllDatabasesListEntries(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
+        listDatabasesForDeletion.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -168,60 +211,19 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
         return ret;
     }
 
-    /**
-     * Get either list of databases ready to be printed to user
-     * or stored database filename depending on prettyPrint parameter.
-     *
-     * @param prettyPrint Weather getting all databases ready to be printed to user or raw filenames
-     * @return List of all available databases
-     */
-    private CharSequence[] getAllDatabases(boolean prettyPrint) {
-        // For an obscure reason, databaseList() returns strange results on some device
-        // such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
-        // instead of [TravelerMoneyHelper_appdata_default]
-        // What is 0 ? What is TravelerMoneyHelper_appdata ? who knows !
-        CharSequence[] list = TmhApplication.getAppContext().databaseList();
-        //CharSequence[] ret = new CharSequence[list.length];
-        List<String> listEntries = new ArrayList<String>();
-
-        TmhLogger.d(TAG, "Number of databases returned : " + list.length);
-        for (int i = 0; i < list.length; i++) {
-            String[] vals = ((String) list[i]).split(DatabaseHelper.DATABASE_PREFIX);
-            // If database name is not correct (no prefix), array is wrong so we denied this DB
-            // We also discard journal DB
-            if (vals.length == 2 && !vals[1].contains("-journal")) {
-                TmhLogger.d(TAG, "Database filename : " + list[i] + " - database name : " + vals[1]);
-                if (prettyPrint)
-                    listEntries.add(vals[1]);
-                else
-                    listEntries.add(list[i].toString());
-            }
-        }
-
-        return listEntries.toArray(new String[0]);
-    }
-
-    private CharSequence[] getAllDatabasesListEntries() {
-        return getAllDatabases(true);
-    }
-
-    private CharSequence[] getAllDatabasesListEntryValues() {
-        return getAllDatabases(false);
-    }
-
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
             ((EditTextPreference) preference).setText("");
-            ((EditTextPreference) preference).getEditText().setText("");
-        } else if (StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
-            ((EditTextPreference) preference).getEditText().requestFocus();
         } else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
             Calendar cal = Calendar.getInstance();
             String dateString = DateUtil.dateToStringForFilename(cal.getTime());
-            String filename = new StringBuilder("tmh-").append(dateString).append(".db").toString();
-            ((EditTextPreference) preference).getEditText().setText(filename);
-            ((EditTextPreference) preference).getEditText().requestFocus();
+            String filename = new StringBuilder(DatabaseHelper.getPreferredDatabaseName())
+                    .append("-")
+                    .append(dateString)
+                    .append(".db")
+                    .toString();
+            ((EditTextPreference) preference).setText(filename);
         }
 
         return true;
@@ -235,6 +237,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
             Currency cur = StaticData.getDefaultMainCurrency();
             if (cur != null)
                 StaticData.setMainCurrency(cur.getId());
+            StaticPrefs.loadCurrentStaticPrefs();
         } else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
             if (!"".equals(newValue)) {
                 TmhLogger.d(TAG, "Creating new database " + newValue);
@@ -244,10 +247,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
                 // creating a new DB
                 TmhApplication.changeOrCreateDatabase(dbName);
 
-                // Resetting edit text to emtpy string
-                ListPreference dbPref = (ListPreference) findPreference(StaticData.PREF_DATABASE);
-                dbPref.setEntries(getAllDatabasesListEntries());
-                dbPref.setEntryValues(getAllDatabasesListEntryValues());
+                // Resetting edit text to empty string
+                refreshDbLists(null);
+                ListPreference dbPref = (ListPreference) preferencesFragment.findPreference(StaticData.PREF_DATABASE);
                 dbPref.setValue(dbName);
 
                 Toast.makeText(
@@ -294,24 +296,49 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
             String db = DatabaseHelper.DATABASE_PREFIX + (newValue);
             TmhApplication.changeOrCreateDatabase(db);
 
-            // Resetting edit text to emtpy string
-            ListPreference dbPref = (ListPreference) findPreference(StaticData.PREF_DATABASE);
-            dbPref.setEntries(getAllDatabasesListEntries());
-            dbPref.setEntryValues(getAllDatabasesListEntryValues());
+            // Resetting edit text to empty string
+            ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+            dbPref.setEntries(DatabaseHelper.getAllDatabasesListEntries());
+            dbPref.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
             dbPref.setValue(db);
 
             Toast.makeText(
                     TmhApplication.getAppContext(),
                     getString(R.string.database_created_successfuly) + " [" + newValue + "]",
                     Toast.LENGTH_LONG).show();
+        } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
+            HashSet<String> dbList = (HashSet<String>) newValue;
+            if (dbList.size() > 0) {
+                Iterator<String> dbListIt = dbList.iterator();
+                StringBuilder sb = new StringBuilder(getString(R.string.manageable_obj_del_confirm_question)).append(" (");
+                while (dbListIt.hasNext()) {
+                    sb.append(DatabaseHelper.stripDatabaseFileName(dbListIt.next()));
+                    if (dbListIt.hasNext())
+                        sb.append(", ");
+                }
+                sb.append(")");
+
+                SimpleDialog.confirmDialog(this,
+                        sb.toString(),
+                        (dialog, which) -> {
+                            Iterator<String> it = dbList.iterator();
+                            while (it.hasNext()) {
+                                TmhApplication.getAppContext().deleteDatabase(it.next());
+                            }
+                            refreshDbLists(null);
+                            dialog.dismiss();
+                            Toast.makeText(TmhApplication.getAppContext(), R.string.databases_deleted_successfuly, Toast.LENGTH_LONG).show();
+                        }).show();
+            }
         }
 
         if (StaticData.PREF_DATABASE.equals(preference.getKey()) ||
                 StaticData.PREF_NEW_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+                StaticData.PREF_IMPORT_DB.equals(preference.getKey()) ||
+                StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
             dbChanged = true;
             // Update categories for this db
-            ListPreference catPref = (ListPreference) findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
+            ListPreference catPref = (ListPreference) preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
             catPref.setEntries(getAllCategoriesEntries());
             catPref.setEntryValues(getAllCategoriesEntryValues());
 
@@ -325,23 +352,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnPrefere
                 catPref.setValue(null);
                 SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
             }
+
+            // currentDB preference is not yet applied at this stage so we need to get it from newValue
+            // if we just changed it
+            String curDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
+            if (StaticData.PREF_DATABASE.equals(preference.getKey()))
+                curDB = (String) newValue;
+            refreshDbLists(curDB);
         }
 
         return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            Uri uri = null;
-            if (data != null) {
-                uri = data.getData();
-                TmhLogger.d(TAG, "Uri: " + uri.toString());
-                importPreference.getDbFilename().setText(uri.toString(), TextView.BufferType.EDITABLE);
-                importPreference.setDatabaseUri(uri);
-            }
-        }
     }
 
     public static String getStringValue(String key) {

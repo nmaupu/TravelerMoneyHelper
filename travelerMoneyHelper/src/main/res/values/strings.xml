@@ -18,7 +18,6 @@
     <string name="error_no_oer_api_key">To use currencies, please create an account on the following website : http://openexchangerates.org (it is free for personal use) and copy API key you will get on the next screen.</string>
     <string name="error_network_issue">Network problem or network not available, please retry</string>
     <string name="error_oer_apikey_invalid">API key is invalid, please correct !</string>
-    <string name="activity_title_main">Main activity</string>
     <string name="activity_title_edition_category">Category edition</string>
     <string name="activity_title_edition_currency">Currency edition</string>
     <string name="activity_title_edition_operation">Operation edition</string>
@@ -96,6 +95,7 @@
     <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>
+    <string name="databases_deleted_successfuly">Database(s) deleted successfully</string>
     <string name="database_export_failed">Database export failed</string>
     <string name="database">Database</string>
     <string name="new_database">New database</string>
@@ -177,4 +177,6 @@
     <string name="pref_title_default_parameters">Default parameters</string>
     <string name="pref_title_api_configuration">API configuration</string>
     <string name="pref_title_import_export">Import / export</string>
+    <string name="pref_db_manager_title">Database manager</string>
+    <string name="pref_db_manager_summary">Delete a database</string>
 </resources>

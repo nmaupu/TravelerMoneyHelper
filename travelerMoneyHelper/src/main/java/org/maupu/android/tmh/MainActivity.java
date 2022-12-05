@@ -1,18 +1,19 @@
 package org.maupu.android.tmh;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -45,9 +46,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final Class TAG = MainActivity.class;
+    private static final Class<MainActivity> TAG = MainActivity.class;
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
     // drawer
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -197,7 +198,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (drawerItem.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
                 changeFragment(AddOrEditOperationFragment.class, false, null);
             } else if (drawerItem.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
-                changeFragment(PreferencesNewFragment.class, true, null);
+                Intent intent = new Intent(this, PreferencesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
 
             return false;

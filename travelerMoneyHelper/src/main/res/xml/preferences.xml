@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_marginTop="20dp"
     android:layout_height="match_parent">
 
-    <!-- Add some space at the top -->
-    <PreferenceCategory android:title=""></PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_title_persistence">
+    <PreferenceCategory
+        android:title="@string/pref_title_persistence"
+        app:icon="@drawable/ic_baseline_analytics_24">
         <ListPreference
             android:id="@+id/database"
             android:defaultValue="0"
@@ -23,9 +23,19 @@
             android:key="new_database"
             android:summary="@string/new_database_summary"
             android:title="@string/new_database" />
+
+        <MultiSelectListPreference
+            android:id="@+id/database_manager"
+            android:dialogTitle="@string/pref_db_manager_title"
+            android:summary="@string/pref_db_manager_summary"
+            android:key="manage_db"
+            android:title="@string/pref_db_manager_title"
+            android:positiveButtonText="@string/delete" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_title_default_parameters">
+    <PreferenceCategory
+        android:title="@string/pref_title_default_parameters"
+        app:icon="@drawable/ic_baseline_settings_24">
         <ListPreference
             android:id="@+id/category_withdrawal"
             android:defaultValue="0"
@@ -34,7 +44,9 @@
             android:title="@string/default_category_withdrawal" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_title_api_configuration">
+    <PreferenceCategory
+        android:title="@string/pref_title_api_configuration"
+        app:icon="@drawable/ic_baseline_https_24">
         <EditTextPreference
             android:id="@+id/oer_api_key"
             android:defaultValue=""
@@ -44,7 +56,9 @@
             android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_title_import_export">
+    <PreferenceCategory
+        android:title="@string/pref_title_import_export"
+        app:icon="@drawable/ic_baseline_import_export_24">
         <EditTextPreference
             android:id="@+id/export_filename"
             android:defaultValue="tmh.db"
@@ -52,13 +66,13 @@
             android:key="export_filename"
             android:summary="@string/export_db_summary"
             android:title="@string/export_db_title" />
-        <org.maupu.android.tmh.ui.ImportPreference
+        <org.maupu.android.tmh.dialog.ImportDBDialogPreference
             android:id="@+id/import_db"
-            android:key="import_db"
-            android:title="@string/import_db_title"
-            android:summary="@string/import_db_summary"
             android:dialogMessage="@string/import_db_summary"
+            android:key="import_db"
             android:negativeButtonText="@string/cancel"
-            android:positiveButtonText="ok" />
+            android:positiveButtonText="ok"
+            android:summary="@string/import_db_summary"
+            android:title="@string/import_db_title" />
     </PreferenceCategory>
 </PreferenceScreen>
