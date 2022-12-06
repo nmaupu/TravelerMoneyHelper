@@ -1,22 +1,21 @@
 package org.maupu.android.tmh;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.AnimHelper;
@@ -25,9 +24,8 @@ import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
 import org.maupu.android.tmh.util.TmhLogger;
 
-@SuppressLint("NewApi")
-public abstract class ManageableObjectActivity<T extends BaseObject> extends TmhActivity implements NumberCheckedListener, OnClickListener {
-    private static final Class TAG = ManageableObjectActivity.class;
+public abstract class ManageableObjectFragment<T extends BaseObject> extends TmhFragment implements View.OnClickListener, NumberCheckedListener {
+    private static final Class<ManageableObjectFragment> TAG = ManageableObjectFragment.class;
     private static final int ACTIVITY_ADD = 0;
     private static final int ACTIVITY_EDIT = 1;
     private ListView listView;
@@ -35,37 +33,42 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
     private Button editButton;
     private Button deleteButton;
     private Button updateButton;
-    private Class<?> addOrEditActivity;
+    private LinearLayout layoutRootFooter;
+    private Class<?> addOrEditFragment;
     private T obj;
-    //private QuickActionGrid quickActionGrid;
     private boolean animList = false;
     private CheckableCursorAdapter checkableCursorAdapter = null;
+    private int title;
 
-    public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, boolean animList) {
-        this(title, addOrEditActivity, obj, R.layout.manageable_object, animList);
+    public ManageableObjectFragment(int title, Class<?> addOrEditFragment, T obj, boolean animList) {
+        this(title, addOrEditFragment, obj, R.layout.manageable_object, animList);
     }
 
-    public ManageableObjectActivity(int title, Class<?> addOrEditActivity, T obj, Integer layoutList, boolean animList) {
-        super(layoutList, title);
-        this.addOrEditActivity = addOrEditActivity;
+    public ManageableObjectFragment(int title, Class<?> addOrEditFragment, T obj, Integer layoutList, boolean animList) {
+        super(layoutList);
+        this.addOrEditFragment = addOrEditFragment;
         this.obj = obj;
         this.animList = animList;
+        this.title = title;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        TmhLogger.d(TAG, "Calling onCreate");
-        super.onCreate(savedInstanceState);
-        this.tvEmpty = (TextView) findViewById(R.id.empty);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        TmhLogger.d(TAG, "Calling onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
 
-        this.listView = (ListView) findViewById(R.id.list);
-        //this.listView.setItemsCanFocus(false);
-        //this.listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        getActivity().setTitle(this.title);
+
+        this.layoutRootFooter = (LinearLayout) view.findViewById(R.id.layout_root_footer);
+
+        this.tvEmpty = (TextView) view.findViewById(R.id.empty);
+
+        this.listView = (ListView) view.findViewById(R.id.list);
         this.listView.setEmptyView(tvEmpty);
 
-        this.editButton = (Button) findViewById(R.id.button_edit);
-        this.deleteButton = (Button) findViewById(R.id.button_delete);
-        this.updateButton = (Button) findViewById(R.id.button_update);
+        this.editButton = (Button) view.findViewById(R.id.button_edit);
+        this.deleteButton = (Button) view.findViewById(R.id.button_delete);
+        this.updateButton = (Button) view.findViewById(R.id.button_update);
 
         if (this.editButton != null)
             this.editButton.setOnClickListener(this);
@@ -81,14 +84,15 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
         //
         initButtons();
-        refreshDisplay();
+        //refreshDisplay();
     }
 
-    @Override
+    // TODO menu
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.manage_menu, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -102,7 +106,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
     }
 
     public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
-        checkableCursorAdapter = new CheckableCursorAdapter(this, layout, data, from, to);
+        checkableCursorAdapter = new CheckableCursorAdapter(getActivity(), layout, data, from, to);
         setAdapter(checkableCursorAdapter);
     }
 
@@ -143,8 +147,6 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
 
     @Override
     public void onClick(View v) {
-        Intent intent = null;
-        final Context finalContext = this;
         final Integer[] posChecked = ((CheckableCursorAdapter) listView.getAdapter()).getCheckedPositions();
 
         switch (v.getId()) {
@@ -164,14 +166,16 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
                     Cursor cursor = (Cursor) listView.getItemAtPosition(p);
                     obj.toDTO(cursor);
 
+                    // TODO launch fragment instead of activity
+                   /* Intent intent = null;
                     intent = new Intent(this, addOrEditActivity);
                     intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
-                    startActivityForResult(intent, ACTIVITY_EDIT);
+                    startActivityForResult(intent, ACTIVITY_EDIT);*/
                 }
 
                 break;
             case R.id.button_delete:
-                SimpleDialog.confirmDialog(this,
+                SimpleDialog.confirmDialog(getActivity(),
                         getString(R.string.manageable_obj_del_confirm_question),
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -191,7 +195,7 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
                                 }
 
                                 if (err)
-                                    SimpleDialog.errorDialog(finalContext, getString(R.string.error), errMessage).show();
+                                    SimpleDialog.errorDialog(getActivity(), getString(R.string.error), errMessage).show();
 
                                 dialog.dismiss();
                                 refreshDisplay();
@@ -243,35 +247,35 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
     }
 
     private void setVisibilityButtonsBar(int anim, boolean visible) {
-        View v = findViewById(R.id.layout_root_footer);
 
         // Already ok
-        if ((!visible && v.getVisibility() == View.GONE) || (visible && v.getVisibility() == View.VISIBLE))
+        if ((!visible && layoutRootFooter.getVisibility() == View.GONE) || (visible && layoutRootFooter.getVisibility() == View.VISIBLE))
             return;
 
         if (visible) {
-            v.setVisibility(View.VISIBLE);
+            layoutRootFooter.setVisibility(View.VISIBLE);
         } else {
-            v.setVisibility(View.GONE);
+            layoutRootFooter.setVisibility(View.GONE);
         }
 
-        Animation animation = AnimationUtils.loadAnimation(v.getContext(), anim);
+        Animation animation = AnimationUtils.loadAnimation(layoutRootFooter.getContext(), anim);
         if (anim == R.anim.pushup)
             animation.setInterpolator(new DecelerateInterpolator());
         else
             animation.setInterpolator(new AccelerateInterpolator());
 
-        v.startAnimation(animation);
+        layoutRootFooter.startAnimation(animation);
     }
 
     public ListView getListView() {
         return this.listView;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // TODO refresh when fragment is disposed
+    /*@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         refreshDisplay();
-    }
+    }*/
 
     /**
      * Validate an object before deletion
@@ -288,10 +292,12 @@ public abstract class ManageableObjectActivity<T extends BaseObject> extends Tmh
      */
     protected abstract void onClickUpdate(Integer[] objs);
 
-    protected Intent onAddClicked() {
+    protected void onAddClicked() {
+        /*
         Intent intent = new Intent(this, addOrEditActivity);
         startActivityForResult(intent, ACTIVITY_ADD);
+        */
 
-        return intent;
+        //return intent;
     }
 }

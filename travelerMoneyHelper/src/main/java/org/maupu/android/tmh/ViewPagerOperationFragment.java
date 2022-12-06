@@ -1,21 +1,18 @@
 package org.maupu.android.tmh;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
-
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.widget.CustomDatePickerDialog;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.TmhLogger;
@@ -25,8 +22,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
-public class ViewPagerOperationActivity extends TmhActivity implements ViewPager.OnPageChangeListener, DatePickerDialog.OnDateSetListener {
-    private static final Class TAG = ViewPagerOperationActivity.class;
+public class ViewPagerOperationFragment extends TmhFragment implements ViewPager.OnPageChangeListener, DatePickerDialog.OnDateSetListener {
+    private static final Class<ViewPagerOperationFragment> TAG = ViewPagerOperationFragment.class;
     private ViewPagerOperationAdapter adapter;
     private ViewPagerOperationAdapter adapterRaw;
     private int currentPosition;
@@ -45,17 +42,19 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
     private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
     private final static int DRAWER_ITEM_TODAY = TmhApplication.getIdentifier("DRAWER_ITEM_TODAY");
 
-    public ViewPagerOperationActivity() {
-        super(R.layout.viewpager_operation, R.string.activity_title_viewpager_operation);
+    public ViewPagerOperationFragment() {
+        super(R.layout.viewpager_operation);
     }
 
-    @Override
+    // TODO see for drawer highlight selection
+    /*@Override
     public int whatIsMyDrawerIdentifier() {
         return super.DRAWER_ITEM_OPERATIONS;
-    }
+    }*/
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Force portrait
@@ -82,43 +81,47 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
             a = adapterRaw;
         }
 
-        viewpager = (ViewPager) findViewById(R.id.viewpager);
+        viewpager = (ViewPager) view.findViewById(R.id.viewpager);
         setViewpagerAdapter(a);
 
         viewpager.setOnPageChangeListener(this);
     }
 
-    @Override
+    // TODO options menu to handle
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.viewpager_operation_menu, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        // TODO handle option menu item
+        /*switch (item.getItemId()) {
             case R.id.action_add:
                 startActivity(new Intent(this, AddOrEditOperationActivity.class));
                 break;
             case R.id.action_withdrawal:
                 startActivity(new Intent(this, WithdrawalActivity.class));
                 break;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        super.selectDrawerItem(DRAWER_ITEM_OPERATIONS);
+        // TODO
+        //super.selectDrawerItem(DRAWER_ITEM_OPERATIONS);
     }
 
-    @Override
+    // TODO Handle activity result with fragment
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         TmhLogger.d(TAG, "onActivityResult resultCode : " + resultCode);
         refreshDisplay();
-    }
+    }*/
 
     @Override
     public void onPageScrollStateChanged(int position) {
@@ -182,7 +185,8 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
         }
     }
 
-    @Override
+    // TODO Handle refresh when current account changes
+    /*@Override
     public void refreshAfterCurrentAccountChanged() {
         super.refreshAfterCurrentAccountChanged();
         Operation dummyOp = new Operation();
@@ -191,9 +195,10 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
         adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
 
         changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
-    }
+    }*/
 
-    @Override
+    // TODO handle adding navigation drawer items
+    /*@Override
     public IDrawerItem[] buildNavigationDrawer() {
         return new IDrawerItem[]{
                 createSecondaryDrawerItem(
@@ -213,9 +218,10 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
                         R.drawable.ic_list_black,
                         R.string.operation_list_type),
         };
-    }
+    }*/
 
-    @Override
+    // TODO handle drawer items click
+    /*@Override
     public boolean onItemClick(View view, int position, IDrawerItem item) {
         if (item.getIdentifier() == DRAWER_ITEM_LIST_TYPE) {
             changeOperationsListType(
@@ -249,7 +255,7 @@ public class ViewPagerOperationActivity extends TmhActivity implements ViewPager
         }
 
         return super.onItemClick(view, position, item);
-    }
+    }*/
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

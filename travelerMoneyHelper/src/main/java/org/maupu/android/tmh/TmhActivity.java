@@ -9,12 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.TranslateAnimation;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -115,10 +109,10 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, ViewPagerOperationActivity.class);
+                /*Intent intent = new Intent(this, ViewPagerOperationActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                break;
+                break;*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -262,7 +256,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             intent = new Intent(this, PreferencesActivity.class);
             killCurrentActivity = false;
         } else if (item.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
-            intent = new Intent(this, ViewPagerOperationActivity.class);
+            //intent = new Intent(this, ViewPagerOperationActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_STATS) {
             intent = new Intent(this, StatsActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_CONVERTER) {
@@ -316,25 +310,6 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         }
 
         updateDrawerBadges();
-    }
-
-    public static void setListViewAnimation(ListView listView) {
-        // Setting animation
-        AnimationSet set = new AnimationSet(true);
-
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(50);
-        set.addAnimation(animation);
-
-        animation = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
-        );
-        animation.setDuration(100);
-        set.addAnimation(animation);
-
-        LayoutAnimationController controller = new LayoutAnimationController(set, 0.5f);
-        listView.setLayoutAnimation(controller);
     }
 
     @Override

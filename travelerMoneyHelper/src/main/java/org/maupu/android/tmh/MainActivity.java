@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Display initial fragment
         if (savedInstanceState == null) {
-            changeFragment(AddOrEditOperationFragment.class, false, null);
+            changeFragment(ViewPagerOperationFragment.class, false, null);
         }
     }
 

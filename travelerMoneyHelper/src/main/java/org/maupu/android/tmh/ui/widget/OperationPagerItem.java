@@ -16,10 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.maupu.android.tmh.AddOrEditActivity;
-import org.maupu.android.tmh.AddOrEditOperationActivity;
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.ViewPagerOperationActivity;
+import org.maupu.android.tmh.TmhFragment;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
@@ -44,7 +42,8 @@ import java.util.Set;
 
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
     private static final Class TAG = OperationPagerItem.class;
-    private ViewPagerOperationActivity viewPagerOperationActivity;
+
+    private TmhFragment parentFragment;
     private View view;
     private Date date;
     private Button editButton;
@@ -59,10 +58,10 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
     private TextView textViewTotal;
     private TextView textViewBalance;
 
-    public OperationPagerItem(ViewPagerOperationActivity ctx, LayoutInflater inflater, Date date) {
-        this.viewPagerOperationActivity = ctx;
+    public OperationPagerItem(TmhFragment parentFragment, Date date) {
         this.date = date;
-        this.inflater = inflater;
+        this.parentFragment = parentFragment;
+        this.inflater = parentFragment.getLayoutInflater();
 
         view = inflater.inflate(R.layout.manageable_object, null);
 
@@ -76,7 +75,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         createFooterTotal();
 
         // Avoid having toolbar twice
-        view.findViewById(R.id.tmh_toolbar).setVisibility(View.GONE);
+        //view.findViewById(R.id.tmh_toolbar).setVisibility(View.GONE);
 
         this.editButton = (Button) view.findViewById(R.id.button_edit);
         this.deleteButton = (Button) view.findViewById(R.id.button_delete);
@@ -139,7 +138,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
             case R.id.account_icon:
                 // Disabled due to a bug when switching to stats (current account changed does not reset dates)
                 TmhLogger.d(TAG, "Icon clicked");
-                DialogHelper.popupDialogAccountChooser(viewPagerOperationActivity);
+                DialogHelper.popupDialogAccountChooser(parentFragment);
                 break;
             case R.id.button_edit:
                 if (posChecked.length == 1) {
@@ -147,19 +146,20 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                     Cursor cursor = (Cursor) listView.getItemAtPosition(p);
                     obj.toDTO(cursor);
 
-                    intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
+                    // TODO edit
+                    /*intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
                     intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
-                    viewPagerOperationActivity.startActivityForResult(intent, 0);
+                    viewPagerOperationActivity.startActivityForResult(intent, 0);*/
                 }
 
                 break;
             case R.id.button_delete:
-                SimpleDialog.confirmDialog(viewPagerOperationActivity,
-                        viewPagerOperationActivity.getString(R.string.manageable_obj_del_confirm_question),
+                SimpleDialog.confirmDialog(parentFragment.getContext(),
+                        parentFragment.getString(R.string.manageable_obj_del_confirm_question),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String errMessage = viewPagerOperationActivity.getString(R.string.manageable_obj_del_error);
+                                String errMessage = parentFragment.getString(R.string.manageable_obj_del_error);
                                 boolean err = false;
 
                                 for (int i = 0; i < posChecked.length; i++) {
@@ -171,7 +171,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                                 }
 
                                 if (err)
-                                    SimpleDialog.errorDialog(viewPagerOperationActivity, viewPagerOperationActivity.getString(R.string.error), errMessage).show();
+                                    SimpleDialog.errorDialog(parentFragment.getContext(), parentFragment.getString(R.string.error), errMessage).show();
 
                                 dialog.dismiss();
                                 refreshDisplay();
@@ -244,7 +244,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
         // Setting parameters - account should not be null
         if (account != null) {
-            ImageViewHelper.setIcon(viewPagerOperationActivity, imageViewIcon, account.getIcon());
+            ImageViewHelper.setIcon(parentFragment.getContext(), imageViewIcon, account.getIcon());
             textViewAccountName.setText(account.getName());
         }
 
@@ -393,7 +393,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
             }
 
             OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
-                    viewPagerOperationActivity,
+                    parentFragment.getContext(),
                     R.layout.operation_item,
                     cAllOp,
                     new String[]{"icon", "category", "dateStringHours", "amountString", "convertedAmount"},

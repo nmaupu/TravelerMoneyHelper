@@ -10,17 +10,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
-import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 
 import java.util.Map;
 
-public abstract class AddOrEditFragment<T extends BaseObject> extends Fragment implements IAsyncActivityRefresher {
+public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragment implements IAsyncActivityRefresher {
     public static final String EXTRA_OBJECT_ID = "base_object";
     public static final String EXTRA_APP_INIT = "app_init";
     private T obj;
@@ -180,21 +178,6 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends Fragment i
 
     protected T getObj() {
         return obj;
-    }
-
-    public void refreshDisplay() {
-        AsyncActivityRefresher refresher = new AsyncActivityRefresher(getActivity(), this, false);
-        try {
-            // Execute background task implemented by client class
-            refresher.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Map<Integer, Object> handleRefreshBackground() {
-        return null;
     }
 
     @Override

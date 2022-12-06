@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
-
     <LinearLayout
         android:id="@+id/layout_root"
         android:layout_width="match_parent"
@@ -19,7 +17,8 @@
             android:layout_weight="0"
             android:paddingBottom="2dip"
             android:paddingTop="2dip"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:orientation="vertical" />
 
         <ListView
             android:id="@+id/list"

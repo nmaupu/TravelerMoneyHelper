@@ -34,9 +34,6 @@
         <activity
             android:name=".ManageAccountActivity"
             android:noHistory="false" />
-        <activity
-            android:name=".ViewPagerOperationActivity"
-            android:noHistory="false" />
         <activity android:name=".ManageOperationActivity" />
         <activity android:name=".AddOrEditCurrencyActivity" />
         <activity android:name=".AddOrEditCategoryActivity" />

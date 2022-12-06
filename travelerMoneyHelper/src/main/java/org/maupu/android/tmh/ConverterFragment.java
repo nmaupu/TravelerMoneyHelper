@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Currency;
@@ -26,7 +25,6 @@ import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
@@ -40,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ConverterFragment extends Fragment implements View.OnClickListener, IAsync, TextWatcher, IAsyncActivityRefresher {
+public class ConverterFragment extends TmhFragment implements View.OnClickListener, IAsync, TextWatcher, IAsyncActivityRefresher {
     public static final Class TAG = ConverterActivity.class;
     public static final int TYPE_LEFT = 0;
     public static final int TYPE_RIGHT = 1;
@@ -338,17 +336,6 @@ public class ConverterFragment extends Fragment implements View.OnClickListener,
         TmhLogger.d(TAG, "afterTextChanged called");
         updateConvertedAmounts();
         refreshDisplay();
-    }
-
-    public void refreshDisplay() {
-        AsyncActivityRefresher refresher = new AsyncActivityRefresher(getActivity(), this, false);
-
-        try {
-            // Execute background task implemented by client class
-            refresher.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

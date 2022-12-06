@@ -102,7 +102,8 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
         } else if (nbAcc == 0) {
             intent = new Intent(this, AddOrEditAccountActivity.class);
         } else {
-            intent = new Intent(this, ViewPagerOperationActivity.class);
+            // TODO start listview operation ?
+            intent = intent = new Intent(this, AddOrEditAccountActivity.class);
         }
 
         startActivity(intent);

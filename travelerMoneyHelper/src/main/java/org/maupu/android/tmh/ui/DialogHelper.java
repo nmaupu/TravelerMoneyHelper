@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhActivity;
+import org.maupu.android.tmh.TmhFragment;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -43,21 +44,21 @@ public abstract class DialogHelper {
         return categoryChooserAdapter != null;
     }
 
-    public static Dialog popupDialogAccountChooser(final TmhActivity tmhActivity) {
-        if (tmhActivity == null)
+    public static Dialog popupDialogAccountChooser(final TmhFragment fragment) {
+        if (fragment == null || fragment.getContext() == null)
             return null;
 
-        final Dialog dialog = new Dialog(tmhActivity);
+        final Dialog dialog = new Dialog(fragment.getContext());
 
         dialog.setContentView(R.layout.dialog_listview);
-        dialog.setTitle(tmhActivity.getString(R.string.pick_account));
+        dialog.setTitle(fragment.getString(R.string.pick_account));
 
-        ListView listAccount = (ListView) dialog.findViewById(R.id.list);
+        ListView listAccount = dialog.findViewById(R.id.list);
         Account dummyAccount = new Account();
         final Cursor cursorAllAccounts = dummyAccount.fetchAll();
 
         final IconCursorAdapter adapter = new IconCursorAdapter(
-                tmhActivity,
+                fragment.getContext(),
                 R.layout.icon_name_item_no_checkbox,
                 cursorAllAccounts,
                 new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME},
@@ -78,8 +79,9 @@ public abstract class DialogHelper {
                 /** Replacing preferences account (excepted categories are also reset to auto) **/
                 /** Setting some specific stuff as well **/
                 StaticData.setCurrentAccount(account);
-                tmhActivity.refreshAfterCurrentAccountChanged();
-                tmhActivity.refreshDisplay();
+                // TODO refresh if account changes
+                //fragment.refreshAfterCurrentAccountChanged();
+                fragment.refreshDisplay();
                 dialog.dismiss();
 
                 return (View) item;
