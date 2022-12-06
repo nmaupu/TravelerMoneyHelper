@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
                 changeFragment(ConverterFragment.class, false, null);
             } else if (drawerItem.getIdentifier() == DRAWER_ITEM_OPERATIONS) {
-                changeFragment(AddOrEditOperationFragment.class, false, null);
+                changeFragment(ViewPagerOperationFragment.class, false, null);
             } else if (drawerItem.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
                 Intent intent = new Intent(this, PreferencesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -39,12 +39,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ConverterFragment extends TmhFragment implements View.OnClickListener, IAsync, TextWatcher, IAsyncActivityRefresher {
-    public static final Class TAG = ConverterActivity.class;
-    public static final int TYPE_LEFT = 0;
-    public static final int TYPE_RIGHT = 1;
-    public static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";
-    public static final String PREFS_CONVERTER_CURRENCY_2 = "ConverterActivity_currency_2";
-    public static final String PREFS_CONVERTER_AMOUNT = "ConverterActivity_amount";
+    private static final Class TAG = ConverterActivity.class;
+    private static final int TYPE_LEFT = 0;
+    private static final int TYPE_RIGHT = 1;
+    private static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";
+    private static final String PREFS_CONVERTER_CURRENCY_2 = "ConverterActivity_currency_2";
+    private static final String PREFS_CONVERTER_AMOUNT = "ConverterActivity_amount";
 
     private static final int DRAWER_ITEM_UPDATE_RATES = TmhApplication.getIdentifier("DRAWER_ITEM_UPDATE_RATES");
 
@@ -151,6 +151,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Display preferences
+                    // TODO replace with preference fragment
                     Intent intent = new Intent(ctx, PreferencesActivity.class);
                     startActivity(intent);
                 }
@@ -160,6 +161,13 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
 
         initOerFetcher();
+    }
+
+    @Override
+    public void onPause() {
+        savePrefs();
+        SoftKeyboardHelper.hide(getActivity());
+        super.onPause();
     }
 
     private void initOerFetcher() {
@@ -182,6 +190,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
             currency2 = currencyBackup;
             resetRates();
             updateConvertedAmounts();
+            savePrefs();
             refreshDisplay();
         } else if (v instanceof TextView) {
             if (v == tvCurrencyCode1 || v == tvCurrencyCode2) {
@@ -195,14 +204,22 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
 
     @Override
     public void onFinishAsync() {
-        /**
-         * Called when initOerFetcher finishes to update
-         */
+        // Called when initOerFetcher finishes to update
         currenciesList = oerFetcher.getCurrencies();
         currencyAdapter = new ArrayAdapter<CurrencyISO4217>(getContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 currenciesList);
         loadPrefs();
+    }
+
+    public void savePrefs() {
+        if (this.currency1 != null)
+            StaticData.setPreferenceValueString(PREFS_CONVERTER_CURRENCY_1, currency1.getCode());
+
+        if (this.currency2 != null)
+            StaticData.setPreferenceValueString(PREFS_CONVERTER_CURRENCY_2, currency2.getCode());
+
+        StaticData.setPreferenceValueString(PREFS_CONVERTER_AMOUNT, netAmount.getStringText());
     }
 
     public void loadPrefs() {
@@ -281,6 +298,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         final AlertDialog dialog = builder.create();
         final AutoCompleteTextView textView = (AutoCompleteTextView) layout.findViewById(R.id.edit);
         textView.setAdapter(currencyAdapter);
+        final ConverterFragment converterFragment = this;
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
