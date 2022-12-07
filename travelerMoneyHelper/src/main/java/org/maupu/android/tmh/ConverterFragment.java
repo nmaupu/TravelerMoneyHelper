@@ -151,7 +151,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Display preferences
-                    // TODO replace with preference fragment
                     Intent intent = new Intent(ctx, PreferencesActivity.class);
                     startActivity(intent);
                 }

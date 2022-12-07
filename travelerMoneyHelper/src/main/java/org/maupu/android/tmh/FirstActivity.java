@@ -6,55 +6,56 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.databinding.ActivityFirstBinding;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.util.TmhLogger;
 
-import java.util.Map;
-
 /**
- * Activity displayed at first activity in order to get ready first app launch
- * or first database init.
+ * Activity displayed as first activity in order to get stuff ready and configured.
  */
-public class FirstActivity extends TmhActivity implements View.OnClickListener {
-    private static final Class TAG = FirstActivity.class;
+public class FirstActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final Class<FirstActivity> TAG = FirstActivity.class;
     private ImageView categoryImg, currencyImg, accountImg;
-    private Button goBtn;
     private int nbCat = 0;
     private int nbAcc = 0;
     private int nbCur = 0;
 
     public FirstActivity() {
-        super(R.layout.first, R.string.app_name);
-    }
-
-    @Override
-    public int whatIsMyDrawerIdentifier() {
-        return -1;
+        super(R.layout.activity_first);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /** Widgets **/
-        goBtn = (Button) findViewById(R.id.button);
+        if (isRequiredStuffOk())
+            return;
+
+        setTitle(R.string.app_name);
+
+        ActivityFirstBinding binding = ActivityFirstBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
+
+        // Widgets
+        Button goBtn = (Button) findViewById(R.id.button);
         accountImg = (ImageView) findViewById(R.id.account_image);
         categoryImg = (ImageView) findViewById(R.id.category_image);
         currencyImg = (ImageView) findViewById(R.id.currency_image);
-
-        /** Events **/
         goBtn.setOnClickListener(this);
 
         // Ensure keyboard is down
         SoftKeyboardHelper.hide(this);
     }
 
-    @Override
-    public void refreshDisplay() {
-        /** Database checks **/
+    public boolean isRequiredStuffOk() {
+        // Database checks
         nbCat = new Category().getCount();
         nbCur = new Currency().getCount();
         nbAcc = new Account().getCount();
@@ -65,9 +66,16 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
         TmhLogger.d(TAG, "  nb acc = " + nbAcc);
 
         if (nbCat > 0 && nbCur > 0 && nbAcc > 0) {
-            //startActivity(new Intent(this, ViewPagerOperationActivity.class));
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
+            return true;
+        }
+        return false;
+    }
+
+    public void refreshDisplay() {
+        if (isRequiredStuffOk()) {
+            return;
         }
 
         if (nbCat > 0) {
@@ -88,12 +96,12 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
             currencyImg.setImageDrawable(getResources().getDrawable(R.drawable.puce));
         }
 
-        super.refreshDisplay();
     }
 
     @Override
     public void onClick(View v) {
         Intent intent;
+        boolean finish = false;
 
         if (nbCat == 0) {
             intent = new Intent(this, AddOrEditCategoryActivity.class);
@@ -102,19 +110,12 @@ public class FirstActivity extends TmhActivity implements View.OnClickListener {
         } else if (nbAcc == 0) {
             intent = new Intent(this, AddOrEditAccountActivity.class);
         } else {
-            // TODO start listview operation ?
-            intent = intent = new Intent(this, AddOrEditAccountActivity.class);
+            intent = new Intent(this, MainActivity.class);
+            finish = true;
         }
 
         startActivity(intent);
-    }
-
-    @Override
-    public Map<Integer, Object> handleRefreshBackground() {
-        return null;
-    }
-
-    @Override
-    public void handleRefreshEnding(Map<Integer, Object> results) {
+        if (finish)
+            this.finish();
     }
 }

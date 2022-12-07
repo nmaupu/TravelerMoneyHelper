@@ -57,6 +57,8 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         super.onViewCreated(view, savedInstanceState);
         super.onCreate(savedInstanceState);
 
+        MainActivity activity = (MainActivity) getActivity();
+
         getActivity().setTitle(R.string.activity_title_viewpager_operation);
 
         // Force portrait
