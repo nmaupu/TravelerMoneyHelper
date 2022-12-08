@@ -44,10 +44,10 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
         setSupportActionBar(binding.toolbar);
 
         // Widgets
-        Button goBtn = (Button) findViewById(R.id.button);
-        accountImg = (ImageView) findViewById(R.id.account_image);
-        categoryImg = (ImageView) findViewById(R.id.category_image);
-        currencyImg = (ImageView) findViewById(R.id.currency_image);
+        Button goBtn = findViewById(R.id.button);
+        accountImg = findViewById(R.id.account_image);
+        categoryImg = findViewById(R.id.category_image);
+        currencyImg = findViewById(R.id.currency_image);
         goBtn.setOnClickListener(this);
 
         // Ensure keyboard is down
