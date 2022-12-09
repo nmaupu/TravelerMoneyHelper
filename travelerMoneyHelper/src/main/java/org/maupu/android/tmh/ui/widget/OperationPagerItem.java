@@ -3,6 +3,7 @@ package org.maupu.android.tmh.ui.widget;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.maupu.android.tmh.AddOrEditOperationFragment;
+import org.maupu.android.tmh.MainActivity;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhFragment;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -74,29 +77,22 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         createHeader();
         createFooterTotal();
 
-        // Avoid having toolbar twice
-        //view.findViewById(R.id.tmh_toolbar).setVisibility(View.GONE);
-
-        this.editButton = (Button) view.findViewById(R.id.button_edit);
-        this.deleteButton = (Button) view.findViewById(R.id.button_delete);
-
-        if (this.editButton != null)
-            this.editButton.setOnClickListener(this);
-
-        if (this.deleteButton != null)
-            this.deleteButton.setOnClickListener(this);
+        editButton = view.findViewById(R.id.button_edit);
+        this.editButton.setOnClickListener(this);
+        deleteButton = view.findViewById(R.id.button_delete);
+        this.deleteButton.setOnClickListener(this);
     }
 
     private void createHeader() {
         // Getting header
         View headerContent = inflater.inflate(R.layout.viewpager_operation_header, null);
-        LinearLayout header = (LinearLayout) view.findViewById(R.id.header);
+        LinearLayout header = view.findViewById(R.id.header);
 
         // Getting resources
-        textViewTitleMonth = (TextView) headerContent.findViewById(R.id.title_month);
-        textViewTitleYear = (TextView) headerContent.findViewById(R.id.title_year);
-        textViewAccountName = (TextView) headerContent.findViewById(R.id.account_name);
-        imageViewIcon = (ImageView) headerContent.findViewById(R.id.account_icon);
+        textViewTitleMonth = headerContent.findViewById(R.id.title_month);
+        textViewTitleYear = headerContent.findViewById(R.id.title_year);
+        textViewAccountName = headerContent.findViewById(R.id.account_name);
+        imageViewIcon = headerContent.findViewById(R.id.account_icon);
         //imageViewIcon.setOnClickListener(this);
 
         // Adding content to viewpager header
@@ -106,10 +102,10 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
     private void createFooterTotal() {
         footerOperationBalance = inflater.inflate(R.layout.manageable_operation_total, null);
-        LinearLayout content = (LinearLayout) view.findViewById(R.id.layout_root);
+        LinearLayout content = view.findViewById(R.id.layout_root);
 
-        textViewTotal = (TextView) footerOperationBalance.findViewById(R.id.total);
-        textViewBalance = (TextView) footerOperationBalance.findViewById(R.id.balance);
+        textViewTotal = footerOperationBalance.findViewById(R.id.total);
+        textViewBalance = footerOperationBalance.findViewById(R.id.balance);
         content.addView(footerOperationBalance, content.getChildCount() - 2);
     }
 
@@ -146,10 +142,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                     Cursor cursor = (Cursor) listView.getItemAtPosition(p);
                     obj.toDTO(cursor);
 
-                    // TODO edit
-                    /*intent = new Intent(viewPagerOperationActivity, AddOrEditOperationActivity.class);
-                    intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
-                    viewPagerOperationActivity.startActivityForResult(intent, 0);*/
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(AddOrEditOperationFragment.EXTRA_OBJECT_ID, obj);
+                    ((MainActivity) parentFragment.requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, bundle);
                 }
 
                 break;

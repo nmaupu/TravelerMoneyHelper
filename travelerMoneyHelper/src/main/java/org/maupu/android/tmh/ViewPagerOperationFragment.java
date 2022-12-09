@@ -2,12 +2,18 @@ package org.maupu.android.tmh;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -29,9 +35,9 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     private int currentPosition;
     private ViewPager viewpager;
 
-    private final static String STATIC_DATA_PREVIOUS_MONTH_CHOSEN = "VPA_PreviousMonthChoosen";
-    private final static String STATIC_DATA_PREVIOUS_YEAR_CHOSEN = "VPA_PreviousYearChoosen";
-    private final static String STATIC_DATA_PREVIOUS_DAY_CHOSEN = "VPA_PreviousDayChoosen";
+    private final static String STATIC_DATA_PREVIOUS_MONTH_CHOSEN = "VPO_PreviousMonthChoosen";
+    private final static String STATIC_DATA_PREVIOUS_YEAR_CHOSEN = "VPO_PreviousYearChoosen";
+    private final static String STATIC_DATA_PREVIOUS_DAY_CHOSEN = "VPO_PreviousDayChoosen";
 
     public final static int LIST_RAW = 0;
     public final static int LIST_BY_MONTH = 1;
@@ -42,24 +48,23 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     private final static int DRAWER_ITEM_AUTO = TmhApplication.getIdentifier("DRAWER_ITEM_AUTO");
     private final static int DRAWER_ITEM_TODAY = TmhApplication.getIdentifier("DRAWER_ITEM_TODAY");
 
+    private MenuProvider menuProvider;
+
     public ViewPagerOperationFragment() {
         super(R.layout.viewpager_operation);
     }
 
-    // TODO see for drawer highlight selection
-    /*@Override
-    public int whatIsMyDrawerIdentifier() {
-        return super.DRAWER_ITEM_OPERATIONS;
-    }*/
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        requireActivity().setTitle(R.string.activity_title_viewpager_operation);
+        setupMenu();
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        super.onCreate(savedInstanceState);
-
-        MainActivity activity = (MainActivity) getActivity();
-
-        getActivity().setTitle(R.string.activity_title_viewpager_operation);
 
         // Force portrait
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -89,6 +94,31 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         setViewpagerAdapter(a);
 
         viewpager.setOnPageChangeListener(this);
+    }
+
+    private void setupMenu() {
+        if (menuProvider == null) {
+            menuProvider = new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.viewpager_operation_menu, menu);
+                }
+
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_add:
+                            ((MainActivity) requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, null);
+                            break;
+                        case R.id.action_withdrawal:
+                            // TODO withdrawl when fragment is done
+                            break;
+                    }
+                    return true;
+                }
+            };
+        }
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     // TODO options menu to handle

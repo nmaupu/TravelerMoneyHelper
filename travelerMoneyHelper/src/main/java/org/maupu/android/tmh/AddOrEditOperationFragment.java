@@ -1,8 +1,6 @@
 package org.maupu.android.tmh;
 
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -72,6 +70,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         super(R.string.activity_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
     }
 
+
     @Override
     protected View initResources(View view) {
         // Set current time
@@ -134,14 +133,12 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         } else {
             // Adding an operation
             c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()});
-            final Activity activity = getActivity();
             if (c.getCount() == 0) {
                 // No category created yet, cannot continue !
                 SimpleDialog.errorDialog(getContext(), getString(R.string.error), getString(R.string.error_no_category), new android.content.DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(activity, AddOrEditCategoryActivity.class));
-                        activity.finish();
+                        ((MainActivity) requireActivity()).changeFragment(AddOrEditFragment.class, false, null);
                     }
                 }).show();
             }

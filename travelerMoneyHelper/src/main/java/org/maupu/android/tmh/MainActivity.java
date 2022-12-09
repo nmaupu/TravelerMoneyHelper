@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
             if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ABOUT) {
                 DialogHelper.popupDialogAbout(this);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CONVERTER) {
-
                 changeFragment(ConverterFragment.class, false, null);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_OPERATIONS) {
                 changeFragment(ViewPagerOperationFragment.class, false, null);
@@ -102,9 +101,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
-    }
-
-    protected void selectDrawerItem(int identifier) {
-        ApplicationDrawer.getDrawer().setSelection(identifier, false);
     }
 }

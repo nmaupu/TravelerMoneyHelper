@@ -26,6 +26,7 @@ import java.util.Map;
 @SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
     private static final Class TAG = ViewPagerOperationAdapter.class;
+    
     public final static int DEFAULT_COUNT = 25;
     private Map<Integer, OperationPagerItem> items = new HashMap<>();
     private int count;

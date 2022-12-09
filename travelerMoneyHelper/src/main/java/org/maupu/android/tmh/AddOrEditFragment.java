@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.SimpleDialog;
@@ -25,6 +27,8 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     private boolean appInit = false;
     private int title;
 
+    private MenuProvider menuProvider;
+
     public AddOrEditFragment(int title, int contentView, T obj) {
         super(contentView);
         this.title = title;
@@ -35,12 +39,11 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getActivity().setTitle(title);
+        requireActivity().setTitle(title);
 
-        setHasOptionsMenu(true);
+        retrieveItemFromBundle();
 
-        // Retrieve extra parameter
-        retrieveItemFromExtra();
+        setupMenu(obj != null && obj.getId() != null); // obj != null alone is not sufficient (as it's a generic type ?)
 
         // Init all widgets
         View v = initResources(getView());
@@ -55,46 +58,49 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
         refreshDisplay();
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.add_or_edit_menu, menu);
-        if (isEditing() || appInit)
-            menu.findItem(R.id.action_add).setVisible(false);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                onContinue(true);
-                break;
-            case R.id.action_add:
-                if (onContinue(false)) {
-                    Toast.makeText(getContext(), getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
-                    obj.reset();
-                    refreshDisplay();
+    public void setupMenu(boolean editMode) {
+        if (menuProvider == null) {
+            menuProvider = new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.add_or_edit_menu, menu);
+                    menu.findItem(R.id.action_add).setVisible(!editMode);
                 }
-                break;
-        }
 
-        return super.onOptionsItemSelected(item);
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_save:
+                            saveOrEdit(true);
+                            break;
+                        case R.id.action_add:
+                            if (saveOrEdit(false)) {
+                                Toast.makeText(getContext(), getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
+                                obj.reset();
+                                refreshDisplay();
+                            }
+                            break;
+                    }
+                    return true;
+                }
+            };
+        }
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    private void retrieveItemFromExtra() {
+    private void retrieveItemFromBundle() {
         try {
             Bundle bundle = getArguments();
             T objnew = (T) bundle.getSerializable(AddOrEditFragment.EXTRA_OBJECT_ID);
             if (objnew != null) {
-                //buttonContinueAndAdd.setEnabled(false);
-                //CustomActionBarItem.setEnableItem(false, saveAndAddItem);
                 obj = objnew;
             }
 
+            // TODO verify it's still needed and usable
             // Set this when initializing app from WelcomeActivity (we deactivate 'save and add' button)
             appInit = (Boolean) bundle.get(AddOrEditFragment.EXTRA_APP_INIT);
 
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // TODO better error handling ?
             // Here, nothing is allocated, we keep default obj
         } catch (ClassCastException cce) {
             // This exception should not be thrown
@@ -102,38 +108,36 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
         }
     }
 
-    protected boolean onContinue(final boolean disposeActivity) {
+    protected boolean saveOrEdit(boolean returnToPreviousFragment) {
         if (validate()) {
             fieldsToBaseObject(obj);
 
             if (obj.getId() != null) {
                 // Show a confirm dialog when updating
                 SimpleDialog.confirmDialog(getContext(), getString(R.string.confirm_modification), new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         obj.update();
-
                         dialog.dismiss();
-
-                        // Dispose this activity
-                        if (disposeActivity) {
-                            SoftKeyboardHelper.hide(getActivity());
-                            getActivity().finish();
+                        if (returnToPreviousFragment) {
+                            SoftKeyboardHelper.hide(requireActivity());
+                            requireActivity().onBackPressed();
                         }
                     }
                 }).show();
             } else {
-                obj.insert();
-
-                if (disposeActivity) {
-                    SoftKeyboardHelper.hide(getActivity());
-                    //getActivity().finish();
+                boolean ret = obj.insert();
+                if (returnToPreviousFragment) {
+                    SoftKeyboardHelper.hide(requireActivity());
+                    requireActivity().onBackPressed();
                 }
+                return ret;
             }
 
             return true;
         } else {
-            SimpleDialog.errorDialog(getActivity(), getString(R.string.error), getString(R.string.error_add_object)).show();
+            SimpleDialog.errorDialog(requireActivity(), getString(R.string.error), getString(R.string.error_add_object)).show();
             return false;
         }
     }
