@@ -16,12 +16,13 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_width="wrap_content"
         android:layout_height="38dip"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|end"
         android:layout_weight="1"
         android:contentDescription="@string/account"
+        android:minWidth="50dip"
         android:src="@drawable/tmh_icon_48" />
 
 </LinearLayout>

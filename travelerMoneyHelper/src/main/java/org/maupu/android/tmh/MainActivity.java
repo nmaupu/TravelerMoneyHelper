@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, PreferencesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ACCOUNTS) {
+                changeFragment(ManageAccountFragment.class, false, null);
             }
 
             return false;

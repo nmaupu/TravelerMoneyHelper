@@ -59,16 +59,16 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
 
         getActivity().setTitle(this.title);
 
-        this.layoutRootFooter = (LinearLayout) view.findViewById(R.id.layout_root_footer);
+        this.layoutRootFooter = view.findViewById(R.id.layout_root_footer);
 
-        this.tvEmpty = (TextView) view.findViewById(R.id.empty);
+        this.tvEmpty = view.findViewById(R.id.empty);
 
-        this.listView = (ListView) view.findViewById(R.id.list);
+        this.listView = view.findViewById(R.id.list);
         this.listView.setEmptyView(tvEmpty);
 
-        this.editButton = (Button) view.findViewById(R.id.button_edit);
-        this.deleteButton = (Button) view.findViewById(R.id.button_delete);
-        this.updateButton = (Button) view.findViewById(R.id.button_update);
+        this.editButton = view.findViewById(R.id.button_edit);
+        this.deleteButton = view.findViewById(R.id.button_delete);
+        this.updateButton = view.findViewById(R.id.button_update);
 
         if (this.editButton != null)
             this.editButton.setOnClickListener(this);
@@ -84,7 +84,7 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
 
         //
         initButtons();
-        //refreshDisplay();
+        refreshDisplay();
     }
 
     // TODO menu

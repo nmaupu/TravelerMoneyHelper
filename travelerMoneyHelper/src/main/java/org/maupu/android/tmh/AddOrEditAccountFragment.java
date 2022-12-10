@@ -3,7 +3,6 @@ package org.maupu.android.tmh;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -11,15 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +27,6 @@ import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
-import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -41,7 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
+public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     private static final String TAG = AddOrEditAccountActivity.class.getName();
     private ImageView imageViewIcon;
     private TextView textViewName;
@@ -55,24 +50,19 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
     private static final int MENU_ITEM_URL = 3;
     private static final int MENU_ITEM_CAMERA = 4;
 
-    public AddOrEditAccountActivity() {
+    public AddOrEditAccountFragment() {
         super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
     }
 
     @Override
-    public int whatIsMyDrawerIdentifier() {
-        return super.DRAWER_ITEM_ACCOUNTS;
-    }
-
-    @Override
-    protected View initResources() {
-        imageViewIcon = (ImageView) findViewById(R.id.icon);
-        textViewName = (TextView) findViewById(R.id.name);
-        Spinner spinnerCurrency = (Spinner) findViewById(R.id.currency);
+    protected View initResources(View view) {
+        imageViewIcon = view.findViewById(R.id.icon);
+        textViewName = view.findViewById(R.id.name);
+        Spinner spinnerCurrency = view.findViewById(R.id.currency);
         //spinnerCurrencyManager = new SpinnerManager(spinnerCurrency);
-        spinnerCurrencyManager = new SpinnerManager(this, spinnerCurrency);
-        icon = (ImageView) findViewById(R.id.icon);
-        icon.setOnClickListener(new OnClickListener() {
+        spinnerCurrencyManager = new SpinnerManager(requireContext(), spinnerCurrency);
+        icon = view.findViewById(R.id.icon);
+        icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createDialogMenu();
@@ -95,7 +85,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         spinnerCurrencyManager.closeAdapterCursor();
         super.onDestroy();
     }
@@ -104,36 +94,32 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        mApps = getPackageManager().queryIntentActivities(mainIntent, 0);
+        mApps = requireActivity().getPackageManager().queryIntentActivities(mainIntent, 0);
     }
 
     private void createDialogMenu() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
         builder.setTitle(R.string.account_icon_edit_dialog_title);
 
-        builder.setItems(popupMenuIconNames, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int item) {
-                Dialog d = createDialogIconChooser(item);
+        builder.setItems(popupMenuIconNames, (dialogInterface, item) -> {
+            Dialog d = createDialogIconChooser(item);
 
-                dialogInterface.dismiss();
+            dialogInterface.dismiss();
 
-                if (d != null)
-                    d.show();
-            }
+            if (d != null)
+                d.show();
         });
 
         builder.create().show();
     }
 
     private AlertDialog createDialogIconChooser(int dialogType) {
-        Toast toast = Toast.makeText(this, getString(R.string.not_implemented), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(requireContext(), getString(R.string.not_implemented), Toast.LENGTH_SHORT);
         switch (dialogType) {
             case MENU_ITEM_APPS:
                 return createDialogFromApps();
             case MENU_ITEM_URL:
-                toast.show();
-                return null;
             case MENU_ITEM_CAMERA:
                 toast.show();
                 return null;
@@ -141,7 +127,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
                 return createDialogFromFlags();
             case MENU_ITEM_DEFAULT:
                 imageViewIcon.setImageResource(R.drawable.tmh_icon_48);
-                imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
+                imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 return null;
             default:
                 return null;
@@ -150,28 +136,27 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 
     private AlertDialog createDialogFromApps() {
         AlertDialog.Builder builder;
-        Context mContext = this;
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) findViewById(R.id.root_layout), false);
+        LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) requireActivity().findViewById(R.id.root_layout), false);
 
 
-        builder = new AlertDialog.Builder(mContext);
+        builder = new AlertDialog.Builder(requireContext());
         builder.setView(layout);
 
         final AlertDialog dialog = builder.create();
 
-        GridView gridview = (GridView) layout.findViewById(R.id.gridview);
+        GridView gridview = layout.findViewById(R.id.gridview);
         gridview.setAdapter(new AppsAdapter());
-        gridview.setOnItemClickListener(new OnItemClickListener() {
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 ResolveInfo info = mApps.get(position % mApps.size());
-                imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(getPackageManager()));
+                imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(requireContext().getPackageManager()));
                 dialog.dismiss();
             }
         });
 
         Button close = (Button) layout.findViewById(R.id.close);
-        close.setOnClickListener(new OnClickListener() {
+        close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -183,18 +168,17 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 
     private AlertDialog createDialogFromFlags() {
         AlertDialog.Builder builder;
-        final Context mContext = this;
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_flags_icon, (ViewGroup) findViewById(R.id.root_layout), false);
+        LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_flags_icon, requireActivity().findViewById(R.id.root_layout), false);
 
-        builder = new AlertDialog.Builder(mContext);
+        builder = new AlertDialog.Builder(requireContext());
         builder.setView(layout);
 
         final AlertDialog dialog = builder.create();
 
         //ListView list = (ListView)layout.findViewById(R.id.list);
         SimpleIconAdapter adapter = new SimpleIconAdapter(
-                this, Flag.getFlagsForAdapter(this),
+                requireContext(), Flag.getFlagsForAdapter(requireContext()),
                 R.layout.icon_name_item_no_checkbox,
                 new String[]{"icon", "name"},
                 new int[]{R.id.icon, R.id.name});
@@ -204,19 +188,17 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
             @Override
             public Object callback(Object item) {
                 // Text field is updated so we are called and we can now set the flag icon
-                Flag flag = Flag.getFlagFromCountry(mContext, (String) item);
+                Flag flag = Flag.getFlagFromCountry(requireContext(), (String) item);
                 if (flag != null) {
-                    flagImageView.setImageDrawable(
-                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
+                    flagImageView.setImageDrawable(getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
                 }
-
                 return null;
             }
         });
         textView.setAdapter(adapter);
 
         Button cancel = (Button) layout.findViewById(R.id.cancel);
-        cancel.setOnClickListener(new OnClickListener() {
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -224,7 +206,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
         });
 
         Button validate = (Button) layout.findViewById(R.id.validate);
-        validate.setOnClickListener(new OnClickListener() {
+        validate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Flag flag = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
@@ -232,7 +214,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
                     // Set flag
                     imageViewIcon.setImageDrawable(
                             getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
-                    imageViewIcon.setScaleType(ScaleType.FIT_CENTER);
+                    imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                     dialog.dismiss();
                 } else {
@@ -259,7 +241,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
 
             // Loading icon
             String filename = obj.getIcon();
-            ImageViewHelper.setIcon(this, imageViewIcon, filename);
+            ImageViewHelper.setIcon(requireContext(), imageViewIcon, filename);
 
             if (obj.getCurrency() != null)
                 spinnerCurrencyManager.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
@@ -274,7 +256,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
             String filename = account + ".png";
 
             try {
-                FileOutputStream fOut = openFileOutput(filename, Context.MODE_PRIVATE);
+                FileOutputStream fOut = requireContext().openFileOutput(filename, Context.MODE_PRIVATE);
 
                 b.compress(Bitmap.CompressFormat.PNG, 100, fOut);
                 fOut.flush();
@@ -293,6 +275,7 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
         }
     }
 
+    /* TODO what to do here ? and how ? onContinue is not a function
     @Override
     protected boolean onContinue(boolean disposeActivity) {
         // Invalidate current account if we are editing it
@@ -305,16 +288,15 @@ public class AddOrEditAccountActivity extends AddOrEditActivity<Account> {
         }
 
         return super.onContinue(disposeActivity);
-    }
+    }*/
 
-    @Deprecated
     class AppsAdapter extends BaseAdapter {
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView i = new ImageView(AddOrEditAccountActivity.this);
+            ImageView i = new ImageView(requireContext());
 
             ResolveInfo info = mApps.get(position % mApps.size());
 
-            i.setImageDrawable(info.activityInfo.loadIcon(getPackageManager()));
+            i.setImageDrawable(info.activityInfo.loadIcon(requireContext().getPackageManager()));
             i.setScaleType(ImageView.ScaleType.FIT_CENTER);
             final int w = (int) (36 * getResources().getDisplayMetrics().density + 0.5f);
             i.setLayoutParams(new GridView.LayoutParams(w, w));
