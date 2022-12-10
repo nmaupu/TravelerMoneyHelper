@@ -175,6 +175,10 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
                     objsIds[i] = obj.getId();
                 }
                 onClickUpdate(objsIds);
+
+                ((CheckableCursorAdapter) listView.getAdapter()).clearCheckedItems();
+                buttonsBarGone();
+
                 break;
             case R.id.button_edit:
                 if (posChecked.length == 1) {
@@ -284,12 +288,6 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
     public ListView getListView() {
         return this.listView;
     }
-
-    // TODO refresh when fragment is disposed
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        refreshDisplay();
-    }*/
 
     /**
      * Validate an object before deletion

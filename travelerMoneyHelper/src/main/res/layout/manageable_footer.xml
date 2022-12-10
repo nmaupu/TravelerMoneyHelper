@@ -31,9 +31,9 @@
         android:layout_marginRight="2dip"
         android:layout_marginTop="4dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/button_refresh"
+        android:drawableTop="@drawable/ic_baseline_refresh_24"
         android:enabled="false"
-        android:visibility="gone"
+        android:visibility="visible"
         android:padding="5dip"
         android:text="@string/update" />
 

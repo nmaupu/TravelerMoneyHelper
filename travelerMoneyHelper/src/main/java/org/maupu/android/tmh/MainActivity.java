@@ -34,15 +34,19 @@ public class MainActivity extends AppCompatActivity {
             if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ABOUT) {
                 DialogHelper.popupDialogAbout(this);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CONVERTER) {
-                changeFragment(ConverterFragment.class, false, null);
+                changeFragment(ConverterFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_OPERATIONS) {
-                changeFragment(ViewPagerOperationFragment.class, false, null);
+                changeFragment(ViewPagerOperationFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_PARAMETERS) {
                 Intent intent = new Intent(this, PreferencesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ACCOUNTS) {
-                changeFragment(ManageAccountFragment.class, false, null);
+                changeFragment(ManageAccountFragment.class, false);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CATEGORIES) {
+                changeFragment(ManageCategoryFragment.class, false);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CURRENCIES) {
+                changeFragment(ManageCurrencyFragment.class, false);
             }
 
             return false;
@@ -71,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void changeFragment(Class fragment, boolean addToBackStack) {
+        changeFragment(fragment, addToBackStack, null);
     }
 
     public void changeFragment(Class fragment, boolean addToBackStack, Bundle args) {

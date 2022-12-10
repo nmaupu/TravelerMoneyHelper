@@ -42,7 +42,7 @@ public class ManageAccountFragment extends ManageableObjectFragment<Account> {
         Account account = new Account();
         Cursor c = account.fetchAll();
 
-        Map<Integer, Object> results = new HashMap<Integer, Object>();
+        Map<Integer, Object> results = new HashMap<>();
         results.put(0, c);
 
         return results;
