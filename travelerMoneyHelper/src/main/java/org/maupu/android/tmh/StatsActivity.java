@@ -92,7 +92,7 @@ public class StatsActivity extends TmhActivity {
     private StatsViewPager statsViewPager;
 
     public StatsActivity() {
-        super(R.layout.stats, R.string.activity_title_statistics);
+        super(R.layout.stats, R.string.fragment_title_statistics);
     }
 
     @Override

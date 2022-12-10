@@ -56,7 +56,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        requireActivity().setTitle(R.string.activity_title_viewpager_operation);
+        requireActivity().setTitle(R.string.fragment_title_viewpager_operation);
         setupMenu();
 
         return super.onCreateView(inflater, container, savedInstanceState);

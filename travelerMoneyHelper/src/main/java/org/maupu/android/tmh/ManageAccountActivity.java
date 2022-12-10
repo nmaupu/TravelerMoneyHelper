@@ -18,7 +18,7 @@ public class ManageAccountActivity extends ManageableObjectActivity<Account> {
     private IconCheckableCursorAdapter iconCheckableCursorAdapter = null;
 
     public ManageAccountActivity() {
-        super(R.string.activity_title_manage_account, AddOrEditAccountActivity.class, new Account(), true);
+        super(R.string.fragment_title_manage_account, AddOrEditAccountActivity.class, new Account(), true);
     }
 
     @Override

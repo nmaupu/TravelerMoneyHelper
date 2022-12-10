@@ -99,7 +99,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(R.string.activity_title_currency_converter);
+        getActivity().setTitle(R.string.fragment_title_currency_converter);
 
         /**
          * Widgets

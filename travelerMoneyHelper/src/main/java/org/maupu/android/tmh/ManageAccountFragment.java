@@ -16,7 +16,7 @@ public class ManageAccountFragment extends ManageableObjectFragment<Account> {
     private IconCheckableCursorAdapter iconCheckableCursorAdapter = null;
 
     public ManageAccountFragment() {
-        super(R.string.activity_title_manage_account, AddOrEditAccountFragment.class, new Account(), true);
+        super(R.string.fragment_title_manage_account, AddOrEditAccountFragment.class, new Account(), true);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class ManageOperationFragment extends ManageableObjectFragment<Operation>
 
     public ManageOperationFragment() {
         // animList is disabled because of bad performance
-        super(R.string.activity_title_manage_operation, AddOrEditOperationFragment.class, new Operation(), false);
+        super(R.string.fragment_title_manage_operation, AddOrEditOperationFragment.class, new Operation(), false);
     }
 
     @Override

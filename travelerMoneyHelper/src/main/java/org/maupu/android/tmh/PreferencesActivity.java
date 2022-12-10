@@ -55,7 +55,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
-        setTitle(R.string.activity_title_preferences);
+        setTitle(R.string.fragment_title_preferences);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24);
 

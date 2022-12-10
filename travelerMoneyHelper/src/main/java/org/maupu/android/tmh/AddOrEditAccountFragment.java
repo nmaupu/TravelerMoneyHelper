@@ -51,7 +51,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     private static final int MENU_ITEM_CAMERA = 4;
 
     public AddOrEditAccountFragment() {
-        super(R.string.activity_title_edition_account, R.layout.add_or_edit_account, new Account());
+        super(R.string.fragment_title_edition_account, R.layout.add_or_edit_account, new Account());
     }
 
     @Override
