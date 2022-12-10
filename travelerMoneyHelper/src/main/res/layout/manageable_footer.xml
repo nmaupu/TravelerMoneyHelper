@@ -17,7 +17,7 @@
         android:layout_marginRight="2dip"
         android:layout_marginBottom="0dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/ic_baseline_edit_24"
+        android:drawableTop="@drawable/ic_baseline_edit_black_24"
         android:enabled="false"
         android:padding="5dip"
         android:text="@string/edit" />
@@ -31,7 +31,7 @@
         android:layout_marginRight="2dip"
         android:layout_marginTop="4dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/ic_baseline_refresh_24"
+        android:drawableTop="@drawable/ic_baseline_refresh_black_24"
         android:enabled="false"
         android:visibility="visible"
         android:padding="5dip"
@@ -46,7 +46,7 @@
         android:layout_marginRight="2dip"
         android:layout_marginBottom="0dip"
         android:layout_weight="1"
-        android:drawableTop="@drawable/ic_baseline_delete_24"
+        android:drawableTop="@drawable/ic_baseline_delete_black_24"
         android:enabled="false"
         android:padding="5dip"
         android:text="@string/delete" />

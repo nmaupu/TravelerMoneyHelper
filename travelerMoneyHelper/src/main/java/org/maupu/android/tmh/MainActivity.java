@@ -31,22 +31,24 @@ public class MainActivity extends AppCompatActivity {
         ApplicationDrawer.getDrawer().setOnDrawerItemClickListener((view, position, drawerItem) -> {
             // When returning true, drawer doesn't close itself
             // whereas when returning false, drawer closes
-            if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ABOUT) {
-                DialogHelper.popupDialogAbout(this);
+            if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_OPERATIONS) {
+                changeFragment(ViewPagerOperationFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CONVERTER) {
                 changeFragment(ConverterFragment.class, false);
-            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_OPERATIONS) {
-                changeFragment(ViewPagerOperationFragment.class, false);
-            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_PARAMETERS) {
-                Intent intent = new Intent(this, PreferencesActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_STATS) {
+                changeFragment(StatsFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ACCOUNTS) {
                 changeFragment(ManageAccountFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CATEGORIES) {
                 changeFragment(ManageCategoryFragment.class, false);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CURRENCIES) {
                 changeFragment(ManageCurrencyFragment.class, false);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_PARAMETERS) {
+                Intent intent = new Intent(this, PreferencesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ABOUT) {
+                DialogHelper.popupDialogAbout(this);
             }
 
             return false;

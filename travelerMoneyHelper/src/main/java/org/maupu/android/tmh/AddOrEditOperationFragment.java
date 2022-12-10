@@ -13,7 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.maupu.android.tmh.database.CategoryData;
@@ -38,8 +37,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, TextWatcher, AdapterView.OnItemSelectedListener {
-    private static final int DATE_DIALOG_ID = 0;
-    private static final int TIME_DIALOG_ID = 1;
     //private DatePicker datePicker;
     private int mYear;
     private int mMonth;
@@ -81,35 +78,30 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         mSeconds = cal.get(Calendar.SECOND);
 
         //smAccount = new SpinnerManager(this, (Spinner)findViewById(R.id.account));
-        accountIcon = (ImageView) view.findViewById(R.id.account_icon);
-        accountName = (TextView) view.findViewById(R.id.account_name);
-        smCategory = new SpinnerManager(getContext(), (Spinner) view.findViewById(R.id.category));
-        amount = (NumberEditText) view.findViewById(R.id.amount);
+        accountIcon = view.findViewById(R.id.account_icon);
+        accountName = view.findViewById(R.id.account_name);
+        smCategory = new SpinnerManager(getContext(), view.findViewById(R.id.category));
+        amount = view.findViewById(R.id.amount);
         amount.addTextChangedListener(this);
-        linearLayoutRateUpdater = (LinearLayout) view.findViewById(R.id.ll_exchange_rate);
-        checkboxUpdateRate = (CheckBox) view.findViewById(R.id.checkbox_update_rate);
-        checkboxUpdateRate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateConvertedAmount();
-            }
-        });
-        smCurrency = new SpinnerManager(getContext(), (Spinner) view.findViewById(R.id.currency));
+        linearLayoutRateUpdater = view.findViewById(R.id.ll_exchange_rate);
+        checkboxUpdateRate = view.findViewById(R.id.checkbox_update_rate);
+        checkboxUpdateRate.setOnCheckedChangeListener((buttonView, isChecked) -> updateConvertedAmount());
+        smCurrency = new SpinnerManager(getContext(), view.findViewById(R.id.currency));
         smCurrency.getSpinner().setOnItemSelectedListener(this);
 
-        radioButtonCredit = (RadioButton) view.findViewById(R.id.credit);
-        radioButtonDebit = (RadioButton) view.findViewById(R.id.debit);
+        radioButtonCredit = view.findViewById(R.id.credit);
+        radioButtonDebit = view.findViewById(R.id.debit);
         radioButtonCredit.setOnCheckedChangeListener(this);
         radioButtonDebit.setOnCheckedChangeListener(this);
-        textViewSign = (TextView) view.findViewById(R.id.sign);
-        textViewDate = (TextView) view.findViewById(R.id.date);
+        textViewSign = view.findViewById(R.id.sign);
+        textViewDate = view.findViewById(R.id.date);
         textViewDate.setOnClickListener(this);
-        textViewTime = (TextView) view.findViewById(R.id.time);
+        textViewTime = view.findViewById(R.id.time);
         textViewTime.setOnClickListener(this);
-        buttonToday = (Button) view.findViewById(R.id.button_today);
+        buttonToday = view.findViewById(R.id.button_today);
         buttonToday.setOnClickListener(this);
-        textViewConvertedAmount = (TextView) view.findViewById(R.id.converted_amount);
-        textViewAmount = (TextView) view.findViewById(R.id.text_amount);
+        textViewConvertedAmount = view.findViewById(R.id.converted_amount);
+        textViewAmount = view.findViewById(R.id.text_amount);
 
         // Set spinners content
         Cursor c;

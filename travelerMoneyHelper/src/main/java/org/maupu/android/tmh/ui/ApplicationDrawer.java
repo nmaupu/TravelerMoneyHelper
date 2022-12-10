@@ -198,7 +198,7 @@ public class ApplicationDrawer {
         // prevent being able to slide drawer from the left edge of the screen
         navigationDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_24);
+        activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24);
         isDrawerEnabled = false;
     }
 

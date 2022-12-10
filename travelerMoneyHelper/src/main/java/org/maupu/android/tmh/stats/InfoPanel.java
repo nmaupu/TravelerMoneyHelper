@@ -3,8 +3,9 @@ package org.maupu.android.tmh.stats;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
@@ -15,7 +16,7 @@ import java.util.Iterator;
 
 public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedListener {
     private static final Class TAG = InfoPanel.class;
-    private TmhActivity ctx;
+    private FragmentActivity activity;
 
     // Avg / total info
     private TextView tvAvg1Currency, tvAvg1Amount, tvAvg2Currency, tvAvg2Amount;
@@ -23,31 +24,31 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
     private TextView tvTotal1Currency, tvTotal1Amount, tvTotal2Currency, tvTotal2Amount;
     private TextView tvTotal1Cat, tvTotal1CatCurrency, tvTotal1CatAmount, tvTotal2CatCurrency, tvTotal2CatAmount;
 
-    public InfoPanel(TmhActivity context) {
-        super(context);
-        this.ctx = context;
+    public InfoPanel(FragmentActivity activity) {
+        super(activity);
+        this.activity = activity;
     }
 
     @Override
     public void initPanel() {
-        tvAvg1Currency = (TextView)ctx.findViewById(R.id.text_avg1_currency);
-        tvAvg1Amount = (TextView)ctx.findViewById(R.id.text_avg1_amount);
-        tvAvg2Currency = (TextView)ctx.findViewById(R.id.text_avg2_currency);
-        tvAvg2Amount = (TextView)ctx.findViewById(R.id.text_avg2_amount);
-        tvAvg1Cat = (TextView)ctx.findViewById(R.id.text_avg1_cat);
-        tvAvg1CatCurrency = (TextView)ctx.findViewById(R.id.text_avg1_cat_currency);
-        tvAvg1CatAmount = (TextView)ctx.findViewById(R.id.text_avg1_cat_amount);
-        tvAvg2CatCurrency = (TextView)ctx.findViewById(R.id.text_avg2_cat_currency);
-        tvAvg2CatAmount = (TextView)ctx.findViewById(R.id.text_avg2_cat_amount);
-        tvTotal1Currency = (TextView)ctx.findViewById(R.id.text_total1_currency);
-        tvTotal1Amount = (TextView)ctx.findViewById(R.id.text_total1_amount);
-        tvTotal2Currency = (TextView)ctx.findViewById(R.id.text_total2_currency);
-        tvTotal2Amount = (TextView)ctx.findViewById(R.id.text_total2_amount);
-        tvTotal1Cat = (TextView)ctx.findViewById(R.id.text_total1_cat);
-        tvTotal1CatCurrency = (TextView)ctx.findViewById(R.id.text_total1_cat_currency);
-        tvTotal1CatAmount = (TextView)ctx.findViewById(R.id.text_total1_cat_amount);
-        tvTotal2CatCurrency = (TextView)ctx.findViewById(R.id.text_total2_cat_currency);
-        tvTotal2CatAmount = (TextView)ctx.findViewById(R.id.text_total2_cat_amount);
+        tvAvg1Currency = activity.findViewById(R.id.text_avg1_currency);
+        tvAvg1Amount = activity.findViewById(R.id.text_avg1_amount);
+        tvAvg2Currency = activity.findViewById(R.id.text_avg2_currency);
+        tvAvg2Amount = activity.findViewById(R.id.text_avg2_amount);
+        tvAvg1Cat = activity.findViewById(R.id.text_avg1_cat);
+        tvAvg1CatCurrency = activity.findViewById(R.id.text_avg1_cat_currency);
+        tvAvg1CatAmount = activity.findViewById(R.id.text_avg1_cat_amount);
+        tvAvg2CatCurrency = activity.findViewById(R.id.text_avg2_cat_currency);
+        tvAvg2CatAmount = activity.findViewById(R.id.text_avg2_cat_amount);
+        tvTotal1Currency = activity.findViewById(R.id.text_total1_currency);
+        tvTotal1Amount = activity.findViewById(R.id.text_total1_amount);
+        tvTotal2Currency = activity.findViewById(R.id.text_total2_currency);
+        tvTotal2Amount = activity.findViewById(R.id.text_total2_amount);
+        tvTotal1Cat = activity.findViewById(R.id.text_total1_cat);
+        tvTotal1CatCurrency = activity.findViewById(R.id.text_total1_cat_currency);
+        tvTotal1CatAmount = activity.findViewById(R.id.text_total1_cat_amount);
+        tvTotal2CatCurrency = activity.findViewById(R.id.text_total2_cat_currency);
+        tvTotal2CatAmount = activity.findViewById(R.id.text_total2_cat_amount);
     }
 
     @Override
@@ -72,22 +73,22 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
         final String currencySymbol = currentAcc != null && currentAcc.getCurrency() != null ? currentAcc.getCurrency().getShortName() : nonAvailable;
 
         String currentCatName = nonAvailable;
-        if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null) {
+        if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getName() != null) {
             // Getting possible aggregated name if needed
             StatsCategoryValues scv = statsData.get(statsData.getCatToHighlight().getId());
             currentCatName = scv != null ? scv.getName() : statsData.getCatToHighlight().getName();
 
-            if(currentCatName.length() > 11) {
+            if (currentCatName.length() > 11) {
                 currentCatName = statsData.getCatToHighlight().getName().substring(0, 11);
                 if (!currentCatName.equals(statsData.getCatToHighlight().getName()))
                     currentCatName += ".";
             }
         }
 
-        if(statsData.values().size() > 0) {
+        if (statsData.values().size() > 0) {
             /** Gran total **/
             Iterator<StatsCategoryValues> it = statsData.values().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 StatsCategoryValues scv = it.next();
                 total += scv.summarize();
                 totalConv += scv.summarizeConv();
@@ -99,7 +100,7 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
             avgConv = totalConv / nbDays;
 
             /** Total and avg by day by category **/
-            if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getId() != null) {
+            if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getId() != null) {
                 StatsCategoryValues scv = statsData.get(statsData.getCatToHighlight().getId());
                 if (scv != null) {
                     totalCat = scv.summarize();
@@ -120,7 +121,7 @@ public class InfoPanel extends View implements IStatsPanel, IStatsDataChangedLis
         final double fTotalCat = totalCat;
         final double fTotalCatConv = totalCatConv;
 
-        this.ctx.runOnUiThread(new Runnable() {
+        this.activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 /** Setting all data to TextViews **/

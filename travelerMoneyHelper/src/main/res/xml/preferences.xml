@@ -35,7 +35,7 @@
 
     <PreferenceCategory
         android:title="@string/pref_title_default_parameters"
-        app:icon="@drawable/ic_baseline_settings_24">
+        app:icon="@drawable/ic_baseline_settings_black_24">
         <ListPreference
             android:id="@+id/category_withdrawal"
             android:defaultValue="0"
@@ -46,7 +46,7 @@
 
     <PreferenceCategory
         android:title="@string/pref_title_api_configuration"
-        app:icon="@drawable/ic_baseline_https_24">
+        app:icon="@drawable/ic_baseline_https_black_24">
         <EditTextPreference
             android:id="@+id/oer_api_key"
             android:defaultValue=""
@@ -58,7 +58,7 @@
 
     <PreferenceCategory
         android:title="@string/pref_title_import_export"
-        app:icon="@drawable/ic_baseline_import_export_24">
+        app:icon="@drawable/ic_baseline_import_export_black_24">
         <EditTextPreference
             android:id="@+id/export_filename"
             android:defaultValue="tmh.db"

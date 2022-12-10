@@ -5,44 +5,38 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.AttributeSet;
 
-
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.TmhActivity;
 
 public class StatsViewPager extends ViewPager implements IStatsPanel, IStatsDataChangedListener {
     private static final String TAG = StatsViewPager.class.getName();
-    private TmhActivity context;
     private StatsFragmentPagerAdapter statsFragmentPagerAdapter;
-
-    public StatsViewPager(Context context) {
-        super(context);
-        this.context = (TmhActivity)context;
-    }
+    private FragmentActivity activity;
 
     public StatsViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = (TmhActivity)context;
+        this.activity = (FragmentActivity) context;
     }
 
     @Override
     public void initPanel() {
         statsFragmentPagerAdapter = new StatsFragmentPagerAdapter(
-                context.getSupportFragmentManager(), getResources()
+                this.activity.getSupportFragmentManager(), getResources()
         );
         setAdapter(statsFragmentPagerAdapter);
     }
 
     @Override
     public void refreshPanel(final StatsData data) {
-        if(data == null || data.size() == 0)
+        if (data == null || data.size() == 0)
             return;
 
-        context.runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 statsFragmentPagerAdapter.setData(data);

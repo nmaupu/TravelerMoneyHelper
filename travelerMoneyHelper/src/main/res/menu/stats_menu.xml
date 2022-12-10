@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_swap_mode"
-          android:title="@string/toolbar_swap_mode"
-          android:orderInCategory="10"
-          app:showAsAction="ifRoom|withText"
-          android:icon="@drawable/ic_swap_white" />
+    <item
+        android:id="@+id/stats_action_date_begin"
+        android:title="@string/date_change_begin"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_today_white" />
 
-    <item android:id="@+id/action_graph_info"
-          android:title="@string/toolbar_graph_info"
-          android:orderInCategory="20"
-          app:showAsAction="ifRoom|withText"
-          android:icon="@drawable/ic_graph_white" />
+    <item
+        android:id="@+id/stats_action_date_end"
+        android:title="@string/date_change_end"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_event_white" />
 
-    <item android:id="@+id/action_account"
-          android:title="@string/toolbar_account"
-          android:orderInCategory="30"
-          app:showAsAction="ifRoom|withText"
-          android:icon="@drawable/ic_account_white" />
+    <item
+        android:id="@+id/stats_action_reset"
+        android:title="@string/date_change_reset"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_baseline_refresh_24_white" />
+
+    <item
+        android:id="@+id/stats_action_auto_cats"
+        android:title="@string/stats_item_cat_auto"
+        android:orderInCategory="4"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_baseline_category_white_24" />
 
 </menu>

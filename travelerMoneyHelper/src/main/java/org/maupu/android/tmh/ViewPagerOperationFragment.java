@@ -34,13 +34,13 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     private int currentPosition;
     private ViewPager viewpager;
 
-    private final static String STATIC_DATA_PREVIOUS_MONTH_CHOSEN = "VPO_PreviousMonthChoosen";
-    private final static String STATIC_DATA_PREVIOUS_YEAR_CHOSEN = "VPO_PreviousYearChoosen";
-    private final static String STATIC_DATA_PREVIOUS_DAY_CHOSEN = "VPO_PreviousDayChoosen";
+    private final static String STATIC_DATA_VPO_MONTH_CHOSEN = "VPO_MonthChosen";
+    private final static String STATIC_DATA_VPO_YEAR_CHOSEN = "VPO_YearChosen";
+    private final static String STATIC_DATA_VPO_DAY_CHOSEN = "VPO_DayChosen";
 
     public final static int LIST_RAW = 0;
     public final static int LIST_BY_MONTH = 1;
-    public final static String STATIC_DATA_LIST_STATUS = "StaticDataVPOAListStatus";
+    public final static String STATIC_DATA_LIST_STATUS = "StaticDataVPOListStatus";
 
     private final static int DRAWER_ITEM_CHOOSE_MONTH = TmhApplication.getIdentifier("DRAWER_ITEM_CHOOSE_MONTH");
     private final static int DRAWER_ITEM_LIST_TYPE = TmhApplication.getIdentifier("DRAWER_ITEM_LIST_TYPE");
@@ -126,9 +126,9 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
                         setViewpagerAdapter(new ViewPagerOperationAdapter(fragment, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast));
                         refreshDisplay();
                     } else if (DRAWER_ITEM_CHOOSE_MONTH == menuItem.getItemId()) {
-                        int month = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN);
-                        int year = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN);
-                        int day = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN);
+                        int month = StaticData.getPreferenceValueInt(STATIC_DATA_VPO_MONTH_CHOSEN);
+                        int year = StaticData.getPreferenceValueInt(STATIC_DATA_VPO_YEAR_CHOSEN);
+                        int day = StaticData.getPreferenceValueInt(STATIC_DATA_VPO_DAY_CHOSEN);
 
                         Calendar cal = Calendar.getInstance();
                         if (month == -1 || year == -1 || day == -1) {
@@ -150,6 +150,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
                 }
             };
         }
+
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
@@ -230,9 +231,9 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
         int realMonth = monthOfYear + 1;
         TmhLogger.d(TAG, "Date has been set to : " + year + "/" + realMonth + "/" + dayOfMonth);
-        StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN, monthOfYear);
-        StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN, year);
-        StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN, dayOfMonth);
+        StaticData.setPreferenceValueInt(STATIC_DATA_VPO_MONTH_CHOSEN, monthOfYear);
+        StaticData.setPreferenceValueInt(STATIC_DATA_VPO_YEAR_CHOSEN, year);
+        StaticData.setPreferenceValueInt(STATIC_DATA_VPO_DAY_CHOSEN, dayOfMonth);
         Calendar cal = Calendar.getInstance();
         cal.setTime(new GregorianCalendar(year, monthOfYear, dayOfMonth).getTime());
 
