@@ -36,15 +36,6 @@ public class ManageOperationFragment extends ManageableObjectFragment<Operation>
         super(R.string.activity_title_manage_operation, AddOrEditOperationFragment.class, new Operation(), false);
     }
 
-    // TODO verify drawer item selection highlight
-    /*
-    @Override
-    public int whatIsMyDrawerIdentifier() {
-        return super.DRAWER_ITEM_OPERATIONS;
-    }
-
-     */
-
     @Override
     protected boolean validateConstraintsForDeletion(Operation obj) {
         return true;

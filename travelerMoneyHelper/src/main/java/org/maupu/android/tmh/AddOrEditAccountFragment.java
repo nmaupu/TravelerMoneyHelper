@@ -319,10 +319,11 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
 
     @Override
     public Map<Integer, Object> handleRefreshBackground() {
-        return null;
+        return super.handleRefreshBackground();
     }
 
     @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
+        super.handleRefreshEnding(results);
     }
 }

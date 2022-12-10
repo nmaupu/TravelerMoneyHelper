@@ -3,8 +3,12 @@ package org.maupu.android.tmh;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -16,6 +20,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.AnimHelper;
@@ -39,6 +45,7 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
     private boolean animList = false;
     private CheckableCursorAdapter checkableCursorAdapter = null;
     private int title;
+    private MenuProvider menuProvider;
 
     public ManageableObjectFragment(int title, Class<?> addOrEditFragment, T obj, boolean animList) {
         this(title, addOrEditFragment, obj, R.layout.manageable_object, animList);
@@ -52,12 +59,18 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
         this.title = title;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        requireActivity().setTitle(this.title);
+        setupMenu();
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         TmhLogger.d(TAG, "Calling onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-
-        getActivity().setTitle(this.title);
 
         this.layoutRootFooter = view.findViewById(R.id.layout_root_footer);
 
@@ -87,22 +100,26 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
         refreshDisplay();
     }
 
-    // TODO menu
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.manage_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }*/
+    public void setupMenu() {
+        if (menuProvider == null) {
+            menuProvider = new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.manage_menu, menu);
+                }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                onAddClicked();
-                break;
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_add:
+                            onAddClicked();
+                            break;
+                    }
+                    return true;
+                }
+            };
         }
-
-        return super.onOptionsItemSelected(item);
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     public void setAdapter(int layout, Cursor data, String[] from, int[] to) {
@@ -141,7 +158,6 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
                 setEnabledDeleteButton(true);
                 setEnabledEditButton(false);
                 setEnabledUpdateButton(true);
-                ;
         }
     }
 
@@ -166,11 +182,9 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
                     Cursor cursor = (Cursor) listView.getItemAtPosition(p);
                     obj.toDTO(cursor);
 
-                    // TODO launch fragment instead of activity
-                   /* Intent intent = null;
-                    intent = new Intent(this, addOrEditActivity);
-                    intent.putExtra(AddOrEditActivity.EXTRA_OBJECT_ID, obj);
-                    startActivityForResult(intent, ACTIVITY_EDIT);*/
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(AddOrEditFragment.EXTRA_OBJECT_ID, obj);
+                    ((MainActivity) requireActivity()).changeFragment(this.addOrEditFragment, true, bundle);
                 }
 
                 break;
@@ -293,11 +307,6 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
     protected abstract void onClickUpdate(Integer[] objs);
 
     protected void onAddClicked() {
-        /*
-        Intent intent = new Intent(this, addOrEditActivity);
-        startActivityForResult(intent, ACTIVITY_ADD);
-        */
-
-        //return intent;
+        ((MainActivity) requireActivity()).changeFragment(this.addOrEditFragment, true, null);
     }
 }
