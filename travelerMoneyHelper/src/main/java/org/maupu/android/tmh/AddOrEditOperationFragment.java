@@ -1,5 +1,6 @@
 package org.maupu.android.tmh;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.text.Editable;
@@ -346,6 +347,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         updateConvertedAmount();
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateConvertedAmount() {
         try {
             Cursor c = smCurrency.getSelectedItem();
@@ -370,7 +372,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());
         } catch (NumberFormatException nfe) {
             // No conversion
-            TmhLogger.d(AddOrEditOperationActivity.class, "NumberFormatException occured, no conversion is done");
+            TmhLogger.d(AddOrEditOperationActivity.class, "NumberFormatException occurred, no conversion is done");
         }
     }
 

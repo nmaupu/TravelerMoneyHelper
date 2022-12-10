@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the drawer singleton
         ApplicationDrawer.getInstance().initDrawer(this);
         ApplicationDrawer.getDrawer().setOnDrawerItemClickListener((view, position, drawerItem) -> {
+            // When returning true, drawer doesn't close itself
+            // whereas when returning false, drawer closes
             if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_ABOUT) {
                 DialogHelper.popupDialogAbout(this);
             } else if (drawerItem.getIdentifier() == ApplicationDrawer.DRAWER_ITEM_CONVERTER) {
@@ -49,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
             changeFragment(ViewPagerOperationFragment.class, false, null);
         }
     }
-
 
     // When clicking on the "home" button which can be hamburger or back arrow
     @Override

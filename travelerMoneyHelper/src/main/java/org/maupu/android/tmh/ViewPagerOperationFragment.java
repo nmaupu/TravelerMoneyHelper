@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -8,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
@@ -28,7 +27,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
-public class ViewPagerOperationFragment extends TmhFragment implements ViewPager.OnPageChangeListener, DatePickerDialog.OnDateSetListener {
+public class ViewPagerOperationFragment extends TmhFragment implements ViewPager.OnPageChangeListener {
     private static final Class<ViewPagerOperationFragment> TAG = ViewPagerOperationFragment.class;
     private ViewPagerOperationAdapter adapter;
     private ViewPagerOperationAdapter adapterRaw;
@@ -59,6 +58,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         requireActivity().setTitle(R.string.activity_title_viewpager_operation);
         setupMenu();
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -98,64 +98,60 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
 
     private void setupMenu() {
         if (menuProvider == null) {
+            final TmhFragment fragment = this;
             menuProvider = new MenuProvider() {
                 @Override
                 public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                     menuInflater.inflate(R.menu.viewpager_operation_menu, menu);
+                    menu.add(0, DRAWER_ITEM_AUTO, 1, R.string.menu_item_auto).setIcon(R.drawable.ic_event_black);
+                    menu.add(0, DRAWER_ITEM_TODAY, 1, R.string.today).setIcon(R.drawable.ic_today_black);
+                    menu.add(0, DRAWER_ITEM_CHOOSE_MONTH, 1, R.string.menu_item_choose_month).setIcon(R.drawable.ic_period_black);
+                    menu.add(0, DRAWER_ITEM_LIST_TYPE, 1, R.string.operation_list_type).setIcon(R.drawable.ic_list_black);
                 }
 
                 @Override
                 public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_add:
-                            ((MainActivity) requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, null);
-                            break;
-                        case R.id.action_withdrawal:
-                            // TODO withdrawl when fragment is done
-                            break;
+                    if (R.id.action_add == menuItem.getItemId()) {
+                        ((MainActivity) requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, null);
+                    } else if (R.id.action_withdrawal == menuItem.getItemId()) {
+                        // TODO withdrawl when fragment is done
+                    } else if (DRAWER_ITEM_TODAY == menuItem.getItemId()) {
+                        StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
+                        setViewpagerAdapter(new ViewPagerOperationAdapter(fragment));
+                        refreshDisplay();
+                    } else if (DRAWER_ITEM_AUTO == menuItem.getItemId()) {
+                        StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
+                        Operation dummyOp = new Operation();
+                        Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+                        setViewpagerAdapter(new ViewPagerOperationAdapter(fragment, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast));
+                        refreshDisplay();
+                    } else if (DRAWER_ITEM_CHOOSE_MONTH == menuItem.getItemId()) {
+                        int month = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN);
+                        int year = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN);
+                        int day = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN);
+
+                        Calendar cal = Calendar.getInstance();
+                        if (month == -1 || year == -1 || day == -1) {
+                            // Set current date
+                            cal.setTime(new GregorianCalendar().getTime());
+                            year = cal.get(Calendar.YEAR);
+                            month = cal.get(Calendar.MONTH);
+                            day = cal.get(Calendar.DAY_OF_MONTH);
+                        }
+
+                        new DatePickerDialogFragment(year, month, day, (view, y, m, dom) -> {
+                            onDateSet(y, m, dom);
+                        }).show(getChildFragmentManager(), DatePickerDialogFragment.TAG);
+                    } else if (DRAWER_ITEM_LIST_TYPE == menuItem.getItemId()) {
+                        changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS) == LIST_BY_MONTH ? LIST_RAW : LIST_BY_MONTH);
                     }
+
                     return true;
                 }
             };
         }
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
-
-    // TODO options menu to handle
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.viewpager_operation_menu, menu);
-        return true;
-    }*/
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO handle option menu item
-        /*switch (item.getItemId()) {
-            case R.id.action_add:
-                startActivity(new Intent(this, AddOrEditOperationActivity.class));
-                break;
-            case R.id.action_withdrawal:
-                startActivity(new Intent(this, WithdrawalActivity.class));
-                break;
-        }*/
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // TODO
-        //super.selectDrawerItem(DRAWER_ITEM_OPERATIONS);
-    }
-
-    // TODO Handle activity result with fragment
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        TmhLogger.d(TAG, "onActivityResult resultCode : " + resultCode);
-        refreshDisplay();
-    }*/
 
     @Override
     public void onPageScrollStateChanged(int position) {
@@ -231,68 +227,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
     }*/
 
-    // TODO handle adding navigation drawer items
-    /*@Override
-    public IDrawerItem[] buildNavigationDrawer() {
-        return new IDrawerItem[]{
-                createSecondaryDrawerItem(
-                        DRAWER_ITEM_AUTO,
-                        R.drawable.ic_event_black,
-                        R.string.menu_item_auto),
-                createSecondaryDrawerItem(
-                        DRAWER_ITEM_TODAY,
-                        R.drawable.ic_today_black,
-                        R.string.today),
-                createSecondaryDrawerItem(
-                        DRAWER_ITEM_CHOOSE_MONTH,
-                        R.drawable.ic_period_black,
-                        R.string.menu_item_choose_month),
-                createSecondaryDrawerItem(
-                        DRAWER_ITEM_LIST_TYPE,
-                        R.drawable.ic_list_black,
-                        R.string.operation_list_type),
-        };
-    }*/
-
-    // TODO handle drawer items click
-    /*@Override
-    public boolean onItemClick(View view, int position, IDrawerItem item) {
-        if (item.getIdentifier() == DRAWER_ITEM_LIST_TYPE) {
-            changeOperationsListType(
-                    StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS) == LIST_BY_MONTH ? LIST_RAW : LIST_BY_MONTH
-            );
-        } else if (item.getIdentifier() == DRAWER_ITEM_CHOOSE_MONTH) {
-            int month = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN);
-            int year = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_YEAR_CHOSEN);
-            int day = StaticData.getPreferenceValueInt(STATIC_DATA_PREVIOUS_DAY_CHOSEN);
-
-            Calendar cal = Calendar.getInstance();
-            if (month == -1 || year == -1 || day == -1) {
-                // Set current date
-                cal.setTime(new GregorianCalendar().getTime());
-                year = cal.get(Calendar.YEAR);
-                month = cal.get(Calendar.MONTH);
-                day = cal.get(Calendar.DAY_OF_MONTH);
-            }
-
-            new CustomDatePickerDialog(this, this, year, month, day).show();
-        } else if (item.getIdentifier() == DRAWER_ITEM_AUTO) {
-            StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
-            Operation dummyOp = new Operation();
-            Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
-            setViewpagerAdapter(new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast));
-            refreshDisplay();
-        } else if (item.getIdentifier() == DRAWER_ITEM_TODAY) {
-            StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
-            setViewpagerAdapter(new ViewPagerOperationAdapter(this));
-            refreshDisplay();
-        }
-
-        return super.onItemClick(view, position, item);
-    }*/
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
         int realMonth = monthOfYear + 1;
         TmhLogger.d(TAG, "Date has been set to : " + year + "/" + realMonth + "/" + dayOfMonth);
         StaticData.setPreferenceValueInt(STATIC_DATA_PREVIOUS_MONTH_CHOSEN, monthOfYear);

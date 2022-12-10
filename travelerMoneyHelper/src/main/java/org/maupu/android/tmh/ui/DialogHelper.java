@@ -256,13 +256,13 @@ public abstract class DialogHelper {
         }
     }
 
-    public static void popupDialogAbout(final FragmentActivity tmhActivity) {
+    public static void popupDialogAbout(final FragmentActivity tmhFragment) {
         // Popup about dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(tmhActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(tmhFragment);
 
         PackageInfo pInfo = null;
         try {
-            pInfo = TmhApplication.getAppContext().getPackageManager().getPackageInfo(tmhActivity.getPackageName(), 0);
+            pInfo = TmhApplication.getAppContext().getPackageManager().getPackageInfo(tmhFragment.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException nnfe) {
             nnfe.printStackTrace();
         }
@@ -270,7 +270,7 @@ public abstract class DialogHelper {
         String appVersion = pInfo.versionName;
         int appCode = pInfo.versionCode;
         StringBuilder sb = new StringBuilder();
-        sb.append(tmhActivity.getString(R.string.about))
+        sb.append(tmhFragment.getString(R.string.about))
                 .append("\n")
                 .append("App ver: ").append(appVersion)
                 .append("\n")
@@ -278,10 +278,10 @@ public abstract class DialogHelper {
                 .append("\n")
                 .append("DB ver: ").append(DatabaseHelper.DATABASE_VERSION)
                 .append("\n")
-                .append(tmhActivity.getString(R.string.about_flags_copyright)).append(" ").append("www.icondrawer.com");
+                .append(tmhFragment.getString(R.string.about_flags_copyright)).append(" ").append("www.icondrawer.com");
 
         builder.setMessage(sb.toString())
-                .setTitle(tmhActivity.getString(R.string.about_title))
+                .setTitle(tmhFragment.getString(R.string.about_title))
                 .setIcon(R.drawable.tmh_icon_48)
                 .setCancelable(true)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

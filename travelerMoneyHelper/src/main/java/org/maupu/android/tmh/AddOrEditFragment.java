@@ -2,10 +2,12 @@ package org.maupu.android.tmh;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,15 +37,21 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
         this.obj = obj;
     }
 
+    @Nullable
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         requireActivity().setTitle(title);
 
         retrieveItemFromBundle();
+        setupMenu(obj != null && obj.getId() != null); // obj != null alone is not sufficient (generic type cannot be tested against null ?)
 
-        setupMenu(obj != null && obj.getId() != null); // obj != null alone is not sufficient (as it's a generic type ?)
+        return super.onCreateView(inflater, container, savedInstanceState);
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Init all widgets
         View v = initResources(getView());
