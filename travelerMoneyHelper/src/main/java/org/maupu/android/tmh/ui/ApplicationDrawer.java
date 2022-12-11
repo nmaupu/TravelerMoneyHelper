@@ -22,6 +22,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import org.maupu.android.tmh.IOnAccountChangeListener;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -31,7 +32,6 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +44,8 @@ public class ApplicationDrawer {
     private AccountHeader accountHeader;
     private Drawer navigationDrawer;
     private boolean isDrawerEnabled = true;
+
+    private IOnAccountChangeListener onAccountChangeListener;
 
     public static final int DRAWER_ITEM_OPERATIONS = TmhApplication.getIdentifier("DRAWER_ITEM_OPERATIONS");
     public static final int DRAWER_ITEM_STATS = TmhApplication.getIdentifier("DRAWER_ITEM_STATS");
@@ -125,11 +127,11 @@ public class ApplicationDrawer {
 
             // Custom items
             //IDrawerItem[] customItems = buildNavigationDrawer();
-            IDrawerItem[] customItems = null;
-            if (customItems != null) {
-                items.add(new DividerDrawerItem());
-                items.addAll(Arrays.asList(customItems));
-            }
+            //IDrawerItem[] customItems = null;
+            //if (customItems != null) {
+            //    items.add(new DividerDrawerItem());
+            //    items.addAll(Arrays.asList(customItems));
+            //}
 
             items.add(new DividerDrawerItem());
 
@@ -142,7 +144,6 @@ public class ApplicationDrawer {
                     .withActivity(activity)
                     .addDrawerItems(items.toArray(new IDrawerItem[0]))
                     .withAccountHeader(accountHeader)
-                    // .withToolbar(binding.toolbar)
                     .withActionBarDrawerToggle(false)
                     .withOnDrawerListener(new Drawer.OnDrawerListener() {
                         @Override
@@ -169,11 +170,8 @@ public class ApplicationDrawer {
         setNavigationBarDrawerIconToHamburger();
     }
 
-    public void setOnDrawerItemClickListener(Drawer.OnDrawerItemClickListener listener) {
-        if (this.activity == null) {
-            return;
-        }
-        navigationDrawer.setOnDrawerItemClickListener(listener);
+    public void setOnAccountChangeListener(IOnAccountChangeListener onAccountChangeListener) {
+        this.onAccountChangeListener = onAccountChangeListener;
     }
 
     public boolean isDrawerEnabled() {
@@ -211,8 +209,13 @@ public class ApplicationDrawer {
         while (it.hasNext()) {
             ProfileDrawerItem p = (ProfileDrawerItem) it.next();
             Account a = (Account) p.getTag();
-            if (StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId())
+            if (StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId()) {
                 accountHeader.setActiveProfile(p);
+                if (this.onAccountChangeListener != null) {
+                    this.onAccountChangeListener.onAccountChange();
+                }
+                break;
+            }
         }
     }
 

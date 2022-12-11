@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
@@ -59,6 +60,18 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         requireActivity().setTitle(R.string.fragment_title_viewpager_operation);
         setupMenu();
 
+        ApplicationDrawer.getInstance().setOnAccountChangeListener(() -> {
+            Operation dummyOp = new Operation();
+            Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+            if (autoLast == null)
+                autoLast = Calendar.getInstance().getTime();
+
+            adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
+            adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
+
+            changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
+        });
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -77,7 +90,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
         adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
 
-        /** Set adapter **/
+        // Set adapter
         int status = StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS);
         if (status == -1) {
             status = LIST_BY_MONTH;
@@ -114,7 +127,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
                     if (R.id.action_add == menuItem.getItemId()) {
                         ((MainActivity) requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, null);
                     } else if (R.id.action_withdrawal == menuItem.getItemId()) {
-                        // TODO withdrawl when fragment is done
+                        // TODO withdrawal when fragment is done
                     } else if (DRAWER_ITEM_TODAY == menuItem.getItemId()) {
                         StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
                         setViewpagerAdapter(new ViewPagerOperationAdapter(fragment));
@@ -123,6 +136,8 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
                         StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
                         Operation dummyOp = new Operation();
                         Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+                        if (autoLast == null)
+                            autoLast = Calendar.getInstance().getTime();
                         setViewpagerAdapter(new ViewPagerOperationAdapter(fragment, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast));
                         refreshDisplay();
                     } else if (DRAWER_ITEM_CHOOSE_MONTH == menuItem.getItemId()) {
@@ -215,18 +230,6 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
             viewpager.setCurrentItem(currentPosition);
         }
     }
-
-    // TODO Handle refresh when current account changes
-    /*@Override
-    public void refreshAfterCurrentAccountChanged() {
-        super.refreshAfterCurrentAccountChanged();
-        Operation dummyOp = new Operation();
-        Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
-        adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
-        adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
-
-        changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
-    }*/
 
     public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
         int realMonth = monthOfYear + 1;

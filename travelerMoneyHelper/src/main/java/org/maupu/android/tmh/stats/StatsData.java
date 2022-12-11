@@ -8,13 +8,12 @@ import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -74,19 +73,20 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
     }
 
     protected void notifyStatsDataChanged() {
-        for (IStatsDataChangedListener l: listeners) {
+        for (IStatsDataChangedListener l : listeners) {
             l.onStatsDataChanged(this);
         }
     }
 
     /**
      * Rebuild charts data and send events to all listeners that data have been changed.
-     * @param exceptedCategories Categories to except
-     * @param dateBegin Date from when we are loading data
-     * @param dateEnd Date until when we are loading data
+     *
+     * @param exceptedCategories     Categories to except
+     * @param dateBegin              Date from when we are loading data
+     * @param dateEnd                Date until when we are loading data
      * @param limitBeforeAggregation Number of categories before aggregating them together
-     * @param aggregationName Name of the aggregated category
-     * @param forwardEvent Specify whether event are forwarded to listeners or not
+     * @param aggregationName        Name of the aggregated category
+     * @param forwardEvent           Specify whether event are forwarded to listeners or not
      */
     public void rebuildChartsData(final Set<Integer> exceptedCategories,
                                   final Date dateBegin, final Date dateEnd,
@@ -95,28 +95,32 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
         Integer[] exceptedCats = null;
-        if(exceptedCategories != null)
+        if (exceptedCategories != null)
             exceptedCats = exceptedCategories.toArray(new Integer[exceptedCategories.size()]);
+
+        if (this.dateBegin == null)
+            this.dateBegin = Calendar.getInstance().getTime();
+        if (this.dateEnd == null)
+            this.dateEnd = Calendar.getInstance().getTime();
 
         Cursor c = new Operation().sumOperationsGroupByDayOrderDateAsc(
                 StaticData.getCurrentAccount(),
-                dateBegin,
-                dateEnd,
+                this.dateBegin,
+                this.dateEnd,
                 exceptedCats
         );
-        if(c == null)
-            return;
-        if(c.getCount() == 0) {
-            this.clearData();
-            if(forwardEvent)
+
+        this.clearData();
+        if (c == null || c.getCount() == 0) {
+            if (forwardEvent)
                 notifyStatsDataChanged();
-            c.close();
+            if (c != null)
+                c.close();
             return;
         }
 
         c.moveToFirst();
 
-        this.clearData();
         do {
             int idxAmount = c.getColumnIndexOrThrow("amountString");
             int idxAmountConv = c.getColumnIndexOrThrow("amountConv");
@@ -143,15 +147,16 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
 
             try {
                 StatsCategoryValues scv = this.get(catId);
-                if(scv == null) {
+                if (scv == null) {
                     scv = new StatsCategoryValues(cat, dateBegin, dateEnd, rate, currency);
                     this.put(catId, scv);
                 }
 
                 scv.addValue(dateString, Math.abs(amount.floatValue()));
                 scv.addValueConv(dateString, Math.abs(amountConv.floatValue()));
-            } catch(NullPointerException | NumberFormatException ex) {}
-        } while(c.moveToNext());
+            } catch (NullPointerException | NumberFormatException ex) {
+            }
+        } while (c.moveToNext());
 
         c.close();
 
@@ -160,23 +165,23 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         int nbElts = chartsDataList.size();
 
         // Biggest category is the first one after sorting the list
-        if(chartsDataList.size() > 0)
+        if (chartsDataList.size() > 0)
             biggestCategory = chartsDataList.get(0).getFirstCategory();
 
         // Put color from an array on each stats category value
         int x = 0;
-        for (StatsCategoryValues s: chartsDataList) {
+        for (StatsCategoryValues s : chartsDataList) {
             s.setColor(colors[x % colors.length]);
             x++;
         }
 
         // If max nb of displayed slices is reach, gather remaining categories together
-        if(nbElts > limitBeforeAggregation) {
+        if (nbElts > limitBeforeAggregation) {
             miscCategory = chartsDataList.get(limitBeforeAggregation);
             miscCategory.setName(aggregationName);
             // Remove from charts data, fusion everything and reintegrate it
             this.remove(miscCategory.getFirstCategory().getId());
-            for(int i=limitBeforeAggregation+1; i<nbElts; i++) {
+            for (int i = limitBeforeAggregation + 1; i < nbElts; i++) {
                 StatsCategoryValues curScv = chartsDataList.get(i);
                 miscCategory.fusionWith(curScv);
                 this.remove(curScv.getFirstCategory().getId());
@@ -186,7 +191,7 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
             miscCategory = null;
         }
 
-        if(forwardEvent)
+        if (forwardEvent)
             notifyStatsDataChanged();
     }
 
@@ -195,19 +200,20 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
         biggestCategory = null;
         miscCategory = null;
         catToHighlight = null;
+
     }
 
     public String getMiscCategoryText() {
-        if(miscCategory == null || miscCategory.getCategories() == null || miscCategory.getCategories().size() == 0)
+        if (miscCategory == null || miscCategory.getCategories() == null || miscCategory.getCategories().size() == 0)
             return null;
-        else if(miscCategory.getCategories().size() == 1)
+        else if (miscCategory.getCategories().size() == 1)
             return miscCategory.getFirstCategory().getName();
 
         StringBuilder sb = null;
 
         List<Category> miscCats = new ArrayList<>(miscCategory.getCategories());
         Collections.sort(miscCats);
-        for (Category cat: miscCats) {
+        for (Category cat : miscCats) {
             if (sb == null) {
                 sb = new StringBuilder();
                 sb.append(cat.getName());
@@ -220,7 +226,7 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
     }
 
     public StatsCategoryValues sumForDate(String dateString) {
-        if(size() == 0)
+        if (size() == 0)
             return null;
 
         Category dummyCat = new Category();
@@ -233,7 +239,7 @@ public class StatsData extends HashMap<Integer, StatsCategoryValues> {
 
         StatsCategoryValues ret = new StatsCategoryValues(dummyCat, null, null, rate, currency);
 
-        for(int k : keySet()) {
+        for (int k : keySet()) {
             StatsCategoryValues scv = get(k);
             ret.addValue(dateString, (Float) scv.getValues().get(dateString));
         }

@@ -118,7 +118,7 @@ public abstract class StaticData {
 
         setPreferenceValueInt(PREF_CURRENT_ACCOUNT, id);
 
-        // Reset stats's expected categories list
+        // Reset stats' expected categories list
         statsExceptedCategories.clear();
 
         // Fetch and fill currentAccount

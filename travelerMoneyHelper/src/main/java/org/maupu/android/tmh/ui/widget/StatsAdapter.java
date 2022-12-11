@@ -13,15 +13,10 @@ import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.NumberUtil;
-import org.maupu.android.tmh.util.TmhLogger;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class StatsAdapter extends BaseAdapter {
     private static final String TAG = StatsAdapter.class.getName();
@@ -38,7 +33,7 @@ public class StatsAdapter extends BaseAdapter {
         this.statsData = statsData;
         this.type = displayType;
 
-        if(statsData != null) {
+        if (statsData != null) {
             statsList = new ArrayList<>(statsData.values());
             Collections.sort(statsList);
             dates = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
@@ -47,46 +42,46 @@ public class StatsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
-        if(statsList == null || statsData == null)
+        if (statsList == null || statsData == null)
             return null;
 
         View row = convertView != null ? convertView : inflater.inflate(R.layout.stats_item_details, parent, false);
-        TextView tvText = (TextView)row.findViewById(R.id.text);
-        TextView tvAmount = (TextView)row.findViewById(R.id.amount);
-        TextView tvCurrency = (TextView)row.findViewById(R.id.currency);
-        TextView tvAmountConverted = (TextView)row.findViewById(R.id.amount_converted);
-        TextView tvCurrencyConverted = (TextView)row.findViewById(R.id.currency_converted);
-        TextView tvCurrencyAvg = (TextView)row.findViewById(R.id.currency_avg);
-        TextView tvAmountAvg = (TextView)row.findViewById(R.id.amount_avg);
-        TextView tvCurrencyConvertedAvg = (TextView)row.findViewById(R.id.currency_converted_avg);
-        TextView tvAmountConvertedAvg = (TextView)row.findViewById(R.id.amount_converted_avg);
+        TextView tvText = row.findViewById(R.id.text);
+        TextView tvAmount = row.findViewById(R.id.amount);
+        TextView tvCurrency = row.findViewById(R.id.currency);
+        TextView tvAmountConverted = row.findViewById(R.id.amount_converted);
+        TextView tvCurrencyConverted = row.findViewById(R.id.currency_converted);
+        TextView tvCurrencyAvg = row.findViewById(R.id.currency_avg);
+        TextView tvAmountAvg = row.findViewById(R.id.amount_avg);
+        TextView tvCurrencyConvertedAvg = row.findViewById(R.id.currency_converted_avg);
+        TextView tvAmountConvertedAvg = row.findViewById(R.id.amount_converted_avg);
 
-        StatsCategoryValues scv = null;
+        StatsCategoryValues scv;
         try {
             scv = (StatsCategoryValues) getItem(position);
             if (scv == null)
                 return row;
-        } catch(IndexOutOfBoundsException ioobe) {
+        } catch (IndexOutOfBoundsException ioobe) {
             return row; // trying to refresh too much
         }
 
-        if(type == TYPE_CATEGORY) {
+        if (type == TYPE_CATEGORY) {
             Double sum = scv.summarize().doubleValue();
             tvText.setText(scv.getName());
 
             int nbDays = DateUtil.getNumberOfDaysBetweenDates(scv.getDateBegin(), scv.getDateEnd());
 
-            /** Column 1 **/
+            // Column 1
             tvCurrency.setText(scv.getCurrency().getShortName());
             tvAmount.setText(NumberUtil.formatDecimal(sum));
 
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
             tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRateAvg()));
 
-            /** Column 2 **/
+            // Column 2
             Double avg = sum / nbDays;
             tvCurrencyAvg.setText(scv.getCurrency().getShortName());
             tvAmountAvg.setText(NumberUtil.formatDecimal(avg));
@@ -98,28 +93,28 @@ public class StatsAdapter extends BaseAdapter {
             Double sum = scv.summarize().doubleValue(); // Summarize only one element
             tvText.setText(dateString);
 
-            /** Column 1 **/
+            // Column 1
             tvAmount.setText(NumberUtil.formatDecimal(sum));
             tvCurrency.setText(scv.getCurrency().getShortName());
 
             tvAmountConverted.setText(NumberUtil.formatDecimal(sum / scv.getRateAvg()));
             tvCurrencyConverted.setText(StaticData.getMainCurrency().getShortName());
 
-            /** Column 2 **/
+            // Column 2
             tvCurrencyAvg.setVisibility(View.GONE);
             tvAmountAvg.setVisibility(View.GONE);
             tvCurrencyConvertedAvg.setVisibility(View.GONE);
             tvAmountConvertedAvg.setVisibility(View.GONE);
         }
-        
+
         return row;
     }
 
     @Override
     public int getCount() {
-        if(type == TYPE_CATEGORY)
+        if (type == TYPE_CATEGORY)
             return statsList == null ? 0 : statsList.size();
-        else if(type == TYPE_DAY)
+        else if (type == TYPE_DAY)
             return statsData == null ? 0 : DateUtil.getNumberOfDaysBetweenDates(statsData.getDateBegin(), statsData.getDateEnd());
 
         return 0;

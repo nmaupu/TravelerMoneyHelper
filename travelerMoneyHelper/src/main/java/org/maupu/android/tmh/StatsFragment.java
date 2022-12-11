@@ -38,6 +38,7 @@ import org.maupu.android.tmh.stats.InfoPanel;
 import org.maupu.android.tmh.stats.StatsCategoryValues;
 import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.stats.StatsViewPager;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
@@ -101,6 +102,15 @@ public class StatsFragment extends TmhFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         requireActivity().setTitle(R.string.fragment_title_statistics);
         setupMenu();
+
+        ApplicationDrawer.getInstance().setOnAccountChangeListener(() -> {
+            autoSetDates();
+            statsData.setCatToHighlight(null);
+            resetInputData();
+            rebuildStatsData(true);
+            refreshDisplay();
+        });
+
         return view;
     }
 
@@ -119,7 +129,7 @@ public class StatsFragment extends TmhFragment {
         slidingPanel = view.findViewById(R.id.sliding_layout);
         slidingPanel.setDragView(R.id.layout_title);
 
-        /** Primary panel **/
+        // Primary panel
         tvMisc = view.findViewById(R.id.misc);
         tvDateBegin = view.findViewById(R.id.date_begin);
         tvDateEnd = view.findViewById(R.id.date_end);
@@ -137,7 +147,7 @@ public class StatsFragment extends TmhFragment {
         initPieChart(view);
         initDetailsChart(view);
 
-        /** Secondary panel **/
+        // Secondary panel
         accountImage = view.findViewById(R.id.account_image);
         accountName = view.findViewById(R.id.account_name);
         statsViewPager = view.findViewById(R.id.viewpager);
@@ -253,7 +263,6 @@ public class StatsFragment extends TmhFragment {
                         refreshDisplay();
                     }
 
-                    //return super.onItemClick(view, position, item);
                     return false;
                 }
             };
@@ -283,6 +292,7 @@ public class StatsFragment extends TmhFragment {
             _cal.set(Calendar.MONTH, month);
             _cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             Date date = _cal.getTime();
+
 
             if (id == DIALOG_DATE_BEGIN) {
                 Date dateToSet = DateUtil.resetDateToBeginingOfDay(date);
@@ -348,16 +358,6 @@ public class StatsFragment extends TmhFragment {
         refreshLayoutCategories();
         refreshDates();
     }
-
-    // TODO refresh when current account changed
-    /*@Override
-    public void refreshAfterCurrentAccountChanged() {
-        autoSetDates();
-        statsData.setCatToHighlight(null);
-        resetInputData();
-        rebuildStatsData(true, false);
-        refreshDisplay();
-    }*/
 
     private void autoSetDates() {
         Account currentAccount = StaticData.getCurrentAccount();

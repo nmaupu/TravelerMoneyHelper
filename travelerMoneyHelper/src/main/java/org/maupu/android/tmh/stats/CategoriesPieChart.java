@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsDataChangedListener {
-    private static final String TAG=CategoriesPieChart.class.getName();
+    private static final String TAG = CategoriesPieChart.class.getName();
 
     public CategoriesPieChart(Context context) {
         super(context);
@@ -52,8 +52,9 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
 
     @Override
     public void refreshPanel(final StatsData statsData) {
-        if(statsData == null || statsData.size() == 0) {
+        if (statsData == null || statsData.size() == 0) {
             this.invalidate();
+            this.clear();
             return;
         }
 
@@ -76,13 +77,13 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
         int nbElts = values.size();
         int lim = nbElts / 2;
         int xIndex = 0;
-        for(int i=0; i<=lim; i++) {
+        for (int i = 0; i <= lim; i++) {
             int j = i + lim + 1;
             StatsCategoryValues scvi = values.get(i);
             colors[xIndex] = scvi.getColor();
             xEntries.add(scvi.getName());
             yEntries.add(new Entry(scvi.summarize(), xIndex++, scvi));
-            if(j<nbElts) {
+            if (j < nbElts) {
                 StatsCategoryValues scvj = values.get(j);
                 colors[xIndex] = scvj.getColor();
                 xEntries.add(scvj.getName());
@@ -121,14 +122,15 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
      * 2) If catToLookFor is null, try to highlight catIfNotFound (recursive call)
      * 3) If catToLookFor is not found and catIfNotFound is set, trying to highlight catIfNotFound (recursive call)
      * 4) If catToLookFor is not found and catIfNotFound is null, don't highlight anything (recursive call)
-     * @param catToLookFor Category to highlight in first priority
+     *
+     * @param catToLookFor  Category to highlight in first priority
      * @param catIfNotFound Category to highlight if catToLookFor is not found
      */
     public void highlightInPieChart(final Category catToLookFor, final Category catIfNotFound) {
-        if(catToLookFor == null && catIfNotFound == null) {
+        if (catToLookFor == null && catIfNotFound == null) {
             /** Case number 1) **/
             this.highlightValue(null, true);
-        } else if(catToLookFor == null) {
+        } else if (catToLookFor == null) {
             /** Case number 2) **/
             highlightInPieChart(catIfNotFound, null);
         } else {
@@ -139,11 +141,11 @@ public class CategoriesPieChart extends PieChart implements IStatsPanel, IStatsD
             List<Entry> yEntries = pds.getYVals();
             int x;
             int yEntriesSize = yEntries.size();
-            for(x=0; x<yEntriesSize; x++) {
+            for (x = 0; x < yEntriesSize; x++) {
                 Entry entry = yEntries.get(x);
-                StatsCategoryValues scv = (StatsCategoryValues)entry.getData();
+                StatsCategoryValues scv = (StatsCategoryValues) entry.getData();
 
-                if(scv != null && scv.contains(catToLookFor.getId())) {
+                if (scv != null && scv.contains(catToLookFor.getId())) {
                     // Highlighting found element
                     this.highlightValue(new Highlight(x, 0), true
                     );

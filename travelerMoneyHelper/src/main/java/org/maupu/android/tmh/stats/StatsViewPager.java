@@ -33,15 +33,9 @@ public class StatsViewPager extends ViewPager implements IStatsPanel, IStatsData
 
     @Override
     public void refreshPanel(final StatsData data) {
-        if (data == null || data.size() == 0)
-            return;
-
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                statsFragmentPagerAdapter.setData(data);
-                statsFragmentPagerAdapter.notifyDataSetChanged();
-            }
+        activity.runOnUiThread(() -> {
+            statsFragmentPagerAdapter.setData(data);
+            statsFragmentPagerAdapter.notifyDataSetChanged();
         });
     }
 
@@ -70,10 +64,10 @@ class StatsFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        StatsFragment fragment = new StatsFragment();
+        StatsSlideUpFragment fragment = new StatsSlideUpFragment();
         fragment.setStatsData(data);
         Bundle args = new Bundle();
-        args.putInt(StatsFragment.ARG_TYPE, position);
+        args.putInt(StatsSlideUpFragment.ARG_TYPE, position);
         fragment.setArguments(args);
         return fragment;
     }
