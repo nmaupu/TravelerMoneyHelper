@@ -103,7 +103,8 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
         Intent intent;
         boolean finish = false;
 
-        if (nbCat == 0) {
+        // TODO use fragments
+        /*if (nbCat == 0) {
             intent = new Intent(this, AddOrEditCategoryActivity.class);
         } else if (nbCur == 0) {
             intent = new Intent(this, AddOrEditCurrencyActivity.class);
@@ -115,6 +116,7 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
         }
 
         startActivity(intent);
+        */
         if (finish)
             this.finish();
     }

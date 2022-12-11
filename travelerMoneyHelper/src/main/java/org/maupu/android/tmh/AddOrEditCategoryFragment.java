@@ -6,7 +6,6 @@ import android.widget.TextView;
 import org.maupu.android.tmh.database.object.Category;
 
 public class AddOrEditCategoryFragment extends AddOrEditFragment<Category> {
-    private static final String TAG = AddOrEditCategoryActivity.class.getName();
     private TextView tvName;
 
     public AddOrEditCategoryFragment() {

@@ -31,7 +31,6 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
-import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
@@ -87,7 +86,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         if (this.title != null)
             setTitle(this.title);
 
-        toolbar = findViewById(R.id.tmh_toolbar);
+        //toolbar = findViewById(R.id.tmh_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
@@ -250,7 +249,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
         boolean killCurrentActivity = true;
 
         /** Determine what item has been clicked **/
-        if (item.getIdentifier() == DRAWER_ITEM_REFRESH) {
+        /*if (item.getIdentifier() == DRAWER_ITEM_REFRESH) {
             refreshDisplay();
         } else if (item.getIdentifier() == DRAWER_ITEM_PARAMETERS) {
             intent = new Intent(this, PreferencesActivity.class);
@@ -269,7 +268,7 @@ public abstract class TmhActivity extends AppCompatActivity implements IAsyncAct
             intent = new Intent(this, ManageCurrencyActivity.class);
         } else if (item.getIdentifier() == DRAWER_ITEM_ABOUT) {
             DialogHelper.popupDialogAbout(this);
-        }
+        }*/
 
         /** Launch corresponding activity if recognized **/
         if (intent != null) {

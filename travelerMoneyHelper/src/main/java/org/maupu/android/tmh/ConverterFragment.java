@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConverterFragment extends TmhFragment implements View.OnClickListener, IAsync, TextWatcher, IAsyncActivityRefresher {
-    private static final Class TAG = ConverterActivity.class;
+    private static final Class TAG = ConverterFragment.class;
     private static final int TYPE_LEFT = 0;
     private static final int TYPE_RIGHT = 1;
     private static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";

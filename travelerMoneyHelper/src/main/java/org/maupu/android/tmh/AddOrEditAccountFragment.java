@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
-    private static final String TAG = AddOrEditAccountActivity.class.getName();
     private ImageView imageViewIcon;
     private TextView textViewName;
     private SpinnerManager spinnerCurrencyManager;

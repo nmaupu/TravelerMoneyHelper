@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.ArrayList;
@@ -52,7 +50,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
         /** Construct all curves from statsData **/
         final List<String> xEntries = StatsCategoryValues.buildXEntries(statsData.getDateBegin(), statsData.getDateEnd());
         // No data
-        if(xEntries == null) {
+        if (xEntries == null) {
             this.invalidate();
             return;
         }
@@ -62,11 +60,11 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
         /** First, draw others categories **/
         List<StatsCategoryValues> scvs = new ArrayList<>(statsData.values());
         Iterator<StatsCategoryValues> it = scvs.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             StatsCategoryValues scv = it.next();
 
             LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
-            if(statsData.getCatToHighlight() == null || ! statsData.getCatToHighlight().getId().equals(scv.getFirstCategory().getId())) {
+            if (statsData.getCatToHighlight() == null || !statsData.getCatToHighlight().getId().equals(scv.getFirstCategory().getId())) {
                 lds.setColor(scv.getColor());
                 lds.setLineWidth(LINE_WIDTH);
                 lds.setDrawCircleHole(true);
@@ -78,9 +76,9 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
         }
 
         /** Last, draw selected category (displayed on top of others curves) **/
-        if(statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getId() != null) {
+        if (statsData.getCatToHighlight() != null && statsData.getCatToHighlight().getId() != null) {
             StatsCategoryValues scv = statsData.get(statsData.getCatToHighlight().getId());
-            if(scv != null) {
+            if (scv != null) {
                 LineDataSet lds = new LineDataSet(scv.getYEntries(), scv.getName());
                 lds.setColor(scv.getColor());
                 lds.setCircleColor(scv.getColor());
@@ -94,7 +92,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
         }
 
         final CategoriesLineChart thisInstance = this;
-        ((Activity)getContext()).runOnUiThread(new Runnable() {
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -109,7 +107,7 @@ public class CategoriesLineChart extends LineChart implements IStatsPanel, IStat
                         thisInstance.setDescription("");
                     thisInstance.setGridBackgroundColor(Color.WHITE);
                     thisInstance.invalidate();
-                } catch(IllegalArgumentException iae) {
+                } catch (IllegalArgumentException iae) {
                     TmhLogger.e(TAG, "Problem with chart entries, refresh not executed correctly");
                 }
             }

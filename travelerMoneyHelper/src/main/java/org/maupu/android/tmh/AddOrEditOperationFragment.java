@@ -267,7 +267,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        TmhLogger.d(AddOrEditOperationActivity.class, "RadioButton check changed");
+        TmhLogger.d(AddOrEditOperationFragment.class, "RadioButton check changed");
         if (radioButtonCredit.isChecked()) {
             textViewSign.setText(PLUS);
             textViewSign.setTextColor(Operation.COLOR_POSITIVE_AMOUNT);
@@ -346,7 +346,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             dummyCur.toDTO(c);
 
             String a = amount.getStringText();
-            TmhLogger.d(AddOrEditOperationActivity.class, "Current amount to convert = " + a);
+            TmhLogger.d(AddOrEditOperationFragment.class, "Current amount to convert = " + a);
             a = a != null ? a.trim() : a;
 
             Double currentAmount = 0d;
@@ -363,7 +363,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());
         } catch (NumberFormatException nfe) {
             // No conversion
-            TmhLogger.d(AddOrEditOperationActivity.class, "NumberFormatException occurred, no conversion is done");
+            TmhLogger.d(AddOrEditOperationFragment.class, "NumberFormatException occurred, no conversion is done");
         }
     }
 

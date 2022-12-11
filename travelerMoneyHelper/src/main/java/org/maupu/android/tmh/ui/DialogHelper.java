@@ -10,13 +10,11 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.fragment.app.FragmentActivity;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.TmhActivity;
 import org.maupu.android.tmh.TmhFragment;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -88,79 +86,6 @@ public abstract class DialogHelper {
             }
         });
         listAccount.setAdapter(adapter);
-        dialog.show();
-
-        return dialog;
-    }
-
-    public static Dialog popupDialogCategoryChooser(final TmhActivity tmhActivity, boolean resetPopup, boolean hideUnusedCat) {
-        if (tmhActivity == null)
-            return null;
-
-        final Dialog dialog = new Dialog(tmhActivity);
-        dialog.setCancelable(true);
-        dialog.setTitle(R.string.stats_filter_cat_title);
-        dialog.setContentView(R.layout.category_chooser_activity);
-
-        Button btnValidate = (Button) dialog.findViewById(R.id.btn_validate);
-        Button btnAutosel = (Button) dialog.findViewById(R.id.btn_autosel);
-        final ListView list = (ListView) dialog.findViewById(R.id.list);
-
-        /**
-         * Adapter for category chooser
-         */
-        Category cat = new Category();
-        Account currentAccount = StaticData.getCurrentAccount();
-        final Cursor cursor;
-        if (hideUnusedCat)
-            cursor = cat.fetchAllCategoriesUsedByAccountOperations(currentAccount.getId());
-        else
-            cursor = cat.fetchAll();
-        cursor.moveToFirst();
-
-        /**
-         * Buttons' listener
-         */
-        Button.OnClickListener listener = new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.getId() == R.id.btn_validate) {
-                    StaticData.getStatsExceptedCategories().clear();
-                    CheckableCursorAdapter adapter = (CheckableCursorAdapter) list.getAdapter();
-                    Integer[] ints = adapter.getCheckedPositions();
-                    for (int i : ints) {
-                        Cursor c = (Cursor) adapter.getItem(i);
-                        Category cat = new Category();
-                        cat.toDTO(c);
-                        StaticData.getStatsExceptedCategories().add(cat.getId());
-                    }
-
-                    dialog.dismiss();
-                    tmhActivity.refreshDisplay();
-                } else if (v.getId() == R.id.btn_autosel) {
-                    categoryChooserAdapter.setToCheck(getAutoExceptCategoriesPositions(cursor));
-                    categoryChooserAdapter.notifyDataSetChanged();
-                }
-            }
-        };
-        btnValidate.setOnClickListener(listener);
-        btnAutosel.setOnClickListener(listener);
-
-        if (categoryChooserAdapter == null || resetPopup) {
-            TmhLogger.d(TAG, "categoryChooserAdapter creation from scratch");
-            categoryChooserAdapter = new CheckableCursorAdapter(
-                    tmhActivity,
-                    R.layout.category_item,
-                    cursor,
-                    new String[]{CategoryData.KEY_NAME},
-                    new int[]{R.id.name},
-                    getAutoExceptCategoriesPositions(cursor));
-        } else {
-            TmhLogger.d(TAG, "categoryChooserAdapter reused but cursor changed");
-            categoryChooserAdapter.changeCursor(cursor);
-        }
-
-        list.setAdapter(categoryChooserAdapter);
         dialog.show();
 
         return dialog;
