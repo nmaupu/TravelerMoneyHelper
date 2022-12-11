@@ -97,6 +97,11 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.fragment_title_currency_converter);
@@ -133,13 +138,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         tvConverterResult2.setOnClickListener(this);
 
         /**
-         * Fields init
-         */
-        //netAmount.setText(NumberUtil.formatDecimal(0d));
-        netAmount.requestFocus();
-        SoftKeyboardHelper.forceShowUp(this);
-
-        /**
          * OpenExchangeRate initialization
          */
         // Before going further, verify we have api key to open exchange rates api
@@ -165,8 +163,13 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     @Override
     public void onPause() {
         savePrefs();
-        SoftKeyboardHelper.hide(getActivity());
+        SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private void initOerFetcher() {
@@ -205,7 +208,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     public void onFinishAsync() {
         // Called when initOerFetcher finishes to update
         currenciesList = oerFetcher.getCurrencies();
-        currencyAdapter = new ArrayAdapter<CurrencyISO4217>(getContext(),
+        currencyAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 currenciesList);
         loadPrefs();
@@ -337,7 +340,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
 
         netAmount.requestFocus();
-        SoftKeyboardHelper.forceShowUp(this);
+        SoftKeyboardHelper.forceShowUp(requireActivity());
     }
 
     @Override
@@ -369,6 +372,11 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         else
             sb.append("N/A");
         tvRatesLastUpdate.setText(sb.toString());
+
+        if (netAmount != null) {
+            netAmount.requestFocus();
+            SoftKeyboardHelper.forceShowUp(requireActivity());
+        }
     }
 
     @Override

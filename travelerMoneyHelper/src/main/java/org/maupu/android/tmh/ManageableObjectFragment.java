@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,6 +24,7 @@ import androidx.lifecycle.Lifecycle;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.AnimHelper;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.NumberCheckedListener;
@@ -195,29 +195,28 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
             case R.id.button_delete:
                 SimpleDialog.confirmDialog(getActivity(),
                         getString(R.string.manageable_obj_del_confirm_question),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String errMessage = getString(R.string.manageable_obj_del_error);
-                                boolean err = false;
+                        (dialog, which) -> {
+                            String errMessage = getString(R.string.manageable_obj_del_error);
+                            boolean err = false;
 
-                                for (int i = 0; i < posChecked.length; i++) {
-                                    Integer pos = posChecked[i];
-                                    //Request deletion
-                                    Cursor cursor = (Cursor) listView.getItemAtPosition(pos);
-                                    obj.toDTO(cursor);
-                                    if (validateConstraintsForDeletion(obj))
-                                        obj.delete();
-                                    else
-                                        err = true;
-                                }
-
-                                if (err)
-                                    SimpleDialog.errorDialog(getActivity(), getString(R.string.error), errMessage).show();
-
-                                dialog.dismiss();
-                                refreshDisplay();
+                            for (Integer pos : posChecked) {
+                                //Request deletion
+                                Cursor cursor = (Cursor) listView.getItemAtPosition(pos);
+                                obj.toDTO(cursor);
+                                if (validateConstraintsForDeletion(obj))
+                                    obj.delete();
+                                else
+                                    err = true;
                             }
+
+                            if (err)
+                                SimpleDialog.errorDialog(getActivity(), getString(R.string.error), errMessage).show();
+
+                            onItemDelete();
+
+                            dialog.dismiss();
+
+                            refreshDisplay();
                         }).show();
                 break;
         }
@@ -287,6 +286,10 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
 
     public ListView getListView() {
         return this.listView;
+    }
+
+    protected void onItemDelete() {
+        ApplicationDrawer.getInstance().updateDrawerBadges();
     }
 
     /**

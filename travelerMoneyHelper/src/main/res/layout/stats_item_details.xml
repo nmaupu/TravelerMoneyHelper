@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/item_layout"
-                android:orientation="horizontal"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    android:id="@+id/item_layout"
+    android:orientation="horizontal"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/text"
         android:gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <TableLayout
         android:layout_toRightOf="@id/text"
@@ -21,7 +21,9 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <TableRow android:gravity="right">
+
             <TextView
                 android:paddingLeft="3dp"
                 android:id="@+id/currency"
@@ -31,7 +33,8 @@
                 android:gravity="right|center_vertical"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/amount"
                 android:background="@color/md_green_200"
@@ -40,7 +43,8 @@
                 android:gravity="right|center_vertical"
                 android:paddingRight="10dp"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:paddingLeft="3dp"
                 android:id="@+id/currency_avg"
@@ -51,18 +55,21 @@
                 android:gravity="right|center_vertical"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/amount_avg"
-                android:text="123.99"
+                android:text="0.00"
                 android:background="@color/md_blue_200"
                 android:textSize="16dp"
                 android:textStyle="bold"
                 android:gravity="right|center_vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </TableRow>
+
         <TableRow android:gravity="right">
+
             <TextView
                 android:id="@+id/currency_converted"
                 android:paddingLeft="3dp"
@@ -72,7 +79,8 @@
                 android:textSize="10dp"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/amount_converted"
                 android:background="@color/md_green_50"
@@ -81,7 +89,8 @@
                 android:paddingRight="10dp"
                 android:gravity="right|center_vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/currency_converted_avg"
                 android:paddingLeft="3dp"
@@ -92,16 +101,17 @@
                 android:gravity="right|center_vertical"
                 android:paddingRight="3dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/amount_converted_avg"
-                android:text="123.99"
+                android:text="0.00"
                 android:background="@color/md_blue_50"
                 android:textSize="10dp"
                 android:textStyle="italic"
                 android:gravity="right|center_vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </TableRow>
     </TableLayout>
 </LinearLayout>

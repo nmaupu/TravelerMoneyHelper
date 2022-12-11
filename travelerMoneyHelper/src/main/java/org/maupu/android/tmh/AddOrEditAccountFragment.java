@@ -23,6 +23,7 @@ import android.widget.Toast;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.ImageViewHelper;
@@ -325,5 +326,17 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
         super.handleRefreshEnding(results);
+    }
+
+    @Override
+    protected void onItemAdd() {
+        super.onItemAdd();
+        ApplicationDrawer.getInstance().refreshAccountsProfile();
+    }
+
+    @Override
+    protected void onItemEdit() {
+        super.onItemEdit();
+        ApplicationDrawer.getInstance().refreshAccountsProfile();
     }
 }

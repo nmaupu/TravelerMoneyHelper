@@ -6,6 +6,7 @@ import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
 import java.util.HashMap;
@@ -69,5 +70,11 @@ public class ManageAccountFragment extends ManageableObjectFragment<Account> {
         } catch (NullPointerException npe) {
             // nothing to be done
         }
+    }
+
+    @Override
+    protected void onItemDelete() {
+        super.onItemDelete();
+        ApplicationDrawer.getInstance().refreshAccountsProfile();
     }
 }

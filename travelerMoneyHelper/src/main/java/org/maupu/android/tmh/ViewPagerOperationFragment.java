@@ -103,7 +103,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
             a = adapterRaw;
         }
 
-        viewpager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewpager = view.findViewById(R.id.viewpager);
         setViewpagerAdapter(a);
 
         viewpager.setOnPageChangeListener(this);

@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.maupu.android.tmh.databinding.ActivityMainBinding;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.DialogHelper;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
 public class MainActivity extends AppCompatActivity {
     private static final Class<MainActivity> TAG = MainActivity.class;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        SoftKeyboardHelper.hide(this, getCurrentFocus());
         if (ApplicationDrawer.getDrawer().isDrawerOpen()) {
             ApplicationDrawer.getDrawer().closeDrawer();
         } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {

@@ -42,7 +42,7 @@ public class StatsSlideUpFragment extends Fragment {
 
         StatsAdapter statsAdapter = new StatsAdapter(rootView.getContext(), statsData, type);
         listView.setAdapter(statsAdapter);
-        if (statsData == null) {
+        if (statsData == null || statsData.size() == 0) {
             return rootView;
         }
 

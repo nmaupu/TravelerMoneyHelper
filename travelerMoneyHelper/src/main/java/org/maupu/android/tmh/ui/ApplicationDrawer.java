@@ -85,33 +85,7 @@ public class ApplicationDrawer {
                         return false;
                     }).build();
 
-            Cursor cursor = new Account().fetchAll();
-            cursor.moveToFirst();
-            int currentAccountId = -1;
-            if (StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
-                currentAccountId = StaticData.getCurrentAccount().getId();
-            IProfile profileToActivate = null;
-            for (int i = 0; i < cursor.getCount(); i++) {
-                int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
-                int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-                int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
-                Bitmap icon = ImageViewHelper.getBitmapIcon(activity, cursor.getString(idxIcon));
-                Account a = new Account();
-                a.toDTO(cursor);
-                IProfile profile = new ProfileDrawerItem()
-                        .withTag(a)
-                        .withName(cursor.getString(idxName))
-                        .withIcon(icon);
-                // Select current account on nav drawer header
-                if (cursor.getInt(idxId) == currentAccountId)
-                    profileToActivate = profile;
-                accountHeader.addProfile(profile, i);
-                cursor.moveToNext();
-            }
-            cursor.close();
-
-            if (profileToActivate != null)
-                accountHeader.setActiveProfile(profileToActivate);
+            refreshAccountsProfile();
         }
 
         if (navigationDrawer == null) {
@@ -217,6 +191,43 @@ public class ApplicationDrawer {
                 break;
             }
         }
+    }
+
+    public void refreshAccountsProfile() {
+        accountHeader.clear();
+        Cursor cursor = new Account().fetchAll();
+        cursor.moveToFirst();
+        int currentAccountId = -1;
+        if (StaticData.getCurrentAccount() != null && StaticData.getCurrentAccount().getId() != null)
+            currentAccountId = StaticData.getCurrentAccount().getId();
+        IProfile profileToActivate = null;
+        for (int i = 0; i < cursor.getCount(); i++) {
+            int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
+            int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
+            int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
+            Bitmap icon = ImageViewHelper.getBitmapIcon(activity, cursor.getString(idxIcon));
+            Account a = new Account();
+            a.toDTO(cursor);
+            IProfile profile = new ProfileDrawerItem()
+                    .withTag(a)
+                    .withName(cursor.getString(idxName))
+                    .withIcon(icon);
+            // Select current account on nav drawer header
+            if (cursor.getInt(idxId) == currentAccountId)
+                profileToActivate = profile;
+            accountHeader.addProfile(profile, i);
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        if (profileToActivate == null) {
+            profileToActivate = accountHeader.getProfiles().get(0);
+            Account a = (Account) ((ProfileDrawerItem) profileToActivate).getTag();
+            StaticData.setCurrentAccount(a);
+        }
+
+        accountHeader.setActiveProfile(profileToActivate);
+        refreshAfterCurrentAccountChanged();
     }
 
     public IDrawerItem createPrimaryDrawerItem(int identifier, int iconRes, int textRes) {

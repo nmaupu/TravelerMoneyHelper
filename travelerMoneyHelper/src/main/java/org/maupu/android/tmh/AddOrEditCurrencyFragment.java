@@ -208,7 +208,7 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);
 
         if (cur != null) {
-            SoftKeyboardHelper.hide(requireActivity());
+            SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
             editTextShortName.setText(cur.getCurrencySymbol());
             editTextLongName.setText(cur.getName());
 
@@ -237,6 +237,7 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
             }
         } // if
     }
+
 
     // TODO what to do with onContinue ?
     /*@Override

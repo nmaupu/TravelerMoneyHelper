@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, TextWatcher, AdapterView.OnItemSelectedListener {
-    //private DatePicker datePicker;
     private int mYear;
     private int mMonth;
     private int mDay;

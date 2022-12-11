@@ -1,6 +1,5 @@
 package org.maupu.android.tmh;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +15,7 @@ import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 
 import org.maupu.android.tmh.database.object.BaseObject;
+import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
@@ -50,6 +50,11 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -57,7 +62,7 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
         View v = initResources(getView());
         if (v != null && !isEditing()) {
             v.requestFocus();
-            SoftKeyboardHelper.forceShowUp(this);
+            SoftKeyboardHelper.forceShowUp(requireActivity());
         }
 
         // Fill form fields
@@ -122,22 +127,20 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
 
             if (obj.getId() != null) {
                 // Show a confirm dialog when updating
-                SimpleDialog.confirmDialog(getContext(), getString(R.string.confirm_modification), new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        obj.update();
-                        dialog.dismiss();
-                        if (returnToPreviousFragment) {
-                            SoftKeyboardHelper.hide(requireActivity());
-                            requireActivity().onBackPressed();
-                        }
+                SimpleDialog.confirmDialog(getContext(), getString(R.string.confirm_modification), (dialog, which) -> {
+                    obj.update();
+                    onItemEdit();
+                    dialog.dismiss();
+                    if (returnToPreviousFragment) {
+                        SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
+                        requireActivity().onBackPressed();
                     }
                 }).show();
             } else {
                 boolean ret = obj.insert();
+                onItemAdd();
                 if (returnToPreviousFragment) {
-                    SoftKeyboardHelper.hide(requireActivity());
+                    SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
                     requireActivity().onBackPressed();
                 }
                 return ret;
@@ -187,6 +190,21 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
      * @param obj
      */
     protected abstract void fieldsToBaseObject(T obj);
+
+    /**
+     * Method called when menu item has been processed and persisted.
+     * This method provides a way to add more stuff to do if needed
+     */
+    protected void onItemAdd() {
+        ApplicationDrawer.getInstance().updateDrawerBadges();
+    }
+
+    /**
+     * Method called when menu item has been processed and persisted.
+     * This method provides a way to add more stuff to do if needed
+     */
+    protected void onItemEdit() {
+    }
 
     protected T getObj() {
         return obj;
