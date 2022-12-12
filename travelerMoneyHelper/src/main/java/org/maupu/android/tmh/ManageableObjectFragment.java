@@ -32,8 +32,6 @@ import org.maupu.android.tmh.util.TmhLogger;
 
 public abstract class ManageableObjectFragment<T extends BaseObject> extends TmhFragment implements View.OnClickListener, NumberCheckedListener {
     private static final Class<ManageableObjectFragment> TAG = ManageableObjectFragment.class;
-    private static final int ACTIVITY_ADD = 0;
-    private static final int ACTIVITY_EDIT = 1;
     private ListView listView;
     private TextView tvEmpty;
     private Button editButton;

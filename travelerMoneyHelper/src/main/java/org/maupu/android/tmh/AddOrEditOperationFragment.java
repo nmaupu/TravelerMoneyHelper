@@ -285,22 +285,16 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 mMonth = month;
                 mDay = dayOfMonth;
                 updateDatePickerTextView();
-            }).show(
-                    getChildFragmentManager(), DatePickerDialogFragment.TAG
-            );
+            }).show(getChildFragmentManager(), DatePickerDialogFragment.TAG);
         } else if (v.getId() == R.id.time) {
             new TimePickerDialogFragment(mHours, mMinutes, true, (view, hourOfDay, minute) -> {
                 mHours = hourOfDay;
                 mMinutes = minute;
                 updateDatePickerTextView();
-            }).show(
-                    getChildFragmentManager(), TimePickerDialogFragment.TAG
-            );
+            }).show(getChildFragmentManager(), TimePickerDialogFragment.TAG);
         } else if (v.getId() == R.id.button_today) {
             Date now = Calendar.getInstance().getTime();
             setDateTimeFields(now);
-
-            //customDatePickerDialog.updateDate(mYear, mMonth, mDay);
             initDatePickerTextView(now);
         }
     }

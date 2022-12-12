@@ -127,7 +127,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
                     if (R.id.action_add == menuItem.getItemId()) {
                         ((MainActivity) requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, null);
                     } else if (R.id.action_withdrawal == menuItem.getItemId()) {
-                        // TODO withdrawal when fragment is done
+                        ((MainActivity) requireActivity()).changeFragment(WithdrawalFragment.class, true, null);
                     } else if (DRAWER_ITEM_TODAY == menuItem.getItemId()) {
                         StaticData.setPreferenceValueInt(STATIC_DATA_LIST_STATUS, LIST_BY_MONTH);
                         setViewpagerAdapter(new ViewPagerOperationAdapter(fragment));

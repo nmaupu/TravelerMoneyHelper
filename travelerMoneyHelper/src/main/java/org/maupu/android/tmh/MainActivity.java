@@ -6,17 +6,12 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import org.maupu.android.tmh.databinding.ActivityMainBinding;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.DialogHelper;
-import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 
-public class MainActivity extends AppCompatActivity {
-    private static final Class<MainActivity> TAG = MainActivity.class;
-
+public class MainActivity extends TmhActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
@@ -77,44 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void changeFragment(Class fragment, boolean addToBackStack) {
-        changeFragment(fragment, addToBackStack, null);
-    }
-
-    public void changeFragment(Class fragment, boolean addToBackStack, Bundle args) {
-        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-
-        if (addToBackStack) {
-            transaction
-                    .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                    .replace(R.id.fragment_content_main, fragment, args)
-                    .setReorderingAllowed(true)
-                    .addToBackStack(null);
-
-            ApplicationDrawer.getInstance().setNavigationBarDrawerIconToBackArrow();
-        } else {
-            transaction
-                    .replace(R.id.fragment_content_main, fragment, args)
-                    .setReorderingAllowed(true);
-        }
-
-        transaction.commit();
-        getSupportFragmentManager().executePendingTransactions();
-    }
-
-    @Override
-    public void onBackPressed() {
-        SoftKeyboardHelper.hide(this, getCurrentFocus());
-        if (ApplicationDrawer.getDrawer().isDrawerOpen()) {
-            ApplicationDrawer.getDrawer().closeDrawer();
-        } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            ApplicationDrawer.getInstance().setNavigationBarDrawerIconToHamburger();
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
         }
     }
 }

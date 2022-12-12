@@ -110,4 +110,6 @@
         android:text="@string/welcome_button"
         android:layout_centerVertical="true" />
 
+    <include layout="@layout/content_main" />
+
 </LinearLayout>

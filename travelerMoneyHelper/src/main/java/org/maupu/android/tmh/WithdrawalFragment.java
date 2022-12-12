@@ -1,32 +1,30 @@
 package org.maupu.android.tmh;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
@@ -35,8 +33,11 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
+import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -49,8 +50,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
-public class WithdrawalActivity extends TmhActivity implements OnItemSelectedListener, OnClickListener, OnDateSetListener, OnTimeSetListener, TextWatcher {
-    private static final Class TAG = WithdrawalActivity.class;
+public class WithdrawalFragment extends TmhFragment implements AdapterView.OnItemSelectedListener, View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, TextWatcher {
+    private static final Class TAG = WithdrawalFragment.class;
     private static final int DATE_DIALOG_ID = 0;
     private static final int TIME_DIALOG_ID = 1;
 
@@ -74,20 +75,24 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
     private int mHours = 0;
     private int mMinutes = 0;
     private int mSeconds = 0;
+    private MenuProvider menuProvider;
 
-    public WithdrawalActivity() {
-        super(R.layout.withdrawal, R.string.fragment_title_edition_withdrawal);
+    public WithdrawalFragment() {
+        super(R.layout.withdrawal);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        requireActivity().setTitle(R.string.fragment_title_edition_withdrawal);
+        setupMenu();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    public int whatIsMyDrawerIdentifier() {
-        return super.DRAWER_ITEM_OPERATIONS;
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        TmhLogger.d(TAG, "Calling onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
 
         // Set current time
         Calendar cal = Calendar.getInstance();
@@ -95,21 +100,21 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         mMinutes = cal.get(Calendar.MINUTE);
         mSeconds = cal.get(Calendar.SECOND);
 
-        ivFrom = (ImageView) findViewById(R.id.account_icon_from);
-        spinnerFrom = (Spinner) findViewById(R.id.spinner_from);
-        ivTo = (ImageView) findViewById(R.id.account_icon_to);
-        spinnerTo = (Spinner) findViewById(R.id.spinner_to);
-        spinnerCurrency = (Spinner) findViewById(R.id.spinner_currency);
-        spinnerCategory = (Spinner) findViewById(R.id.spinner_category);
-        amount = (NumberEditText) findViewById(R.id.amount);
+        ivFrom = view.findViewById(R.id.account_icon_from);
+        spinnerFrom = view.findViewById(R.id.spinner_from);
+        ivTo = view.findViewById(R.id.account_icon_to);
+        spinnerTo = view.findViewById(R.id.spinner_to);
+        spinnerCurrency = view.findViewById(R.id.spinner_currency);
+        spinnerCategory = view.findViewById(R.id.spinner_category);
+        amount = view.findViewById(R.id.amount);
         amount.addTextChangedListener(this);
-        textViewAmount = (TextView) findViewById(R.id.text_amount);
-        textViewConvertedAmount = (TextView) findViewById(R.id.converted_amount);
-        textViewDate = (TextView) findViewById(R.id.date);
+        textViewAmount = view.findViewById(R.id.text_amount);
+        textViewConvertedAmount = view.findViewById(R.id.converted_amount);
+        textViewDate = view.findViewById(R.id.date);
         textViewDate.setOnClickListener(this);
-        textViewTime = (TextView) findViewById(R.id.time);
+        textViewTime = view.findViewById(R.id.time);
         textViewTime.setOnClickListener(this);
-        buttonToday = (Button) findViewById(R.id.button_today);
+        buttonToday = view.findViewById(R.id.button_today);
         buttonToday.setOnClickListener(this);
 
         spinnerFrom.setOnItemSelectedListener(this);
@@ -123,60 +128,69 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
         // Force edit text to get focus on startup
         amount.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        SoftKeyboardHelper.forceShowUp(requireActivity());
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_or_edit_menu, menu);
-        menu.findItem(R.id.action_add).setVisible(false);
-        return super.onCreateOptionsMenu(menu);
-    }
+    private void setupMenu() {
+        if (menuProvider == null) {
+            menuProvider = new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.add_or_edit_menu, menu);
+                    menu.findItem(R.id.action_add).setVisible(false);
+                }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                save(true);
-                break;
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    if (menuItem.getItemId() == R.id.action_save)
+                        if (save())
+                            requireActivity().onBackPressed();
+                    return true;
+                }
+            };
         }
-        return super.onOptionsItemSelected(item);
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onResume() {
+        super.onResume();
+        if (spinnerManagerCategory != null) {
+            Category category = StaticData.getWithdrawalCategory();
+            if (category != null)
+                spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
+        }
+    }
+
+    @Override
+    public void onDestroy() {
         spinnerManagerFrom.closeAdapterCursor();
         spinnerManagerTo.closeAdapterCursor();
         spinnerManagerCurrency.closeAdapterCursor();
         spinnerManagerCategory.closeAdapterCursor();
-
         super.onDestroy();
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.date) {
-            showDialog(DATE_DIALOG_ID);
+            new DatePickerDialogFragment(mYear, mMonth, mDay, (view, year, month, dayOfMonth) -> {
+                mYear = year;
+                mMonth = month;
+                mDay = dayOfMonth;
+                updateDatePickerTextView();
+            }).show(getChildFragmentManager(), DatePickerDialogFragment.TAG);
         } else if (v.getId() == R.id.time) {
-            showDialog(TIME_DIALOG_ID);
+            new TimePickerDialogFragment(mHours, mMinutes, true, (view, hourOfDay, minute) -> {
+                mHours = hourOfDay;
+                mMinutes = minute;
+                updateDatePickerTextView();
+            }).show(getChildFragmentManager(), TimePickerDialogFragment.TAG);
         } else if (v.getId() == R.id.button_today) {
             Date now = Calendar.getInstance().getTime();
             setDateTimeFields(now);
             initDatePickerTextView(now);
         }
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-                return new DatePickerDialog(this, this, mYear, mMonth, mDay);
-            case TIME_DIALOG_ID:
-                return new TimePickerDialog(this, this, mHours, mMinutes, true);
-        }
-
-        return null;
     }
 
     private void initDatePickerTextView(Date d) {
@@ -215,10 +229,10 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
     }
 
     private void initSpinnerManagers() {
-        spinnerManagerFrom = new SpinnerManager(this, spinnerFrom);
-        spinnerManagerTo = new SpinnerManager(this, spinnerTo);
-        spinnerManagerCurrency = new SpinnerManager(this, spinnerCurrency);
-        spinnerManagerCategory = new SpinnerManager(this, spinnerCategory);
+        spinnerManagerFrom = new SpinnerManager(requireContext(), spinnerFrom);
+        spinnerManagerTo = new SpinnerManager(requireContext(), spinnerTo);
+        spinnerManagerCurrency = new SpinnerManager(requireContext(), spinnerCurrency);
+        spinnerManagerCategory = new SpinnerManager(requireContext(), spinnerCategory);
 
         Account account = new Account();
         Cursor cursor = account.fetchAll();
@@ -244,17 +258,12 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         if (category != null) {
             spinnerManagerCategory.setSpinnerPositionCursor(category.getName(), new Category());
         } else {
-            final Activity activity = this;
             SimpleDialog.errorDialog(
-                    this,
+                    requireActivity(),
                     getString(R.string.warning),
                     getString(R.string.default_category_warning),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(activity, PreferencesActivity.class));
-                            activity.finish();
-                        }
+                    (dialog, which) -> {
+                        startActivity(new Intent(requireActivity(), PreferencesActivity.class));
                     }).show();
         }
 
@@ -292,7 +301,7 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
 
         Account a = new Account();
         a.toDTO(cursorItem);
-        ImageViewHelper.setIcon(this, ivAccount, a.getIcon());
+        ImageViewHelper.setIcon(requireContext(), ivAccount, a.getIcon());
     }
 
     @Override
@@ -358,55 +367,53 @@ public class WithdrawalActivity extends TmhActivity implements OnItemSelectedLis
         }
     }
 
-    private void save(boolean finishActivity) {
+    private boolean save() {
         if (!validate()) {
-            SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_add_object)).show();
-        } else {
-            Account accountFrom = new Account();
-            Cursor cursor = spinnerManagerFrom.getSelectedItem();
-            accountFrom.toDTO(cursor);
-
-            Account accountTo = new Account();
-            cursor = spinnerManagerTo.getSelectedItem();
-            accountTo.toDTO(cursor);
-
-            Category category = new Category();
-            cursor = spinnerManagerCategory.getSelectedItem();
-            category.toDTO(cursor);
-
-            Double amountd = Double.valueOf(amount.getStringText().toString().trim());
-
-            Currency currency = new Currency();
-            cursor = spinnerManagerCurrency.getSelectedItem();
-            currency.toDTO(cursor);
-
-            Date date = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
-
-            // First, we debit from account
-            Operation operationFrom = new Operation();
-            operationFrom.setAccount(accountFrom);
-            operationFrom.setAmount(-1d * amountd);
-            operationFrom.setCategory(category);
-            operationFrom.setCurrency(currency);
-            operationFrom.setDate(date);
-            operationFrom.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
-            operationFrom.insert();
-
-            // Second, we credit 'to' account
-            Operation operationTo = new Operation();
-            operationTo.setAccount(accountTo);
-            operationTo.setAmount(amountd);
-            operationTo.setCategory(category);
-            operationTo.setCurrency(currency);
-            operationTo.setDate(date);
-            operationTo.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
-            operationTo.insert();
-
-            Operation.linkTwoOperations(operationFrom, operationTo);
-
-            // Dispose activity
-            if (finishActivity)
-                finish();
+            SimpleDialog.errorDialog(requireContext(), getString(R.string.error), getString(R.string.error_add_object)).show();
+            return false;
         }
+
+        Account accountFrom = new Account();
+        Cursor cursor = spinnerManagerFrom.getSelectedItem();
+        accountFrom.toDTO(cursor);
+
+        Account accountTo = new Account();
+        cursor = spinnerManagerTo.getSelectedItem();
+        accountTo.toDTO(cursor);
+
+        Category category = new Category();
+        cursor = spinnerManagerCategory.getSelectedItem();
+        category.toDTO(cursor);
+
+        Double amountd = Double.valueOf(amount.getStringText().toString().trim());
+
+        Currency currency = new Currency();
+        cursor = spinnerManagerCurrency.getSelectedItem();
+        currency.toDTO(cursor);
+
+        Date date = new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime();
+
+        // First, we debit from account
+        Operation operationFrom = new Operation();
+        operationFrom.setAccount(accountFrom);
+        operationFrom.setAmount(-1d * amountd);
+        operationFrom.setCategory(category);
+        operationFrom.setCurrency(currency);
+        operationFrom.setDate(date);
+        operationFrom.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
+        operationFrom.insert();
+
+        // Second, we credit 'to' account
+        Operation operationTo = new Operation();
+        operationTo.setAccount(accountTo);
+        operationTo.setAmount(amountd);
+        operationTo.setCategory(category);
+        operationTo.setCurrency(currency);
+        operationTo.setDate(date);
+        operationTo.setCurrencyValueOnCreated(currency.getRateCurrencyLinked());
+        operationTo.insert();
+
+        Operation.linkTwoOperations(operationFrom, operationTo);
+        return true;
     }
 }

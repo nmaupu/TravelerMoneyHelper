@@ -132,7 +132,6 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
                     onItemEdit();
                     dialog.dismiss();
                     if (returnToPreviousFragment) {
-                        SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
                         requireActivity().onBackPressed();
                     }
                 }).show();
@@ -140,7 +139,6 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
                 boolean ret = obj.insert();
                 onItemAdd();
                 if (returnToPreviousFragment) {
-                    SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
                     requireActivity().onBackPressed();
                 }
                 return ret;

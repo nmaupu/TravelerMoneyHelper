@@ -6,34 +6,34 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.databinding.ActivityFirstBinding;
+import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.TmhLogger;
 
 /**
  * Activity displayed as first activity in order to get stuff ready and configured.
  */
-public class FirstActivity extends AppCompatActivity implements View.OnClickListener {
+public class FirstActivity extends TmhActivity implements View.OnClickListener {
     private static final Class<FirstActivity> TAG = FirstActivity.class;
+
     private ImageView categoryImg, currencyImg, accountImg;
     private int nbCat = 0;
     private int nbAcc = 0;
     private int nbCur = 0;
 
-    public FirstActivity() {
-        super(R.layout.activity_first);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isRequiredStuffOk())
+        if (checkRequiredStuff())
             return;
 
         setTitle(R.string.app_name);
@@ -54,7 +54,45 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
         SoftKeyboardHelper.hide(this);
     }
 
-    public boolean isRequiredStuffOk() {
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        if (nbCat == 0) {
+            // Create default category
+            String catName = getString(R.string.default_category_withdrawal_name);
+            Category defaultCategory = new Category();
+            defaultCategory.setName(catName);
+            if (defaultCategory.insert()) {
+                StaticData.setWithdrawalCategory(defaultCategory);
+                nbCat++;
+            }
+        }
+
+        if (nbCur == 0 || nbAcc == 0) {
+            String countryCode = TmhApplication.getCountryCode(this);
+            String countryName = TmhApplication.getCountryNameFromCountryCode(countryCode);
+            CurrencyISO4217 currency = CurrencyISO4217.getCurrencyISO4217FromCountryCode(countryCode);
+            TmhLogger.d(TAG, "Country code: " + countryCode + ", country name: " + countryName + ", country currency: " + currency.toString());
+
+            // Creating the primary Currency
+            Currency cur = new Currency();
+            cur.setIsoCode(currency.getCode());
+            cur.setLongName(currency.getName());
+            cur.setShortName(currency.getCurrencySymbol());
+            cur.insert();
+
+            // Creating the primary Account
+            Account acc = new Account();
+            acc.setName(countryName);
+            acc.setCurrency(cur);
+            acc.insert();
+        }
+
+        refreshDisplay();
+    }
+
+    public boolean checkRequiredStuff() {
         // Database checks
         nbCat = new Category().getCount();
         nbCur = new Currency().getCount();
@@ -74,7 +112,7 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void refreshDisplay() {
-        if (isRequiredStuffOk()) {
+        if (checkRequiredStuff()) {
             return;
         }
 
@@ -100,24 +138,14 @@ public class FirstActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        Intent intent;
-        boolean finish = false;
-
-        // TODO use fragments
-        /*if (nbCat == 0) {
-            intent = new Intent(this, AddOrEditCategoryActivity.class);
-        } else if (nbCur == 0) {
-            intent = new Intent(this, AddOrEditCurrencyActivity.class);
+        if (nbCur == 0) {
+            changeFragment(AddOrEditCategoryFragment.class, true, null);
         } else if (nbAcc == 0) {
-            intent = new Intent(this, AddOrEditAccountActivity.class);
+            changeFragment(AddOrEditAccountFragment.class, true, null);
         } else {
-            intent = new Intent(this, MainActivity.class);
-            finish = true;
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
         }
-
-        startActivity(intent);
-        */
-        if (finish)
-            this.finish();
     }
 }

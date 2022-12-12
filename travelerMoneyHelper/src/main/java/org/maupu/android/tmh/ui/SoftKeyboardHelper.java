@@ -35,6 +35,8 @@ public abstract class SoftKeyboardHelper {
     }
 
     public static void hide(Context context, View view) {
+        if (view == null || context == null)
+            return;
         InputMethodManager imm = getInputMethodManager(context);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
