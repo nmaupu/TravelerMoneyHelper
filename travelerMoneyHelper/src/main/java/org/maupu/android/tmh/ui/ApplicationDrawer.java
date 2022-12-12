@@ -70,6 +70,11 @@ public class ApplicationDrawer {
     private ApplicationDrawer() {
     }
 
+    public static void resetDrawer(@NonNull AppCompatActivity activity) {
+        ApplicationDrawer.instance = new ApplicationDrawer();
+        ApplicationDrawer.instance.initDrawer(activity);
+    }
+
     public void initDrawer(@NonNull AppCompatActivity activity) {
         this.activity = activity;
 

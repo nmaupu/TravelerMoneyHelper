@@ -114,7 +114,14 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            if (this.dbChanged) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                this.finish();
+            } else {
+                onBackPressed();
+            }
             return true;
         }
 
@@ -249,7 +256,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
                 // Resetting edit text to empty string
                 refreshDbLists(null);
-                ListPreference dbPref = (ListPreference) preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+                ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
                 dbPref.setValue(dbName);
 
                 Toast.makeText(
@@ -338,7 +345,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
             dbChanged = true;
             // Update categories for this db
-            ListPreference catPref = (ListPreference) preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
+            ListPreference catPref = preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
             catPref.setEntries(getAllCategoriesEntries());
             catPref.setEntryValues(getAllCategoriesEntryValues());
 

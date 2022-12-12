@@ -7,6 +7,7 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 
+import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.databinding.ActivityMainBinding;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.DialogHelper;
@@ -17,12 +18,17 @@ public class MainActivity extends TmhActivity {
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         super.onCreate(savedInstanceState);
 
+        if (!TmhApplication.checkDatabaseInitialized()) {
+            TmhApplication.initDatabase(this);
+        }
+
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
 
         // Initialize the drawer singleton
+        ApplicationDrawer.resetDrawer(this);
         ApplicationDrawer.getInstance().initDrawer(this);
         ApplicationDrawer.getDrawer().setOnDrawerItemClickListener((view, position, drawerItem) -> {
             // When returning true, drawer doesn't close itself

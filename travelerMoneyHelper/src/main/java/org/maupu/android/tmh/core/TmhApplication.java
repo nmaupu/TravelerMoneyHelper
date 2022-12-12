@@ -5,9 +5,16 @@ import android.content.Context;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
-import org.maupu.android.tmh.FirstActivity;
+import org.maupu.android.tmh.MainActivity;
+import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.object.Account;
+import org.maupu.android.tmh.database.object.Category;
+import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.database.object.StaticPrefs;
+import org.maupu.android.tmh.ui.CurrencyISO4217;
+import org.maupu.android.tmh.ui.StaticData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,7 +27,7 @@ public class TmhApplication extends Application {
     private static Context applicationContext;
     private static DatabaseHelper dbHelper;
 
-    public static final Class<?> HOME_ACTIVITY_CLASS = FirstActivity.class;
+    public static final Class<?> HOME_ACTIVITY_CLASS = MainActivity.class;
 
     @Override
     public void onCreate() {
@@ -35,6 +42,52 @@ public class TmhApplication extends Application {
 
     public static DatabaseHelper getDatabaseHelper() {
         return dbHelper;
+    }
+
+    public static boolean checkDatabaseInitialized() {
+        return new Category().fetchAll().getCount() > 0 &&
+                new Currency().fetchAll().getCount() > 0 &&
+                new Account().fetchAll().getCount() > 0;
+    }
+
+    /**
+     * Initialize or reinitialize a database, removing everything and recreating from scratch.
+     * ATTENTION: all data will be erased !
+     *
+     * @param ctx Context
+     */
+    public static void initDatabase(Context ctx) {
+        new StaticPrefs().deleteAll();
+        new Operation().deleteAll();
+        new Category().deleteAll();
+        new Account().deleteAll();
+        new Currency().deleteAll();
+
+        // Create default category
+        String catName = ctx.getString(R.string.default_category_withdrawal_name);
+        Category defaultCategory = new Category();
+        defaultCategory.setName(catName);
+        if (defaultCategory.insert()) {
+            StaticData.setWithdrawalCategory(defaultCategory);
+        }
+
+        String countryCode = TmhApplication.getCountryCode(ctx);
+        String countryName = TmhApplication.getCountryNameFromCountryCode(countryCode);
+        CurrencyISO4217 currency = CurrencyISO4217.getCurrencyISO4217FromCountryCode(countryCode);
+
+        // Creating the primary Currency
+        Currency cur = new Currency();
+        cur.setIsoCode(currency.getCode());
+        cur.setLongName(currency.getName());
+        cur.setShortName(currency.getCurrencySymbol());
+        cur.setRateCurrencyLinked(1d);
+        cur.insert();
+
+        // Creating the primary Account
+        Account acc = new Account();
+        acc.setName(countryName);
+        acc.setCurrency(cur);
+        acc.insert();
     }
 
     public static void changeOrCreateDatabase(String dbName) {
