@@ -90,6 +90,10 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
         if (this.updateButton != null)
             this.updateButton.setOnClickListener(this);
 
+        if (!this.updateButtonVisible()) {
+            this.updateButton.setVisibility(View.GONE);
+        }
+
         if (animList)
             AnimHelper.setListViewAnimation(listView);
 
@@ -304,6 +308,13 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
      * @param objs button clicked
      */
     protected abstract void onClickUpdate(Integer[] objs);
+
+    /**
+     * Set the status of the update button
+     */
+    protected boolean updateButtonVisible() {
+        return false;
+    }
 
     protected void onAddClicked() {
         ((MainActivity) requireActivity()).changeFragment(this.addOrEditFragment, true, null);

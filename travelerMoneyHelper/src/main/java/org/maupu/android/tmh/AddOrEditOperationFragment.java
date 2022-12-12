@@ -1,7 +1,6 @@
 package org.maupu.android.tmh;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +24,7 @@ import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
 import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
 import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -127,12 +127,23 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             c = dummyCategory.fetchAllExcept(new Integer[]{withdrawalCat.getId()});
             if (c.getCount() == 0) {
                 // No category created yet, cannot continue !
-                SimpleDialog.errorDialog(getContext(), getString(R.string.error), getString(R.string.error_no_category), new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((MainActivity) requireActivity()).changeFragment(AddOrEditFragment.class, false, null);
-                    }
-                }).show();
+                SimpleDialog.errorDialogWithCancel(
+                        getContext(),
+                        getString(R.string.error),
+                        getString(R.string.error_no_category),
+                        (dialog, which) -> {
+                            ((MainActivity) requireActivity()).changeFragment(
+                                    AddOrEditCategoryFragment.class,
+                                    true,
+                                    null);
+                        },
+                        (dialog, which) -> {
+                            SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
+                            ((MainActivity) requireActivity()).changeFragment(
+                                    ViewPagerOperationFragment.class,
+                                    false,
+                                    null);
+                        }).show();
             }
         }
 

@@ -22,12 +22,12 @@ public abstract class TmhActivity extends AppCompatActivity {
                     .replace(R.id.fragment_content_main, fragment, args)
                     .setReorderingAllowed(true)
                     .addToBackStack(null);
-
             ApplicationDrawer.getInstance().setNavigationBarDrawerIconToBackArrow();
         } else {
             transaction
                     .replace(R.id.fragment_content_main, fragment, args)
                     .setReorderingAllowed(true);
+            ApplicationDrawer.getInstance().setNavigationBarDrawerIconToHamburger();
         }
 
         transaction.commit();
@@ -39,8 +39,11 @@ public abstract class TmhActivity extends AppCompatActivity {
         SoftKeyboardHelper.hide(this, getCurrentFocus());
         if (ApplicationDrawer.getDrawer() != null && ApplicationDrawer.getDrawer().isDrawerOpen()) {
             ApplicationDrawer.getDrawer().closeDrawer();
-        } else if (ApplicationDrawer.getDrawer() != null && getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            ApplicationDrawer.getInstance().setNavigationBarDrawerIconToHamburger();
+        } else if (ApplicationDrawer.getDrawer() != null) {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1)
+                ApplicationDrawer.getInstance().setNavigationBarDrawerIconToBackArrow();
+            else
+                ApplicationDrawer.getInstance().setNavigationBarDrawerIconToHamburger();
             getSupportFragmentManager().popBackStack();
         } else {
             super.onBackPressed();

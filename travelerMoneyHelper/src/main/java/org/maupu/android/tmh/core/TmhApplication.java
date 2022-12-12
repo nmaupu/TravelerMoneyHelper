@@ -18,6 +18,7 @@ import org.maupu.android.tmh.ui.StaticData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class TmhApplication extends Application {
@@ -81,6 +82,7 @@ public class TmhApplication extends Application {
         cur.setLongName(currency.getName());
         cur.setShortName(currency.getCurrencySymbol());
         cur.setRateCurrencyLinked(1d);
+        cur.setLastUpdate(Calendar.getInstance().getTime());
         cur.insert();
 
         // Creating the primary Account

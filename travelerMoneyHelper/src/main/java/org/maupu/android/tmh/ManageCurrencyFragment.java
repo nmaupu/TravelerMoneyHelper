@@ -38,6 +38,12 @@ public class ManageCurrencyFragment extends ManageableObjectFragment<Currency> {
         super.onDestroy();
     }
 
+
+    @Override
+    protected boolean updateButtonVisible() {
+        return true;
+    }
+    
     @Override
     protected void onClickUpdate(Integer[] objs) {
         Currency[] currencies = new Currency[objs.length];
@@ -76,8 +82,6 @@ public class ManageCurrencyFragment extends ManageableObjectFragment<Currency> {
 
     @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
-        super.activateUpdateButton();
-
         Cursor c = (Cursor) results.get(0);
 
         closeCursorAdapterIfNeeded();
