@@ -18,7 +18,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
@@ -115,13 +116,16 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     }
 
     private AlertDialog createDialogIconChooser(int dialogType) {
-        Toast toast = Toast.makeText(requireContext(), getString(R.string.not_implemented), Toast.LENGTH_SHORT);
+
         switch (dialogType) {
             case MENU_ITEM_APPS:
                 return createDialogFromApps();
             case MENU_ITEM_URL:
             case MENU_ITEM_CAMERA:
-                toast.show();
+                Snackbar.make(
+                        getView(),
+                        getString(R.string.not_implemented),
+                        Snackbar.LENGTH_SHORT).show();
                 return null;
             case MENU_ITEM_FLAGS:
                 return createDialogFromFlags();

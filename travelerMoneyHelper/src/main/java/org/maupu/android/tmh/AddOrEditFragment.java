@@ -7,12 +7,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.database.object.BaseObject;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
@@ -88,7 +89,10 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
                             break;
                         case R.id.action_add:
                             if (saveOrEdit(false)) {
-                                Toast.makeText(getContext(), getString(R.string.toast_success), Toast.LENGTH_SHORT).show();
+                                Snackbar.make(
+                                        getView(),
+                                        getString(R.string.toast_success),
+                                        Snackbar.LENGTH_SHORT).show();
                                 obj.reset();
                                 refreshDisplay();
                             }

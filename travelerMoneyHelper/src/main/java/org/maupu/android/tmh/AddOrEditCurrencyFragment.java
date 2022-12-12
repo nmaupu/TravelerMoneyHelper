@@ -12,11 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.maupu.android.tmh.database.object.Currency;
@@ -229,7 +229,10 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
                     });
                     updater.execute(dummyCurrency);
                 } catch (Exception e) {
-                    Toast.makeText(requireContext(), getString(R.string.error_currency_update) + " - " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(
+                            getView(),
+                            getString(R.string.error_currency_update) + " - " + e.getMessage(),
+                            Snackbar.LENGTH_SHORT).show();
                 }
             } else {
                 // Set to 1 by default

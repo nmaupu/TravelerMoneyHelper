@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +22,7 @@ import androidx.lifecycle.Lifecycle;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -299,14 +299,20 @@ public class StatsFragment extends TmhFragment {
                 if (dateToSet.before(dateEnd))
                     dateBegin = dateToSet;
                 else
-                    Toast.makeText(requireActivity(), getString(R.string.error_date_begin_after_end), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(
+                            getView(),
+                            getString(R.string.error_date_begin_after_end),
+                            Snackbar.LENGTH_SHORT).show();
                 TmhLogger.d(TAG, "Changing date begin to : " + dateBegin);
             } else if (id == DIALOG_DATE_END) {
                 Date dateToSet = DateUtil.resetDateToEndOfDay(date);
                 if (dateToSet.after(dateBegin))
                     dateEnd = dateToSet;
                 else
-                    Toast.makeText(requireActivity(), getString(R.string.error_date_end_before_begin), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(
+                            getView(),
+                            getString(R.string.error_date_end_before_begin),
+                            Snackbar.LENGTH_SHORT).show();
                 TmhLogger.d(TAG, "Changing date end to : " + dateEnd);
             }
 

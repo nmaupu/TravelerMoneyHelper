@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +15,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -41,8 +42,6 @@ import java.util.Iterator;
 
 public class PreferencesActivity extends AppCompatActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private static final Class<PreferencesActivity> TAG = PreferencesActivity.class;
-    //private static final String FILENAME = "mainPrefs";
-    private boolean dbChanged = false;
 
     private ActivityPreferencesBinding binding;
     private PreferencesFragment preferencesFragment;
@@ -114,34 +113,24 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (this.dbChanged) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                this.finish();
-            } else {
-                onBackPressed();
-            }
+            onBackPressed();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void resetToHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        this.finish();
+    }
+
     @Override
     protected void onDestroy() {
         TmhApplication.getDatabaseHelper().close();
         super.onDestroy();
-    }
-
-    @Override
-    protected void onPause() {
-        if (dbChanged) {
-            // if db changed, restart from dashboard
-            startActivity(new Intent(this, TmhApplication.HOME_ACTIVITY_CLASS));
-        }
-
-        super.onPause();
     }
 
     private CharSequence[] getAllAccountsEntryValues() {
@@ -258,11 +247,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 refreshDbLists(null);
                 ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
                 dbPref.setValue(dbName);
-
-                Toast.makeText(
-                        TmhApplication.getAppContext(),
-                        getString(R.string.database_created_successfuly) + " [" + newValue + "]",
-                        Toast.LENGTH_LONG).show();
             }
         } else if (StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
             try {
@@ -292,11 +276,10 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             }
         } else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Calling export db " + newValue);
-            if (!ImportExportUtil.exportCurrentDatabase(newValue.toString())) {
-                Toast.makeText(
-                        TmhApplication.getAppContext(),
+            if (!ImportExportUtil.exportCurrentDatabase(newValue.toString(), findViewById(android.R.id.content))) {
+                Snackbar.make(findViewById(android.R.id.content),
                         getString(R.string.database_export_failed) + " [" + newValue + "]",
-                        Toast.LENGTH_LONG).show();
+                        Snackbar.LENGTH_LONG).show();
             }
         } else if (StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
             // After importing the db, reload it
@@ -309,10 +292,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             dbPref.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
             dbPref.setValue(db);
 
-            Toast.makeText(
-                    TmhApplication.getAppContext(),
+            Snackbar.make(findViewById(android.R.id.content),
                     getString(R.string.database_created_successfuly) + " [" + newValue + "]",
-                    Toast.LENGTH_LONG).show();
+                    Snackbar.LENGTH_LONG).show();
         } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
             HashSet<String> dbList = (HashSet<String>) newValue;
             if (dbList.size() > 0) {
@@ -334,16 +316,20 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                             }
                             refreshDbLists(null);
                             dialog.dismiss();
-                            Toast.makeText(TmhApplication.getAppContext(), R.string.databases_deleted_successfuly, Toast.LENGTH_LONG).show();
+                            Snackbar.make(
+                                    findViewById(android.R.id.content),
+                                    R.string.databases_deleted_successfuly,
+                                    Snackbar.LENGTH_LONG).show();
                         }).show();
             }
         }
 
+        // Reset stuff
         if (StaticData.PREF_DATABASE.equals(preference.getKey()) ||
                 StaticData.PREF_NEW_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_IMPORT_DB.equals(preference.getKey()) ||
-                StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
-            dbChanged = true;
+                StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+            resetToHome();
+        } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
             // Update categories for this db
             ListPreference catPref = preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
             catPref.setEntries(getAllCategoriesEntries());
@@ -357,7 +343,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 catPref.setValue(wcIndex.toString());
             } else {
                 catPref.setValue(null);
-                SimpleDialog.errorDialog(this, getString(R.string.warning), getString(R.string.default_category_warning)).show();
             }
 
             // currentDB preference is not yet applied at this stage so we need to get it from newValue
@@ -366,6 +351,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             if (StaticData.PREF_DATABASE.equals(preference.getKey()))
                 curDB = (String) newValue;
             refreshDbLists(curDB);
+
         }
 
         return true;

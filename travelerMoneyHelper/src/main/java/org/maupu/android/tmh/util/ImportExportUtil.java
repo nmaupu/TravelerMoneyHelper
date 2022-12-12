@@ -3,7 +3,9 @@ package org.maupu.android.tmh.util;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Environment;
-import android.widget.Toast;
+import android.view.View;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -19,7 +21,7 @@ import java.io.IOException;
 public class ImportExportUtil {
     private static final Class<ImportExportUtil> TAG = ImportExportUtil.class;
 
-    public static boolean exportCurrentDatabase(String filename) {
+    public static boolean exportCurrentDatabase(String filename, View view) {
         try {
             String sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
 
@@ -36,7 +38,12 @@ public class ImportExportUtil {
 
             FileUtil.copyFile(new FileInputStream(srcFile), new FileOutputStream(dstFile));
 
-            Toast.makeText(TmhApplication.getAppContext(), "File exported to : " + dstFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            if (view != null) {
+                Snackbar.make(
+                        view,
+                        "File exported to : " + dstFile.getAbsolutePath(),
+                        Snackbar.LENGTH_LONG).show();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
