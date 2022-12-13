@@ -35,13 +35,13 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
 import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
-import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
@@ -301,7 +301,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
 
         Account a = new Account();
         a.toDTO(cursorItem);
-        ImageViewHelper.setIcon(requireContext(), ivAccount, a.getIcon());
+        ImageUtil.setIcon(ivAccount, a.getIcon());
     }
 
     @Override

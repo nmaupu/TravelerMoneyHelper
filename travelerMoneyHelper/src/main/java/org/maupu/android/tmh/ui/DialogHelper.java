@@ -59,7 +59,7 @@ public abstract class DialogHelper {
                 fragment.getContext(),
                 R.layout.icon_name_item_no_checkbox,
                 cursorAllAccounts,
-                new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME},
+                new String[]{AccountData.KEY_ICON_BYTES, AccountData.KEY_NAME},
                 new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
             @Override
             public View callback(Object item) {

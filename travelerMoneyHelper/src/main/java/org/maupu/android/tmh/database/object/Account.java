@@ -3,20 +3,24 @@ package org.maupu.android.tmh.database.object;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.ui.AccountBalance;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.QueryBuilder;
 import org.maupu.android.tmh.util.TmhLogger;
 
 public class Account extends BaseObject {
     private static final long serialVersionUID = 1L;
     private String name;
-    private String icon;
+    private byte[] iconBytes;
     private Currency currency;
     public Double balance;
 
@@ -24,8 +28,8 @@ public class Account extends BaseObject {
         return name;
     }
 
-    public String getIcon() {
-        return icon;
+    public byte[] getIconBytes() {
+        return iconBytes;
     }
 
     public Currency getCurrency() {
@@ -40,8 +44,8 @@ public class Account extends BaseObject {
         this.name = name;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public void setIconBytes(byte[] iconBytes) {
+        this.iconBytes = iconBytes;
     }
 
     public void setCurrency(Currency currency) {
@@ -56,14 +60,24 @@ public class Account extends BaseObject {
         balance += b;
     }
 
+    public Bitmap getIcon() {
+        byte[] image = getIconBytes();
+
+        if (image == null || image.length == 0)
+            return ImageUtil.drawableToBitmap(TmhApplication.getAppContext().getDrawable(R.drawable.tmh_icon_48));
+
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
     @Override
     public BaseObject copy() {
         Account a = new Account();
         a._id = super.getId();
         a.setName(name);
-        a.setIcon(icon);
         a.setCurrency((Currency) currency.copy());
         a.setBalance(balance);
+        if (iconBytes != null)
+            a.setIconBytes(iconBytes.clone());
 
         return a;
     }
@@ -71,7 +85,7 @@ public class Account extends BaseObject {
     public ContentValues createContentValues() {
         ContentValues cv = new ContentValues();
         cv.put(AccountData.KEY_NAME, this.getName());
-        cv.put(AccountData.KEY_ICON, this.getIcon());
+        cv.put(AccountData.KEY_ICON_BYTES, this.getIconBytes());
 
         if (this.getCurrency() != null)
             cv.put(AccountData.KEY_ID_CURRENCY, this.getCurrency().getId());
@@ -95,14 +109,14 @@ public class Account extends BaseObject {
         this.reset();
         int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
         int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-        int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
+        int idxIconBytes = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON_BYTES);
         int idxCurrency = cursor.getColumnIndexOrThrow(AccountData.KEY_ID_CURRENCY);
         int idxBalance = cursor.getColumnIndexOrThrow(AccountData.KEY_BALANCE);
 
         if (!cursor.isClosed() && !cursor.isBeforeFirst() && !cursor.isAfterLast()) {
             super._id = cursor.getInt(idxId);
             this.setName(cursor.getString(idxName));
-            this.setIcon(cursor.getString(idxIcon));
+            this.setIconBytes(cursor.getBlob(idxIconBytes));
             this.setBalance(cursor.getDouble(idxBalance));
 
             Currency c = new Currency();
@@ -244,8 +258,8 @@ public class Account extends BaseObject {
     @Override
     public void reset() {
         super._id = null;
-        this.icon = null;
         this.name = null;
+        this.iconBytes = null;
     }
 
     @Override

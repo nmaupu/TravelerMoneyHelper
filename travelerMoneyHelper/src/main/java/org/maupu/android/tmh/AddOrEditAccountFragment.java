@@ -27,14 +27,12 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ICallback;
-import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
+import org.maupu.android.tmh.util.ImageUtil;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -244,8 +242,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
             textViewName.setText(obj.getName());
 
             // Loading icon
-            String filename = obj.getIcon();
-            ImageViewHelper.setIcon(requireContext(), imageViewIcon, filename);
+            ImageUtil.setIcon(imageViewIcon, obj.getIcon());
 
             if (obj.getCurrency() != null)
                 spinnerCurrencyManager.setSpinnerPositionCursor(obj.getCurrency().getLongName(), new Currency());
@@ -256,20 +253,9 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     protected void fieldsToBaseObject(Account obj) {
         if (obj != null) {
             String account = textViewName.getText().toString().trim();
-            Bitmap b = ((BitmapDrawable) imageViewIcon.getDrawable()).getBitmap();
-            String filename = account + ".png";
+            Bitmap bitmap = ((BitmapDrawable) imageViewIcon.getDrawable()).getBitmap();
 
-            try {
-                FileOutputStream fOut = requireContext().openFileOutput(filename, Context.MODE_PRIVATE);
-
-                b.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-                fOut.flush();
-                fOut.close();
-
-                obj.setIcon(filename);
-            } catch (IOException ioe) {
-            }
-
+            obj.setIconBytes(ImageUtil.getBytesFromBitmap(bitmap));
             obj.setName(account);
 
             Cursor c = spinnerCurrencyManager.getSelectedItem();

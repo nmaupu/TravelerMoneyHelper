@@ -22,13 +22,13 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
 import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
-import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
@@ -108,7 +108,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         // Init on current account
         account = StaticData.getCurrentAccount();
         accountName.setText(account.getName());
-        ImageViewHelper.setIcon(getContext(), accountIcon, account.getIcon());
+        ImageUtil.setIcon(accountIcon, account.getIcon());
 
         Category dummyCategory = new Category();
         Category withdrawalCat = StaticData.getWithdrawalCategory();
@@ -212,7 +212,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             if (obj.getAccount() != null) {
                 account = obj.getAccount();
                 accountName.setText(account.getName());
-                ImageViewHelper.setIcon(getContext(), accountIcon, account.getIcon());
+                ImageUtil.setIcon(accountIcon, account.getIcon());
             }
             if (obj.getCategory() != null)
                 smCategory.setSpinnerPositionCursor(obj.getCategory().getName(), new Category());

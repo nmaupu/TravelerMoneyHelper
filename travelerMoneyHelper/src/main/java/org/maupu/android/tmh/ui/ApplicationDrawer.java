@@ -1,7 +1,6 @@
 package org.maupu.android.tmh.ui;
 
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 
@@ -209,14 +208,13 @@ public class ApplicationDrawer {
         for (int i = 0; i < cursor.getCount(); i++) {
             int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
             int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-            int idxIcon = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON);
-            Bitmap icon = ImageViewHelper.getBitmapIcon(activity, cursor.getString(idxIcon));
+
             Account a = new Account();
             a.toDTO(cursor);
             IProfile profile = new ProfileDrawerItem()
                     .withTag(a)
                     .withName(cursor.getString(idxName))
-                    .withIcon(icon);
+                    .withIcon(a.getIcon());
             // Select current account on nav drawer header
             if (cursor.getInt(idxId) == currentAccountId)
                 profileToActivate = profile;

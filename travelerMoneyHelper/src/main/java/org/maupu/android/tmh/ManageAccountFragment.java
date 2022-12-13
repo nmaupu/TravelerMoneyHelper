@@ -57,9 +57,10 @@ public class ManageAccountFragment extends ManageableObjectFragment<Account> {
 
         // custom custom cursor adapter lol :D
         iconCheckableCursorAdapter = new IconCheckableCursorAdapter(
-                requireContext(), R.layout.icon_name_item,
+                requireContext(),
+                R.layout.icon_name_item,
                 c,
-                new String[]{AccountData.KEY_ICON, AccountData.KEY_NAME},
+                new String[]{AccountData.KEY_ICON_BYTES, AccountData.KEY_NAME},
                 new int[]{R.id.icon, R.id.name});
         super.setAdapter(iconCheckableCursorAdapter);
     }

@@ -39,11 +39,11 @@ import org.maupu.android.tmh.stats.StatsCategoryValues;
 import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.stats.StatsViewPager;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
-import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.util.Arrays;
@@ -349,7 +349,7 @@ public class StatsFragment extends TmhFragment {
         Account currentAccount = StaticData.getCurrentAccount();
 
         if (currentAccount != null) {
-            ImageViewHelper.setIcon(getActivity(), accountImage, currentAccount.getIcon());
+            ImageUtil.setIcon(accountImage, currentAccount.getIcon());
             accountName.setText(currentAccount.getName());
         } else {
             accountImage.setImageResource(R.drawable.tmh_icon_48);

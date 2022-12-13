@@ -29,10 +29,10 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.AccountBalance;
 import org.maupu.android.tmh.ui.DialogHelper;
-import org.maupu.android.tmh.ui.ImageViewHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
@@ -239,7 +239,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
         // Setting parameters - account should not be null
         if (account != null) {
-            ImageViewHelper.setIcon(parentFragment.getContext(), imageViewIcon, account.getIcon());
+            ImageUtil.setIcon(imageViewIcon, account.getIcon());
             textViewAccountName.setText(account.getName());
         }
 
