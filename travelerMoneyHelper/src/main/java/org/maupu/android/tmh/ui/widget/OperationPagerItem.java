@@ -21,6 +21,7 @@ import org.maupu.android.tmh.AddOrEditOperationFragment;
 import org.maupu.android.tmh.MainActivity;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.TmhFragment;
+import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
@@ -391,7 +392,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                     parentFragment.getContext(),
                     R.layout.operation_item,
                     cAllOp,
-                    new String[]{"icon", "category", "dateStringHours", "amountString", "convertedAmount"},
+                    new String[]{AccountData.KEY_ICON_BYTES, "category", "dateStringHours", "amountString", "convertedAmount"},
                     new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
             cca.setOnNumberCheckedListener(this);
             listView.setAdapter(cca);

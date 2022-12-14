@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -11,6 +12,7 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.util.ImageUtil;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class AccountData extends APersistedData {
@@ -22,15 +24,16 @@ public class AccountData extends APersistedData {
     public static final String KEY_BALANCE = "balance";
 
     public static final String TABLE_NAME = "account";
-    private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME;
-    private static final String CREATE_TABLE_OPTS = KEY_ID + " INTEGER primary key autoincrement," +
+    private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+            KEY_ID + " INTEGER primary key autoincrement," +
             KEY_NAME + " TEXT NOT NULL," +
             KEY_ICON_BYTES + " BLOB," +
             KEY_ID_CURRENCY + " INTEGER NOT NULL, " +
-            KEY_BALANCE + " REAL NOT NULL DEFAULT 0";
+            KEY_BALANCE + " REAL NOT NULL DEFAULT 0" +
+            ")";
 
     public AccountData() {
-        super(TABLE_NAME, CREATE_TABLE + "(" + CREATE_TABLE_OPTS + ")");
+        super(TABLE_NAME, CREATE_TABLE);
     }
 
     @Override
@@ -89,7 +92,7 @@ public class AccountData extends APersistedData {
             return;
 
         // Copy old icons
-        Cursor accounts = new Account().fetchAll();
+        Cursor accounts = new Account().fetchAllWithDb(db);
         accounts.moveToFirst();
         HashMap<Integer, Bitmap> icons = new HashMap<>();
         for (int i = 0; i < accounts.getCount(); i++) {
@@ -102,32 +105,46 @@ public class AccountData extends APersistedData {
             accounts.moveToNext();
         }
 
+
         db.beginTransaction();
         try {
             // No DROP COLUMN in android sqlite, so need a copy of the whole table to a new one
-            String backupTable = TABLE_NAME + "_backup";
-            db.execSQL("CREATE TEMPORARY TABLE " + backupTable + "(" + CREATE_TABLE_OPTS + ")");
-            db.execSQL("INSERT INTO " + backupTable + " SELECT * FROM " + TABLE_NAME);
-            db.execSQL("DROP TABLE " + TABLE_NAME);
-            db.execSQL("CREATE TABLE " + TABLE_NAME + "(" + CREATE_TABLE_OPTS + ")");
-            db.execSQL("INSERT INTO " + TABLE_NAME + " SELECT * FROM " + backupTable);
-            db.execSQL("DROP TABLE " + backupTable);
+            StringBuilder colsOld = new StringBuilder();
+            colsOld.append(KEY_ID).append(",");
+            colsOld.append(KEY_NAME).append(",");
+            colsOld.append(KEY_ICON).append(",");
+            colsOld.append(KEY_ID_CURRENCY).append(",");
+            colsOld.append(KEY_BALANCE);
 
+            StringBuilder colsNew = new StringBuilder();
+            colsNew.append(KEY_ID).append(",");
+            colsNew.append(KEY_NAME).append(",");
+            colsNew.append(KEY_ICON_BYTES).append(",");
+            colsNew.append(KEY_ID_CURRENCY).append(",");
+            colsNew.append(KEY_BALANCE);
+
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " RENAME TO " + TABLE_NAME + "bak");
+            db.execSQL(CREATE_TABLE);
+            db.execSQL("INSERT INTO " + TABLE_NAME + "(" + colsNew + ") " +
+                    "SELECT " + colsOld + " " +
+                    "FROM " + TABLE_NAME + "bak");
+            db.execSQL("DROP TABLE " + TABLE_NAME + "bak");
+
+            for (Map.Entry m : icons.entrySet()) {
+                String sql = "UPDATE " + TABLE_NAME + " SET " + KEY_ICON_BYTES + "=?" + " WHERE " + KEY_ID + "=?";
+                SQLiteStatement stmt = db.compileStatement(sql);
+                stmt.clearBindings();
+                byte[] bytes = ImageUtil.getBytesFromBitmap(icons.get(m.getKey()));
+                stmt.bindBlob(1, bytes);
+                stmt.bindLong(2, (int) m.getKey());
+                stmt.executeUpdateDelete();
+            }
+
+            db.setTransactionSuccessful();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         } finally {
             db.endTransaction();
-        }
-
-        accounts = new Account().fetchAll();
-        accounts.moveToFirst();
-        for (int i = 0; i < accounts.getCount(); i++) {
-            Account acc = new Account();
-            acc.toDTO(accounts);
-            Bitmap icon = icons.get(acc.getId());
-            acc.setIconBytes(ImageUtil.getBytesFromBitmap(icon));
-            acc.update();
-            accounts.moveToNext();
         }
     }
 }

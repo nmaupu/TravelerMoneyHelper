@@ -149,16 +149,23 @@ public abstract class BaseObject implements Validator, Serializable, Comparable 
     }
 
     public Cursor fetchAll() {
-        return fetchAllOrderBy(getDefaultOrderColumn(), getDefaultOrder());
+        return fetchAllWithDb(TmhApplication.getDatabaseHelper().getDb());
+    }
+
+    public Cursor fetchAllWithDb(SQLiteDatabase db) {
+        return fetchAllOrderByWithDb(db, getDefaultOrderColumn(), getDefaultOrder());
     }
 
     public Cursor fetchAllOrderBy(String column, String order) {
+        return fetchAllOrderByWithDb(TmhApplication.getDatabaseHelper().getDb(), column, order);
+    }
+
+    public Cursor fetchAllOrderByWithDb(SQLiteDatabase db, String column, String order) {
         StringBuilder query = new StringBuilder("select * from ")
                 .append(getTableName())
                 .append(" order by ").append(column)
                 .append(" ").append(order);
-        //return TmhApplication.getDatabaseHelper().getDb().query(getTableName(), null, null, null, null, null, columnName);
-        return TmhApplication.getDatabaseHelper().getDb().rawQuery(query.toString(), null);
+        return db.rawQuery(query.toString(), null);
     }
 
     public Cursor fetchAllExcept(Integer[] ids) {
