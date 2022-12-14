@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -253,7 +252,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     protected void fieldsToBaseObject(Account obj) {
         if (obj != null) {
             String account = textViewName.getText().toString().trim();
-            Bitmap bitmap = ((BitmapDrawable) imageViewIcon.getDrawable()).getBitmap();
+            Bitmap bitmap = ImageUtil.drawableToBitmap(imageViewIcon.getDrawable());
 
             obj.setIconBytes(ImageUtil.getBytesFromBitmap(bitmap));
             obj.setName(account);

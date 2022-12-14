@@ -17,7 +17,7 @@
         android:icon="@drawable/ic_event_white" />
 
     <item
-        android:id="@+id/stats_action_reset"
+        android:id="@+id/stats_action_reset_dates"
         android:title="@string/date_change_reset"
         android:orderInCategory="3"
         app:showAsAction="ifRoom|withText"

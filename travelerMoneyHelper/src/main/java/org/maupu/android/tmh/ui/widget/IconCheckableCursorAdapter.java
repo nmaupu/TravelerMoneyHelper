@@ -25,7 +25,7 @@ public class IconCheckableCursorAdapter extends CheckableCursorAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = super.getView(position, convertView, parent);
 
-        ImageView imageViewIcon = v.findViewById(R.id.icon);
+        ImageView imageViewIcon = v.findViewById(R.id.iconBytes);
 
         int oldPosition = cursor.getPosition();
         cursor.moveToPosition(position);

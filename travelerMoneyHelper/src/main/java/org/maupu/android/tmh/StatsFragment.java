@@ -164,11 +164,37 @@ public class StatsFragment extends TmhFragment {
         refreshDisplay();
     }
 
-    @Override
-    public void onDestroy() {
-        TmhLogger.d(TAG, "onDestroy called");
-        // Called when exiting / changing screen orientation
-        super.onDestroy();
+    private void setupMenu() {
+        if (menuProvider == null) {
+            menuProvider = new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.stats_menu, menu);
+                }
+
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    if (R.id.stats_action_auto_cats == menuItem.getItemId()) {
+                        statsData.setCatToHighlight(null);
+                        autoSetExceptedCategories();
+                        rebuildStatsData(true, false);
+                        refreshDisplay();
+                    } else if (R.id.stats_action_date_begin == menuItem.getItemId()) {
+                        createDateDialog(DIALOG_DATE_BEGIN);
+                    } else if (R.id.stats_action_date_end == menuItem.getItemId()) {
+                        createDateDialog(DIALOG_DATE_END);
+                    } else if (R.id.stats_action_reset_dates == menuItem.getItemId()) {
+                        autoSetDates();
+                        rebuildStatsData(true, false);
+                        refreshDisplay();
+                    }
+
+                    return false;
+                }
+            };
+        }
+
+        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     private void initPieChart(View view) {
@@ -238,43 +264,17 @@ public class StatsFragment extends TmhFragment {
         detailsChart.initPanel();
     }
 
-    private void setupMenu() {
-        if (menuProvider == null) {
-            menuProvider = new MenuProvider() {
-                @Override
-                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                    menuInflater.inflate(R.menu.stats_menu, menu);
-                }
-
-                @Override
-                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                    if (R.id.stats_action_auto_cats == menuItem.getItemId()) {
-                        statsData.setCatToHighlight(null);
-                        autoSetExceptedCategories();
-                        rebuildStatsData(true, false);
-                        refreshDisplay();
-                    } else if (R.id.stats_action_date_begin == menuItem.getItemId()) {
-                        createDateDialog(DIALOG_DATE_BEGIN);
-                    } else if (R.id.stats_action_date_end == menuItem.getItemId()) {
-                        createDateDialog(DIALOG_DATE_END);
-                    } else if (R.id.stats_action_reset == menuItem.getItemId()) {
-                        autoSetDates();
-                        rebuildStatsData(true, false);
-                        refreshDisplay();
-                    }
-
-                    return false;
-                }
-            };
-        }
-
-        requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-    }
-
     private void createDateDialog(final int id) {
         int y, m, d;
 
         Calendar cal = Calendar.getInstance();
+
+        if (dateBegin == null)
+            dateBegin = cal.getTime();
+        if (dateEnd == null)
+            dateEnd = cal.getTime();
+        if (dateEnd.before(dateBegin))
+            dateEnd = dateBegin;
 
         if (id == DIALOG_DATE_BEGIN) {
             cal.setTime(dateBegin);
