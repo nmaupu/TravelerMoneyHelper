@@ -2,10 +2,10 @@ package org.maupu.android.tmh.core;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
-import org.maupu.android.tmh.MainActivity;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Account;
@@ -15,7 +15,9 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.database.object.StaticPrefs;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.util.ImageUtil;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
@@ -27,8 +29,6 @@ public class TmhApplication extends Application {
     public static final boolean LOGGING = false;
     private static Context applicationContext;
     private static DatabaseHelper dbHelper;
-
-    public static final Class<?> HOME_ACTIVITY_CLASS = MainActivity.class;
 
     @Override
     public void onCreate() {
@@ -89,6 +89,15 @@ public class TmhApplication extends Application {
         Account acc = new Account();
         acc.setName(countryName);
         acc.setCurrency(cur);
+        Drawable flagDrawable = null;
+        try {
+            Field idField = R.drawable.class.getDeclaredField("flag_" + countryCode.toLowerCase() + "_48");
+            int resourceID = idField.getInt(idField);
+            flagDrawable = getAppContext().getDrawable(resourceID);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+        }
+        if (flagDrawable != null)
+            acc.setIconBytes(ImageUtil.getBytesFromBitmap(ImageUtil.drawableToBitmap(flagDrawable)));
         acc.insert();
     }
 
@@ -204,11 +213,7 @@ public class TmhApplication extends Application {
                 case 255:
                     return "UA";
             }
-        } catch (ClassNotFoundException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ignored) {
-        } catch (InvocationTargetException ignored) {
-        } catch (NullPointerException ignored) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | NullPointerException ignored) {
         }
 
         return null;

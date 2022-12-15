@@ -223,7 +223,7 @@ public class ApplicationDrawer {
         }
         cursor.close();
 
-        if (profileToActivate == null) {
+        if (profileToActivate == null && accountHeader.getProfiles() != null && accountHeader.getProfiles().size() > 0) {
             profileToActivate = accountHeader.getProfiles().get(0);
             Account a = (Account) ((ProfileDrawerItem) profileToActivate).getTag();
             StaticData.setCurrentAccount(a);

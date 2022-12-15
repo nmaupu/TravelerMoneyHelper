@@ -1,12 +1,9 @@
 package org.maupu.android.tmh;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -45,31 +42,28 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         super(R.string.fragment_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Before going further, verify we have api key to open exchange rates api
         String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT);
-        apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
+        this.apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
         if (apiKey == null || "".equals(apiKey) || !apiKeyValid) {
-            SimpleDialog.errorDialog(requireContext(), getString(R.string.error), getString(R.string.error_no_oer_api_key), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Display preferences
-                    Intent intent = new Intent(requireContext(), PreferencesActivity.class);
-                    startActivity(intent);
-                }
-            }).show();
+            SimpleDialog.errorDialog(
+                    requireContext(),
+                    getString(R.string.error),
+                    getString(R.string.error_no_oer_api_key),
+                    (dialog, which) -> {
+                        // Display preferences
+                        Intent intent = new Intent(requireContext(), PreferencesActivity.class);
+                        startActivity(intent);
+                    }).show();
         } else {
-            apiKeyValid = true;
+            this.apiKeyValid = true;
         }
+
+        updateTextViewRate();
 
         initOerFetcher();
     }
@@ -83,7 +77,6 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         checkBoxUpdate = view.findViewById(R.id.checkbox_last_update);
         actvCurrencyCode = view.findViewById(R.id.currency_code);
 
-        updateTextViewRate();
 
         actvCurrencyCode.setOnItemClickListener(this);
         return actvCurrencyCode;
@@ -131,12 +124,13 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         met.setFloatingLabelText(curText);
 
         if (StaticData.getMainCurrency() != null && StaticData.getMainCurrency().getId() != null) {
-            met.setFloatingLabelText(
-                    curText +
-                            java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol()
-            );
+            String hint = curText + java.util.Currency.getInstance(StaticData.getMainCurrency().getIsoCode()).getSymbol();
+            met.setFloatingLabelText(hint);
+            met.setHint(hint);
         } else if (StaticData.getMainCurrency() == null) {
-            met.setFloatingLabelText(curText + " " + editTextShortName.getText().toString());
+            String hint = curText + " " + editTextShortName.getText().toString();
+            met.setFloatingLabelText(hint);
+            met.setHint(hint);
         }
     }
 

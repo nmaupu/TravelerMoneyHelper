@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/form_addedit_value"
-                android:numeric="integer|decimal" />
+                android:inputType="number" />
 
             <CheckBox
                 android:id="@+id/checkbox_last_update"

@@ -328,6 +328,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         if (StaticData.PREF_DATABASE.equals(preference.getKey()) ||
                 StaticData.PREF_NEW_DATABASE.equals(preference.getKey()) ||
                 StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+            StaticData.invalidateCurrentAccount();
             resetToHome();
         } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
             // Update categories for this db
