@@ -8,16 +8,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
 
 import androidx.fragment.app.FragmentActivity;
 
 import org.maupu.android.tmh.R;
-import org.maupu.android.tmh.TmhFragment;
 import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.OperationData;
@@ -25,8 +22,6 @@ import org.maupu.android.tmh.database.filter.OperationFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Operation;
-import org.maupu.android.tmh.ui.widget.CheckableCursorAdapter;
-import org.maupu.android.tmh.ui.widget.IconCursorAdapter;
 import org.maupu.android.tmh.ui.widget.OperationCursorAdapter;
 import org.maupu.android.tmh.util.TmhLogger;
 
@@ -36,60 +31,6 @@ import java.util.List;
 
 public abstract class DialogHelper {
     private static final Class TAG = DialogHelper.class;
-    private static CheckableCursorAdapter categoryChooserAdapter = null;
-
-    public static boolean isCheckableCursorAdapterInit() {
-        return categoryChooserAdapter != null;
-    }
-
-    public static Dialog popupDialogAccountChooser(final TmhFragment fragment) {
-        if (fragment == null || fragment.getContext() == null)
-            return null;
-
-        final Dialog dialog = new Dialog(fragment.getContext());
-
-        dialog.setContentView(R.layout.dialog_listview);
-        dialog.setTitle(fragment.getString(R.string.pick_account));
-
-        ListView listAccount = dialog.findViewById(R.id.list);
-        Account dummyAccount = new Account();
-        final Cursor cursorAllAccounts = dummyAccount.fetchAll();
-
-        final IconCursorAdapter adapter = new IconCursorAdapter(
-                fragment.getContext(),
-                R.layout.icon_name_item_no_checkbox,
-                cursorAllAccounts,
-                new String[]{AccountData.KEY_ICON_BYTES, AccountData.KEY_NAME},
-                new int[]{R.id.icon, R.id.name}, new ICallback<View>() {
-            @Override
-            public View callback(Object item) {
-                TmhLogger.d(TAG, "popupDialogAccountChooser : callback called");
-
-                int position = (Integer) ((View) item).getTag();
-                int oldPosition = cursorAllAccounts.getPosition();
-                cursorAllAccounts.moveToPosition(position);
-
-                Account account = new Account();
-                account.toDTO(cursorAllAccounts);
-
-                cursorAllAccounts.moveToPosition(oldPosition);
-
-                /** Replacing preferences account (excepted categories are also reset to auto) **/
-                /** Setting some specific stuff as well **/
-                StaticData.setCurrentAccount(account);
-                // TODO refresh if account changes
-                //fragment.refreshAfterCurrentAccountChanged();
-                fragment.refreshDisplay();
-                dialog.dismiss();
-
-                return (View) item;
-            }
-        });
-        listAccount.setAdapter(adapter);
-        dialog.show();
-
-        return dialog;
-    }
 
     /**
      * Get position of category in a cursor. Useful to know position on a list (cursor adapter)

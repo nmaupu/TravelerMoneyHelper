@@ -89,9 +89,15 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         return actvCurrencyCode;
     }
 
+
     @Override
     public void onResume() {
         apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
+
+        if (StaticData.getMainCurrency() == null || StaticData.getMainCurrency().getId() == null) {
+            StaticData.setMainCurrency(StaticData.getDefaultMainCurrency().getId());
+        }
+
         super.onResume();
     }
 
@@ -240,17 +246,4 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
             }
         } // if
     }
-
-
-    // TODO what to do with onContinue ?
-    /*@Override
-    protected boolean onContinue(boolean disposeActivity) {
-        boolean ret = super.onContinue(disposeActivity);
-
-        if (StaticData.getMainCurrency() == null || StaticData.getMainCurrency().getId() == null) {
-            StaticData.setMainCurrency(StaticData.getDefaultMainCurrency().getId());
-        }
-
-        return ret;
-    }*/
 }

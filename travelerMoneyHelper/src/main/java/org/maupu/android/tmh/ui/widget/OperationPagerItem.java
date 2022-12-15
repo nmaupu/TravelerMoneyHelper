@@ -1,7 +1,5 @@
 package org.maupu.android.tmh.ui.widget;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,7 +27,6 @@ import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.AccountBalance;
-import org.maupu.android.tmh.ui.DialogHelper;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
@@ -94,7 +91,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         textViewTitleYear = headerContent.findViewById(R.id.title_year);
         textViewAccountName = headerContent.findViewById(R.id.account_name);
         imageViewIcon = headerContent.findViewById(R.id.account_icon);
-        //imageViewIcon.setOnClickListener(this);
 
         // Adding content to viewpager header
         header.setVisibility(View.VISIBLE);
@@ -117,7 +113,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
     @Override
     public void onClick(View v) {
         final Operation obj = new Operation();
-        Intent intent = null;
         CheckableCursorAdapter checkableCursorAdapter = null;
         // Bug fix : when changing account name, listview is null
         if (listView == null)
@@ -131,49 +126,36 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         else
             return;
 
-        switch (v.getId()) {
-            case R.id.account_icon:
-                // Disabled due to a bug when switching to stats (current account changed does not reset dates)
-                TmhLogger.d(TAG, "Icon clicked");
-                DialogHelper.popupDialogAccountChooser(parentFragment);
-                break;
-            case R.id.button_edit:
-                if (posChecked.length == 1) {
-                    int p = posChecked[0];
-                    Cursor cursor = (Cursor) listView.getItemAtPosition(p);
-                    obj.toDTO(cursor);
+        if (v.getId() == R.id.button_edit) {
+            if (posChecked.length == 1) {
+                int p = posChecked[0];
+                Cursor cursor = (Cursor) listView.getItemAtPosition(p);
+                obj.toDTO(cursor);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(AddOrEditOperationFragment.EXTRA_OBJECT_ID, obj);
-                    ((MainActivity) parentFragment.requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, bundle);
-                }
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(AddOrEditOperationFragment.EXTRA_OBJECT_ID, obj);
+                ((MainActivity) parentFragment.requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, bundle);
+            }
+        } else if (v.getId() == R.id.button_delete) {
+            SimpleDialog.confirmDialog(parentFragment.getContext(),
+                    parentFragment.getString(R.string.manageable_obj_del_confirm_question),
+                    (dialog, which) -> {
+                        String errMessage = parentFragment.getString(R.string.manageable_obj_del_error);
+                        boolean err = false;
 
-                break;
-            case R.id.button_delete:
-                SimpleDialog.confirmDialog(parentFragment.getContext(),
-                        parentFragment.getString(R.string.manageable_obj_del_confirm_question),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String errMessage = parentFragment.getString(R.string.manageable_obj_del_error);
-                                boolean err = false;
+                        for (Integer pos : posChecked) {
+                            //Request deletion
+                            Cursor cursor = (Cursor) listView.getItemAtPosition(pos);
+                            obj.toDTO(cursor);
+                            obj.delete();
+                        }
 
-                                for (int i = 0; i < posChecked.length; i++) {
-                                    Integer pos = posChecked[i];
-                                    //Request deletion
-                                    Cursor cursor = (Cursor) listView.getItemAtPosition(pos);
-                                    obj.toDTO(cursor);
-                                    obj.delete();
-                                }
+                        if (err)
+                            SimpleDialog.errorDialog(parentFragment.getContext(), parentFragment.getString(R.string.error), errMessage).show();
 
-                                if (err)
-                                    SimpleDialog.errorDialog(parentFragment.getContext(), parentFragment.getString(R.string.error), errMessage).show();
-
-                                dialog.dismiss();
-                                refreshDisplay();
-                            }
-                        }).show();
-                break;
+                        dialog.dismiss();
+                        refreshDisplay();
+                    }).show();
         }
     }
 
@@ -281,17 +263,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
     public void refreshDisplay() {
         // Getting current account
         Account currentAccount = StaticData.getCurrentAccount();
-
-        // TODO - maybe, invalidate "static current account" to force reload instead of this shit
-	/*	if(currentAccount == null || currentAccount.getId() == null) {
-			// no current account, set default one
-			Account acc = new Account();
-			Cursor c = acc.fetchAll();
-			c.moveToFirst();
-			acc.toDTO(c);
-			StaticData.setCurrentAccount(acc);
-			currentAccount = acc;
-		}*/
 
         // Process list
         Operation dummy = new Operation();

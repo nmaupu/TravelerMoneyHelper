@@ -27,6 +27,7 @@ import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.SimpleDialog;
+import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -264,9 +265,8 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
         }
     }
 
-    /* TODO what to do here ? and how ? onContinue is not a function
     @Override
-    protected boolean onContinue(boolean disposeActivity) {
+    public void onResume() {
         // Invalidate current account if we are editing it
         try {
             if (super.isEditing() && super.getObj().getId().intValue() == StaticData.getCurrentAccount().getId().intValue()) {
@@ -276,8 +276,8 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
             // Do nothing more here
         }
 
-        return super.onContinue(disposeActivity);
-    }*/
+        super.onResume();
+    }
 
     class AppsAdapter extends BaseAdapter {
         public View getView(int position, View convertView, ViewGroup parent) {

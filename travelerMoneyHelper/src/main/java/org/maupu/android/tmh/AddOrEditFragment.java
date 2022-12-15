@@ -27,7 +27,6 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     public static final String EXTRA_OBJECT_ID = "base_object";
     public static final String EXTRA_APP_INIT = "app_init";
     private T obj;
-    private boolean appInit = false;
     private int title;
 
     private MenuProvider menuProvider;
@@ -83,20 +82,17 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
 
                 @Override
                 public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_save:
-                            saveOrEdit(true);
-                            break;
-                        case R.id.action_add:
-                            if (saveOrEdit(false)) {
-                                Snackbar.make(
-                                        getView(),
-                                        getString(R.string.toast_success),
-                                        Snackbar.LENGTH_SHORT).show();
-                                obj.reset();
-                                refreshDisplay();
-                            }
-                            break;
+                    if (menuItem.getItemId() == R.id.action_save) {
+                        saveOrEdit(true);
+                    } else if (menuItem.getItemId() == R.id.action_add) {
+                        if (saveOrEdit(false)) {
+                            Snackbar.make(
+                                    requireView(),
+                                    getString(R.string.toast_success),
+                                    Snackbar.LENGTH_SHORT).show();
+                            obj.reset();
+                            refreshDisplay();
+                        }
                     }
                     return true;
                 }
@@ -108,17 +104,12 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     private void retrieveItemFromBundle() {
         try {
             Bundle bundle = getArguments();
-            T objnew = (T) bundle.getSerializable(AddOrEditFragment.EXTRA_OBJECT_ID);
-            if (objnew != null) {
-                obj = objnew;
+            if (bundle != null) {
+                T objnew = (T) bundle.getSerializable(AddOrEditFragment.EXTRA_OBJECT_ID);
+                if (objnew != null) {
+                    obj = objnew;
+                }
             }
-
-            // TODO verify it's still needed and usable
-            // Set this when initializing app from WelcomeActivity (we deactivate 'save and add' button)
-            appInit = (Boolean) bundle.get(AddOrEditFragment.EXTRA_APP_INIT);
-
-        } catch (NullPointerException e) { // TODO better error handling ?
-            // Here, nothing is allocated, we keep default obj
         } catch (ClassCastException cce) {
             // This exception should not be thrown
             throw cce;

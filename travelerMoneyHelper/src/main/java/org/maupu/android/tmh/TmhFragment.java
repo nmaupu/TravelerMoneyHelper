@@ -30,16 +30,4 @@ public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
     @Override
     public void handleRefreshEnding(Map<Integer, Object> results) {
     }
-
-    // TODO
-    /*public void refreshAfterCurrentAccountChanged() {
-        List<IProfile> profiles = accountHeader.getProfiles();
-        Iterator<IProfile> it = profiles.iterator();
-        while (it.hasNext()) {
-            ProfileDrawerItem p = (ProfileDrawerItem) it.next();
-            Account a = (Account) p.getTag();
-            if (StaticData.getCurrentAccount() != null && a.getId() == StaticData.getCurrentAccount().getId())
-                accountHeader.setActiveProfile(p);
-        }
-    }*/
 }
