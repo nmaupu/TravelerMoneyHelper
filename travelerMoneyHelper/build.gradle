@@ -112,4 +112,7 @@ dependencies {
 
     // https://github.com/ApmeM/android-flowlayout
     implementation "org.apmem.tools:layouts:$flowlayout_version"
+
+    // https://github.com/polyak01/IconSwitch
+    implementation 'com.polyak:icon-switch:1.0.0'
 }

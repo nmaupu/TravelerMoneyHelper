@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.polyak.iconswitch.IconSwitch;
+
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
@@ -60,13 +62,13 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     private TextView textViewConvertedAmount;
     private TextView textViewAmount;
     private Button buttonToday;
+    private IconSwitch switchCreditDebitCard;
     private static final String PLUS = "+";
     private static final String MINUS = "-";
 
     public AddOrEditOperationFragment() {
         super(R.string.fragment_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
     }
-
 
     @Override
     protected View initResources(View view) {
@@ -101,6 +103,8 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         buttonToday.setOnClickListener(this);
         textViewConvertedAmount = view.findViewById(R.id.converted_amount);
         textViewAmount = view.findViewById(R.id.text_amount);
+        switchCreditDebitCard = view.findViewById(R.id.switch_credit_debit_card);
+        switchCreditDebitCard.setOnClickListener(this);
 
         // Set spinners content
         Cursor c;
@@ -307,6 +311,13 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             Date now = Calendar.getInstance().getTime();
             setDateTimeFields(now);
             initDatePickerTextView(now);
+        } else if (v.getId() == R.id.switch_credit_debit_card) {
+            // toggle icon
+            /*if (buttonCreditDebitCard.isChecked())
+                buttonCreditDebitCard.setBackground(requireContext().getDrawable(R.drawable.ic_baseline_credit_card_black_24));
+            else
+                buttonCreditDebitCard.setBackground(requireContext().getDrawable(R.drawable.ic_baseline_credit_card_off_black_24));*/
+
         }
     }
 

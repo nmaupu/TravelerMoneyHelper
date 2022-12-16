@@ -145,6 +145,7 @@
     <string name="update_rates_success">Rates updated OK</string>
     <string name="misc">Misc</string>
     <string name="NA">N/A</string>
+    <string name="add_or_edit_operation_use_credit_debit_card">Pay by credit/debit card</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>

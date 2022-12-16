@@ -96,37 +96,72 @@
                     android:text="@string/credit" />
             </RadioGroup>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="3dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="3dip"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/sign"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="0dp"
                     android:layout_gravity="center_vertical|center_horizontal"
-                    android:layout_weight="0.4"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="@string/minus_symbol"
                     android:textColor="@color/red"
                     android:textSize="30sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/amount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <org.maupu.android.tmh.ui.widget.NumberEditText
-                    style="@style/TmhMaterialEditText"
                     android:id="@+id/amount"
+                    style="@style/TmhMaterialEditText"
+                    android:layout_width="280dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:hint="@string/amount"
                     android:inputType="numberDecimal"
-                    android:hint="@string/amount" />
-            </LinearLayout>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_credit_debit_card"
+                    app:layout_constraintStart_toEndOf="@+id/sign"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <com.polyak.iconswitch.IconSwitch
+                    android:id="@+id/switch_credit_debit_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:backgroundTint="@color/white"
+                    app:isw_background_color="#5F2196f3"
+                    app:isw_active_tint_icon_left="@color/white"
+                    app:isw_active_tint_icon_right="@color/white"
+                    app:isw_inactive_tint_icon_left="@color/md_grey_600"
+                    app:isw_inactive_tint_icon_right="@color/md_grey_600"
+                    
+                    app:isw_thumb_color_left="@color/material_drawer_accent"
+                    app:isw_thumb_color_right="@color/material_drawer_accent"
+                    app:isw_default_selection="left"
+                    app:isw_icon_left="@drawable/ic_baseline_credit_card_off_black_24"
+                    app:isw_icon_right="@drawable/ic_baseline_credit_card_black_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/amount"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <include layout="@layout/separator" />
 
@@ -249,4 +284,5 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
 </LinearLayout>
