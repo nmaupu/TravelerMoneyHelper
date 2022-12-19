@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -149,7 +150,7 @@
                     <com.polyak.iconswitch.IconSwitch
                         android:id="@+id/switch_credit_debit_card"
                         android:layout_width="wrap_content"
-                        android:layout_height="49dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:layout_marginTop="5dp"
                         android:layout_marginEnd="5dp"
@@ -160,7 +161,6 @@
                         app:isw_background_color="#5F2196f3"
                         app:isw_default_selection="left"
                         app:isw_icon_left="@drawable/ic_baseline_credit_card_off_black_24"
-
                         app:isw_icon_right="@drawable/ic_baseline_credit_card_black_24"
                         app:isw_inactive_tint_icon_left="@color/md_grey_600"
                         app:isw_inactive_tint_icon_right="@color/md_grey_600"
@@ -168,13 +168,14 @@
                         app:isw_thumb_color_right="@color/material_drawer_accent" />
 
                     <TextView
+                        android:id="@+id/switch_credit_debit_card_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Cash"
+                        android:text="@string/add_or_edit_operation_use_credit_debit_card_cash"
                         android:gravity="center"
                         android:textStyle="italic"
-                        android:textSize="11dp" />
-                    
+                        android:textSize="11sp" />
+
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -197,7 +198,8 @@
                     android:layout_height="wrap_content"
                     android:gravity="right|center_vertical"
                     android:layout_weight="1"
-                    android:text="0.00" />
+                    android:text="0.00"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -205,7 +207,8 @@
                     android:gravity="center_horizontal|center_vertical"
                     android:layout_weight="1"
                     android:textStyle="bold"
-                    android:text=" -> " />
+                    android:text=" -> "
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/converted_amount"
@@ -213,21 +216,22 @@
                     android:layout_height="wrap_content"
                     android:gravity="left|center_vertical"
                     android:layout_weight="1"
-                    android:text="0.00" />
+                    android:text="0.00"
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <include layout="@layout/separator" />
 
             <LinearLayout
                 android:layout_marginTop="10sp"
-                android:layout_marginLeft="5sp"
+                android:layout_marginStart="5sp"
                 android:id="@+id/ll_exchange_rate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone">
 
                 <CheckBox
-                    android:layout_marginLeft="0px"
+                    android:layout_marginStart="0px"
                     android:id="@+id/checkbox_update_rate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -240,18 +244,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10sp"
-                android:layout_marginLeft="5sp"
+                android:layout_marginStart="5sp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="3sp"
+                    android:layout_marginEnd="3sp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_marginRight="40sp"
+                        android:layout_marginEnd="40sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
@@ -268,13 +272,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="3sp"
+                    android:layout_marginStart="3sp"
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:weightSum="10">
 
                     <ImageView
-                        android:layout_marginRight="40sp"
+                        android:layout_marginEnd="40sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"

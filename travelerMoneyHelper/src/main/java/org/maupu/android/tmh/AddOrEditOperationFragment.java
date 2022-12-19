@@ -63,6 +63,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     private TextView textViewAmount;
     private Button buttonToday;
     private IconSwitch switchCreditDebitCard;
+    private TextView switchCreditDebitCardTextView;
     private static final String PLUS = "+";
     private static final String MINUS = "-";
 
@@ -103,8 +104,16 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         buttonToday.setOnClickListener(this);
         textViewConvertedAmount = view.findViewById(R.id.converted_amount);
         textViewAmount = view.findViewById(R.id.text_amount);
+        switchCreditDebitCardTextView = view.findViewById(R.id.switch_credit_debit_card_text);
         switchCreditDebitCard = view.findViewById(R.id.switch_credit_debit_card);
-        switchCreditDebitCard.setOnClickListener(this);
+        switchCreditDebitCard.setCheckedChangeListener(current -> {
+            // toggle text
+            if (switchCreditDebitCard.getChecked() == IconSwitch.Checked.LEFT)
+                switchCreditDebitCardTextView.setText(R.string.add_or_edit_operation_use_credit_debit_card_cash);
+            else
+                switchCreditDebitCardTextView.setText(R.string.add_or_edit_operation_use_credit_debit_card_card);
+        });
+
 
         // Set spinners content
         Cursor c;
@@ -311,13 +320,6 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             Date now = Calendar.getInstance().getTime();
             setDateTimeFields(now);
             initDatePickerTextView(now);
-        } else if (v.getId() == R.id.switch_credit_debit_card) {
-            // toggle icon
-            /*if (buttonCreditDebitCard.isChecked())
-                buttonCreditDebitCard.setBackground(requireContext().getDrawable(R.drawable.ic_baseline_credit_card_black_24));
-            else
-                buttonCreditDebitCard.setBackground(requireContext().getDrawable(R.drawable.ic_baseline_credit_card_off_black_24));*/
-
         }
     }
 
