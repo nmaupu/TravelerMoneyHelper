@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,8 +29,8 @@
                     <fr.ganfra.materialspinner.MaterialSpinner
                         style="@style/TmhMaterialSpinner"
                         android:id="@+id/spinner_from"
-                        android:layout_marginRight="0px"
-                        android:layout_width="match_parent"
+                        android:layout_marginEnd="0px"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         app:ms_floatingLabelText="@string/debit" />
@@ -38,7 +39,7 @@
                         android:id="@+id/account_icon_from"
                         android:layout_width="wrap_content"
                         android:layout_height="40dip"
-                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_gravity="left|center_vertical"
                         android:maxHeight="40dip"
                         android:scaleType="centerInside"
                         android:src="@drawable/tmh_icon_48" />
@@ -50,8 +51,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="->"
+                    android:gravity="center"
+                    android:width="30dp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    tools:ignore="HardcodedText" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -63,7 +67,7 @@
                         android:id="@+id/account_icon_to"
                         android:layout_width="wrap_content"
                         android:layout_height="40dip"
-                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_gravity="right|center_vertical"
                         android:maxHeight="40dip"
                         android:scaleType="centerInside"
                         android:src="@drawable/tmh_icon_48" />
@@ -72,8 +76,8 @@
                     <fr.ganfra.materialspinner.MaterialSpinner
                         style="@style/TmhMaterialSpinner"
                         android:id="@+id/spinner_to"
-                        android:layout_marginLeft="0px"
-                        android:layout_width="match_parent"
+                        android:layout_marginStart="0px"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         app:ms_floatingLabelText="@string/credit" />

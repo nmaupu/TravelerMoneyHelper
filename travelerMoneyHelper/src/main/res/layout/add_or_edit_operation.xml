@@ -22,10 +22,10 @@
                 <LinearLayout
                     android:id="@+id/ll_account"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginLeft="5sp"
+                    android:layout_marginStart="5sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="6dip"
+                    android:layout_marginEnd="6dip"
                     android:orientation="vertical">
 
                     <ImageView
@@ -35,6 +35,7 @@
                         android:layout_gravity="center_horizontal"
                         android:maxHeight="40dip"
                         android:scaleType="centerInside"
+                        android:contentDescription="@string/account"
                         android:src="@drawable/tmh_icon_48" />
 
                     <TextView
@@ -43,7 +44,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:layout_gravity="center"
-                        android:textSize="10dp"
+                        android:textSize="11sp"
                         android:textStyle="italic" />
                 </LinearLayout>
 
@@ -130,35 +131,51 @@
                     android:hint="@string/amount"
                     android:inputType="numberDecimal"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switch_credit_debit_card"
+                    app:layout_constraintEnd_toStartOf="@+id/credit_debit_card_layout"
                     app:layout_constraintStart_toEndOf="@+id/sign"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
-                <com.polyak.iconswitch.IconSwitch
-                    android:id="@+id/switch_credit_debit_card"
+                <LinearLayout
+                    android:id="@+id/credit_debit_card_layout"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:backgroundTint="@color/white"
-                    app:isw_background_color="#5F2196f3"
-                    app:isw_active_tint_icon_left="@color/white"
-                    app:isw_active_tint_icon_right="@color/white"
-                    app:isw_inactive_tint_icon_left="@color/md_grey_600"
-                    app:isw_inactive_tint_icon_right="@color/md_grey_600"
-                    
-                    app:isw_thumb_color_left="@color/material_drawer_accent"
-                    app:isw_thumb_color_right="@color/material_drawer_accent"
-                    app:isw_default_selection="left"
-                    app:isw_icon_left="@drawable/ic_baseline_credit_card_off_black_24"
-                    app:isw_icon_right="@drawable/ic_baseline_credit_card_black_24"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/amount"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.polyak.iconswitch.IconSwitch
+                        android:id="@+id/switch_credit_debit_card"
+                        android:layout_width="wrap_content"
+                        android:layout_height="49dp"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:backgroundTint="@color/white"
+                        app:isw_active_tint_icon_left="@color/white"
+                        app:isw_active_tint_icon_right="@color/white"
+                        app:isw_background_color="#5F2196f3"
+                        app:isw_default_selection="left"
+                        app:isw_icon_left="@drawable/ic_baseline_credit_card_off_black_24"
+
+                        app:isw_icon_right="@drawable/ic_baseline_credit_card_black_24"
+                        app:isw_inactive_tint_icon_left="@color/md_grey_600"
+                        app:isw_inactive_tint_icon_right="@color/md_grey_600"
+                        app:isw_thumb_color_left="@color/material_drawer_accent"
+                        app:isw_thumb_color_right="@color/material_drawer_accent" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cash"
+                        android:gravity="center"
+                        android:textStyle="italic"
+                        android:textSize="11dp" />
+                    
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
