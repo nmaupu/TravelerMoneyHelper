@@ -51,6 +51,7 @@ dependencies {
     def preference_version = "1.2.0"
     def nav_version = "2.5.3"
     def fragment_version = "1.5.4"
+    def google_play_services = "20.4.0"
 
     repositories {
         mavenCentral()
@@ -115,4 +116,7 @@ dependencies {
 
     // https://github.com/polyak01/IconSwitch
     implementation 'com.polyak:icon-switch:1.0.0'
+
+    // Google play services
+    implementation "com.google.android.gms:play-services-auth:$google_play_services"
 }

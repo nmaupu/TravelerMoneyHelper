@@ -147,6 +147,7 @@
     <string name="NA">N/A</string>
     <string name="add_or_edit_operation_use_credit_debit_card_cash">Cash</string>
     <string name="add_or_edit_operation_use_credit_debit_card_card">Carte</string>
+    <string name="gdrive_button_sign_out">Se déconnecter</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
@@ -182,5 +183,8 @@
     <string name="pref_title_import_export">Importer / exporter</string>
     <string name="pref_db_manager_title">Gestion des bases de données</string>
     <string name="pref_db_manager_summary">Supprimer une base de données</string>
-
+    <string name="pref_backup_category">Sauvegarde</string>
+    <string name="pref_gdrive_activate">Activer Google Drive</string>
+    <string name="pref_google_signin_successfully">Connecté avec succès</string>
+    <string name="pref_google_signout_successfully">Déconnecté avec succès</string>
 </resources>

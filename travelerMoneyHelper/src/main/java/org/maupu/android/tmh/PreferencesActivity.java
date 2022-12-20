@@ -1,21 +1,33 @@
 package org.maupu.android.tmh;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.core.TmhApplication;
@@ -45,6 +57,11 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
     private ActivityPreferencesBinding binding;
     private PreferencesFragment preferencesFragment;
+
+    // google sign in components
+    private ActivityResultLauncher<Intent> googleSignInStartForResult;
+    private GoogleSignInClient googleSignInClient;
+    private GoogleSignInAccount googleSignInAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +109,30 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         ImportDBDialogPreference importDBDialogPreference = preferencesFragment.findPreference(StaticData.PREF_IMPORT_DB);
         importDBDialogPreference.setOnPreferenceChangeListener(this);
         importDBDialogPreference.setOnPreferenceClickListener(this);
+
+        SwitchPreference gdriveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_GDRIVE_ACTIVATE);
+        gdriveActivationSwitch.setOnPreferenceClickListener(this);
+
+        // google sign in initialization
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(preferencesFragment.requireContext(), gso);
+        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(preferencesFragment.requireContext());
+        if (googleSignInAccount != null) {
+            PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+            c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
+            gdriveActivationSwitch.setChecked(true);
+        }
+
+        googleSignInStartForResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                        handleSignInResult(task);
+                    }
+                });
     }
 
     private void refreshDbLists(String currentDB) {
@@ -220,6 +261,26 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     .append(".db")
                     .toString();
             ((EditTextPreference) preference).setText(filename);
+        } else if (StaticData.PREF_GDRIVE_ACTIVATE.equals(preference.getKey())) {
+            SwitchPreference pref = (SwitchPreference) preference;
+            if (pref.isChecked()) {
+                // pop sign in intent up
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                googleSignInStartForResult.launch(signInIntent);
+
+                // TODO display more options
+            } else {
+                googleSignInClient.signOut().addOnCompleteListener(command -> {
+                    Snackbar.make(
+                            preferencesFragment.requireContext(),
+                            preferencesFragment.requireView(),
+                            preferencesFragment.getString(R.string.pref_google_signout_successfully) + " (" + googleSignInAccount.getEmail() + ")",
+                            Snackbar.LENGTH_LONG).show();
+
+                    PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+                    c.setTitle(R.string.pref_backup_category);
+                });
+            }
         }
 
         return true;
@@ -361,5 +422,26 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     public static String getStringValue(String key) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TmhApplication.getAppContext());
         return sharedPreferences.getString(key, "");
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            googleSignInAccount = completedTask.getResult(ApiException.class);
+            if (googleSignInAccount != null) {
+                Snackbar.make(
+                        preferencesFragment.requireContext(),
+                        preferencesFragment.requireView(),
+                        preferencesFragment.getString(R.string.pref_google_signin_successfully) + " (" + googleSignInAccount.getEmail() + ")",
+                        Snackbar.LENGTH_LONG).show();
+                
+                // Change category title
+                PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+                c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
+            }
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG.getName(), "signInResult:failed code=" + e.getStatusCode());
+        }
     }
 }

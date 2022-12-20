@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -46,17 +44,15 @@ public class ImportDBPreferenceDialogFragmentCompat extends PreferenceDialogFrag
         super.onCreate(savedInstanceState);
 
         // startForResult HAS to be declared before view is created
-        startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent intent = result.getData();
-                            databaseUri = intent.getData();
-                            final ImportDBDialogPreference preference = (ImportDBDialogPreference) getPreference();
-                            preference.setDatabaseUri(databaseUri);
-                            dbFilename.setText(databaseUri.toString());
-                        }
+        startForResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        databaseUri = intent.getData();
+                        final ImportDBDialogPreference preference = (ImportDBDialogPreference) getPreference();
+                        preference.setDatabaseUri(databaseUri);
+                        dbFilename.setText(databaseUri.toString());
                     }
                 });
     }
