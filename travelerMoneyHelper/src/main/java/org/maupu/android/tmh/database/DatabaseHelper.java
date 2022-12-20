@@ -30,8 +30,8 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
     public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
     public static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX + "default";
-    public static final int DATABASE_VERSION = 15;
-    private List<APersistedData> persistedData = new ArrayList<APersistedData>();
+    public static final int DATABASE_VERSION = 16;
+    private List<APersistedData> persistedData = new ArrayList<>();
 
     public DatabaseHelper(String dbName) {
         super(TmhApplication.getAppContext(), dbName, null, DATABASE_VERSION);

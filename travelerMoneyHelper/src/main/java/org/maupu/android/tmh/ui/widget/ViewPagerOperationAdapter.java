@@ -2,7 +2,6 @@ package org.maupu.android.tmh.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.os.Parcelable;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,7 +25,7 @@ import java.util.Map;
 @SuppressLint("UseSparseArrays")
 public class ViewPagerOperationAdapter extends PagerAdapter {
     private static final Class TAG = ViewPagerOperationAdapter.class;
-    
+
     public final static int DEFAULT_COUNT = 25;
     private Map<Integer, OperationPagerItem> items = new HashMap<>();
     private int count;
@@ -62,8 +61,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
                 cal.add(Calendar.MONTH, offset + position);
                 date = cal.getTime();
             }
-
-            LayoutInflater inflater = LayoutInflater.from(parentFragment.getContext());
+            
             // if date is null, all operations will be displayed
             opi = new OperationPagerItem(parentFragment, date);
             items.put(position, opi);

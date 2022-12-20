@@ -132,7 +132,7 @@ public class Account extends BaseObject {
     /*
      * Get current account balance
      */
-    public Cursor getComputedBalanceCursor() {
+    public Cursor getComputedBalanceCursor(boolean onlyCash) {
         if (getId() == null || getId() < 0)
             return null;
 
@@ -144,6 +144,7 @@ public class Account extends BaseObject {
                 .append("o." + OperationData.KEY_AMOUNT + " operation_" + OperationData.KEY_AMOUNT).append(",")
                 .append("o." + OperationData.KEY_ID_CURRENCY + " operation_" + OperationData.KEY_ID_CURRENCY).append(",")
                 .append("o." + OperationData.KEY_CURRENCY_VALUE + " operation_" + OperationData.KEY_CURRENCY_VALUE).append(",")
+                .append("o." + OperationData.KEY_IS_CASH + " operation_" + OperationData.KEY_IS_CASH).append(",")
                 .append("c." + CurrencyData.KEY_SHORT_NAME + " currency_" + CurrencyData.KEY_SHORT_NAME);
 
         b.append(" FROM ")
@@ -155,6 +156,9 @@ public class Account extends BaseObject {
                 .append("a." + AccountData.KEY_ID + "=" + getId()).append(" AND ")
                 .append("o." + OperationData.KEY_ID_ACCOUNT + "=a." + AccountData.KEY_ID).append(" AND ")
                 .append("c." + CurrencyData.KEY_ID + "=o." + OperationData.KEY_ID_CURRENCY);
+        if (onlyCash)
+            b.append(" AND o." + OperationData.KEY_IS_CASH + "=1");
+
 
         TmhLogger.d(Account.class, "Account.getBalance" + b.getStringBuilder().toString());
         Cursor c = TmhApplication.getDatabaseHelper().getDb().rawQuery(b.getStringBuilder().toString(), null);
@@ -163,8 +167,8 @@ public class Account extends BaseObject {
         return c;
     }
 
-    public AccountBalance getComputedBalance() {
-        Cursor cursor = getComputedBalanceCursor();
+    public AccountBalance getComputedBalance(boolean onlyCash) {
+        Cursor cursor = getComputedBalanceCursor(onlyCash);
         AccountBalance accountBalance = new AccountBalance(this);
 
         if (cursor != null) {

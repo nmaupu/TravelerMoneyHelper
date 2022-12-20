@@ -86,6 +86,7 @@
     <string name="default_account_name">Account1</string>
     <string name="confirm_modification">Do you confirm the modification ?</string>
     <string name="total">Total:</string>
+    <string name="total_card">Total card:</string>
     <string name="total_">Total</string>
     <string name="average">Average:</string>
     <string name="average_">Average</string>

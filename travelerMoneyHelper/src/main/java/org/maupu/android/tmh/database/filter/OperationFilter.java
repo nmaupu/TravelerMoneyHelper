@@ -50,6 +50,7 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
                 .addSelectToQuery(OperationData.KEY_ID_CURRENCY).append(",")
                 .addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",")
                 .addSelectToQuery(OperationData.KEY_DATE).append(",")
+                .addSelectToQuery(OperationData.KEY_IS_CASH).append(",")
                 .addSelectToQuery(OperationData.KEY_LINK_TO).append(",");
 
         qsb.setCurrentTableAlias("c");
@@ -115,6 +116,8 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
             int valInf = Math.round((int) val * 0.9f);
 
             qb.append(" AND o." + OperationData.KEY_AMOUNT + " BETWEEN " + valInf + " AND " + valSup);
+        } else if (OperationData.KEY_IS_CASH.equals(operand)) {
+            qb.append(" AND o." + OperationData.KEY_IS_CASH + " " + strFunc + value);
         }
 
         if (nested)

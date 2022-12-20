@@ -58,6 +58,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
     private View footerOperationBalance;
     private TextView textViewTotal;
     private TextView textViewBalance;
+    private TextView textViewTotalCard;
 
     public OperationPagerItem(TmhFragment parentFragment, Date date) {
         this.date = date;
@@ -79,6 +80,8 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         this.editButton.setOnClickListener(this);
         deleteButton = view.findViewById(R.id.button_delete);
         this.deleteButton.setOnClickListener(this);
+        Button updateButton = view.findViewById(R.id.button_update);
+        updateButton.setVisibility(View.GONE);
     }
 
     private void createHeader() {
@@ -103,6 +106,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
         textViewTotal = footerOperationBalance.findViewById(R.id.total);
         textViewBalance = footerOperationBalance.findViewById(R.id.balance);
+        textViewTotalCard = footerOperationBalance.findViewById(R.id.total_card);
         content.addView(footerOperationBalance, content.getChildCount() - 2);
     }
 
@@ -268,20 +272,21 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         Operation dummy = new Operation();
         dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(currentAccount.getId()));
 
-        Cursor cAllOp, cSumOp;
+        Cursor cAllOp, cSumOp, cSumOpCashCard;
         if (this.date != null) {
             cAllOp = dummy.fetchByMonth(date);
-            cSumOp = dummy.sumOperationsByMonth(currentAccount, date, null);
+            cSumOp = dummy.sumOperationsByMonth(currentAccount, date, null, true);
+            cSumOpCashCard = dummy.sumOperationsByMonth(currentAccount, date, null, false);
         } else {
             cAllOp = dummy.fetchAll();
-            cSumOp = dummy.sumOperations(currentAccount, null);
+            cSumOp = dummy.sumOperations(currentAccount, null, true);
+            cSumOpCashCard = dummy.sumOperations(currentAccount, null, false);
         }
 
-        if (cSumOp == null || cAllOp == null) {
-            /* An error occured */
+        if (cSumOp == null || cAllOp == null || cSumOpCashCard == null) {
+            // An error occurred
             return;
         }
-
 
         // Process balance
         Currency mainCur = StaticData.getMainCurrency();
@@ -292,7 +297,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
             symbolCurrency = java.util.Currency.getInstance(new Locale("fr", "FR")).getSymbol();
         }
 
-        AccountBalance balance = currentAccount.getComputedBalance();
+        AccountBalance balance = currentAccount.getComputedBalance(true);
         StringBuilder sbBalance = new StringBuilder();
         if (balance.size() == 1) {
             Set<Integer> s = balance.keySet();
@@ -316,10 +321,31 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                 .append(" ")
                 .append(symbolCurrency);
 
-
-        Double total = 0d;
-        int nbRes = cSumOp.getCount();
+        double totalCashCard = 0d;
+        int nbRes = cSumOpCashCard.getCount();
         boolean sameCurrency = (nbRes == 1);
+        for (int i = 0; i < nbRes; i++) {
+            int idxSum = cSumOpCashCard.getColumnIndexOrThrow(Operation.KEY_SUM);
+            int idxRate = cSumOpCashCard.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
+            int idxCurrencyShortName = cSumOpCashCard.getColumnIndexOrThrow(CurrencyData.KEY_SHORT_NAME);
+
+            float amount = cSumOpCashCard.getFloat(idxSum);
+            float rate = cSumOpCashCard.getFloat(idxRate);
+
+            // If not sameCurrency, convert it from rate
+            if (!sameCurrency) {
+                totalCashCard += amount / rate;
+            } else {
+                totalCashCard += amount;
+                symbolCurrency = cSumOp.getString(idxCurrencyShortName);
+            }
+
+            cSumOpCashCard.moveToNext();
+        } //for
+
+        double total = 0d;
+        nbRes = cSumOp.getCount();
+        sameCurrency = (nbRes == 1);
         for (int i = 0; i < nbRes; i++) {
             int idxSum = cSumOp.getColumnIndexOrThrow(Operation.KEY_SUM);
             int idxRate = cSumOp.getColumnIndexOrThrow(CurrencyData.KEY_CURRENCY_LINKED);
@@ -341,6 +367,11 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
         // closing useless cursor
         cSumOp.close();
+        cSumOpCashCard.close();
+
+        StringBuilder sbTotalCard = new StringBuilder(NumberUtil.formatDecimal(total - totalCashCard));
+        sbTotalCard.append(" ");
+        sbTotalCard.append(symbolCurrency);
 
         StringBuilder sbTotal = new StringBuilder(NumberUtil.formatDecimal(total));
         sbTotal.append(" ");
@@ -349,28 +380,28 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
         // Set and refresh view
         if (listView == null)
-            listView = (ListView) view.findViewById(R.id.list);
+            listView = view.findViewById(R.id.list);
 
-        if (cAllOp != null) {
-            // Close previous cursor before new assignation
-            try {
-                ((CheckableCursorAdapter) listView.getAdapter()).getCursor().close();
-            } catch (NullPointerException npe) {
-                // listview not yet initialized - do nothing
-            }
-
-            OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
-                    parentFragment.getContext(),
-                    R.layout.operation_item,
-                    cAllOp,
-                    new String[]{AccountData.KEY_ICON_BYTES, "category", "dateStringHours", "amountString", "convertedAmount"},
-                    new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
-            cca.setOnNumberCheckedListener(this);
-            listView.setAdapter(cca);
-
-            textViewBalance.setText(sbBalance.toString());
-            textViewTotal.setText(sbTotal.toString());
+        // all operations
+        // Close previous cursor before new assignation
+        try {
+            ((CheckableCursorAdapter) listView.getAdapter()).getCursor().close();
+        } catch (NullPointerException npe) {
+            // listview not yet initialized - do nothing
         }
+
+        OperationCheckableCursorAdapter cca = new OperationCheckableCursorAdapter(
+                parentFragment.getContext(),
+                R.layout.operation_item,
+                cAllOp,
+                new String[]{AccountData.KEY_ICON_BYTES, "category", "dateStringHours", "amountString", "convertedAmount"},
+                new int[]{R.id.icon, R.id.category, R.id.date, R.id.amount, R.id.convAmount});
+        cca.setOnNumberCheckedListener(this);
+        listView.setAdapter(cca);
+
+        textViewBalance.setText(sbBalance.toString());
+        textViewTotal.setText(sbTotal.toString());
+        textViewTotalCard.setText(sbTotalCard.toString());
 
         // refresh header if needed
         refreshHeader();

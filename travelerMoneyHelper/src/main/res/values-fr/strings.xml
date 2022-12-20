@@ -85,6 +85,7 @@
     <string name="default_account_name">Compte1</string>
     <string name="confirm_modification">Confirmez-vous la modification ?</string>
     <string name="total">Total:</string>
+    <string name="total_card">Total carte:</string>
     <string name="total_">Total</string>
     <string name="average">Moyenne:</string>
     <string name="average_">Moyenne</string>

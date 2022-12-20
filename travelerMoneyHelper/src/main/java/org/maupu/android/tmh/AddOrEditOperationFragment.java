@@ -221,6 +221,11 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 d = Calendar.getInstance().getTime();
             }
 
+            if (obj.isCash())
+                switchCreditDebitCard.setChecked(IconSwitch.Checked.LEFT);
+            else
+                switchCreditDebitCard.setChecked(IconSwitch.Checked.RIGHT);
+
             initDatePickerTextView(d);
             if (obj.getAccount() != null) {
                 account = obj.getAccount();
@@ -256,6 +261,8 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     protected void fieldsToBaseObject(Operation obj) {
         if (obj != null) {
             obj.setDate(new GregorianCalendar(mYear, mMonth, mDay, mHours, mMinutes, mSeconds).getTime());
+
+            obj.setIsCash(switchCreditDebitCard.getChecked() == IconSwitch.Checked.LEFT);
 
             Cursor c;
 

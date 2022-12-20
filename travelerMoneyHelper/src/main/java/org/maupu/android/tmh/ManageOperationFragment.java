@@ -97,7 +97,7 @@ public class ManageOperationFragment extends ManageableObjectFragment<Operation>
         dummyOperation.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_ID_ACCOUNT, String.valueOf(id));
         Cursor c = dummyOperation.fetchByMonth(new GregorianCalendar().getTime());
 
-        Map<Integer, Object> results = new HashMap<Integer, Object>();
+        Map<Integer, Object> results = new HashMap<>();
         results.put(0, c);
 
         return results;
