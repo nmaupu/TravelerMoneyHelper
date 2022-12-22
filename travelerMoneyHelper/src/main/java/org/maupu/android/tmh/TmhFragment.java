@@ -13,7 +13,7 @@ public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
     }
 
     public void refreshDisplay() {
-        AsyncActivityRefresher refresher = new AsyncActivityRefresher(getActivity(), this, false);
+        AsyncActivityRefresher refresher = new AsyncActivityRefresher(requireActivity(), this, false);
         try {
             // Execute background task implemented by client class
             refresher.execute();

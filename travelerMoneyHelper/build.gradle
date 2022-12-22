@@ -21,9 +21,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     packagingOptions {
-        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
         exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
     }
     buildFeatures {
         viewBinding true
@@ -50,73 +56,106 @@ dependencies {
     def flowlayout_version = "1.10"
     def preference_version = "1.2.0"
     def nav_version = "2.5.3"
-    def fragment_version = "1.5.4"
-    def google_play_services = "20.4.0"
+    def fragment_version = "1.5.5"
+    def google_play_services_version = "20.4.0"
+    def google_api_services_drive = "v3-rev20220815-2.0.0"
 
     repositories {
         mavenCentral()
+        google()
         maven { url "https://jitpack.io" }
     }
 
-//    implementation 'com.android.support:appcompat-v7:28.0.0'
-//    implementation 'com.android.support:design:28.0.0'
-
-    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
-    implementation "androidx.viewpager:viewpager:$viewpager_version"
+    implementation("androidx.legacy:legacy-support-v4:$legacy_support_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("androidx.viewpager:viewpager:$viewpager_version") {
+        exclude group: 'com.google.guava'
+    }
     implementation("androidx.preference:preference:$preference_version") {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
+        exclude group: 'com.google.guava'
     }
 
-    implementation "androidx.fragment:fragment:$fragment_version"
+    implementation("androidx.fragment:fragment:$fragment_version") {
+        exclude group: 'com.google.guava'
+    }
 
-    implementation "androidx.navigation:navigation-fragment:$nav_version"
-    implementation "androidx.navigation:navigation-ui:$nav_version"
+    implementation("androidx.navigation:navigation-fragment:$nav_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("androidx.navigation:navigation-ui:$nav_version") {
+        exclude group: 'com.google.guava'
+    }
 
-    implementation "com.github.garretyoder:Colorful:$colorful_version"
-
-    //implementation "com.mikepenz:iconics-core:5.4.0@aar"
-    //implementation "com.mikepenz:community-material-typeface:7.0.96.0-kotlin@aar"
+    implementation("com.github.garretyoder:Colorful:$colorful_version") {
+        exclude group: 'com.google.guava'
+    }
 
     // mikepenz.materialdrawer deps
-    implementation "com.mikepenz:materialdrawer:$materialdrawer_version"
+    //noinspection GradleDependency
+    implementation("com.mikepenz:materialdrawer:$materialdrawer_version") {
+        exclude group: 'com.google.guava'
+    }
 
     //required support lib modules
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
-    implementation "androidx.annotation:annotation:$annotation_version"
-    implementation "com.google.android.material:material:$material_version"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+    implementation("androidx.appcompat:appcompat:$appcompat_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("androidx.recyclerview:recyclerview:$recyclerview_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("androidx.annotation:annotation:$annotation_version")
+    implementation("com.google.android.material:material:$material_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("androidx.constraintlayout:constraintlayout:$constraintlayout_version") {
+        exclude group: 'com.google.guava'
+    }
 
-    implementation "com.google.code.gson:gson:$gson_version"
+    implementation("com.google.code.gson:gson:$gson_version")
 
     //
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation("com.squareup.okhttp3:okhttp:$okhttp_version")
 
     // https://github.com/rengwuxian/MaterialEditText/
-    implementation "com.rengwuxian.materialedittext:library:$materialedittext_version"
+    implementation("com.rengwuxian.materialedittext:library:$materialedittext_version") {
+        exclude group: 'com.google.guava'
+    }
 
     // https://github.com/ganfra/MaterialSpinner
+    //noinspection GradleDependency
     implementation("com.github.ganfra:material-spinner:$materialspinner_version") {
         exclude group: 'com.nineoldandroids', module: 'library'
         exclude group: 'com.android.support', module: 'appcompat-v7'
+        exclude group: 'com.google.guava'
     }
 
     // https://github.com/umano/AndroidSlidingUpPanel
-    implementation "com.sothree.slidinguppanel:library:$slidinguppanel_version"
+    implementation("com.sothree.slidinguppanel:library:$slidinguppanel_version") {
+        exclude group: 'com.google.guava'
+    }
 
     // Json parsing
     implementation files("libs/jackson-core-asl-${jackson_version}.jar")
     implementation files("libs/jackson-mapper-asl-${jackson_version}.jar")
 
     // https://github.com/PhilJay/MPAndroidChart
-    implementation "com.github.PhilJay:MPAndroidChart:$mpandroidchart_version"
+    implementation("com.github.PhilJay:MPAndroidChart:$mpandroidchart_version")
 
     // https://github.com/ApmeM/android-flowlayout
-    implementation "org.apmem.tools:layouts:$flowlayout_version"
+    implementation("org.apmem.tools:layouts:$flowlayout_version")
 
     // https://github.com/polyak01/IconSwitch
-    implementation 'com.polyak:icon-switch:1.0.0'
+    implementation('com.polyak:icon-switch:1.0.0') {
+        exclude group: 'com.google.guava'
+    }
 
     // Google play services
-    implementation "com.google.android.gms:play-services-auth:$google_play_services"
+    implementation 'com.google.guava:guava:24.1-jre'
+    implementation("com.google.android.gms:play-services-auth:$google_play_services_version") {
+        exclude group: 'com.google.guava'
+    }
+    implementation("com.google.apis:google-api-services-drive:$google_api_services_drive")
+    implementation("com.google.api-client:google-api-client-android:1.23.0")
 }

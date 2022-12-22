@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.maupu.android.tmh"
     android:versionCode="205"
     android:versionName="2.0.5">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--
+    This permission is no longer needed starting from API 29 (android 10)
+    but remains because we target an inferior version
+    See https://stackoverflow.com/a/65477206
+    -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:name="org.maupu.android.tmh.core.TmhApplication"

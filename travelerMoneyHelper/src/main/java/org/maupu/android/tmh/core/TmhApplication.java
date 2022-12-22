@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class TmhApplication extends Application {
-    public static final String APP_NAME = "TravelerMoneyHelper";
+    public static final String APP_NAME = "Traveler Money Helper";
     public static final String APP_NAME_SHORT = "tmh";
     public static final boolean LOGGING = false;
     private static Context applicationContext;

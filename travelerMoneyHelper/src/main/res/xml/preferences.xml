@@ -82,7 +82,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="gdrive_activate"
+            android:key="drive_activate"
             android:title="@string/pref_gdrive_activate" />
 
         <EditTextPreference
@@ -92,10 +92,9 @@
             android:singleLine="true"
             android:title="Edit text preference" />
 
-        <org.maupu.android.tmh.dialog.GDriveBackupDialogPreference
-            android:id="@+id/gdrive_configure"
-            android:key="gdrive_configure"
-            android:positiveButtonText=""
-            android:negativeButtonText="" />
+        <Preference
+            android:title="Upload to drive"
+            android:key="drive_upload"
+            android:summary="Upload a sample file to drive" />
     </PreferenceCategory>
 </PreferenceScreen>

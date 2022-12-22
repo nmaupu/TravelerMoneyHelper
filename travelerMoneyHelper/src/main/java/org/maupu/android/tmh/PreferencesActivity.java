@@ -27,14 +27,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 
 import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.StaticPrefs;
@@ -43,14 +48,20 @@ import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
+import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
+import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
+import org.maupu.android.tmh.util.DriveServiceHelper;
 import org.maupu.android.tmh.util.ImportExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 public class PreferencesActivity extends AppCompatActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private static final Class<PreferencesActivity> TAG = PreferencesActivity.class;
@@ -110,19 +121,64 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         importDBDialogPreference.setOnPreferenceChangeListener(this);
         importDBDialogPreference.setOnPreferenceClickListener(this);
 
-        SwitchPreference gdriveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_GDRIVE_ACTIVATE);
-        gdriveActivationSwitch.setOnPreferenceClickListener(this);
+        SwitchPreference driveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_DRIVE_ACTIVATE);
+        driveActivationSwitch.setOnPreferenceClickListener(this);
+
+        Preference driveUpload = preferencesFragment.findPreference("drive_upload");
+        driveUpload.setOnPreferenceClickListener(
+                preference -> {
+                    GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                    if (googleSignInAccount != null) {
+
+                        GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Collections.singleton(DriveScopes.DRIVE_FILE));
+                        googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
+
+                        NetHttpTransport netHttpTransport = null;
+                        try {
+                            netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
+                        } catch (IOException | GeneralSecurityException e) {
+                            e.printStackTrace();
+                        }
+                        Drive googleDriveService = new Drive.Builder(
+                                netHttpTransport,
+                                GsonFactory.getDefaultInstance(),
+                                googleAccountCredential)
+                                .setApplicationName(TmhApplication.APP_NAME)
+                                .build();
+
+                        AsyncActivityRefresher refresher = new AsyncActivityRefresher(preferencesFragment.requireActivity(), new IAsyncActivityRefresher() {
+                            @Override
+                            public Map<Integer, Object> handleRefreshBackground() {
+                                String filepath = "/data/data/org.maupu.android.tmh/files/yala.png";
+                                DriveServiceHelper.upload(googleDriveService, filepath)
+                                        .addOnSuccessListener(file -> Snackbar.make(preferencesFragment.requireView(), "File uploaded successfully !", Snackbar.LENGTH_LONG).show())
+                                        .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), "Fail to upload file ! err=" + e, Snackbar.LENGTH_LONG).show());
+                                return null;
+                            }
+
+                            @Override
+                            public void handleRefreshEnding(Map<Integer, Object> results) {
+
+                            }
+                        }, true);
+                        refresher.execute();
+
+                    }
+                    return true;
+                });
 
         // google sign in initialization
+        // requesting Drive scope that can create/update/delete our own files only (DriveScopes.DRIVE_FILE)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(preferencesFragment.requireContext(), gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(preferencesFragment.requireContext());
         if (googleSignInAccount != null) {
             PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
             c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
-            gdriveActivationSwitch.setChecked(true);
+            driveActivationSwitch.setChecked(true);
         }
 
         googleSignInStartForResult = registerForActivityResult(
@@ -131,6 +187,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         handleSignInResult(task);
+                    } else {
+                        ((SwitchPreference) preferencesFragment.findPreference(StaticData.PREF_DRIVE_ACTIVATE)).setChecked(false);
                     }
                 });
     }
@@ -172,42 +230,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     protected void onDestroy() {
         TmhApplication.getDatabaseHelper().close();
         super.onDestroy();
-    }
-
-    private CharSequence[] getAllAccountsEntryValues() {
-        CharSequence[] ret;
-        Account dummy = new Account();
-        Cursor cursor = dummy.fetchAll();
-        cursor.moveToFirst();
-
-        ret = new CharSequence[cursor.getCount()];
-        for (int i = 0; i < cursor.getCount(); i++) {
-            int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
-            //int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-            ret[i] = String.valueOf(cursor.getInt(idxId));
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-        return ret;
-    }
-
-    private CharSequence[] getAllAccountEntries() {
-        CharSequence[] ret;
-        Account dummy = new Account();
-        Cursor cursor = dummy.fetchAll();
-        cursor.moveToFirst();
-
-        ret = new CharSequence[cursor.getCount()];
-        for (int i = 0; i < cursor.getCount(); i++) {
-            //int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
-            int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-            ret[i] = cursor.getString(idxName);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-        return ret;
     }
 
     private CharSequence[] getAllCategoriesEntries() {
@@ -261,7 +283,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     .append(".db")
                     .toString();
             ((EditTextPreference) preference).setText(filename);
-        } else if (StaticData.PREF_GDRIVE_ACTIVATE.equals(preference.getKey())) {
+        } else if (StaticData.PREF_DRIVE_ACTIVATE.equals(preference.getKey())) {
             SwitchPreference pref = (SwitchPreference) preference;
             if (pref.isChecked()) {
                 // pop sign in intent up
@@ -270,16 +292,18 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
                 // TODO display more options
             } else {
-                googleSignInClient.signOut().addOnCompleteListener(command -> {
-                    Snackbar.make(
-                            preferencesFragment.requireContext(),
-                            preferencesFragment.requireView(),
-                            preferencesFragment.getString(R.string.pref_google_signout_successfully) + " (" + googleSignInAccount.getEmail() + ")",
-                            Snackbar.LENGTH_LONG).show();
+                if (googleSignInAccount != null) {
+                    googleSignInClient.signOut().addOnCompleteListener(command -> {
+                        Snackbar.make(
+                                preferencesFragment.requireContext(),
+                                preferencesFragment.requireView(),
+                                preferencesFragment.getString(R.string.pref_google_signout_successfully) + " (" + googleSignInAccount.getEmail() + ")",
+                                Snackbar.LENGTH_LONG).show();
 
-                    PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
-                    c.setTitle(R.string.pref_backup_category);
-                });
+                        PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+                        c.setTitle(R.string.pref_backup_category);
+                    });
+                }
             }
         }
 
@@ -433,7 +457,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         preferencesFragment.requireView(),
                         preferencesFragment.getString(R.string.pref_google_signin_successfully) + " (" + googleSignInAccount.getEmail() + ")",
                         Snackbar.LENGTH_LONG).show();
-                
+
                 // Change category title
                 PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
                 c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");

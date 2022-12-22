@@ -42,7 +42,7 @@ public abstract class StaticData {
     public static final String PREF_EXPORT_DB = "export_filename";
     public static final String PREF_IMPORT_DB = "import_db";
     public static final String PREF_BACKUP_CATEGORY = "backup_category";
-    public static final String PREF_GDRIVE_ACTIVATE = "gdrive_activate";
+    public static final String PREF_DRIVE_ACTIVATE = "drive_activate";
 
     // Keep tracking item selected in navigation drawer
     public static int navigationDrawerItemSelected = 0;
