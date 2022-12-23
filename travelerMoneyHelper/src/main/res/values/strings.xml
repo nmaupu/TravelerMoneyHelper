@@ -177,6 +177,18 @@
     <string name="error_date_end_before_begin">Error, cannot set date end before current date begin</string>
 
     <!-- Preferences -->
+    <string name="pref_key_database" translatable="false">database</string>
+    <string name="pref_key_new_database" translatable="false">new_database</string>
+    <string name="pref_key_manage_db" translatable="false">manage_db</string>
+    <string name="pref_key_category_withdrawal" translatable="false">category_withdrawal</string>
+    <string name="pref_key_oer_apikey_edit_text" translatable="false">oer_apikey_edit_text</string>
+    <string name="pref_key_export_filename" translatable="false">export_filename</string>
+    <string name="pref_key_import_db" translatable="false">import_db</string>
+    <string name="pref_key_backup_category" translatable="false">backup_category</string>
+    <string name="pref_key_drive_activate" translatable="false">drive_activate</string>
+    <string name="pref_key_drive_backup_folder" translatable="false">drive_backup_folder</string>
+    <string name="pref_key_drive_manual_backup" translatable="false">drive_manual_backup</string>
+
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
     <string name="pref_title_persistence">Persistence</string>
@@ -189,4 +201,11 @@
     <string name="pref_gdrive_activate">Activate Google Drive</string>
     <string name="pref_google_signin_successfully">Signed in successfully</string>
     <string name="pref_google_signout_successfully">Signed out successfully</string>
+    <string name="pref_gdrive_default_folder">tmh-backups</string>
+    <string name="pref_gdrive_folder_title">Backup folder</string>
+    <string name="pref_gdrive_folder_summary">Configure a drive backup folder</string>
+    <string name="pref_drive_manual_upload_title">Backup now</string>
+    <string name="pref_drive_manual_upload_summary">Create a drive backup now</string>
+    <string name="pref_upload_file_to_drive_success">File uploaded successfully !</string>
+    <string name="pref_upload_file_to_drive_fail">Error uploading file to drive</string>
 </resources>

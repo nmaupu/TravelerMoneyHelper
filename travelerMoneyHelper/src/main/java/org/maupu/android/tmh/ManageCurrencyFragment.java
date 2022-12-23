@@ -43,11 +43,11 @@ public class ManageCurrencyFragment extends ManageableObjectFragment<Currency> {
     protected boolean updateButtonVisible() {
         return true;
     }
-    
+
     @Override
     protected void onClickUpdate(Integer[] objs) {
         Currency[] currencies = new Currency[objs.length];
-        OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
+        OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
         //GoogleRateAsyncUpdater rateUpdater = new GoogleRateAsyncUpdater(this);
 
         // Loading currencies list from objs

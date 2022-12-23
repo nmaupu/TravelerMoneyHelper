@@ -141,7 +141,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
          * OpenExchangeRate initialization
          */
         // Before going further, verify we have api key to open exchange rates api
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT);
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
         final Context ctx = getActivity();
         apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
         if (apiKey == null || "".equals(apiKey) || !apiKeyValid) {
@@ -257,7 +257,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                         dummyCurrency1.setIsoCode(currency1.getCode());
                         dummyCurrency2.setIsoCode(currency2.getCode());
 
-                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT), ratesCacheEnabled);
+                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), ratesCacheEnabled);
                         updater.setAsyncListener(new IAsync() {
                             @Override
                             public void onFinishAsync() {

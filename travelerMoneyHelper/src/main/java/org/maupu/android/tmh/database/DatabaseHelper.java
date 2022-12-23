@@ -149,7 +149,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public static String getPreferredDatabaseName() {
-        String db = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
+        String db = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
         if (db == null || "".equals(db)) {
             // Return default db name
             return DEFAULT_DATABASE_NAME;

@@ -171,8 +171,8 @@
     <string name="date_change_begin">Changer date de début</string>
     <string name="date_change_end">Changer date de fin</string>
     <string name="date_change_reset">Reset dates de début / fin</string>
-    <string name="error_date_begin_after_end">Érreur, la date de début ne peut pas être après la date de fin</string>
-    <string name="error_date_end_before_begin">Érreur, la date de fin ne peut pas être avant la date de début</string>
+    <string name="error_date_begin_after_end">Erreur, la date de début ne peut pas être après la date de fin</string>
+    <string name="error_date_end_before_begin">Erreur, la date de fin ne peut pas être avant la date de début</string>
 
     <!-- Preferences import / export -->
     <string name="pref_import_db_filename">Fichier à importer</string>
@@ -187,4 +187,11 @@
     <string name="pref_gdrive_activate">Activer Google Drive</string>
     <string name="pref_google_signin_successfully">Connecté avec succès</string>
     <string name="pref_google_signout_successfully">Déconnecté avec succès</string>
+    <string name="pref_gdrive_default_folder">tmh-backups</string>
+    <string name="pref_gdrive_folder_title">Répertoire de sauvegarde</string>
+    <string name="pref_gdrive_folder_summary">Configurer le répertoire drive pour les sauvegardes</string>
+    <string name="pref_drive_manual_upload_title">Sauvegarder maintenant</string>
+    <string name="pref_drive_manual_upload_summary">Créer une sauvegarde drive maintenant</string>
+    <string name="pref_upload_file_to_drive_success">Fichier envoyé avec succès</string>
+    <string name="pref_upload_file_to_drive_fail">Erreur lors de l\'envoi de la sauvegarde vers drive</string>
 </resources>

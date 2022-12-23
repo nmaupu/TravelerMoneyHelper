@@ -5,6 +5,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.CurrencyData;
@@ -17,32 +18,34 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class StaticData {
-    private static Account currentAccount = new Account();
+    private static final Account currentAccount = new Account();
     private static boolean isValidCurrentAccount = false;
     private static Integer defaultAccountId;
-    private static Category currentSelectedCategory = new Category();
-    private static Set<Integer> statsExceptedCategories = new HashSet<>();
-    private static boolean statsAdvancedFilter = false;
-    private static Date currentOperationDatePickerDate = null;
+    private static final Category currentSelectedCategory = new Category();
+    private static final Set<Integer> statsExceptedCategories = new HashSet<>();
     private static Currency mainCurrency = null;
 
+    public static final String PREF_KEY_NEW_DATABASE = TmhApplication.getAppContext().getString(R.string.pref_key_new_database);
+    public static final String PREF_KEY_DATABASE = TmhApplication.getAppContext().getString(R.string.pref_key_database);
+    public static final String PREF_KEY_MANAGE_DB = TmhApplication.getAppContext().getString(R.string.pref_key_manage_db);
+    public static final String PREF_KEY_WITHDRAWAL_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_category_withdrawal);
+    public static final String PREF_KEY_OER_EDIT = TmhApplication.getAppContext().getString(R.string.pref_key_oer_apikey_edit_text);
+    public static final String PREF_KEY_EXPORT_DB = TmhApplication.getAppContext().getString(R.string.pref_key_export_filename);
+    public static final String PREF_KEY_IMPORT_DB = TmhApplication.getAppContext().getString(R.string.pref_key_import_db);
+    public static final String PREF_KEY_BACKUP_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_backup_category);
+    public static final String PREF_KEY_DRIVE_ACTIVATE = TmhApplication.getAppContext().getString(R.string.pref_key_drive_activate);
+    public static final String PREF_KEY_DRIVE_BACKUP_FOLDER = TmhApplication.getAppContext().getString(R.string.pref_key_drive_backup_folder);
+    public static final String PREF_KEY_DRIVE_MANUAL_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_manual_backup);
+
     public static final String PREF_CURRENT_ACCOUNT = "current_account";
-    public static final String PREF_NEW_DATABASE = "new_database";
-    public static final String PREF_DATABASE = "database";
-    public static final String PREF_MANAGE_DB = "manage_db";
-    public static final String PREF_DEF_ACCOUNT = "def_account";
-    public static final String PREF_WITHDRAWAL_CATEGORY = "category_withdrawal";
     public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
     public static final String PREF_CURRENT_SELECTED_CATEGORY = "current_category";
     public static final String PREF_MAIN_CURRENCY = "main_currency";
     public static final String PREF_STATS_DATE_BEG = "statsDateBeg";
     public static final String PREF_STATS_DATE_END = "statsDateEnd";
-    public static final String PREF_OER_EDIT = "oer_apikey_edit_text";
     public static final String PREF_OER_VALID = "oer_apikey_valid";
-    public static final String PREF_EXPORT_DB = "export_filename";
-    public static final String PREF_IMPORT_DB = "import_db";
-    public static final String PREF_BACKUP_CATEGORY = "backup_category";
-    public static final String PREF_DRIVE_ACTIVATE = "drive_activate";
+    public static final String PREF_DRIVE_BACKUP_FOLDER_ID = "drive_backup_folder_id";
+
 
     // Keep tracking item selected in navigation drawer
     public static int navigationDrawerItemSelected = 0;
@@ -83,16 +86,7 @@ public abstract class StaticData {
         if (date == -1)
             return null;
 
-        currentOperationDatePickerDate = new Date(date);
-        return currentOperationDatePickerDate;
-    }
-
-    public static boolean isStatsAdvancedFilter() {
-        return statsAdvancedFilter;
-    }
-
-    public static void setStatsAdvancedFilter(boolean statsAdvancedFilter) {
-        StaticData.statsAdvancedFilter = statsAdvancedFilter;
+        return new Date(date);
     }
 
     public static Date getDateField(String key) {
@@ -203,7 +197,7 @@ public abstract class StaticData {
 
     // Here, we store a String because PreferenceActivity use string as entryValues
     public static Category getWithdrawalCategory() {
-        String result = getPreferenceValueString(StaticData.PREF_WITHDRAWAL_CATEGORY);
+        String result = getPreferenceValueString(StaticData.PREF_KEY_WITHDRAWAL_CATEGORY);
 
         try {
             if (result == null || Integer.parseInt(result) < 0)
@@ -244,7 +238,7 @@ public abstract class StaticData {
 
         SharedPreferences prefs = getPrefs();
         Editor editor = prefs.edit();
-        editor.putString(PREF_WITHDRAWAL_CATEGORY, catId);
+        editor.putString(PREF_KEY_WITHDRAWAL_CATEGORY, catId);
         editor.commit();
     }
 

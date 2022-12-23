@@ -47,7 +47,7 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         super.onViewCreated(view, savedInstanceState);
 
         // Before going further, verify we have api key to open exchange rates api
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT);
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
         this.apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
         if (apiKey == null || "".equals(apiKey) || !apiKeyValid) {
             SimpleDialog.errorDialog(
@@ -218,7 +218,7 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
                 dummyCurrency.setIsoCode(cur.getCode());
 
                 try {
-                    OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_OER_EDIT));
+                    OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
                     updater.setAsyncListener(() -> {
                         if (dummyCurrency.getRateCurrencyLinked() == null) {
                             updateTextViewRate();

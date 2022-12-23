@@ -89,42 +89,47 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         preferencesFragment = (PreferencesFragment) getSupportFragmentManager().findFragmentById(R.id.preferences_fragment);
 
 
-        EditTextPreference newDatabase = preferencesFragment.findPreference(StaticData.PREF_NEW_DATABASE);
+        EditTextPreference newDatabase = preferencesFragment.findPreference(StaticData.PREF_KEY_NEW_DATABASE);
         newDatabase.setOnPreferenceChangeListener(this);
         newDatabase.setOnPreferenceClickListener(this);
 
-        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
         listDatabases.setOnPreferenceClickListener(this);
         listDatabases.setOnPreferenceChangeListener(this);
 
-        String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
-        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_MANAGE_DB);
+        String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
+        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setOnPreferenceChangeListener(this);
         listDatabasesForDeletion.setOnPreferenceClickListener(this);
 
         refreshDbLists(null);
 
-        ListPreference listCategory = preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
+        ListPreference listCategory = preferencesFragment.findPreference(StaticData.PREF_KEY_WITHDRAWAL_CATEGORY);
         listCategory.setOnPreferenceClickListener(this);
         listCategory.setEntries(getAllCategoriesEntries());
         listCategory.setEntryValues(getAllCategoriesEntryValues());
 
-        EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_OER_EDIT);
+        EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_OER_EDIT);
         editTextPreference.setOnPreferenceChangeListener(this);
         editTextPreference.setOnPreferenceClickListener(this);
 
-        EditTextPreference editTextExportDb = preferencesFragment.findPreference(StaticData.PREF_EXPORT_DB);
+        EditTextPreference editTextExportDb = preferencesFragment.findPreference(StaticData.PREF_KEY_EXPORT_DB);
         editTextExportDb.setOnPreferenceChangeListener(this);
         editTextExportDb.setOnPreferenceClickListener(this);
 
-        ImportDBDialogPreference importDBDialogPreference = preferencesFragment.findPreference(StaticData.PREF_IMPORT_DB);
+        ImportDBDialogPreference importDBDialogPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_IMPORT_DB);
         importDBDialogPreference.setOnPreferenceChangeListener(this);
         importDBDialogPreference.setOnPreferenceClickListener(this);
 
-        SwitchPreference driveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_DRIVE_ACTIVATE);
+        SwitchPreference driveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_ACTIVATE);
         driveActivationSwitch.setOnPreferenceClickListener(this);
+        if (driveActivationSwitch.isChecked()) {
+            setEnableDriveBackupPrefs(true);
+        } else {
+            setEnableDriveBackupPrefs(false);
+        }
 
-        Preference driveUpload = preferencesFragment.findPreference("drive_upload");
+        Preference driveUpload = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP);
         driveUpload.setOnPreferenceClickListener(
                 preference -> {
                     GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
@@ -149,10 +154,15 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         AsyncActivityRefresher refresher = new AsyncActivityRefresher(preferencesFragment.requireActivity(), new IAsyncActivityRefresher() {
                             @Override
                             public Map<Integer, Object> handleRefreshBackground() {
-                                String filepath = "/data/data/org.maupu.android.tmh/files/yala.png";
+                                String filepath = "/data/data/org.maupu.android.tmh/databases/TravelerMoneyHelper_appdata_default";
                                 DriveServiceHelper.upload(googleDriveService, filepath)
-                                        .addOnSuccessListener(file -> Snackbar.make(preferencesFragment.requireView(), "File uploaded successfully !", Snackbar.LENGTH_LONG).show())
-                                        .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), "Fail to upload file ! err=" + e, Snackbar.LENGTH_LONG).show());
+                                        .addOnSuccessListener(file -> {
+                                            if (file != null)
+                                                Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success), Snackbar.LENGTH_LONG).show();
+                                            else
+                                                Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_fail), Snackbar.LENGTH_LONG).show();
+                                        })
+                                        .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success) + "(" + e + ")", Snackbar.LENGTH_LONG).show());
                                 return null;
                             }
 
@@ -176,7 +186,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         googleSignInClient = GoogleSignIn.getClient(preferencesFragment.requireContext(), gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(preferencesFragment.requireContext());
         if (googleSignInAccount != null) {
-            PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+            PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_KEY_BACKUP_CATEGORY);
             c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
             driveActivationSwitch.setChecked(true);
         }
@@ -187,23 +197,30 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         handleSignInResult(task);
+                        setEnableDriveBackupPrefs(true);
                     } else {
-                        ((SwitchPreference) preferencesFragment.findPreference(StaticData.PREF_DRIVE_ACTIVATE)).setChecked(false);
+                        ((SwitchPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_ACTIVATE)).setChecked(false);
+                        setEnableDriveBackupPrefs(false);
                     }
                 });
+    }
+
+    private void setEnableDriveBackupPrefs(boolean isActivated) {
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER).setEnabled(isActivated);
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP).setEnabled(isActivated);
     }
 
     private void refreshDbLists(String currentDB) {
         String curDB = currentDB;
         if (curDB == null) {
-            curDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
+            curDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
         }
-        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+        ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
         listDatabases.setEntries(DatabaseHelper.getAllDatabasesListEntries());
         listDatabases.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
-        listDatabases.setValue(PreferencesActivity.getStringValue(StaticData.PREF_DATABASE));
+        listDatabases.setValue(PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE));
 
-        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_MANAGE_DB);
+        MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setValues(new HashSet<>());
         listDatabasesForDeletion.setEntries(DatabaseHelper.getAllDatabasesListEntries(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
         listDatabasesForDeletion.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
@@ -272,9 +289,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
+        if (StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
             ((EditTextPreference) preference).setText("");
-        } else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
             Calendar cal = Calendar.getInstance();
             String dateString = DateUtil.dateToStringForFilename(cal.getTime());
             String filename = new StringBuilder(DatabaseHelper.getPreferredDatabaseName())
@@ -283,14 +300,12 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     .append(".db")
                     .toString();
             ((EditTextPreference) preference).setText(filename);
-        } else if (StaticData.PREF_DRIVE_ACTIVATE.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_DRIVE_ACTIVATE.equals(preference.getKey())) {
             SwitchPreference pref = (SwitchPreference) preference;
             if (pref.isChecked()) {
                 // pop sign in intent up
                 Intent signInIntent = googleSignInClient.getSignInIntent();
                 googleSignInStartForResult.launch(signInIntent);
-
-                // TODO display more options
             } else {
                 if (googleSignInAccount != null) {
                     googleSignInClient.signOut().addOnCompleteListener(command -> {
@@ -300,8 +315,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                 preferencesFragment.getString(R.string.pref_google_signout_successfully) + " (" + googleSignInAccount.getEmail() + ")",
                                 Snackbar.LENGTH_LONG).show();
 
-                        PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+                        PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_KEY_BACKUP_CATEGORY);
                         c.setTitle(R.string.pref_backup_category);
+                        setEnableDriveBackupPrefs(false);
                     });
                 }
             }
@@ -312,14 +328,14 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (StaticData.PREF_DATABASE.equals(preference.getKey())) {
+        if (StaticData.PREF_KEY_DATABASE.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Opening database " + newValue);
             TmhApplication.changeOrCreateDatabase((String) newValue);
             Currency cur = StaticData.getDefaultMainCurrency();
             if (cur != null)
                 StaticData.setMainCurrency(cur.getId());
             StaticPrefs.loadCurrentStaticPrefs();
-        } else if (StaticData.PREF_NEW_DATABASE.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
             if (!"".equals(newValue)) {
                 TmhLogger.d(TAG, "Creating new database " + newValue);
 
@@ -330,14 +346,14 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
                 // Resetting edit text to empty string
                 refreshDbLists(null);
-                ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+                ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
                 dbPref.setValue(dbName);
             }
-        } else if (StaticData.PREF_OER_EDIT.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_OER_EDIT.equals(preference.getKey())) {
             try {
                 if (!"".equals((String) newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String) newValue)) {
                     // Set value
-                    StaticData.setPreferenceValueString(StaticData.PREF_OER_EDIT, (String) newValue);
+                    StaticData.setPreferenceValueString(StaticData.PREF_KEY_OER_EDIT, (String) newValue);
                     StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, true);
                 } else {
                     // not valid
@@ -359,20 +375,20 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     }
                 }).show();
             }
-        } else if (StaticData.PREF_EXPORT_DB.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Calling export db " + newValue);
             if (!ImportExportUtil.exportCurrentDatabase(newValue.toString(), findViewById(android.R.id.content))) {
                 Snackbar.make(findViewById(android.R.id.content),
                         getString(R.string.database_export_failed) + " [" + newValue + "]",
                         Snackbar.LENGTH_LONG).show();
             }
-        } else if (StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_IMPORT_DB.equals(preference.getKey())) {
             // After importing the db, reload it
             String db = DatabaseHelper.DATABASE_PREFIX + (newValue);
             TmhApplication.changeOrCreateDatabase(db);
 
             // Resetting edit text to empty string
-            ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_DATABASE);
+            ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
             dbPref.setEntries(DatabaseHelper.getAllDatabasesListEntries());
             dbPref.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
             dbPref.setValue(db);
@@ -380,7 +396,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             Snackbar.make(findViewById(android.R.id.content),
                     getString(R.string.database_created_successfuly) + " [" + newValue + "]",
                     Snackbar.LENGTH_LONG).show();
-        } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_MANAGE_DB.equals(preference.getKey())) {
             HashSet<String> dbList = (HashSet<String>) newValue;
             if (dbList.size() > 0) {
                 Iterator<String> dbListIt = dbList.iterator();
@@ -410,14 +426,14 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         }
 
         // Reset stuff
-        if (StaticData.PREF_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_NEW_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_IMPORT_DB.equals(preference.getKey())) {
+        if (StaticData.PREF_KEY_DATABASE.equals(preference.getKey()) ||
+                StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey()) ||
+                StaticData.PREF_KEY_IMPORT_DB.equals(preference.getKey())) {
             StaticData.invalidateCurrentAccount();
             resetToHome();
-        } else if (StaticData.PREF_MANAGE_DB.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_MANAGE_DB.equals(preference.getKey())) {
             // Update categories for this db
-            ListPreference catPref = preferencesFragment.findPreference(StaticData.PREF_WITHDRAWAL_CATEGORY);
+            ListPreference catPref = preferencesFragment.findPreference(StaticData.PREF_KEY_WITHDRAWAL_CATEGORY);
             catPref.setEntries(getAllCategoriesEntries());
             catPref.setEntryValues(getAllCategoriesEntryValues());
 
@@ -433,8 +449,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
             // currentDB preference is not yet applied at this stage so we need to get it from newValue
             // if we just changed it
-            String curDB = PreferencesActivity.getStringValue(StaticData.PREF_DATABASE);
-            if (StaticData.PREF_DATABASE.equals(preference.getKey()))
+            String curDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
+            if (StaticData.PREF_KEY_DATABASE.equals(preference.getKey()))
                 curDB = (String) newValue;
             refreshDbLists(curDB);
 
@@ -459,7 +475,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         Snackbar.LENGTH_LONG).show();
 
                 // Change category title
-                PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_BACKUP_CATEGORY);
+                PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_KEY_BACKUP_CATEGORY);
                 c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
             }
         } catch (ApiException e) {

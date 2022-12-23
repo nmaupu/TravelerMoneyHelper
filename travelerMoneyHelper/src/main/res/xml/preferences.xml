@@ -11,7 +11,7 @@
         <ListPreference
             android:id="@+id/database"
             android:defaultValue="0"
-            android:key="database"
+            android:key="@string/pref_key_database"
             android:summary="@string/select_database"
             android:title="@string/database" />
 
@@ -20,7 +20,7 @@
             android:defaultValue=""
             android:dialogMessage="@string/enter_database_name"
             android:dialogTitle="@string/new_database"
-            android:key="new_database"
+            android:key="@string/pref_key_new_database"
             android:summary="@string/new_database_summary"
             android:title="@string/new_database" />
 
@@ -28,7 +28,7 @@
             android:id="@+id/database_manager"
             android:dialogTitle="@string/pref_db_manager_title"
             android:summary="@string/pref_db_manager_summary"
-            android:key="manage_db"
+            android:key="@string/pref_key_manage_db"
             android:title="@string/pref_db_manager_title"
             android:positiveButtonText="@string/delete" />
     </PreferenceCategory>
@@ -39,7 +39,7 @@
         <ListPreference
             android:id="@+id/category_withdrawal"
             android:defaultValue="0"
-            android:key="category_withdrawal"
+            android:key="@string/pref_key_category_withdrawal"
             android:summary="@string/default_category_withdrawal_summary"
             android:title="@string/default_category_withdrawal" />
     </PreferenceCategory>
@@ -51,7 +51,7 @@
             android:id="@+id/oer_api_key"
             android:defaultValue=""
             android:enabled="true"
-            android:key="oer_apikey_edit_text"
+            android:key="@string/pref_key_oer_apikey_edit_text"
             android:summary="@string/oer_api_key_summary"
             android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
@@ -63,13 +63,13 @@
             android:id="@+id/export_filename"
             android:defaultValue="tmh.db"
             android:enabled="true"
-            android:key="export_filename"
+            android:key="@string/pref_key_export_filename"
             android:summary="@string/export_db_summary"
             android:title="@string/export_db_title" />
         <org.maupu.android.tmh.dialog.ImportDBDialogPreference
             android:id="@+id/import_db"
             android:dialogMessage="@string/import_db_summary"
-            android:key="import_db"
+            android:key="@string/pref_key_import_db"
             android:negativeButtonText="@string/cancel"
             android:positiveButtonText="ok"
             android:summary="@string/import_db_summary"
@@ -77,24 +77,25 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_backup_category"
-        android:key="backup_category"
+        android:key="@string/pref_key_backup_category"
         app:icon="@drawable/ic_baseline_backup_black_24">
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="drive_activate"
+            android:key="@string/pref_key_drive_activate"
             android:title="@string/pref_gdrive_activate" />
 
         <EditTextPreference
-            android:defaultValue="Default value"
-            android:key="edit_text_preference_1"
+            android:title="@string/pref_gdrive_folder_title"
+            android:summary="@string/pref_gdrive_folder_summary"
+            android:defaultValue="@string/pref_gdrive_default_folder"
+            android:key="@string/pref_key_drive_backup_folder"
             android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Edit text preference" />
+            android:singleLine="true" />
 
         <Preference
-            android:title="Upload to drive"
-            android:key="drive_upload"
-            android:summary="Upload a sample file to drive" />
+            android:title="@string/pref_drive_manual_upload_title"
+            android:key="@string/pref_key_drive_manual_backup"
+            android:summary="@string/pref_drive_manual_upload_summary" />
     </PreferenceCategory>
 </PreferenceScreen>
