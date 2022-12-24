@@ -29,6 +29,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.AccountBalance;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.NumberUtil;
@@ -412,7 +413,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
 
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         return null;
     }
 

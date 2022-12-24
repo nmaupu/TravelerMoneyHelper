@@ -207,5 +207,5 @@
     <string name="pref_drive_manual_upload_title">Backup now</string>
     <string name="pref_drive_manual_upload_summary">Create a drive backup now</string>
     <string name="pref_upload_file_to_drive_success">File uploaded successfully !</string>
-    <string name="pref_upload_file_to_drive_fail">Error uploading file to drive</string>
+    <string name="pref_upload_file_to_drive_error">Error uploading file(s) to drive</string>
 </resources>

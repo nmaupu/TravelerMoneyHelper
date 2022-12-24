@@ -30,7 +30,7 @@ public class ImportExportUtil {
                 return false;
             }
 
-            String currentDbPath = TmhApplication.getDatabaseHelper().getCurrentDbName();
+            String currentDbPath = TmhApplication.getDatabaseHelper().getCurrentDbPath();
             TmhLogger.d(TAG, "Current database path = " + currentDbPath);
 
             File srcFile = new File(currentDbPath);
@@ -56,7 +56,7 @@ public class ImportExportUtil {
 
         // creating a new DB
         TmhApplication.changeOrCreateDatabase(dbName);
-        String currentDbPath = TmhApplication.getDatabaseHelper().getCurrentDbName();
+        String currentDbPath = TmhApplication.getDatabaseHelper().getCurrentDbPath();
 
         // Open backup db file
         File destFile = new File(currentDbPath);

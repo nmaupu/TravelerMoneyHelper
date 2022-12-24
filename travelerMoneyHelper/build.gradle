@@ -59,6 +59,7 @@ dependencies {
     def fragment_version = "1.5.5"
     def google_play_services_version = "20.4.0"
     def google_api_services_drive = "v3-rev20220815-2.0.0"
+    def commons_io_version = "2.6"
 
     repositories {
         mavenCentral()
@@ -158,4 +159,7 @@ dependencies {
     }
     implementation("com.google.apis:google-api-services-drive:$google_api_services_drive")
     implementation("com.google.api-client:google-api-client-android:1.23.0")
+
+    //
+    implementation("commons-io:commons-io:${commons_io_version}")
 }

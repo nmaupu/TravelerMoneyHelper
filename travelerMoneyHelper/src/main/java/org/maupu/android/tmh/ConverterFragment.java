@@ -25,6 +25,7 @@ import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
@@ -380,7 +381,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         return null;
     }
 

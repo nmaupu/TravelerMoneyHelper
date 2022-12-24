@@ -3,7 +3,7 @@ package org.maupu.android.tmh.ui.async;
 import java.util.Map;
 
 public interface IAsyncActivityRefresher {
-    public Map<Integer, Object> handleRefreshBackground();
+    Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask);
 
-    public void handleRefreshEnding(Map<Integer, Object> results);
+    void handleRefreshEnding(Map<Integer, Object> results);
 }

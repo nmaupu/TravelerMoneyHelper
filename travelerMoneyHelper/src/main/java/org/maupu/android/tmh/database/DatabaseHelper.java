@@ -1,6 +1,7 @@
 package org.maupu.android.tmh.database;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -31,7 +32,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
     public static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX + "default";
     public static final int DATABASE_VERSION = 16;
-    private List<APersistedData> persistedData = new ArrayList<>();
+    private final List<APersistedData> persistedData = new ArrayList<>();
 
     public DatabaseHelper(String dbName) {
         super(TmhApplication.getAppContext(), dbName, null, DATABASE_VERSION);
@@ -69,7 +70,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         return super.getWritableDatabase();
     }
 
-    public String getCurrentDbName() {
+    public String getCurrentDbPath() {
         return getDb().getPath();
     }
 
@@ -172,7 +173,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         // What is 0 ? What is TravelerMoneyHelper_appdata ? who knows !
         CharSequence[] list = TmhApplication.getAppContext().databaseList();
         //CharSequence[] ret = new CharSequence[list.length];
-        List<String> listEntries = new ArrayList<String>();
+        List<String> listEntries = new ArrayList<>();
 
         TmhLogger.d(TAG, "Number of databases returned : " + list.length);
         for (int i = 0; i < list.length; i++) {
@@ -229,5 +230,15 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
      */
     public static CharSequence[] getAllDatabasesListEntryValues(String... exceptions) {
         return getAllDatabases(false, exceptions);
+    }
+
+    /**
+     * Get absolute path of a given database
+     *
+     * @param dbName
+     * @return The absolute path of the database or null if not found
+     */
+    public static String getDbAbsolutePath(Context context, String dbName) {
+        return context.getDatabasePath(dbName).getAbsolutePath();
     }
 }

@@ -40,6 +40,7 @@ import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.stats.StatsViewPager;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
@@ -210,7 +211,7 @@ public class StatsFragment extends TmhFragment {
 
                 IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
                     @Override
-                    public Map<Integer, Object> handleRefreshBackground() {
+                    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
                         StatsCategoryValues scv = (StatsCategoryValues) e.getData();
                         statsData.setCatToHighlight(scv.getFirstCategory());
                         // TODO : Don't redraw everything but replace by a highlight method
@@ -226,7 +227,7 @@ public class StatsFragment extends TmhFragment {
                     }
                 };
 
-                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(getActivity(), refresher, false);
+                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(getActivity(), refresher, false, true, true);
                 asyncTask.execute();
             }
 
@@ -237,7 +238,7 @@ public class StatsFragment extends TmhFragment {
 
                 IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
                     @Override
-                    public Map<Integer, Object> handleRefreshBackground() {
+                    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
                         statsData.setCatToHighlight(null);
                         // TODO : Don't redraw everything but replace by a highlight method
                         detailsChart.refreshPanel(statsData);
@@ -252,7 +253,7 @@ public class StatsFragment extends TmhFragment {
                     }
                 };
 
-                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(getActivity(), refresher, false);
+                AsyncActivityRefresher asyncTask = new AsyncActivityRefresher(getActivity(), refresher, false, true, true);
                 asyncTask.execute();
             }
         });
@@ -538,7 +539,7 @@ public class StatsFragment extends TmhFragment {
         /* Handle that big process in a thread */
         IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
             @Override
-            public Map<Integer, Object> handleRefreshBackground() {
+            public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
                 statsData.setChartAnim(chartAnim);
                 statsData.rebuildChartsData(
                         StaticData.getStatsExceptedCategories(),
@@ -557,7 +558,7 @@ public class StatsFragment extends TmhFragment {
                 tvMisc.setText(miscCatText);
             }
         };
-        AsyncActivityRefresher asyncRefresher = new AsyncActivityRefresher(requireActivity(), refresher, true);
+        AsyncActivityRefresher asyncRefresher = new AsyncActivityRefresher(requireActivity(), refresher, true, true, true);
         asyncRefresher.execute();
     }
 }

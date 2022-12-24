@@ -8,6 +8,7 @@ import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class ManageCurrencyFragment extends ManageableObjectFragment<Currency> {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         Currency currency = new Currency();
         Cursor c = currency.fetchAll();
 

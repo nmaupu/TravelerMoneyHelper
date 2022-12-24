@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import androidx.fragment.app.Fragment;
 
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 
@@ -13,7 +14,7 @@ public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
     }
 
     public void refreshDisplay() {
-        AsyncActivityRefresher refresher = new AsyncActivityRefresher(requireActivity(), this, false);
+        AsyncActivityRefresher refresher = new AsyncActivityRefresher(requireActivity(), this, false, true, true);
         try {
             // Execute background task implemented by client class
             refresher.execute();
@@ -23,7 +24,7 @@ public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         return null;
     }
 

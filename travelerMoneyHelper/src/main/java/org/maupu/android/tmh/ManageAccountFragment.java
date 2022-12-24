@@ -7,6 +7,7 @@ import org.maupu.android.tmh.database.AccountData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class ManageAccountFragment extends ManageableObjectFragment<Account> {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         Account account = new Account();
         Cursor c = account.fetchAll();
 

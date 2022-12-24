@@ -38,6 +38,7 @@ import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
@@ -323,7 +324,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         return null;
     }
 

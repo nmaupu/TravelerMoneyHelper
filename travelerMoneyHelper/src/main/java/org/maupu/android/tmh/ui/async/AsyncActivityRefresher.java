@@ -1,7 +1,6 @@
 package org.maupu.android.tmh.ui.async;
 
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -9,13 +8,13 @@ import org.maupu.android.tmh.R;
 
 import java.util.Map;
 
-public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer, Object>> {
-    private FragmentActivity context;
+public class AsyncActivityRefresher extends AbstractAsyncTask {
+    private final FragmentActivity context;
     private ProgressDialog waitSpinner;
-    private IAsyncActivityRefresher listener;
-    private boolean displayPopup;
+    private final IAsyncActivityRefresher listener;
+    private final boolean displayPopup;
 
-    public AsyncActivityRefresher(FragmentActivity context, IAsyncActivityRefresher listener, boolean displayPopup) {
+    public AsyncActivityRefresher(FragmentActivity context, IAsyncActivityRefresher listener, boolean displayPopup, boolean indeterminate, boolean cancelable) {
         this.context = context;
         this.listener = listener;
         this.displayPopup = displayPopup;
@@ -23,10 +22,11 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
         if (displayPopup) {
             waitSpinner = new ProgressDialog(this.context);
             waitSpinner.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            waitSpinner.setIndeterminate(true);
+            waitSpinner.setIndeterminate(indeterminate);
             waitSpinner.setTitle(R.string.refreshing);
-            waitSpinner.setCancelable(true);
-            waitSpinner.setCanceledOnTouchOutside(true);
+            waitSpinner.setCancelable(cancelable);
+            if (cancelable)
+                waitSpinner.setCanceledOnTouchOutside(true);
         }
     }
 
@@ -37,7 +37,7 @@ public class AsyncActivityRefresher extends AsyncTask<Void, Integer, Map<Integer
     @Override
     protected Map<Integer, Object> doInBackground(Void... activities) {
         publishProgress(0);
-        Map<Integer, Object> results = listener.handleRefreshBackground();
+        Map<Integer, Object> results = listener.handleRefreshBackground(this);
         publishProgress(100);
         return results;
     }

@@ -17,6 +17,7 @@ import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Operation;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.IViewPagerAdapter;
 import org.maupu.android.tmh.ui.widget.IconCheckableCursorAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -86,7 +87,7 @@ public class ManageOperationFragment extends ManageableObjectFragment<Operation>
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         if (spinnerAccountManager == null) {
             return null;
         }

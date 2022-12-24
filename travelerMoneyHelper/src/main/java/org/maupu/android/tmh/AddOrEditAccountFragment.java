@@ -28,6 +28,7 @@ import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
@@ -307,8 +308,8 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
-        return super.handleRefreshBackground();
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
+        return super.handleRefreshBackground(asyncTask);
     }
 
     @Override

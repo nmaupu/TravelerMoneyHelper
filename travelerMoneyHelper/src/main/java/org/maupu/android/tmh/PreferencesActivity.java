@@ -47,13 +47,15 @@ import org.maupu.android.tmh.databinding.ActivityPreferencesBinding;
 import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.util.DateUtil;
-import org.maupu.android.tmh.util.DriveServiceHelper;
 import org.maupu.android.tmh.util.ImportExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
+import org.maupu.android.tmh.util.drive.BackupDbFileHelper;
+import org.maupu.android.tmh.util.drive.DriveServiceHelper;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -153,16 +155,39 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
                         AsyncActivityRefresher refresher = new AsyncActivityRefresher(preferencesFragment.requireActivity(), new IAsyncActivityRefresher() {
                             @Override
-                            public Map<Integer, Object> handleRefreshBackground() {
-                                String filepath = "/data/data/org.maupu.android.tmh/databases/TravelerMoneyHelper_appdata_default";
-                                DriveServiceHelper.upload(googleDriveService, filepath)
-                                        .addOnSuccessListener(file -> {
-                                            if (file != null)
-                                                Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success), Snackbar.LENGTH_LONG).show();
-                                            else
-                                                Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_fail), Snackbar.LENGTH_LONG).show();
-                                        })
-                                        .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success) + "(" + e + ")", Snackbar.LENGTH_LONG).show());
+                            public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
+                                // Getting all DBs
+                                CharSequence[] listDbNames = DatabaseHelper.getAllDatabases(false);
+                                BackupDbFileHelper[] listDbPath = new BackupDbFileHelper[listDbNames.length];
+                                for (int i = 0; i < listDbNames.length; i++) {
+                                    listDbPath[i] = new BackupDbFileHelper(
+                                            DatabaseHelper.getDbAbsolutePath(
+                                                    preferencesFragment.requireContext(), listDbNames[i].toString()));
+                                }
+
+                                String folderName = ((EditTextPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER)).getText();
+                                try {
+                                    DriveServiceHelper.upload(
+                                                    googleDriveService,
+                                                    asyncTask,
+                                                    folderName == null || "".equals(folderName) ? getString(R.string.pref_gdrive_default_folder) : folderName,
+                                                    listDbPath)
+                                            .addOnSuccessListener(file -> {
+                                                if (file != null)
+                                                    Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success), Snackbar.LENGTH_LONG).show();
+                                                else
+                                                    Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_error), Snackbar.LENGTH_LONG).show();
+                                            })
+                                            .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success) + "(" + e + ")", Snackbar.LENGTH_LONG).show());
+                                } catch (IOException ioe) {
+                                    ioe.printStackTrace();
+                                    String err = getString(R.string.pref_upload_file_to_drive_error) + " (" + ioe.getMessage() + ")";
+                                    Snackbar.make(
+                                            preferencesFragment.requireContext(),
+                                            preferencesFragment.requireView(),
+                                            err,
+                                            Snackbar.LENGTH_LONG).show();
+                                }
                                 return null;
                             }
 
@@ -170,7 +195,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                             public void handleRefreshEnding(Map<Integer, Object> results) {
 
                             }
-                        }, true);
+                        }, true, false, true);
                         refresher.execute();
 
                     }

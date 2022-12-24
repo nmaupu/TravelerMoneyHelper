@@ -19,6 +19,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
 import org.maupu.android.tmh.util.DateUtil;
 import org.maupu.android.tmh.util.TmhLogger;
@@ -189,7 +190,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
 
     // Not used
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         return null;
     }
 

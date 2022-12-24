@@ -28,7 +28,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
      * @see <a href="https://openexchangerates.org/documentation">https://openexchangerates.org/documentation</a>
      */
     private final static String OER_CURRENCIES_TIMESTAMP = "OERCurrenciesTimestamp";
-    private String apiKey = null;
+    private String apiKey;
     private boolean cacheEnabled = true;
 
     public OpenExchangeRatesAsyncUpdater(FragmentActivity context, String apiKey) {

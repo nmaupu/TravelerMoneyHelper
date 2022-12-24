@@ -7,6 +7,7 @@ import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.OperationData;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class ManageCategoryFragment extends ManageableObjectFragment<Category> {
     }
 
     @Override
-    public Map<Integer, Object> handleRefreshBackground() {
+    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
         Category category = new Category();
         Cursor c = category.fetchAll();
 
