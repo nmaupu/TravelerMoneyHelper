@@ -12,6 +12,7 @@ public abstract class DateUtil {
     private static final String SDF_FORMAT = "dd-MM-yyyy HH:mm:ss";
     private static final String SDF_FORMAT_NO_TIME = "dd-MM-yyyy";
     private static final String SDF_FORMAT_TO_SQL_DATE = "yyyy-MM-dd HH:mm:ss";
+    private static final String SDF_FORMAT_RFC3339 = "yyyy-MM-dd'T'HH:mm:ssZZZZZ";
 
     /**
      * Transform a date string from format %d-%M-%y %H:%M:%S to a Date object
@@ -84,6 +85,11 @@ public abstract class DateUtil {
 
     public static String dateToStringForFilenameLong(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT_FILENAME_LONG);
+        return sdf.format(date);
+    }
+
+    public static String dateToStringRFC3339(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SDF_FORMAT_RFC3339);
         return sdf.format(date);
     }
 

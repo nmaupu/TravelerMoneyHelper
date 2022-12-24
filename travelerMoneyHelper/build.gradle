@@ -60,6 +60,7 @@ dependencies {
     def google_play_services_version = "20.4.0"
     def google_api_services_drive = "v3-rev20220815-2.0.0"
     def commons_io_version = "2.6"
+    def joda_time_android_version = "2.12.1.1"
 
     repositories {
         mavenCentral()
@@ -162,4 +163,7 @@ dependencies {
 
     //
     implementation("commons-io:commons-io:${commons_io_version}")
+
+    // https://github.com/dlew/joda-time-android
+    implementation "net.danlew:android.joda:${joda_time_android_version}"
 }

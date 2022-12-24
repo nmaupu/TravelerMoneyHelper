@@ -36,6 +36,8 @@ public abstract class StaticData {
     public static final String PREF_KEY_DRIVE_ACTIVATE = TmhApplication.getAppContext().getString(R.string.pref_key_drive_activate);
     public static final String PREF_KEY_DRIVE_BACKUP_FOLDER = TmhApplication.getAppContext().getString(R.string.pref_key_drive_backup_folder);
     public static final String PREF_KEY_DRIVE_MANUAL_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_manual_backup);
+    public static final String PREF_KEY_DRIVE_RETENTION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_retention);
+    public static final String PREF_KEY_DRIVE_DELETE_OLD = TmhApplication.getAppContext().getString(R.string.pref_key_drive_delete_old);
 
     public static final String PREF_CURRENT_ACCOUNT = "current_account";
     public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";

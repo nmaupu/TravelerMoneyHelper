@@ -194,4 +194,8 @@
     <string name="pref_drive_manual_upload_summary">Créer une sauvegarde drive maintenant</string>
     <string name="pref_upload_file_to_drive_success">Fichier envoyé avec succès</string>
     <string name="pref_upload_file_to_drive_error">Erreur lors de l\'envoi de la sauvegarde vers drive</string>
+    <string name="pref_gdrive_retention_title">Durée de rétention</string>
+    <string name="pref_gdrive_retention_summary">Les sauvegardes plus anciennes seront supprimées (jours)</string>
+    <string name="pref_gdrive_delete_old_backups_title">Suppression</string>
+    <string name="pref_gdrive_delete_old_backups_summary">Supprime les backups trop anciens</string>
 </resources>

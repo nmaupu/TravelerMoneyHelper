@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -131,6 +132,12 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             setEnableDriveBackupPrefs(false);
         }
 
+        CheckBoxPreference cbpDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
+        cbpDeleteOld.setOnPreferenceChangeListener((preference, newValue) -> {
+            preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION).setEnabled((boolean) newValue);
+            return true;
+        });
+
         Preference driveUpload = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP);
         driveUpload.setOnPreferenceClickListener(
                 preference -> {
@@ -165,13 +172,25 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                                     preferencesFragment.requireContext(), listDbNames[i].toString()));
                                 }
 
-                                String folderName = ((EditTextPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER)).getText();
+                                String folderNamePref = ((EditTextPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER)).getText();
+                                String retentionPref = ((EditTextPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION)).getText();
+                                boolean deleteOldPref = ((CheckBoxPreference) preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD)).isChecked();
+                                int retentionDurationDays = 0;
+                                try {
+                                    retentionDurationDays = Integer.parseInt(retentionPref);
+                                } catch (NumberFormatException nfe) {
+                                    //
+                                } finally {
+                                    if (retentionDurationDays == 0)
+                                        retentionDurationDays = Integer.parseInt(getString(R.string.pref_gdrive_retention_default));
+                                }
                                 try {
                                     DriveServiceHelper.upload(
                                                     googleDriveService,
                                                     asyncTask,
-                                                    folderName == null || "".equals(folderName) ? getString(R.string.pref_gdrive_default_folder) : folderName,
-                                                    listDbPath)
+                                                    folderNamePref == null || "".equals(folderNamePref) ? getString(R.string.pref_gdrive_default_folder) : folderNamePref,
+                                                    listDbPath,
+                                                    deleteOldPref ? retentionDurationDays : 0)
                                             .addOnSuccessListener(file -> {
                                                 if (file != null)
                                                     Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success), Snackbar.LENGTH_LONG).show();
@@ -179,9 +198,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                                     Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_error), Snackbar.LENGTH_LONG).show();
                                             })
                                             .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), getString(R.string.pref_upload_file_to_drive_success) + "(" + e + ")", Snackbar.LENGTH_LONG).show());
-                                } catch (IOException ioe) {
-                                    ioe.printStackTrace();
-                                    String err = getString(R.string.pref_upload_file_to_drive_error) + " (" + ioe.getMessage() + ")";
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    String err = getString(R.string.pref_upload_file_to_drive_error) + " (" + e.getMessage() + ")";
                                     Snackbar.make(
                                             preferencesFragment.requireContext(),
                                             preferencesFragment.requireView(),
@@ -201,6 +220,54 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     }
                     return true;
                 });
+
+        Preference testPreference = preferencesFragment.findPreference("test");
+        testPreference.setOnPreferenceClickListener(preference -> {
+            GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+            if (googleSignInAccount != null) {
+                GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Collections.singleton(DriveScopes.DRIVE_FILE));
+                googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
+
+                NetHttpTransport netHttpTransport = null;
+                try {
+                    netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
+                } catch (IOException | GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+                Drive googleDriveService = new Drive.Builder(
+                        netHttpTransport,
+                        GsonFactory.getDefaultInstance(),
+                        googleAccountCredential)
+                        .setApplicationName(TmhApplication.APP_NAME)
+                        .build();
+
+                IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
+                    @Override
+                    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
+                        try {
+                            DriveServiceHelper.getAllBackups(googleDriveService, "tmh-backups");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void handleRefreshEnding(Map<Integer, Object> results) {
+
+                    }
+                };
+                AsyncActivityRefresher aar = new AsyncActivityRefresher(
+                        preferencesFragment.requireActivity(),
+                        refresher,
+                        true,
+                        true,
+                        false);
+                aar.execute();
+
+            }
+            return true;
+        });
 
         // google sign in initialization
         // requesting Drive scope that can create/update/delete our own files only (DriveScopes.DRIVE_FILE)
@@ -233,6 +300,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     private void setEnableDriveBackupPrefs(boolean isActivated) {
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER).setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP).setEnabled(isActivated);
+        CheckBoxPreference cbpDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
+        cbpDeleteOld.setEnabled(isActivated);
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION).setEnabled(isActivated && cbpDeleteOld.isChecked());
     }
 
     private void refreshDbLists(String currentDB) {

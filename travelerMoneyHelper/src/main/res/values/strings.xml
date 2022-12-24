@@ -188,6 +188,8 @@
     <string name="pref_key_drive_activate" translatable="false">drive_activate</string>
     <string name="pref_key_drive_backup_folder" translatable="false">drive_backup_folder</string>
     <string name="pref_key_drive_manual_backup" translatable="false">drive_manual_backup</string>
+    <string name="pref_key_drive_retention" translatable="false">drive_retention</string>
+    <string name="pref_key_drive_delete_old" translatable="false">drive_delete_old</string>
 
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
@@ -208,4 +210,9 @@
     <string name="pref_drive_manual_upload_summary">Create a drive backup now</string>
     <string name="pref_upload_file_to_drive_success">File uploaded successfully !</string>
     <string name="pref_upload_file_to_drive_error">Error uploading file(s) to drive</string>
+    <string name="pref_gdrive_retention_title">Retention duration</string>
+    <string name="pref_gdrive_retention_summary">Older backups will be deleted (days)</string>
+    <string name="pref_gdrive_retention_default" translatable="false">30</string>
+    <string name="pref_gdrive_delete_old_backups_title">Delete old backups</string>
+    <string name="pref_gdrive_delete_old_backups_summary">Delete backups if older than retention days</string>
 </resources>
