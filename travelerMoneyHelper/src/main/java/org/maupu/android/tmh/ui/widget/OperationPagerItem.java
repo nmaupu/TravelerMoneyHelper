@@ -338,7 +338,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                 totalCashCard += amount / rate;
             } else {
                 totalCashCard += amount;
-                symbolCurrency = cSumOp.getString(idxCurrencyShortName);
+                symbolCurrency = cSumOpCashCard.getString(idxCurrencyShortName);
             }
 
             cSumOpCashCard.moveToNext();
