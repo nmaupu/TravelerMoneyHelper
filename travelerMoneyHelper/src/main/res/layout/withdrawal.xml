@@ -24,15 +24,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    
                     <fr.ganfra.materialspinner.MaterialSpinner
                         style="@style/TmhMaterialSpinner"
                         android:id="@+id/spinner_from"
                         android:layout_marginEnd="0px"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.9"
                         app:ms_floatingLabelText="@string/debit" />
 
                     <ImageView
@@ -40,8 +41,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="40dip"
                         android:layout_gravity="left|center_vertical"
-                        android:maxHeight="40dip"
-                        android:scaleType="centerInside"
+                        android:layout_weight="0.1"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/tmh_icon_48" />
 
                 </LinearLayout>
@@ -61,15 +62,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
                     <ImageView
                         android:id="@+id/account_icon_to"
                         android:layout_width="wrap_content"
                         android:layout_height="40dip"
+                        android:layout_weight="0.1"
                         android:layout_gravity="right|center_vertical"
-                        android:maxHeight="40dip"
-                        android:scaleType="centerInside"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/tmh_icon_48" />
 
 
@@ -79,7 +81,7 @@
                         android:layout_marginStart="0px"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.9"
                         app:ms_floatingLabelText="@string/credit" />
                 </LinearLayout>
 
