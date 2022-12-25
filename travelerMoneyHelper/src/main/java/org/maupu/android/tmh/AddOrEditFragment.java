@@ -60,10 +60,8 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
 
         // Init all widgets
         View v = initResources(getView());
-        if (v != null && !isEditing()) {
+        if (v != null && !isEditing())
             v.requestFocus();
-            SoftKeyboardHelper.forceShowUp(requireActivity());
-        }
 
         // Fill form fields
         baseObjectToFields(obj);
@@ -207,5 +205,7 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     public void handleRefreshEnding(Map<Integer, Object> results) {
         // Restore from beginning
         baseObjectToFields(obj);
+        if (!isEditing())
+            SoftKeyboardHelper.forceShowUp(requireActivity());
     }
 }
