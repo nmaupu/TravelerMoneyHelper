@@ -1,39 +1,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/layout_root"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical" >
+    android:id="@+id/layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="3dp"
-            android:text="@string/dialog_choose_currency"
-            android:textSize="20dip" />
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginStart="3dp"
+        android:text="@string/dialog_choose_currency"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/hint_currency_autocompletion"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12dp"
-            android:textStyle="italic" />
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/hint_currency_autocompletion"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
+        android:textStyle="italic" />
 
-        <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
-            style="@style/TmhMaterialEditText"
-            android:id="@+id/edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:completionThreshold="1"
-            android:inputType="text|textAutoCorrect|textAutoComplete"
-            android:maxLines="1"
-            android:hint="@string/currency" />
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        style="@style/TmhMaterialEditText"
+        android:id="@+id/edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="1"
+        android:inputType="text|textAutoCorrect|textAutoComplete"
+        android:maxLines="1"
+        android:hint="@string/currency" />
 
 </LinearLayout>

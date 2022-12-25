@@ -19,7 +19,7 @@
     <!-- Different colors for floating text is needed because
     MaterialEditText applies an alpha on colors ... -->
 
-    <style name="TmhMaterialEditText" parent="TmhMaterial">
+    <style name="TmhMaterialEditText" parent="@style/TmhMaterial">
         <item name="met_floatingLabel">normal</item>
         <item name="met_textColorHint">@color/light_gray</item>
         <item name="met_floatingLabelTextColor">@color/gray</item>
@@ -34,4 +34,15 @@
         <item name="ms_alignLabels">false</item>
         <item name="android:paddingLeft">0px</item>
     </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">400dp</item>
+    </style>
+
 </resources>

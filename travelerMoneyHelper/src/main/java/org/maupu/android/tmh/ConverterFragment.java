@@ -1,18 +1,13 @@
 package org.maupu.android.tmh;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.dialog.CurrencyChooserBottomSheetDialog;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
@@ -197,7 +193,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
             refreshDisplay();
         } else if (v instanceof TextView) {
             if (v == tvCurrencyCode1 || v == tvCurrencyCode2) {
-                createDialogCurrencyChooser(v == tvCurrencyCode1 ? TYPE_LEFT : TYPE_RIGHT).show();
+                createBottomSheetCurrencyDialog(v == tvCurrencyCode1 ? TYPE_LEFT : TYPE_RIGHT)
+                        .show(requireActivity().getSupportFragmentManager(), "ModalBottomSheet");
             } else if (v == tvConverterResult1 || v == tvConverterResult2) {
                 // Setting edit text's text with the content of corresponding result's text view
                 netAmount.setText(((TextView) v).getText().toString());
@@ -259,22 +256,19 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                         dummyCurrency2.setIsoCode(currency2.getCode());
 
                         OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), ratesCacheEnabled);
-                        updater.setAsyncListener(new IAsync() {
-                            @Override
-                            public void onFinishAsync() {
-                                // rates are calculated against main currency
-                                rate1 = dummyCurrency1.getRateCurrencyLinked();
-                                rate2 = dummyCurrency2.getRateCurrencyLinked();
-                                TmhLogger.d(TAG, "Setting rate1 = " + rate1);
-                                TmhLogger.d(TAG, "Setting rate2 = " + rate2);
-                                rateConverter = rate2 / rate1;
-                                convertedAmount1 = amount;
-                                convertedAmount2 = amount * rateConverter;
-                                ratesLastUpdate = OpenExchangeRatesAsyncUpdater.getCurrencyRatesCacheDate();
-                                ratesCacheEnabled = true;
-                            }
+                        updater.setAsyncListener(() -> {
+                            // rates are calculated against main currency
+                            rate1 = dummyCurrency1.getRateCurrencyLinked();
+                            rate2 = dummyCurrency2.getRateCurrencyLinked();
+                            TmhLogger.d(TAG, "Setting rate1 = " + rate1);
+                            TmhLogger.d(TAG, "Setting rate2 = " + rate2);
+                            rateConverter = rate2 / rate1;
+                            convertedAmount1 = amount;
+                            convertedAmount2 = amount * rateConverter;
+                            ratesLastUpdate = OpenExchangeRatesAsyncUpdater.getCurrencyRatesCacheDate();
+                            ratesCacheEnabled = true;
                         });
-                        updater.execute(new Currency[]{dummyCurrency1, dummyCurrency2});
+                        updater.execute(dummyCurrency1, dummyCurrency2);
                     } else {
                         convertedAmount1 = amount;
                         convertedAmount2 = amount * rateConverter;
@@ -290,42 +284,19 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
     }
 
-    private AlertDialog createDialogCurrencyChooser(final int type) {
-        AlertDialog.Builder builder;
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_currency_chooser, (ViewGroup) getView().findViewById(R.id.root_layout), false);
+    private CurrencyChooserBottomSheetDialog createBottomSheetCurrencyDialog(final int type) {
+        final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(currencyAdapter);
+        dialog.setOnClickListener(v -> {
+            if (type == TYPE_LEFT)
+                currency1 = dialog.getCurrency();
+            else
+                currency2 = dialog.getCurrency();
 
-        builder = new AlertDialog.Builder(getContext());
-        builder.setView(layout);
-
-        final AlertDialog dialog = builder.create();
-        final AutoCompleteTextView textView = (AutoCompleteTextView) layout.findViewById(R.id.edit);
-        textView.setAdapter(currencyAdapter);
-        final ConverterFragment converterFragment = this;
-        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CurrencyISO4217 c = (CurrencyISO4217) parent.getAdapter().getItem(position);
-                if (type == TYPE_LEFT) {
-                    currency1 = c;
-                } else {
-                    currency2 = c;
-                }
-
-                resetRates();
-                updateConvertedAmounts();
-                refreshDisplay();
-                handleFocus();
-                dialog.dismiss();
-            }
-        });
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                textView.requestFocus();
-                SoftKeyboardHelper.forceShowUp(getActivity());
-            }
+            resetRates();
+            updateConvertedAmounts();
+            refreshDisplay();
+            handleFocus();
+            dialog.dismiss();
         });
 
         return dialog;
