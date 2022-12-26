@@ -133,6 +133,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         tvConverterResult1.setOnClickListener(this);
         tvConverterResult2.setOnClickListener(this);
 
+        handleFocus();
+
         /**
          * OpenExchangeRate initialization
          */
@@ -160,11 +162,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     public void onPause() {
         savePrefs();
         super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private void initOerFetcher() {
@@ -310,14 +307,16 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     private void handleFocus() {
         try {
             Double value = Double.parseDouble(netAmount.getStringText());
-            if (value == 0d)
+            if (value == null || value == 0d)
                 netAmount.setText("");
         } catch (NumberFormatException nfe) {
             // Nothing to do
         }
 
-        netAmount.requestFocus();
-        SoftKeyboardHelper.forceShowUp(requireActivity());
+        if (netAmount != null) {
+            netAmount.requestFocus();
+            SoftKeyboardHelper.forceShowUp(requireActivity());
+        }
     }
 
     @Override
@@ -343,17 +342,12 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
 
         // Rates last update
         StringBuilder sb = new StringBuilder(getResources().getString(R.string.rates_last_update));
-        sb.append(" "); // Last space is trimed if put inside string resource file
+        sb.append(" "); // Last space is trimmed if put inside string resource file
         if (ratesLastUpdate != null)
             sb.append(DateUtil.dateToString(ratesLastUpdate));
         else
             sb.append("N/A");
         tvRatesLastUpdate.setText(sb.toString());
-
-        if (netAmount != null) {
-            netAmount.requestFocus();
-            SoftKeyboardHelper.forceShowUp(requireActivity());
-        }
     }
 
     @Override

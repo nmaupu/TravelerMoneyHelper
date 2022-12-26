@@ -16,7 +16,8 @@ public abstract class SoftKeyboardHelper {
 
         InputMethodManager imm = getInputMethodManager(activity);
         if (imm != null) {
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            imm.showSoftInput(activity.getCurrentFocus(), InputMethodManager.SHOW_IMPLICIT);
             //activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
     }
@@ -39,6 +40,10 @@ public abstract class SoftKeyboardHelper {
             return;
         InputMethodManager imm = getInputMethodManager(context);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static void hide(Context context) {
+        hide(context, new View(context));
     }
 
     private static InputMethodManager getInputMethodManager(Context context) {

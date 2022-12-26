@@ -69,6 +69,12 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
         refreshDisplay();
     }
 
+    @Override
+    public void onPause() {
+        SoftKeyboardHelper.hide(requireActivity());
+        super.onPause();
+    }
+
     public void setupMenu(boolean editMode) {
         if (menuProvider == null) {
             menuProvider = new MenuProvider() {
