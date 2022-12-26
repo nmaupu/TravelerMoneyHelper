@@ -159,7 +159,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     @Override
     public void onPause() {
         savePrefs();
-        SoftKeyboardHelper.hide(requireContext(), getView().getRootView());
         super.onPause();
     }
 
@@ -301,8 +300,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                     resetRates();
                     updateConvertedAmounts();
                     refreshDisplay();
-                    handleFocus();
                     dlg.dismiss();
+                    handleFocus();
                 });
 
         return dialog;

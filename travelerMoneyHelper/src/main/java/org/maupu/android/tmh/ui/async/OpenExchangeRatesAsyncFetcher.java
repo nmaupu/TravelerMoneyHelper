@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -81,7 +82,9 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
 
         if (builderJson == null || "".equals(builderJson.toString())) {
             StringBuilder sbUrl = super.getUrl(ACTION_CURRENCY_LIST, null);
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .build();
             Request req = new Request.Builder()
                     .url(sbUrl.toString())
                     .build();

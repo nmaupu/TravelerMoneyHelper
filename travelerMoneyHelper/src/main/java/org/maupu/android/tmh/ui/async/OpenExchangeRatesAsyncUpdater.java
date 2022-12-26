@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -76,7 +77,9 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 
         // Load from internet
         if (builderJson == null || "".equals(builderJson.toString())) {
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .build();
             Request req = new Request.Builder()
                     .url(url.toString())
                     .build();

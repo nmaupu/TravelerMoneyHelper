@@ -11,18 +11,18 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Integer, Exception> {
-    public static final int DEFAULT_CACHE_LIMIT_TIME = 3600; // 1h
+    public static final long DEFAULT_CACHE_LIMIT_TIME = 3600; // 1h
     protected FragmentActivity context;
     protected ProgressDialog waitSpinner = null;
     protected final static String URL = "https://openexchangerates.org/api/";
@@ -83,10 +83,8 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
 
             // Storing date to invalidate cache
             StaticData.setDateField(filename, new Date());
-        } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -178,7 +176,10 @@ class VerifApiKey extends AsyncTask<String, Integer, Exception> {
 
         StringBuilder sbUrl = AbstractOpenExchangeRates.getUrl(AbstractOpenExchangeRates.ACTION_CURRENCY_LATEST, key);
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient()
+                .newBuilder()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .build();
         Request req = new Request.Builder()
                 .url(sbUrl.toString())
                 .build();
