@@ -90,7 +90,7 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
         }
     }
 
-    public StringBuilder loadFromCache(String filename, int cacheLimit) {
+    public StringBuilder loadFromCache(String filename, long cacheLimit) {
         StringBuilder sbRet = new StringBuilder();
 
         Date now = new Date();
@@ -113,10 +113,8 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
             }
 
             fis.close();
-        } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return sbRet;

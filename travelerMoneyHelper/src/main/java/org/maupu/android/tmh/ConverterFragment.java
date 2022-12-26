@@ -211,7 +211,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     public void onFinishAsync() {
         // Called when initOerFetcher finishes to update
         currenciesList = oerFetcher.getCurrencies();
-        currencyAdapter = new ArrayAdapter<>(getContext(),
+        currencyAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 currenciesList);
         loadPrefs();
