@@ -1,7 +1,6 @@
 package org.maupu.android.tmh;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -10,7 +9,6 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -23,13 +21,12 @@ import com.google.android.material.snackbar.Snackbar;
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.dialog.FlagChooserBottomSheetDialog;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.Flag;
-import org.maupu.android.tmh.ui.ICallback;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
-import org.maupu.android.tmh.ui.widget.AutoCompleteTextViewIcon;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.ImageUtil;
@@ -62,12 +59,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
         //spinnerCurrencyManager = new SpinnerManager(spinnerCurrency);
         spinnerCurrencyManager = new SpinnerManager(requireContext(), spinnerCurrency);
         icon = view.findViewById(R.id.icon);
-        icon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDialogMenu();
-            }
-        });
+        icon.setOnClickListener(v -> createDialogMenu());
 
         // Setting spinner currency values
         Currency dummyCurrency = new Currency();
@@ -101,47 +93,34 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
         builder.setTitle(R.string.account_icon_edit_dialog_title);
-
-        builder.setItems(popupMenuIconNames, (dialogInterface, item) -> {
-            Dialog d = createDialogIconChooser(item);
-
-            dialogInterface.dismiss();
-
-            if (d != null)
-                d.show();
+        builder.setItems(popupMenuIconNames, (dialog, which) -> {
+            switch (which) {
+                case MENU_ITEM_APPS:
+                    createDialogFromApps().show();
+                    break;
+                case MENU_ITEM_URL:
+                case MENU_ITEM_CAMERA:
+                    Snackbar.make(
+                            getView(),
+                            getString(R.string.not_implemented),
+                            Snackbar.LENGTH_SHORT).show();
+                    break;
+                case MENU_ITEM_FLAGS:
+                    showBottomSheetFlagChooserDialog();
+                    break;
+                case MENU_ITEM_DEFAULT:
+                    imageViewIcon.setImageResource(R.drawable.tmh_icon_48);
+                    imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    break;
+            }
         });
-
         builder.create().show();
-    }
-
-    private AlertDialog createDialogIconChooser(int dialogType) {
-
-        switch (dialogType) {
-            case MENU_ITEM_APPS:
-                return createDialogFromApps();
-            case MENU_ITEM_URL:
-            case MENU_ITEM_CAMERA:
-                Snackbar.make(
-                        getView(),
-                        getString(R.string.not_implemented),
-                        Snackbar.LENGTH_SHORT).show();
-                return null;
-            case MENU_ITEM_FLAGS:
-                return createDialogFromFlags();
-            case MENU_ITEM_DEFAULT:
-                imageViewIcon.setImageResource(R.drawable.tmh_icon_48);
-                imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                return null;
-            default:
-                return null;
-        }
     }
 
     private AlertDialog createDialogFromApps() {
         AlertDialog.Builder builder;
         LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_account_app_icon, (ViewGroup) requireActivity().findViewById(R.id.root_layout), false);
-
 
         builder = new AlertDialog.Builder(requireContext());
         builder.setView(layout);
@@ -150,83 +129,36 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
 
         GridView gridview = layout.findViewById(R.id.gridview);
         gridview.setAdapter(new AppsAdapter());
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                ResolveInfo info = mApps.get(position % mApps.size());
-                imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(requireContext().getPackageManager()));
-                dialog.dismiss();
-            }
+        gridview.setOnItemClickListener((parent, v, position, id) -> {
+            ResolveInfo info = mApps.get(position % mApps.size());
+            imageViewIcon.setImageDrawable(info.activityInfo.loadIcon(requireContext().getPackageManager()));
+            dialog.dismiss();
         });
 
         Button close = (Button) layout.findViewById(R.id.close);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        close.setOnClickListener(v -> dialog.dismiss());
 
         return dialog;
     }
 
-    private AlertDialog createDialogFromFlags() {
-        AlertDialog.Builder builder;
-        LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_flags_icon, requireActivity().findViewById(R.id.root_layout), false);
-
-        builder = new AlertDialog.Builder(requireContext());
-        builder.setView(layout);
-
-        final AlertDialog dialog = builder.create();
-
-        //ListView list = (ListView)layout.findViewById(R.id.list);
+    private void showBottomSheetFlagChooserDialog() {
         SimpleIconAdapter adapter = new SimpleIconAdapter(
                 requireContext(), Flag.getFlagsForAdapter(requireContext()),
                 R.layout.icon_name_item_no_checkbox,
                 new String[]{"icon", "name"},
                 new int[]{R.id.icon, R.id.name});
-        final ImageView flagImageView = (ImageView) layout.findViewById(R.id.flag_icon);
-        final AutoCompleteTextViewIcon textView = (AutoCompleteTextViewIcon) layout.findViewById(R.id.edit);
-        textView.setOnUpdateListener(new ICallback() {
-            @Override
-            public Object callback(Object item) {
-                // Text field is updated so we are called and we can now set the flag icon
-                Flag flag = Flag.getFlagFromCountry(requireContext(), (String) item);
-                if (flag != null) {
-                    flagImageView.setImageDrawable(getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
-                }
-                return null;
+        final FlagChooserBottomSheetDialog bottomSheetDialog = new FlagChooserBottomSheetDialog(adapter, (v, dlg, flag) -> {
+            if (flag != null) {
+                // Set flag
+                imageViewIcon.setImageDrawable(
+                        AddOrEditAccountFragment.this.getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
+                imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                dlg.dismiss();
+            } else {
+                SimpleDialog.errorDialog(AddOrEditAccountFragment.this.requireContext(), AddOrEditAccountFragment.this.getString(R.string.error), AddOrEditAccountFragment.this.getString(R.string.country_not_found)).show();
             }
         });
-        textView.setAdapter(adapter);
-
-        Button cancel = (Button) layout.findViewById(R.id.cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        Button validate = (Button) layout.findViewById(R.id.validate);
-        validate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Flag flag = Flag.getFlagFromCountry(v.getContext(), textView.getText().toString());
-                if (flag != null) {
-                    // Set flag
-                    imageViewIcon.setImageDrawable(
-                            getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
-                    imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-                    dialog.dismiss();
-                } else {
-                    SimpleDialog.errorDialog(v.getContext(), getString(R.string.error), getString(R.string.country_not_found)).show();
-                }
-            }
-        });
-
-        return dialog;
+        bottomSheetDialog.show(requireActivity().getSupportFragmentManager(), "ModalFlagChooserDialog");
     }
 
     @Override

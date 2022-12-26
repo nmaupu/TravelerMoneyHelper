@@ -217,7 +217,10 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             dc.setIsoCode(cur.getIsoCode());
 
             try {
-                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), true);
+                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(
+                        requireActivity(),
+                        StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT),
+                        true);
                 updater.setAsyncListener(() -> {
                     if (dc.getRateCurrencyLinked() != null) {
                         currentCurrencyRateValue = dc.getRateCurrencyLinked();

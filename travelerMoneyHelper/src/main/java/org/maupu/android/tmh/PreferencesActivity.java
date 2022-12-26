@@ -463,12 +463,19 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             } catch (IOException ioe) {
                 // Error, cannot verify api key - network issue
                 StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
-                SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_network_issue), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                SimpleDialog.errorDialog(this,
+                                getString(R.string.error),
+                                getString(R.string.error_network_issue) + " err=" + ioe.getMessage(),
+                                (dialog, which) -> dialog.dismiss())
+                        .show();
+            } catch (Exception e) {
+                // Error, cannot verify api key - network issue
+                StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+                SimpleDialog.errorDialog(this,
+                                getString(R.string.error),
+                                getString(R.string.error) + " err=" + e.getMessage(),
+                                (dialog, which) -> dialog.dismiss())
+                        .show();
             }
         } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Calling export db " + newValue);

@@ -21,7 +21,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Integer, Integer> {
+public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Integer, Exception> {
     public static final int DEFAULT_CACHE_LIMIT_TIME = 3600; // 1h
     protected FragmentActivity context;
     protected ProgressDialog waitSpinner = null;
@@ -127,25 +127,26 @@ public abstract class AbstractOpenExchangeRates extends AsyncTask<Currency, Inte
      *
      * @param apiKey
      */
-    public static Boolean isValidApiKey(Context ctx, String apiKey) throws IOException {
+    public static Boolean isValidApiKey(Context ctx, String apiKey) throws Exception {
         VerifApiKey verif = new VerifApiKey(ctx);
 
-        verif.execute(new String[]{apiKey});
+        verif.execute(apiKey);
         try {
-            return verif.get();
-        } catch (ExecutionException ee) {
-            ee.printStackTrace();
-            return null;
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-            return null;
+            Exception e = verif.get();
+            if (e == null)
+                return true;
+            else
+                throw e;
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }
 
-class VerifApiKey extends AsyncTask<String, Integer, Boolean> {
+class VerifApiKey extends AsyncTask<String, Integer, Exception> {
     private Context ctx;
-    protected ProgressDialog waitSpinner = null;
+    protected ProgressDialog waitSpinner;
 
     public VerifApiKey(Context ctx) {
         this.ctx = ctx;
@@ -168,11 +169,11 @@ class VerifApiKey extends AsyncTask<String, Integer, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(String... keys) {
+    protected Exception doInBackground(String... keys) {
         publishProgress(0);
 
         if (keys == null || keys.length == 0) {
-            return false;
+            return new Exception("no key provided");
         }
 
         String key = keys[0];
@@ -190,13 +191,17 @@ class VerifApiKey extends AsyncTask<String, Integer, Boolean> {
         } catch (IOException ioe) {
             ioe.printStackTrace();
             publishProgress(100);
-            return null;
+            return ioe;
         } catch (Exception e) {
             e.printStackTrace();
+            return e;
         }
 
         Boolean ret = statusCode == 200;
         publishProgress(100);
-        return ret;
+        if (ret)
+            return null;
+        else
+            return new Exception("error querying Open Exchange Rate API, status code=" + statusCode);
     }
 }

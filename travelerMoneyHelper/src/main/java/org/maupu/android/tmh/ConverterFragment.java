@@ -14,7 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.maupu.android.tmh.core.TmhApplication;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.dialog.CurrencyChooserBottomSheetDialog;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
@@ -42,8 +43,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     private static final String PREFS_CONVERTER_CURRENCY_1 = "ConverterActivity_currency_1";
     private static final String PREFS_CONVERTER_CURRENCY_2 = "ConverterActivity_currency_2";
     private static final String PREFS_CONVERTER_AMOUNT = "ConverterActivity_amount";
-
-    private static final int DRAWER_ITEM_UPDATE_RATES = TmhApplication.getIdentifier("DRAWER_ITEM_UPDATE_RATES");
 
     /**
      * Chooser widgets
@@ -177,6 +176,12 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
             oerFetcher.execute((Currency[]) null);
         } catch (Exception e) {
             e.printStackTrace();
+            Snackbar.make(
+                            requireContext(),
+                            requireView(),
+                            getString(R.string.error) + " err=" + e.getMessage(),
+                            Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -285,19 +290,20 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     }
 
     private CurrencyChooserBottomSheetDialog createBottomSheetCurrencyDialog(final int type) {
-        final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(currencyAdapter);
-        dialog.setOnClickListener(v -> {
-            if (type == TYPE_LEFT)
-                currency1 = dialog.getCurrency();
-            else
-                currency2 = dialog.getCurrency();
+        final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(
+                currencyAdapter,
+                (v, dlg, currency) -> {
+                    if (type == TYPE_LEFT)
+                        currency1 = currency;
+                    else
+                        currency2 = currency;
 
-            resetRates();
-            updateConvertedAmounts();
-            refreshDisplay();
-            handleFocus();
-            dialog.dismiss();
-        });
+                    resetRates();
+                    updateConvertedAmounts();
+                    refreshDisplay();
+                    handleFocus();
+                    dlg.dismiss();
+                });
 
         return dialog;
     }

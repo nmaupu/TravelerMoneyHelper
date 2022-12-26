@@ -56,7 +56,7 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
     }
 
     @Override
-    protected Integer doInBackground(Currency... params) {
+    protected Exception doInBackground(Currency... params) {
 
         publishProgress(0);
 
@@ -64,11 +64,12 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
             currencies = getRatesList();
         } catch (Exception e) {
             e.printStackTrace();
+            return e;
         }
 
         publishProgress(100);
 
-        return currencies != null ? currencies.size() : 0;
+        return null;
     }
 
 

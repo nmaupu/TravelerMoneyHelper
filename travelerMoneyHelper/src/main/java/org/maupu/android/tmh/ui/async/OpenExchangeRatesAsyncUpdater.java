@@ -42,9 +42,9 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
         this.cacheEnabled = cacheEnabled;
     }
 
-    protected Integer doInBackground(Currency... currencies) {
+    protected Exception doInBackground(Currency... currencies) {
         if (currencies == null || currencies.length == 0)
-            return 0;
+            return new Exception("No currency given");
 
         int nbTotal = currencies.length;
         int nbProcessedSucc = 0;
@@ -58,11 +58,12 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
                 publishProgress(nbProcessed * 100 / nbTotal);
             } catch (Exception e) {
                 e.printStackTrace();
+                return e;
             }
         }
 
         publishProgress(100);
-        return nbProcessedSucc;
+        return null;
     }
 
     public boolean updateRateFromOpenExchangeRates(Currency currency, boolean cacheEnabled) throws Exception {

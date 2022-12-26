@@ -102,6 +102,12 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
             oerFetcher.execute((Currency[]) null);
         } catch (Exception e) {
             e.printStackTrace();
+            Snackbar.make(
+                            requireContext(),
+                            requireView(),
+                            getString(R.string.error) + " err=" + e.getMessage(),
+                            Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -173,13 +179,6 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
                 checkBoxUpdate.setChecked(false);
                 checkBoxUpdate.setEnabled(true);
             }
-
-            // Searching for locale in spinner and select it
-			/*for(int i=0; i<spinnerCurrencyCode.getCount(); i++) {
-				CurrencyISO4217 c = (CurrencyISO4217)spinnerCurrencyCode.getItemAtPosition(i);
-				if(c.getCode().equals(obj.getIsoCode()))
-					spinnerCurrencyCode.setSelection(i);
-			}*/
 
             actvCurrencyCode.setText(obj.getIsoCode());
         }

@@ -20,19 +20,12 @@ import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 public class CurrencyChooserBottomSheetDialog extends BottomSheetDialogFragment {
     private final ArrayAdapter<CurrencyISO4217> mAdapter;
     private CurrencyISO4217 mCurrency;
-    private MaterialAutoCompleteTextView textView;
-    private View.OnClickListener listener;
+    private MaterialAutoCompleteTextView mTextView;
+    private BottomSheetDialogListener<CurrencyISO4217> mListener;
 
-    public CurrencyChooserBottomSheetDialog(ArrayAdapter<CurrencyISO4217> adapter) {
+    public CurrencyChooserBottomSheetDialog(ArrayAdapter<CurrencyISO4217> adapter, BottomSheetDialogListener<CurrencyISO4217> listener) {
         this.mAdapter = adapter;
-    }
-
-    public void setOnClickListener(View.OnClickListener listener) {
-        this.listener = listener;
-    }
-
-    public CurrencyISO4217 getCurrency() {
-        return mCurrency;
+        this.mListener = listener;
     }
 
     @Nullable
@@ -40,19 +33,19 @@ public class CurrencyChooserBottomSheetDialog extends BottomSheetDialogFragment 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_currency_chooser, container, false);
 
-        textView = v.findViewById(R.id.edit);
-        textView.setAdapter(mAdapter);
-        textView.setDropDownWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        textView.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mTextView = v.findViewById(R.id.edit);
+        mTextView.setAdapter(mAdapter);
+        mTextView.setDropDownWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        mTextView.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        textView.setOnItemClickListener((parent, view, position, id) -> {
+        mTextView.setOnItemClickListener((parent, view, position, id) -> {
             mCurrency = (CurrencyISO4217) parent.getAdapter().getItem(position);
-            listener.onClick(v);
+            mListener.onValidateEvent(v, this, mCurrency);
             dismiss();
         });
 
-        textView.setDropDownAnchor(R.id.layout_root);
-        textView.setDropDownVerticalOffset(-2);
+        mTextView.setDropDownAnchor(R.id.layout_root);
+        mTextView.setDropDownVerticalOffset(-2);
 
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme);
 
@@ -62,7 +55,7 @@ public class CurrencyChooserBottomSheetDialog extends BottomSheetDialogFragment 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        textView.requestFocus();
+        mTextView.requestFocus();
         SoftKeyboardHelper.hide(requireActivity());
         SoftKeyboardHelper.forceShowUp(requireActivity());
     }

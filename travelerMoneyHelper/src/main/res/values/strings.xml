@@ -76,7 +76,7 @@
     <string name="pick_account">Pick an account</string>
     <string name="debit">Debit</string>
     <string name="credit">Credit</string>
-    <string name="not_implemented">This feature is not yet implemented</string>
+    <string name="not_implemented">This feature is not implemented yet</string>
     <string name="validate">Validate</string>
     <string name="hint_flag_autocompletion">Use this autocompletion field to choose a country flag</string>
     <string name="hint_currency_autocompletion">Use this autocompletion field to choose a currency</string>
