@@ -240,16 +240,42 @@
                 android:layout_marginStart="5sp"
                 android:id="@+id/ll_exchange_rate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <CheckBox
-                    android:layout_marginStart="0px"
-                    android:id="@+id/checkbox_update_rate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/update_exchange_rate"
-                    android:textStyle="italic" />
+                <RadioGroup
+                    android:id="@+id/radio_group_exchange_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/radio_group_rate_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/exchange_rate_group_title" />
+
+                    <RadioButton
+                        android:id="@+id/radio_exchange_rate_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/exchange_rate_update_from_internet" />
+
+                    <RadioButton
+                        android:id="@+id/radio_exchange_rate_use_local_operation"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/exchange_rate_update_from_local_operation" />
+
+                    <RadioButton
+                        android:id="@+id/radio_exchange_rate_use_from_currency"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/exchange_rate_update_from_local_currency" />
+                </RadioGroup>
+
+
             </LinearLayout>
 
             <LinearLayout

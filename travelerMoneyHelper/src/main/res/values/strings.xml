@@ -92,7 +92,6 @@
     <string name="average_">Average</string>
     <string name="averageByDay">Average / day:</string>
     <string name="averageByDay_">Average / day</string>
-    <string name="update_exchange_rate">Update exchange rate to current</string>
     <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Database created and selected</string>
@@ -150,6 +149,10 @@
     <string name="add_or_edit_operation_use_credit_debit_card_card">Card</string>
     <string name="gdrive_button_sign_out">Sign out</string>
     <string name="use_local_currency_value">Use local currency rate</string>
+    <string name="exchange_rate_group_title">Currency rate options</string>
+    <string name="exchange_rate_update_from_internet">Update exchange rate to current</string>
+    <string name="exchange_rate_update_from_local_operation">Keep exchange rate as is</string>
+    <string name="exchange_rate_update_from_local_currency">Use local currency rate</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>

@@ -67,6 +67,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 
     public boolean updateRateFromOpenExchangeRates(Currency currency, boolean cacheEnabled) throws Exception {
         StringBuilder url = super.getUrl(ACTION_CURRENCY_LATEST, apiKey);
+        boolean errorOccurred = false;
 
         StringBuilder builderJson = null;
         if (cacheEnabled)
@@ -99,8 +100,10 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
             } catch (IOException ioe) {
                 // Network problem ? Load from cache anyway
                 builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, -1);
+                errorOccurred = true;
             } catch (Exception e) {
                 e.printStackTrace();
+                errorOccurred = true;
             }
         }
 
@@ -143,8 +146,8 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
             return false;
         }
 
-        // Everything ok !
-        return true;
+        // Everything ok or error occurred during process
+        return errorOccurred;
     }
 
     /**

@@ -91,7 +91,6 @@
     <string name="average_">Moyenne</string>
     <string name="averageByDay">Moyenne / jour:</string>
     <string name="averageByDay_">Moyenne / jour</string>
-    <string name="update_exchange_rate">Mettre à jour le taux de change</string>
     <string name="force_update_currency">Forcer màj des taux de conv.</string>
     <string name="date">Date</string>
     <string name="database_created_successfuly">Base de données créée et selectionnée</string>
@@ -149,6 +148,10 @@
     <string name="add_or_edit_operation_use_credit_debit_card_card">Carte</string>
     <string name="gdrive_button_sign_out">Se déconnecter</string>
     <string name="use_local_currency_value">Utiliser la valeur locale pour la devise</string>
+    <string name="exchange_rate_group_title">Options des taux de change</string>
+    <string name="exchange_rate_update_from_internet">Mettre à jour le taux de change</string>
+    <string name="exchange_rate_update_from_local_operation">Garder la valeur actuelle</string>
+    <string name="exchange_rate_update_from_local_currency">Utiliser la valeur de la devise actuelle</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
