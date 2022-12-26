@@ -41,7 +41,10 @@ public class OperationCursorAdapter extends SimpleCursorAdapter {
 
         TextView tvConvAmount = view.findViewById(R.id.convAmount);
         int idxConvAmount = cursor.getColumnIndex("convertedAmount");
-        Double convAmount = Double.parseDouble(cursor.getString(idxConvAmount));
+        String convAmountStr = cursor.getString(idxConvAmount);
+        if (convAmountStr == null)
+            convAmountStr = "0";
+        Double convAmount = Double.parseDouble(convAmountStr);
 
         try {
             // format amount

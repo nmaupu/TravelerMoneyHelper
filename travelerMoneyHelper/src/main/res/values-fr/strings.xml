@@ -148,6 +148,7 @@
     <string name="add_or_edit_operation_use_credit_debit_card_cash">Cash</string>
     <string name="add_or_edit_operation_use_credit_debit_card_card">Carte</string>
     <string name="gdrive_button_sign_out">Se déconnecter</string>
+    <string name="use_local_currency_value">Utiliser la valeur locale pour la devise</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>

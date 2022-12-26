@@ -2,6 +2,7 @@ package org.maupu.android.tmh;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -13,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.polyak.iconswitch.IconSwitch;
 
@@ -27,6 +31,7 @@ import org.maupu.android.tmh.dialog.TimePickerDialogFragment;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
@@ -67,6 +72,8 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     private static final String PLUS = "+";
     private static final String MINUS = "-";
 
+    private Double currentCurrencyRateValue;
+
     public AddOrEditOperationFragment() {
         super(R.string.fragment_title_edition_operation, R.layout.add_or_edit_operation, new Operation());
     }
@@ -87,7 +94,9 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         amount.addTextChangedListener(this);
         linearLayoutRateUpdater = view.findViewById(R.id.ll_exchange_rate);
         checkboxUpdateRate = view.findViewById(R.id.checkbox_update_rate);
-        checkboxUpdateRate.setOnCheckedChangeListener((buttonView, isChecked) -> updateConvertedAmount());
+        checkboxUpdateRate.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateConvertedAmount();
+        });
         smCurrency = new SpinnerManager(getContext(), view.findViewById(R.id.currency));
         smCurrency.getSpinner().setOnItemSelectedListener(this);
 
@@ -108,10 +117,13 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         switchCreditDebitCard = view.findViewById(R.id.switch_credit_debit_card);
         switchCreditDebitCard.setCheckedChangeListener(current -> {
             // toggle text
-            if (switchCreditDebitCard.getChecked() == IconSwitch.Checked.LEFT)
+            if (switchCreditDebitCard.getChecked() == IconSwitch.Checked.LEFT) {
                 switchCreditDebitCardTextView.setText(R.string.add_or_edit_operation_use_credit_debit_card_cash);
-            else
+                checkboxUpdateRate.setChecked(false);
+            } else {
                 switchCreditDebitCardTextView.setText(R.string.add_or_edit_operation_use_credit_debit_card_card);
+                checkboxUpdateRate.setChecked(true);
+            }
         });
 
 
@@ -158,6 +170,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                                     null);
                         }).show();
             }
+            checkboxUpdateRate.setChecked(false);
         }
 
         smCategory.setAdapter(c, CategoryData.KEY_NAME);
@@ -174,6 +187,36 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
 
         // Force edit text to get focus on startup
         return amount;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateCurrentCurrencyRateValue();
+    }
+
+    private void updateCurrentCurrencyRateValue() {
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
+        if (apiKey != null && !"".equals(apiKey)) {
+            Cursor c = smCurrency.getSelectedItem();
+            Currency cur = new Currency();
+            cur.toDTO(c);
+
+            final Currency dc = new Currency();
+            dc.setIsoCode(cur.getIsoCode());
+
+            try {
+                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), true);
+                updater.setAsyncListener(() -> {
+                    if (dc.getRateCurrencyLinked() != null) {
+                        currentCurrencyRateValue = dc.getRateCurrencyLinked();
+                    }
+                });
+                updater.execute(dc);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -283,8 +326,12 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 obj.setAmount(obj.getAmount() * -1);
 
             // Store currency value for this addition if exchange rate checkbox is selected
-            if (linearLayoutRateUpdater.getVisibility() == View.GONE || checkboxUpdateRate.isChecked())
-                obj.setCurrencyValueOnCreated(cur.getRateCurrencyLinked());
+            if (linearLayoutRateUpdater.getVisibility() == View.GONE || !checkboxUpdateRate.isChecked()) {
+                obj.setCurrencyValueOnCreated(cur.getRateCurrencyLinked()); // default value
+            } else if (checkboxUpdateRate.isChecked() && currentCurrencyRateValue != null) {
+                obj.setCurrencyValueOnCreated(currentCurrencyRateValue);
+            }
+
         }
     }
 
@@ -367,6 +414,8 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     private void updateConvertedAmount() {
         try {
             Cursor c = smCurrency.getSelectedItem();
+            if (c == null)
+                return;
             Currency dummyCur = new Currency();
             dummyCur.toDTO(c);
 
@@ -379,10 +428,19 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 currentAmount = Math.abs(Double.parseDouble(a));
 
             Double rate;
-            if (checkboxUpdateRate.isChecked())
+            if (checkboxUpdateRate.isChecked()) {
+                if (currentCurrencyRateValue != null)
+                    rate = currentCurrencyRateValue;
+                else
+                    rate = dummyCur.getRateCurrencyLinked();
+            } else {
                 rate = dummyCur.getRateCurrencyLinked();
-            else
+            }
+            /*} else if (!isEditing()) {
+                rate = dummyCur.getRateCurrencyLinked();
+            } else {
                 rate = getObj().getCurrencyValueOnCreated();
+            }*/
 
             textViewConvertedAmount.setText("" + NumberUtil.formatDecimal(currentAmount / rate) + " " + StaticData.getMainCurrency().getShortName());
             textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());

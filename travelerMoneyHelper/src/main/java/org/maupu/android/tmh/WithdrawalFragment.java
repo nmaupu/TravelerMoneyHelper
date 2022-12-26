@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -39,6 +40,7 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.ui.widget.NumberEditText;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.DateUtil;
@@ -67,6 +69,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
     private SpinnerManager spinnerManagerCurrency;
     private SpinnerManager spinnerManagerCategory;
     private NumberEditText amount;
+    private CheckBox checkBoxLocalRate;
     private TextView textViewAmount;
     private TextView textViewConvertedAmount;
     private TextView textViewDate;
@@ -77,6 +80,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
     private int mMinutes = 0;
     private int mSeconds = 0;
     private MenuProvider menuProvider;
+    private Double currentCurrencyRateValue;
 
     public WithdrawalFragment() {
         super(R.layout.withdrawal);
@@ -109,6 +113,8 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
         spinnerCategory = view.findViewById(R.id.spinner_category);
         amount = view.findViewById(R.id.amount);
         amount.addTextChangedListener(this);
+        checkBoxLocalRate = view.findViewById(R.id.checkbox_local_rate);
+        checkBoxLocalRate.setOnCheckedChangeListener((buttonView, isChecked) -> updateConvertedAmount());
         textViewAmount = view.findViewById(R.id.text_amount);
         textViewConvertedAmount = view.findViewById(R.id.converted_amount);
         textViewDate = view.findViewById(R.id.date);
@@ -127,9 +133,35 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
         updateAccountInfo(ivFrom, spinnerManagerFrom.getSelectedItem());
         updateAccountInfo(ivTo, spinnerManagerTo.getSelectedItem());
 
+        updateCurrentCurrencyRateValue();
+
         // Force edit text to get focus on startup
         amount.requestFocus();
         SoftKeyboardHelper.forceShowUp(requireActivity());
+    }
+
+    private void updateCurrentCurrencyRateValue() {
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
+        if (apiKey != null && !"".equals(apiKey)) {
+            Account accountTo = new Account();
+            Cursor cur = spinnerManagerTo.getSelectedItem();
+            accountTo.toDTO(cur);
+
+            final Currency dc = new Currency();
+            dc.setIsoCode(accountTo.getCurrency().getIsoCode());
+
+            try {
+                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), true);
+                updater.setAsyncListener(() -> {
+                    if (dc.getRateCurrencyLinked() != null) {
+                        currentCurrencyRateValue = dc.getRateCurrencyLinked();
+                    }
+                });
+                updater.execute(dc);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setupMenu() {
@@ -360,6 +392,9 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
                 currentAmount = Math.abs(Double.parseDouble(a));
 
             Double rate = dummyCur.getRateCurrencyLinked();
+            if (currentCurrencyRateValue != null && !checkBoxLocalRate.isChecked())
+                rate = currentCurrencyRateValue;
+
             textViewConvertedAmount.setText("" + NumberUtil.formatDecimal(currentAmount / rate) + " " + StaticData.getMainCurrency().getShortName());
             textViewAmount.setText("" + NumberUtil.formatDecimal(currentAmount) + " " + dummyCur.getShortName());
         } catch (NumberFormatException nfe) {
