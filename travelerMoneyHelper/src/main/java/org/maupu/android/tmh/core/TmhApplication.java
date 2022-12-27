@@ -1,10 +1,16 @@
 package org.maupu.android.tmh.core;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.telephony.TelephonyManager;
+
+import androidx.preference.PreferenceManager;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -16,6 +22,7 @@ import org.maupu.android.tmh.database.object.StaticPrefs;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.ImageUtil;
+import org.maupu.android.tmh.util.drive.DriveBackupBroadcastReceiver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +42,21 @@ public class TmhApplication extends Application {
         super.onCreate();
         TmhApplication.applicationContext = this.getApplicationContext();
         dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
+
+        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean driveActivated = prefManager.getBoolean(StaticData.PREF_KEY_DRIVE_ACTIVATE, false);
+        
+
+        // Setup a test alarm
+        Intent broadcastIntent = new Intent(this, DriveBackupBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this, 2343, broadcastIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        /*alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + 3000,
+                10000,
+                pendingIntent);*/
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3000, pendingIntent);
     }
 
     public static Context getAppContext() {

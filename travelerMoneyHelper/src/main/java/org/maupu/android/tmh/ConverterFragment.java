@@ -102,30 +102,25 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.fragment_title_currency_converter);
 
-        /**
-         * Widgets
-         */
-        /** Chooser widgets **/
-        tvCurrencyCode1 = (TextView) view.findViewById(R.id.currency_code_1);
-        tvCurrencyCode2 = (TextView) view.findViewById(R.id.currency_code_2);
-        ivSwitch = (ImageView) view.findViewById(R.id.switch_image);
+        // Chooser widgets
+        tvCurrencyCode1 = view.findViewById(R.id.currency_code_1);
+        tvCurrencyCode2 = view.findViewById(R.id.currency_code_2);
+        ivSwitch = view.findViewById(R.id.switch_image);
 
-        /** Info widgets **/
-        tvCurrencyInfo1 = (TextView) view.findViewById(R.id.currency_info_1);
-        tvCurrencyInfo2 = (TextView) view.findViewById(R.id.currency_info_2);
+        // Info widgets
+        tvCurrencyInfo1 = view.findViewById(R.id.currency_info_1);
+        tvCurrencyInfo2 = view.findViewById(R.id.currency_info_2);
 
-        /** Amounts widgets **/
-        netAmount = (NumberEditText) view.findViewById(R.id.amount);
-        tvAmountSymbol = (TextView) view.findViewById(R.id.amount_symbol);
-        tvConverterResult1 = (TextView) view.findViewById(R.id.converter_result_1);
-        tvConverterResult2 = (TextView) view.findViewById(R.id.converter_result_2);
+        // Amounts widgets
+        netAmount = view.findViewById(R.id.amount);
+        tvAmountSymbol = view.findViewById(R.id.amount_symbol);
+        tvConverterResult1 = view.findViewById(R.id.converter_result_1);
+        tvConverterResult2 = view.findViewById(R.id.converter_result_2);
 
-        /** Misc widgets **/
-        tvRatesLastUpdate = (TextView) view.findViewById(R.id.rates_last_update);
+        // Misc widgets
+        tvRatesLastUpdate = view.findViewById(R.id.rates_last_update);
 
-        /**
-         * Events
-         */
+        // Events
         ivSwitch.setOnClickListener(this);
         tvCurrencyCode1.setOnClickListener(this);
         tvCurrencyCode2.setOnClickListener(this);
@@ -135,9 +130,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
 
         handleFocus();
 
-        /**
-         * OpenExchangeRate initialization
-         */
+
+        // OpenExchangeRate initialization
         // Before going further, verify we have api key to open exchange rates api
         String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
         final Context ctx = getActivity();
@@ -156,6 +150,26 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
 
         initOerFetcher();
+
+        /*NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(requireContext(), "TMH")
+                .setSmallIcon(R.drawable.tmh_icon_48)
+                .setContentTitle("Test notification")
+                .setContentText("I am a notification test")
+                .setPriority(NotificationCompat.PRIORITY_LOW);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "TMH";
+            String description = "TMH notification channel";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("TMH", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        notificationManager.notify(1234, notifBuilder.build());*/
     }
 
     @Override

@@ -45,6 +45,7 @@ import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.StaticPrefs;
 import org.maupu.android.tmh.databinding.ActivityPreferencesBinding;
+import org.maupu.android.tmh.dialog.DriveAutomaticBackupBottomSheetDialog;
 import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
@@ -182,13 +183,13 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                     //
                                 } finally {
                                     if (retentionDurationDays == 0)
-                                        retentionDurationDays = Integer.parseInt(getString(R.string.pref_gdrive_retention_default));
+                                        retentionDurationDays = Integer.parseInt(getString(R.string.pref_drive_retention_default));
                                 }
                                 try {
                                     DriveServiceHelper.upload(
                                                     googleDriveService,
                                                     asyncTask,
-                                                    folderNamePref == null || "".equals(folderNamePref) ? getString(R.string.pref_gdrive_default_folder) : folderNamePref,
+                                                    folderNamePref == null || "".equals(folderNamePref) ? getString(R.string.pref_drive_default_folder) : folderNamePref,
                                                     listDbPath,
                                                     deleteOldPref ? retentionDurationDays : 0)
                                             .addOnSuccessListener(file -> {
@@ -220,6 +221,17 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     }
                     return true;
                 });
+
+        Preference automaticBackupsPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP);
+        setDriveAutomaticBackupSummary(StaticData.getPrefs().getInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY, StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER));
+        automaticBackupsPreference.setOnPreferenceClickListener(preference -> {
+            DriveAutomaticBackupBottomSheetDialog dlg = new DriveAutomaticBackupBottomSheetDialog((v, dialog, opt) -> {
+                setDriveAutomaticBackupSummary(opt);
+                dialog.dismiss();
+            });
+            dlg.show(getSupportFragmentManager(), "ModalPrefAutomaticBackupDialog");
+            return true;
+        });
 
         Preference testPreference = preferencesFragment.findPreference("test");
         testPreference.setOnPreferenceClickListener(preference -> {
@@ -298,11 +310,31 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     }
 
     private void setEnableDriveBackupPrefs(boolean isActivated) {
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP).setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER).setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP).setEnabled(isActivated);
         CheckBoxPreference cbpDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
         cbpDeleteOld.setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION).setEnabled(isActivated && cbpDeleteOld.isChecked());
+    }
+
+    private void setDriveAutomaticBackupSummary(int value) {
+        Preference pref = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP);
+        final String summary;
+        switch (value) {
+            case StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY:
+                summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_daily);
+                break;
+            case StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_WEEKLY:
+                summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_weekly);
+                break;
+            case StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_MONTHLY:
+                summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_monthly);
+                break;
+            default:
+                summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_never);
+        }
+        pref.setSummary(summary);
     }
 
     private void refreshDbLists(String currentDB) {

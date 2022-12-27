@@ -23,6 +23,8 @@
         android:theme="@style/TmhTheme"
         android:allowBackup="true">
 
+        <receiver android:name=".util.drive.DriveBackupBroadcastReceiver" />
+
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden"

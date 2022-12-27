@@ -38,6 +38,14 @@ public abstract class StaticData {
     public static final String PREF_KEY_DRIVE_MANUAL_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_manual_backup);
     public static final String PREF_KEY_DRIVE_RETENTION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_retention);
     public static final String PREF_KEY_DRIVE_DELETE_OLD = TmhApplication.getAppContext().getString(R.string.pref_key_drive_delete_old);
+    public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup);
+
+    // Google Drive automatic backups
+    public static final String PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY = "pref_drive_automatic_backup_freq";
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER = 0;
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY = 2;
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_WEEKLY = 3;
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_MONTHLY = 4;
 
     public static final String PREF_CURRENT_ACCOUNT = "current_account";
     public static final String PREF_CURRENT_OPERATION_DATE_PICKER = "current_op_date";
@@ -193,7 +201,7 @@ public abstract class StaticData {
         getCurrentSelectedCategory();
     }
 
-    private static SharedPreferences getPrefs() {
+    public static SharedPreferences getPrefs() {
         return PreferenceManager.getDefaultSharedPreferences(TmhApplication.getAppContext());
     }
 

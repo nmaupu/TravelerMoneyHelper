@@ -83,25 +83,30 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_key_drive_activate"
-            android:title="@string/pref_gdrive_activate" />
+            android:title="@string/pref_drive_activate" />
+
+        <Preference
+            android:title="@string/pref_drive_automatic_backup_title"
+            android:key="@string/pref_key_drive_automatic_backup"
+            android:summary="@string/dialog_prefs_drive_automatic_backup_option_never" />
 
         <EditTextPreference
-            android:title="@string/pref_gdrive_folder_title"
-            android:summary="@string/pref_gdrive_folder_summary"
-            android:defaultValue="@string/pref_gdrive_default_folder"
+            android:title="@string/pref_drive_folder_title"
+            android:summary="@string/pref_drive_folder_summary"
+            android:defaultValue="@string/pref_drive_default_folder"
             android:key="@string/pref_key_drive_backup_folder"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
 
         <CheckBoxPreference
-            android:title="@string/pref_gdrive_delete_old_backups_title"
-            android:summary="@string/pref_gdrive_delete_old_backups_summary"
+            android:title="@string/pref_drive_delete_old_backups_title"
+            android:summary="@string/pref_drive_delete_old_backups_summary"
             android:key="@string/pref_key_drive_delete_old" />
 
         <EditTextPreference
-            android:title="@string/pref_gdrive_retention_title"
-            android:summary="@string/pref_gdrive_retention_summary"
-            android:defaultValue="@string/pref_gdrive_retention_default"
+            android:title="@string/pref_drive_retention_title"
+            android:summary="@string/pref_drive_retention_summary"
+            android:defaultValue="@string/pref_drive_retention_default"
             android:key="@string/pref_key_drive_retention"
             android:selectAllOnFocus="true"
             android:singleLine="true" />

@@ -193,6 +193,7 @@
     <string name="pref_key_drive_manual_backup" translatable="false">drive_manual_backup</string>
     <string name="pref_key_drive_retention" translatable="false">drive_retention</string>
     <string name="pref_key_drive_delete_old" translatable="false">drive_delete_old</string>
+    <string name="pref_key_drive_automatic_backup" translatable="false">automatic_backup</string>
 
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
@@ -203,19 +204,25 @@
     <string name="pref_db_manager_title">Database manager</string>
     <string name="pref_db_manager_summary">Delete a database</string>
     <string name="pref_backup_category">Save data</string>
-    <string name="pref_gdrive_activate">Activate Google Drive</string>
+    <string name="pref_drive_activate">Activate Google Drive</string>
     <string name="pref_google_signin_successfully">Signed in successfully</string>
     <string name="pref_google_signout_successfully">Signed out successfully</string>
-    <string name="pref_gdrive_default_folder">tmh-backups</string>
-    <string name="pref_gdrive_folder_title">Backup folder</string>
-    <string name="pref_gdrive_folder_summary">Configure a drive backup folder</string>
+    <string name="pref_drive_default_folder">tmh-backups</string>
+    <string name="pref_drive_folder_title">Backup folder</string>
+    <string name="pref_drive_folder_summary">Configure a drive backup folder</string>
     <string name="pref_drive_manual_upload_title">Backup now</string>
     <string name="pref_drive_manual_upload_summary">Create a drive backup now</string>
     <string name="pref_upload_file_to_drive_success">File uploaded successfully !</string>
     <string name="pref_upload_file_to_drive_error">Error uploading file(s) to drive</string>
-    <string name="pref_gdrive_retention_title">Retention duration</string>
-    <string name="pref_gdrive_retention_summary">Older backups will be deleted (days)</string>
-    <string name="pref_gdrive_retention_default" translatable="false">30</string>
-    <string name="pref_gdrive_delete_old_backups_title">Delete old backups</string>
-    <string name="pref_gdrive_delete_old_backups_summary">Delete backups if older than retention days</string>
+    <string name="pref_drive_retention_title">Retention duration</string>
+    <string name="pref_drive_retention_summary">Older backups will be deleted (days)</string>
+    <string name="pref_drive_retention_default" translatable="false">30</string>
+    <string name="pref_drive_delete_old_backups_title">Delete old backups</string>
+    <string name="pref_drive_delete_old_backups_summary">Delete backups if older than retention days</string>
+    <string name="pref_drive_automatic_backup_title">Automatic backups</string>
+    <string name="dialog_prefs_drive_automatic_backup_title">Save to Google Drive</string>
+    <string name="dialog_prefs_drive_automatic_backup_option_never">Never save automatically</string>
+    <string name="dialog_prefs_drive_automatic_backup_option_daily">Backup daily</string>
+    <string name="dialog_prefs_drive_automatic_backup_option_weekly">Backup weekly</string>
+    <string name="dialog_prefs_drive_automatic_backup_option_monthly">Backup monthly</string>
 </resources>

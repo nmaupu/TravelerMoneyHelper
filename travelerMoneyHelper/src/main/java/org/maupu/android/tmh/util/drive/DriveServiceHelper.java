@@ -35,7 +35,8 @@ public abstract class DriveServiceHelper {
         TaskCompletionSource<FileList> taskCompletionSource = new TaskCompletionSource<>();
         FileList fileList = new FileList();
 
-        refresher.publishProgress(0);
+        if (refresher != null)
+            refresher.publishProgress(0);
 
         String backupFolderId = getBackupFolderId(driveService, backupFolderName);
         if (backupFolderId == null) {
@@ -85,7 +86,8 @@ public abstract class DriveServiceHelper {
                     driveService.files()
                             .delete(f.getId())
                             .execute();
-                    refresher.publishProgress(progressValue++, numberOfDriveOperations);
+                    if (refresher != null)
+                        refresher.publishProgress(progressValue++, numberOfDriveOperations);
                 }
             }
             // end deletion old backups
@@ -105,7 +107,8 @@ public abstract class DriveServiceHelper {
                 .execute();
         String todayFolderId = todayFolder.getId();
 
-        refresher.publishProgress(progressValue++, numberOfDriveOperations);
+        if (refresher != null)
+            refresher.publishProgress(progressValue++, numberOfDriveOperations);
 
 
         List<File> processedFiles = new ArrayList<>();
@@ -119,11 +122,13 @@ public abstract class DriveServiceHelper {
             fileMetadata.setParents(Collections.singletonList(todayFolderId));
 
             processedFiles.add(driveService.files().create(fileMetadata, fileContent).execute());
-            refresher.publishProgress(progressValue++, numberOfDriveOperations);
+            if (refresher != null)
+                refresher.publishProgress(progressValue++, numberOfDriveOperations);
         }
 
         taskCompletionSource.setResult(fileList.setFiles(processedFiles));
-        refresher.publishProgress(100);
+        if (refresher != null)
+            refresher.publishProgress(100);
         return taskCompletionSource.getTask();
     }
 
@@ -149,14 +154,6 @@ public abstract class DriveServiceHelper {
 
         // nothing has been found
         return null;
-    }
-
-    private static void deleteOldBackups(Drive driveService, String backupFolderId, int retentionDurationDays) throws IOException {
-        String parentFolderId = getBackupFolderId(driveService, backupFolderId);
-        if (parentFolderId == null || "".equals(parentFolderId))
-            return;
-
-
     }
 
     public static FileList getAllBackups(Drive driveService, String folderName) throws IOException {
