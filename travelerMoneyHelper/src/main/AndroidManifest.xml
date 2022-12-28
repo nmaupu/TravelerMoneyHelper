@@ -24,6 +24,17 @@
         android:allowBackup="true">
 
         <receiver android:name=".util.drive.DriveBackupBroadcastReceiver" />
+        <receiver
+            android:name=".util.BootBroadcastReceiver"
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".MainActivity"

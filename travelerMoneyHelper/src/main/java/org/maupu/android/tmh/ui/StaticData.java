@@ -5,6 +5,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import org.joda.time.DateTimeConstants;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.AccountData;
@@ -62,6 +63,11 @@ public abstract class StaticData {
 
     // Keep tracking parameters of statsActivity
     public static boolean showGraph = true;
+
+    // Automatic backup defaults
+    public static int BACKUP_DEFAULT_HOUR_OF_DAY = 22;
+    public static int BACKUP_DEFAULT_DAY_OF_WEEK = DateTimeConstants.SUNDAY;
+    public static int BACKUP_DEFAULT_DAY_OF_MONTH = 1;
 
 
     /**

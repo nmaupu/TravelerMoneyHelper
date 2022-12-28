@@ -29,6 +29,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DriveBackupBroadcastReceiver extends BroadcastReceiver {
+    // private requestCode to use for the broadcast
+    public static final int requestCode = 6000;
+
     @Override
     public void onReceive(@NonNull Context context, Intent intent) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
