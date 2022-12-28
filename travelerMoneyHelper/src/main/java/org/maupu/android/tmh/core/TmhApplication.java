@@ -28,7 +28,7 @@ public class TmhApplication extends Application {
     public static final String APP_NAME = "Traveler Money Helper";
     public static final String APP_NAME_SHORT = "tmh";
     public static final boolean LOGGING = false;
-    public static AlarmManagerHelper alarmManagerHelper = new AlarmManagerHelper();
+    public static AlarmManagerHelper alarmManagerHelper;
     private static Context applicationContext;
     private static DatabaseHelper dbHelper;
 
@@ -37,7 +37,8 @@ public class TmhApplication extends Application {
         super.onCreate();
         TmhApplication.applicationContext = this.getApplicationContext();
         dbHelper = new DatabaseHelper(DatabaseHelper.getPreferredDatabaseName());
-        alarmManagerHelper.registerDriveBackupAlarm(this);
+        alarmManagerHelper = new AlarmManagerHelper(this);
+        alarmManagerHelper.registerDriveBackupAlarm();
     }
 
     public static Context getAppContext() {

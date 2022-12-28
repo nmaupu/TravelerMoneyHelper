@@ -152,6 +152,11 @@
     <string name="exchange_rate_update_from_internet">Mettre à jour le taux de change</string>
     <string name="exchange_rate_update_from_local_operation">Garder la valeur actuelle</string>
     <string name="exchange_rate_update_from_local_currency">Utiliser la valeur de la devise actuelle</string>
+    <string name="backup_notification_waiting_for_network">En attente de connexion</string>
+    <string name="backup_notification_timeout_waiting_for_network">Toujours pas de connexion après le délai d\'attente</string>
+    <string name="backup_notification_backup_in_progress">Sauvegarde en cours</string>
+    <string name="backup_notification_google_not_signed_in">Le compte google n\'est pas connecté!</string>
+    <string name="backup_boot_notification_title">Prochaine sauvegarde</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
@@ -203,6 +208,8 @@
     <string name="pref_drive_delete_old_backups_title">Suppression</string>
     <string name="pref_drive_delete_old_backups_summary">Supprime les backups trop anciens</string>
     <string name="pref_drive_automatic_backup_title">Sauvegardes automatiques</string>
+    <string name="pref_drive_automatic_backup_boot_notification_title">Affiche une notification au démarrage</string>
+    <string name="pref_drive_automatic_backup_boot_notification_summary">Une notification sera affichée au démarrage du téléphone indiquant la prochaine date de sauvegarde</string>
     <string name="dialog_prefs_drive_automatic_backup_title">Sauvegarder sur Google Drive</string>
     <string name="dialog_prefs_drive_automatic_backup_option_never">Jamais</string>
     <string name="dialog_prefs_drive_automatic_backup_option_daily">Une fois par jour</string>

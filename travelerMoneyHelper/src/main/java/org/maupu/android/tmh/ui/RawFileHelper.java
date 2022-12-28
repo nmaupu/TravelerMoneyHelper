@@ -15,7 +15,7 @@ public final class RawFileHelper<T extends Object> {
     private static final Class TAG = RawFileHelper.class;
     public static final String FIELD_SEPARATOR = "|";
     private final Context ctx;
-    private int rawFileId;
+    private final int rawFileId;
     private ICallback<T> listener;
 
     public RawFileHelper(Context ctx, int rawFileId) {

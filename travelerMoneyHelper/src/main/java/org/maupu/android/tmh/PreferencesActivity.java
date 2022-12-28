@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
@@ -39,7 +40,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
-import org.joda.time.DateTime;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
@@ -103,7 +103,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         listDatabases.setOnPreferenceClickListener(this);
         listDatabases.setOnPreferenceChangeListener(this);
 
-        String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
+        //String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
         MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setOnPreferenceChangeListener(this);
         listDatabasesForDeletion.setOnPreferenceClickListener(this);
@@ -127,6 +127,17 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         importDBDialogPreference.setOnPreferenceChangeListener(this);
         importDBDialogPreference.setOnPreferenceClickListener(this);
 
+        /*
+         * drive and backup options
+         */
+        PreferenceManager // Ensuring fields is updated when backup alarm is triggering while inside preferences
+                .getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+                    if (key.equals(StaticData.KEY_AUTOMATIC_BACKUP_NEXT_ALARM_DATE_TIME)) {
+                        setDriveAutomaticBackupSummary(StaticData.getPreferenceValueInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY));
+                    }
+                });
+
         SwitchPreference driveActivationSwitch = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_ACTIVATE);
         driveActivationSwitch.setOnPreferenceClickListener(onPreferenceClickDriveActivate());
         if (driveActivationSwitch.isChecked()) {
@@ -134,6 +145,10 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         } else {
             setEnableDriveBackupPrefs(false);
         }
+
+        // Force retention edit text to allow only numbers
+        EditTextPreference etpDriveRetention = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION);
+        etpDriveRetention.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
 
         CheckBoxPreference cbpDriveDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
         cbpDriveDeleteOld.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -144,12 +159,17 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         Preference driveUpload = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP);
         driveUpload.setOnPreferenceClickListener(onPreferenceClickDriveUpload());
 
+        Preference automaticBackupsBootNotifPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP_BOOT_NOTIFICATION);
+        boolean isNever = (StaticData.getPreferenceValueInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY) == StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER);
+        automaticBackupsBootNotifPreference.setEnabled(driveActivationSwitch.isChecked() && !isNever);
+
         Preference automaticBackupsPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP);
-        setDriveAutomaticBackupSummary(StaticData.getPrefs().getInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY, StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER));
+        setDriveAutomaticBackupSummary(StaticData.getPreferenceValueInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY));
         automaticBackupsPreference.setOnPreferenceClickListener(preference -> {
             DriveAutomaticBackupBottomSheetDialog dlg = new DriveAutomaticBackupBottomSheetDialog((v, dialog, opt) -> {
-                TmhApplication.alarmManagerHelper.registerDriveBackupAlarm(preferencesFragment.requireContext());
+                TmhApplication.alarmManagerHelper.registerDriveBackupAlarm();
                 setDriveAutomaticBackupSummary(opt);
+                automaticBackupsBootNotifPreference.setEnabled(opt != StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER);
                 dialog.dismiss();
             });
             dlg.show(getSupportFragmentManager(), "ModalPrefAutomaticBackupDialog");
@@ -234,6 +254,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
     private void setEnableDriveBackupPrefs(boolean isActivated) {
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP).setEnabled(isActivated);
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP_BOOT_NOTIFICATION).setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_BACKUP_FOLDER).setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_MANUAL_BACKUP).setEnabled(isActivated);
         CheckBoxPreference cbpDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
@@ -245,6 +266,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         Preference pref = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_AUTOMATIC_BACKUP);
         String summary;
         switch (value) {
+            case StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_TEST:
+                summary = "test";
+                break;
             case StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY:
                 summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_daily);
                 break;
@@ -258,9 +282,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 summary = getString(R.string.dialog_prefs_drive_automatic_backup_option_never);
         }
 
-        DateTime nextAlarmDate = TmhApplication.alarmManagerHelper.getNextAlarm();
-        if (nextAlarmDate != null)
-            summary += " (" + TmhApplication.alarmManagerHelper.getNextAlarm().toString() + ")";
+        if (TmhApplication.alarmManagerHelper.getNextAlarmDateTime() != null) {
+            summary += " (" + TmhApplication.alarmManagerHelper.getNextAlarmDateTimeAsString() + ")";
+        }
         pref.setSummary(summary);
     }
 
@@ -379,6 +403,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         setEnableDriveBackupPrefs(false);
                     });
                 }
+                // Disable and cancel alarm as we are not signed in anymore
+                TmhApplication.alarmManagerHelper.disableAndCancelAlarm();
             }
             return true;
         };
@@ -627,6 +653,12 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 // Change category title
                 PreferenceCategory c = preferencesFragment.findPreference(StaticData.PREF_KEY_BACKUP_CATEGORY);
                 c.setTitle(preferencesFragment.getString(R.string.pref_backup_category) + " (" + googleSignInAccount.getEmail() + ")");
+
+                // Set next alarm if needed
+                TmhApplication.alarmManagerHelper.registerDriveBackupAlarm();
+
+                // Set summary for automatic backup is needed
+                setDriveAutomaticBackupSummary(StaticData.getPreferenceValueInt(StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY));
             }
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.

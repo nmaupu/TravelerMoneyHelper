@@ -8,7 +8,6 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import org.maupu.android.tmh.core.TmhApplication;
-import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.util.DateUtil;
 
 import java.io.IOException;
@@ -24,19 +23,19 @@ public abstract class DriveServiceHelper {
      * Upload files to a Google Drive account
      *
      * @param driveService          {@link Drive} object
-     * @param refresher             refresher used to publish progress to the main thread UI
+     * @param notifier              notifier used to publish progress to the underlying caller
      * @param backupFolderName      backup folder name to use for backups and cleanup
      * @param files                 list of files to backup
      * @param retentionDurationDays retention duration. Older backups then retention days will be delete. If retentionDurationDays is <= 0, deletion is disabled
      * @return
      * @throws IOException
      */
-    public static Task<FileList> upload(Drive driveService, AbstractAsyncTask refresher, String backupFolderName, BackupDbFileHelper[] files, int retentionDurationDays) throws IOException {
+    public static Task<FileList> upload(Drive driveService, DriveBackupNotifier notifier, String backupFolderName, BackupDbFileHelper[] files, int retentionDurationDays) throws IOException {
         TaskCompletionSource<FileList> taskCompletionSource = new TaskCompletionSource<>();
         FileList fileList = new FileList();
 
-        if (refresher != null)
-            refresher.publishProgress(0);
+        if (notifier != null)
+            notifier.publishProgress(0);
 
         String backupFolderId = getBackupFolderId(driveService, backupFolderName);
         if (backupFolderId == null) {
@@ -86,8 +85,8 @@ public abstract class DriveServiceHelper {
                     driveService.files()
                             .delete(f.getId())
                             .execute();
-                    if (refresher != null)
-                        refresher.publishProgress(progressValue++, numberOfDriveOperations);
+                    if (notifier != null)
+                        notifier.publishProgress(progressValue++, numberOfDriveOperations);
                 }
             }
             // end deletion old backups
@@ -107,8 +106,8 @@ public abstract class DriveServiceHelper {
                 .execute();
         String todayFolderId = todayFolder.getId();
 
-        if (refresher != null)
-            refresher.publishProgress(progressValue++, numberOfDriveOperations);
+        if (notifier != null)
+            notifier.publishProgress(progressValue++, numberOfDriveOperations);
 
 
         List<File> processedFiles = new ArrayList<>();
@@ -122,13 +121,13 @@ public abstract class DriveServiceHelper {
             fileMetadata.setParents(Collections.singletonList(todayFolderId));
 
             processedFiles.add(driveService.files().create(fileMetadata, fileContent).execute());
-            if (refresher != null)
-                refresher.publishProgress(progressValue++, numberOfDriveOperations);
+            if (notifier != null)
+                notifier.publishProgress(progressValue++, numberOfDriveOperations);
         }
 
         taskCompletionSource.setResult(fileList.setFiles(processedFiles));
-        if (refresher != null)
-            refresher.publishProgress(100);
+        if (notifier != null)
+            notifier.publishProgress(100);
         return taskCompletionSource.getTask();
     }
 

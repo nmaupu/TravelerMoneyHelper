@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.maupu.android.tmh.BuildConfig;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.ui.StaticData;
 
@@ -34,8 +35,15 @@ public class DriveAutomaticBackupBottomSheetDialog extends BottomSheetDialogFrag
         RadioButton rbDaily = v.findViewById(R.id.daily);
         RadioButton rbWeekly = v.findViewById(R.id.weekly);
         RadioButton rbMonthly = v.findViewById(R.id.monthly);
+        RadioButton rbTest = v.findViewById(R.id.test);
+        if (BuildConfig.DEBUG)
+            rbTest.setVisibility(View.VISIBLE);
+        else
+            rbTest.setVisibility(View.GONE);
 
-        if (currentPref == StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER) {
+        if (BuildConfig.DEBUG && currentPref == StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_TEST) {
+            rbTest.setChecked(true);
+        } else if (currentPref == StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER) {
             rbNever.setChecked(true);
         } else if (currentPref == StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY) {
             rbDaily.setChecked(true);
@@ -47,6 +55,8 @@ public class DriveAutomaticBackupBottomSheetDialog extends BottomSheetDialogFrag
             rbNever.setChecked(true);
         }
 
+        if (BuildConfig.DEBUG)
+            rbTest.setOnClickListener(v1 -> savePref(requireView(), StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_TEST));
         rbNever.setOnClickListener(v1 -> savePref(requireView(), StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER));
         rbDaily.setOnClickListener(v1 -> savePref(requireView(), StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY));
         rbWeekly.setOnClickListener(v1 -> savePref(requireView(), StaticData.PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_WEEKLY));

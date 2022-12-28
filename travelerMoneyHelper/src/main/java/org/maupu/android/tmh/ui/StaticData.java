@@ -40,10 +40,12 @@ public abstract class StaticData {
     public static final String PREF_KEY_DRIVE_RETENTION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_retention);
     public static final String PREF_KEY_DRIVE_DELETE_OLD = TmhApplication.getAppContext().getString(R.string.pref_key_drive_delete_old);
     public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup);
+    public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP_BOOT_NOTIFICATION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup_boot_notification);
 
     // Google Drive automatic backups
     public static final String PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY = "pref_drive_automatic_backup_freq";
-    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER = 0;
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_TEST = 0;
+    public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_NEVER = -1;
     public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_DAILY = 2;
     public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_WEEKLY = 3;
     public static final int PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_MONTHLY = 4;
@@ -69,6 +71,7 @@ public abstract class StaticData {
     public static int BACKUP_DEFAULT_DAY_OF_WEEK = DateTimeConstants.SUNDAY;
     public static int BACKUP_DEFAULT_DAY_OF_MONTH = 1;
 
+    public static final String KEY_AUTOMATIC_BACKUP_NEXT_ALARM_DATE_TIME = "automatic_backup_next_alarm_date_time";
 
     /**
      * Allow current account to be invalidated

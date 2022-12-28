@@ -150,26 +150,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
 
         initOerFetcher();
-
-        /*NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(requireContext(), "TMH")
-                .setSmallIcon(R.drawable.tmh_icon_48)
-                .setContentTitle("Test notification")
-                .setContentText("I am a notification test")
-                .setPriority(NotificationCompat.PRIORITY_LOW);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "TMH";
-            String description = "TMH notification channel";
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel("TMH", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
-        notificationManager.notify(1234, notifBuilder.build());*/
     }
 
     @Override

@@ -153,6 +153,11 @@
     <string name="exchange_rate_update_from_internet">Update exchange rate to current</string>
     <string name="exchange_rate_update_from_local_operation">Keep exchange rate as is</string>
     <string name="exchange_rate_update_from_local_currency">Use local currency rate</string>
+    <string name="backup_notification_waiting_for_network">Waiting for network connectivity</string>
+    <string name="backup_notification_timeout_waiting_for_network">Timeout waiting for network</string>
+    <string name="backup_notification_backup_in_progress">Backup in progress</string>
+    <string name="backup_notification_google_not_signed_in">Not signed in to Google account!</string>
+    <string name="backup_boot_notification_title">Next backup schedule</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>
@@ -194,6 +199,7 @@
     <string name="pref_key_drive_retention" translatable="false">drive_retention</string>
     <string name="pref_key_drive_delete_old" translatable="false">drive_delete_old</string>
     <string name="pref_key_drive_automatic_backup" translatable="false">automatic_backup</string>
+    <string name="pref_key_drive_automatic_backup_boot_notification" translatable="false">automatic_backup_boot_notification</string>
 
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
@@ -220,6 +226,8 @@
     <string name="pref_drive_delete_old_backups_title">Delete old backups</string>
     <string name="pref_drive_delete_old_backups_summary">Delete backups if older than retention days</string>
     <string name="pref_drive_automatic_backup_title">Automatic backups</string>
+    <string name="pref_drive_automatic_backup_boot_notification_title">Show a notification on boot</string>
+    <string name="pref_drive_automatic_backup_boot_notification_summary">A notification will be displayed on startup with the next backup date</string>
     <string name="dialog_prefs_drive_automatic_backup_title">Save to Google Drive</string>
     <string name="dialog_prefs_drive_automatic_backup_option_never">Never save automatically</string>
     <string name="dialog_prefs_drive_automatic_backup_option_daily">Backup daily</string>

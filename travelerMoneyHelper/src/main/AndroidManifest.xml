@@ -7,6 +7,8 @@
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!--
     This permission is no longer needed starting from API 29 (android 10)
     but remains because we target an inferior version
@@ -16,6 +18,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:name="org.maupu.android.tmh.core.TmhApplication"
         android:icon="@drawable/tmh_icon_128"
@@ -23,11 +27,11 @@
         android:theme="@style/TmhTheme"
         android:allowBackup="true">
 
-        <receiver android:name=".util.drive.DriveBackupBroadcastReceiver" />
+        <receiver android:name=".util.receiver.DriveBackupBroadcastReceiver" />
         <receiver
-            android:name=".util.BootBroadcastReceiver"
+            android:name=".util.receiver.BootBroadcastReceiver"
             android:exported="false"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
