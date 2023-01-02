@@ -2,8 +2,6 @@ package org.maupu.android.tmh.database;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import org.maupu.android.tmh.core.TmhApplication;
-
 public class StaticPrefsData extends APersistedData {
     public static final String KEY_WITHDRAWAL_CATEGORY = "withdrawalCategory";
     public static final String KEY_CURRENT_SELECTED_CATEGORY = "currentSelectedCategory";
@@ -20,12 +18,14 @@ public class StaticPrefsData extends APersistedData {
                     KEY_STATS_DATE_END + " TEXT NULL" +
                     ")";
 
-    public StaticPrefsData() { super(TABLE_NAME, CREATE_TABLE); }
+    public StaticPrefsData() {
+        super(TABLE_NAME, CREATE_TABLE);
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Creating table if not exist on current db
-        if(newVersion == 14 && oldVersion < 14) {
+        if (oldVersion < 14) {
             this.onCreate(db);
         }
     }

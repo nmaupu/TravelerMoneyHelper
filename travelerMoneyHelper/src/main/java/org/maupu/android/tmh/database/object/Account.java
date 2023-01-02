@@ -109,7 +109,8 @@ public class Account extends BaseObject {
         this.reset();
         int idxId = cursor.getColumnIndexOrThrow(AccountData.KEY_ID);
         int idxName = cursor.getColumnIndexOrThrow(AccountData.KEY_NAME);
-        int idxIconBytes = cursor.getColumnIndexOrThrow(AccountData.KEY_ICON_BYTES);
+        int idxIconBytes = cursor.
+                getColumnIndexOrThrow(AccountData.KEY_ICON_BYTES);
         int idxCurrency = cursor.getColumnIndexOrThrow(AccountData.KEY_ID_CURRENCY);
         int idxBalance = cursor.getColumnIndexOrThrow(AccountData.KEY_BALANCE);
 

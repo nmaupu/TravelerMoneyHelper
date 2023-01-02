@@ -38,14 +38,14 @@ public class AccountData extends APersistedData {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion == 11 && oldVersion < 11)
+        if (oldVersion < 11)
             upgrade11(db, oldVersion, newVersion);
-        else if (newVersion == 15 && oldVersion < 15)
+        else if (oldVersion < 15)
             upgrade15(db, oldVersion, newVersion);
     }
 
     private void upgrade11(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion != 11 || oldVersion >= 11)
+        if (oldVersion >= 11)
             return;
 
         // Adding balance to account and upgrade all account balances
@@ -63,7 +63,7 @@ public class AccountData extends APersistedData {
 
             // Compute all balances for each existing operations (currencyValue is the value of currency operation when inserted)
             // If operation currency is the same as account currency, not ratio is done
-            // Example : for a vietnam account (dong), all operation for this account are summed directly without changing to euro
+            // Example : for a vietnam account (dong), all operations for this account are summed directly without changing to euro
             // Because all operations are already dong. So Balance for this account is in dong
             String query = "select a.*, case when o.amount IS NULL then 0 else (case when o.idCurrency=a.idCurrency then sum(o.amount) else sum(o.amount/o.currencyValue) end) end as _balance from account a LEFT JOIN operation o ON a._id=o.idAccount GROUP BY a._id;";
             Cursor cursor = db.rawQuery(query, null);
@@ -88,7 +88,7 @@ public class AccountData extends APersistedData {
     }
 
     private void upgrade15(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion != 15 || oldVersion >= 15)
+        if (oldVersion >= 15)
             return;
 
         // Copy old icons
