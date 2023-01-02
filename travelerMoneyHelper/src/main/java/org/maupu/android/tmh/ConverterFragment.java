@@ -158,6 +158,10 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         super.onPause();
     }
 
+    @Override
+    public void onAccountChange() {
+    }
+
     private void initOerFetcher() {
         oerFetcher = new OpenExchangeRatesAsyncFetcher(getActivity());
         // init currencies list - set on callback method (async call)

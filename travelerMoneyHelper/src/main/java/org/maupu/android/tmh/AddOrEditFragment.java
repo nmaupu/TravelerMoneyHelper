@@ -50,6 +50,10 @@ public abstract class AddOrEditFragment<T extends BaseObject> extends TmhFragmen
     }
 
     @Override
+    public void onAccountChange() {
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }

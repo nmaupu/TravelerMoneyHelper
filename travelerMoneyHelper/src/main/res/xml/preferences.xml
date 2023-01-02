@@ -31,6 +31,15 @@
             android:key="@string/pref_key_manage_db"
             android:title="@string/pref_db_manager_title"
             android:positiveButtonText="@string/delete" />
+
+        <EditTextPreference
+            android:id="@+id/rename_database"
+            android:defaultValue=""
+            android:dialogMessage="@string/rename_database_dialog_message"
+            android:dialogTitle="@string/rename_database_dialog_title"
+            android:key="@string/pref_key_rename_database"
+            android:summary="@string/rename_database_summary"
+            android:title="@string/rename_database_title" />
     </PreferenceCategory>
 
     <PreferenceCategory

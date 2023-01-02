@@ -38,7 +38,6 @@ import org.maupu.android.tmh.stats.InfoPanel;
 import org.maupu.android.tmh.stats.StatsCategoryValues;
 import org.maupu.android.tmh.stats.StatsData;
 import org.maupu.android.tmh.stats.StatsViewPager;
-import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
@@ -104,15 +103,21 @@ public class StatsFragment extends TmhFragment {
         requireActivity().setTitle(R.string.fragment_title_statistics);
         setupMenu();
 
-        ApplicationDrawer.getInstance().setOnAccountChangeListener(() -> {
-            autoSetDates();
-            statsData.setCatToHighlight(null);
-            resetInputData();
-            rebuildStatsData(true);
-            refreshDisplay();
-        });
-
         return view;
+    }
+
+    @Override
+    public void onAccountChange() {
+        autoSetDates();
+        statsData.setCatToHighlight(null);
+        resetInputData();
+        rebuildStatsData(true);
+        refreshDisplay();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override

@@ -43,6 +43,7 @@ import com.google.api.services.drive.DriveScopes;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
+import org.maupu.android.tmh.database.RenameDatabaseFileException;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.StaticPrefs;
@@ -94,7 +95,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
         preferencesFragment = (PreferencesFragment) getSupportFragmentManager().findFragmentById(R.id.preferences_fragment);
 
-
         EditTextPreference newDatabase = preferencesFragment.findPreference(StaticData.PREF_KEY_NEW_DATABASE);
         newDatabase.setOnPreferenceChangeListener(this);
         newDatabase.setOnPreferenceClickListener(this);
@@ -107,6 +107,10 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setOnPreferenceChangeListener(this);
         listDatabasesForDeletion.setOnPreferenceClickListener(this);
+
+        EditTextPreference etpRenameDatabase = preferencesFragment.findPreference(StaticData.PREF_KEY_RENAME_DATABASE);
+        etpRenameDatabase.setOnPreferenceChangeListener(this);
+        etpRenameDatabase.setOnPreferenceClickListener(this);
 
         refreshDbLists(null);
 
@@ -296,12 +300,12 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
         listDatabases.setEntries(DatabaseHelper.getAllDatabasesListEntries());
         listDatabases.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
-        listDatabases.setValue(PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE));
+        listDatabases.setValue(curDB);
 
         MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setValues(new HashSet<>());
-        listDatabasesForDeletion.setEntries(DatabaseHelper.getAllDatabasesListEntries(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
-        listDatabasesForDeletion.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues(DatabaseHelper.DEFAULT_DATABASE_NAME, curDB));
+        listDatabasesForDeletion.setEntries(DatabaseHelper.getAllDatabasesListEntries(curDB));
+        listDatabasesForDeletion.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues(curDB));
     }
 
     @Override
@@ -377,6 +381,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                     .append(".db")
                     .toString();
             ((EditTextPreference) preference).setText(filename);
+        } else if (StaticData.PREF_KEY_RENAME_DATABASE.equals(preference.getKey())) {
+            ((EditTextPreference) preference).setText(TmhApplication.getDatabaseHelper().getCurrentDbName());
         }
 
         return true;
@@ -518,6 +524,30 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
                 dbPref.setValue(dbName);
             }
+        } else if (StaticData.PREF_KEY_RENAME_DATABASE.equals(preference.getKey())) {
+            try {
+                TmhApplication.getDatabaseHelper().renameCurrentDatabase((String) newValue);
+                TmhApplication.changeOrCreateDatabase((String) newValue, false);
+
+                // Reload like a new db has been chosen
+                ListPreference listDatabases = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
+                StaticData.setPreferenceValueString(StaticData.PREF_KEY_DATABASE, DatabaseHelper.DATABASE_PREFIX + (String) newValue);
+                refreshDbLists(null);
+                onPreferenceChange(listDatabases, newValue);
+                Snackbar.make(preferencesFragment.requireContext(),
+                                preferencesFragment.requireView(),
+                                getString(R.string.database_renamed_successfully),
+                                Snackbar.LENGTH_LONG)
+                        .show();
+            } catch (RenameDatabaseFileException rdfe) {
+                rdfe.printStackTrace();
+                Snackbar.make(
+                                preferencesFragment.requireContext(),
+                                preferencesFragment.requireView(),
+                                getString(R.string.error) + ": " + rdfe.getMessage(),
+                                Snackbar.LENGTH_LONG)
+                        .show();
+            }
         } else if (StaticData.PREF_KEY_OER_EDIT.equals(preference.getKey())) {
             try {
                 if (!"".equals((String) newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String) newValue)) {
@@ -570,7 +600,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             dbPref.setValue(db);
 
             Snackbar.make(findViewById(android.R.id.content),
-                    getString(R.string.database_created_successfuly) + " [" + newValue + "]",
+                    getString(R.string.database_created_successfully) + " [" + newValue + "]",
                     Snackbar.LENGTH_LONG).show();
         } else if (StaticData.PREF_KEY_MANAGE_DB.equals(preference.getKey())) {
             HashSet<String> dbList = (HashSet<String>) newValue;
@@ -595,7 +625,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                             dialog.dismiss();
                             Snackbar.make(
                                     findViewById(android.R.id.content),
-                                    R.string.databases_deleted_successfuly,
+                                    R.string.databases_deleted_successfully,
                                     Snackbar.LENGTH_LONG).show();
                         }).show();
             }
@@ -615,7 +645,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
             // At this stage the StaticData should be loaded from db
             // Selecting correct value or null if undefined
-            CharSequence wcIndex = null;
+            CharSequence wcIndex;
             if (StaticData.getWithdrawalCategory() != null && StaticData.getWithdrawalCategory().getId() != null) {
                 wcIndex = String.valueOf(StaticData.getWithdrawalCategory().getId());
                 catPref.setValue(wcIndex.toString());

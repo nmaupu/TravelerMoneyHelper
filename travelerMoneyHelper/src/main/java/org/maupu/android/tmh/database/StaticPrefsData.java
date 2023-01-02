@@ -25,7 +25,8 @@ public class StaticPrefsData extends APersistedData {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Creating table if not exist on current db
-        if (oldVersion < 14) {
+
+        if (oldVersion < 14 && newVersion >= 14) {
             this.onCreate(db);
         }
     }

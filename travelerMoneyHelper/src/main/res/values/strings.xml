@@ -94,8 +94,9 @@
     <string name="averageByDay_">Average / day</string>
     <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
-    <string name="database_created_successfuly">Database created and selected</string>
-    <string name="databases_deleted_successfuly">Database(s) deleted successfully</string>
+    <string name="database_created_successfully">Database created and selected</string>
+    <string name="databases_deleted_successfully">Database(s) deleted successfully</string>
+    <string name="database_renamed_successfully">Database renamed successfully</string>
     <string name="database_export_failed">Database export failed</string>
     <string name="database">Database</string>
     <string name="new_database">New database</string>
@@ -200,6 +201,7 @@
     <string name="pref_key_drive_delete_old" translatable="false">drive_delete_old</string>
     <string name="pref_key_drive_automatic_backup" translatable="false">automatic_backup</string>
     <string name="pref_key_drive_automatic_backup_boot_notification" translatable="false">automatic_backup_boot_notification</string>
+    <string name="pref_key_rename_database" translatable="false">rename_database</string>
 
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
@@ -233,4 +235,8 @@
     <string name="dialog_prefs_drive_automatic_backup_option_daily">Backup daily</string>
     <string name="dialog_prefs_drive_automatic_backup_option_weekly">Backup weekly</string>
     <string name="dialog_prefs_drive_automatic_backup_option_monthly">Backup monthly</string>
+    <string name="rename_database_dialog_message">Enter a new database name</string>
+    <string name="rename_database_dialog_title">Database name</string>
+    <string name="rename_database_summary">Rename the current database</string>
+    <string name="rename_database_title">Rename database</string>
 </resources>

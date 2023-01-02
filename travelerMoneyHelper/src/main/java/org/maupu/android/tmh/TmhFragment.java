@@ -9,10 +9,14 @@ import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 
 import java.util.Map;
 
-public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
+public abstract class TmhFragment extends Fragment implements IAsyncActivityRefresher, IOnAccountChangeListener {
     public TmhFragment(int contentView) {
         super(contentView);
+        ApplicationDrawer.getInstance().setOnAccountChangeListener(this);
     }
+
+    @Override
+    public abstract void onAccountChange();
 
     public void refreshDisplay() {
         AsyncActivityRefresher refresher = new AsyncActivityRefresher(requireActivity(), this, false, true, true);
@@ -22,14 +26,6 @@ public class TmhFragment extends Fragment implements IAsyncActivityRefresher {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        // Unregister listener so that a remaining one won't be called by error
-        // with a non existent context
-        ApplicationDrawer.getInstance().setOnAccountChangeListener(null);
-        super.onDestroy();
     }
 
     @Override

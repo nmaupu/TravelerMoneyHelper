@@ -17,7 +17,6 @@ import androidx.viewpager.widget.ViewPager;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.dialog.DatePickerDialogFragment;
-import org.maupu.android.tmh.ui.ApplicationDrawer;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.widget.ViewPagerOperationAdapter;
@@ -61,19 +60,20 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
         requireActivity().setTitle(R.string.fragment_title_viewpager_operation);
         setupMenu();
 
-        ApplicationDrawer.getInstance().setOnAccountChangeListener(() -> {
-            Operation dummyOp = new Operation();
-            Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
-            if (autoLast == null)
-                autoLast = Calendar.getInstance().getTime();
-
-            adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
-            adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
-
-            changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
-        });
-
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onAccountChange() {
+        Operation dummyOp = new Operation();
+        Date autoLast = dummyOp.getLastDate(StaticData.getCurrentAccount(), null);
+        if (autoLast == null)
+            autoLast = Calendar.getInstance().getTime();
+
+        adapter = new ViewPagerOperationAdapter(this, ViewPagerOperationAdapter.DEFAULT_COUNT, autoLast); // operations by month
+        adapterRaw = new ViewPagerOperationAdapter(this, 1, null); // all operations at once
+
+        changeOperationsListType(StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS));
     }
 
     @Override

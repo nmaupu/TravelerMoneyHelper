@@ -41,6 +41,7 @@ public abstract class StaticData {
     public static final String PREF_KEY_DRIVE_DELETE_OLD = TmhApplication.getAppContext().getString(R.string.pref_key_drive_delete_old);
     public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup);
     public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP_BOOT_NOTIFICATION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup_boot_notification);
+    public static final String PREF_KEY_RENAME_DATABASE = TmhApplication.getAppContext().getString(R.string.pref_key_rename_database);
 
     // Google Drive automatic backups
     public static final String PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY = "pref_drive_automatic_backup_freq";

@@ -106,13 +106,18 @@ public class TmhApplication extends Application {
     }
 
     public static void changeOrCreateDatabase(String dbName) {
+        changeOrCreateDatabase(dbName, true);
+    }
+
+    public static void changeOrCreateDatabase(String dbName, boolean savePrefs) {
         String name = dbName;
         if (dbName != null && !"".equals(dbName) && !dbName.startsWith(DatabaseHelper.DATABASE_PREFIX)) {
             name = DatabaseHelper.DATABASE_PREFIX + dbName;
         }
 
         // Loading and saving current
-        StaticPrefs.saveCurrentStaticPrefs();
+        if (savePrefs)
+            StaticPrefs.saveCurrentStaticPrefs();
 
         dbHelper.close();
         dbHelper = new DatabaseHelper(name);

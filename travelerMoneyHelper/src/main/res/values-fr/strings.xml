@@ -93,8 +93,9 @@
     <string name="averageByDay_">Moyenne / jour</string>
     <string name="force_update_currency">Forcer màj des taux de conv.</string>
     <string name="date">Date</string>
-    <string name="database_created_successfuly">Base de données créée et selectionnée</string>
-    <string name="databases_deleted_successfuly">Base(s) de données correctement supprimées</string>
+    <string name="database_created_successfully">Base de données créée et selectionnée</string>
+    <string name="databases_deleted_successfully">Base(s) de données correctement supprimées</string>
+    <string name="database_renamed_successfully">Base de données renommée avec succès</string>
     <string name="database_export_failed">Erreur lors de l\'exportation de la base de données</string>
     <string name="database">Base de données</string>
     <string name="new_database">Nouvelle base de données</string>
@@ -215,4 +216,8 @@
     <string name="dialog_prefs_drive_automatic_backup_option_daily">Une fois par jour</string>
     <string name="dialog_prefs_drive_automatic_backup_option_weekly">Une fois par semaine</string>
     <string name="dialog_prefs_drive_automatic_backup_option_monthly">Une fois par mois</string>
+    <string name="rename_database_dialog_message">Entrer un nouveau nom de base de données</string>
+    <string name="rename_database_dialog_title">Nom de la base de données</string>
+    <string name="rename_database_summary">Renommer la base de données courante</string>
+    <string name="rename_database_title">Renommer une base de données</string>
 </resources>

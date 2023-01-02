@@ -16,6 +16,7 @@ import org.maupu.android.tmh.database.object.Operation;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.TmhLogger;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     public static final SimpleDateFormat dateFormatNoHour = new SimpleDateFormat("yyyy-MM-dd");
     public static final String DATABASE_PREFIX = "TravelerMoneyHelper_appdata_";
     public static final String DEFAULT_DATABASE_NAME = DATABASE_PREFIX + "default";
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 17;
     private final List<APersistedData> persistedData = new ArrayList<>();
 
     public DatabaseHelper(String dbName) {
@@ -72,6 +73,25 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     public String getCurrentDbPath() {
         return getDb().getPath();
+    }
+
+    public String getCurrentDbName() {
+        return stripDatabaseFileName(getCurrentDbPath());
+    }
+
+    public void renameCurrentDatabase(String newName) throws RenameDatabaseFileException {
+        String oldDbName = getCurrentDbName();
+        File oldDbFile = new File(getCurrentDbPath());
+        String dbPath = oldDbFile.getParent();
+        File newDbFile = new File(dbPath + "/" + DATABASE_PREFIX + newName);
+        if (!oldDbFile.renameTo(newDbFile)) {
+            throw new RenameDatabaseFileException("Unable to rename database");
+        }
+        File oldDbJournalFile = new File(dbPath + "/" + DATABASE_PREFIX + oldDbName + "-journal");
+        File newDbJournalFile = new File(dbPath + "/" + DATABASE_PREFIX + newName + "-journal");
+        if (!oldDbJournalFile.renameTo(newDbJournalFile)) {
+            throw new RenameDatabaseFileException("Unable to rename database journal file");
+        }
     }
 
     public static String formatDateForSQL(Date date) {
@@ -208,7 +228,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     private static boolean stringIsContainedInArray(String s, String... list) {
         for (int i = 0; i < list.length; i++) {
-            if (s.contains(stripDatabaseFileName(list[i])))
+            if (s.contentEquals(stripDatabaseFileName(list[i])))
                 return true;
         }
         return false;

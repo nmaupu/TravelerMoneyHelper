@@ -38,9 +38,10 @@ public class AccountData extends APersistedData {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 11)
+        if (oldVersion < 11 && newVersion >= 11)
             upgrade11(db, oldVersion, newVersion);
-        else if (oldVersion < 15)
+
+        if (oldVersion < 15 && newVersion >= 15)
             upgrade15(db, oldVersion, newVersion);
     }
 

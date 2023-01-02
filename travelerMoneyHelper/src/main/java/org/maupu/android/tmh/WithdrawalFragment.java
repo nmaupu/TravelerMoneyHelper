@@ -140,6 +140,10 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
         SoftKeyboardHelper.forceShowUp(requireActivity());
     }
 
+    @Override
+    public void onAccountChange() {
+    }
+
     private void updateCurrentCurrencyRateValue() {
         String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
         if (apiKey != null && !"".equals(apiKey)) {

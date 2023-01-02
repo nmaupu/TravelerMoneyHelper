@@ -38,12 +38,13 @@ public class OperationData extends APersistedData {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //super.onUpgrade(db, oldVersion, newVersion);
-        if (oldVersion >= 1 && newVersion == 8) {
+        if (oldVersion >= 1 && newVersion < 8) {
             // Adding column for operation linking
             db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + KEY_LINK_TO + " INTEGER");
         }
 
-        if (newVersion == 16 && oldVersion < 16) {
+
+        if (oldVersion < 16 && newVersion >= 16) {
             // Adding column isCash to determine if an operation is paid by cash or using credit/debit card
             db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + KEY_IS_CASH + " INTEGER NOT NULL DEFAULT 1");
         }

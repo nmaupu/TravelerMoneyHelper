@@ -56,6 +56,10 @@ public abstract class ManageableObjectFragment<T extends BaseObject> extends Tmh
         this.animList = animList;
         this.title = title;
     }
+    
+    @Override
+    public void onAccountChange() {
+    }
 
     @Nullable
     @Override
