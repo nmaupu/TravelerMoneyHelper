@@ -17,16 +17,19 @@ import androidx.preference.PreferenceDialogFragmentCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
+import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.widget.DriveRestoreListViewDateCustomAdaptor;
 import org.maupu.android.tmh.util.drive.DriveServiceHelper;
@@ -41,6 +44,9 @@ public class DriveRestorePreferenceDialogFragmentCompat extends PreferenceDialog
     public static final Class<DriveRestorePreferenceDialogFragmentCompat> TAG = DriveRestorePreferenceDialogFragmentCompat.class;
     private ListView listView;
     private ProgressBar progressBar;
+
+    private GoogleSignInAccount googleSignInAccount;
+    private Drive googleDriveService;
 
     private ActivityResultLauncher<Intent> startForResult;
 
@@ -74,7 +80,7 @@ public class DriveRestorePreferenceDialogFragmentCompat extends PreferenceDialog
         listView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
-        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(requireContext());
+        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(requireContext());
         if (googleSignInAccount != null) {
             GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(requireContext(), Collections.singleton(DriveScopes.DRIVE_FILE));
             googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
@@ -85,7 +91,7 @@ public class DriveRestorePreferenceDialogFragmentCompat extends PreferenceDialog
             } catch (IOException | GeneralSecurityException e) {
                 e.printStackTrace();
             }
-            Drive googleDriveService = new Drive.Builder(
+            googleDriveService = new Drive.Builder(
                     netHttpTransport,
                     GsonFactory.getDefaultInstance(),
                     googleAccountCredential)
@@ -108,12 +114,62 @@ public class DriveRestorePreferenceDialogFragmentCompat extends PreferenceDialog
                 handler.post(() -> {
                     // UI Thread
                     progressBar.setVisibility(View.GONE);
-                    listView.setAdapter(new DriveRestoreListViewDateCustomAdaptor(requireContext(), finalFileList));
+                    listView.setAdapter(new DriveRestoreListViewDateCustomAdaptor(
+                            requireContext(),
+                            finalFileList,
+                            onClickListener));
                     listView.setVisibility(View.VISIBLE);
                 });
             });
         }
     }
+
+    private View.OnClickListener onClickListener = v -> {
+        listView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        File backupFolder = (File) v.getTag();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            String folderName = backupFolder.getName();
+            FileList fileList = null;
+            try {
+                fileList = DriveServiceHelper.getAllBackupFiles(googleDriveService, folderName);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            FileList finalFileList = fileList;
+            String finalFolderName = folderName;
+            handler.post(() -> {
+                // UI Thread
+                if (finalFileList.size() == 0) {
+                    listView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    Snackbar.make(requireContext(), v, getString(R.string.backup_restore_no_content_found), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                progressBar.setVisibility(View.GONE);
+                listView.setAdapter(new DriveRestoreListViewDateCustomAdaptor(
+                        requireContext(),
+                        finalFileList,
+                        v2 -> {
+                            File f = (File) v2.getTag();
+                            SimpleDialog.confirmDialog(
+                                    requireContext(),
+                                    "Are you sure you want to restore " + finalFolderName + "/" + f.getName() + "?",
+                                    (dialog, which) -> {
+                                        // TODO
+                                    }).show();
+                        }));
+                listView.setVisibility(View.VISIBLE);
+            });
+        });
+
+    };
 
     @Override
     public void onDialogClosed(boolean positiveResult) {

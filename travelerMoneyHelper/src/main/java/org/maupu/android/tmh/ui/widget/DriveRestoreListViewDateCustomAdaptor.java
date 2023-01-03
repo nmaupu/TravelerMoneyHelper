@@ -12,30 +12,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import org.maupu.android.tmh.R;
 
-public class DriveRestoreListViewDateCustomAdaptor extends ArrayAdapter<File> implements View.OnClickListener {
-    private int lastPosition = -1;
+public class DriveRestoreListViewDateCustomAdaptor extends ArrayAdapter<File> {
+    private int mLastPosition = -1;
+    private View.OnClickListener mClickListener;
 
     private static class ViewHolder {
         TextView textView;
     }
 
-    public DriveRestoreListViewDateCustomAdaptor(@NonNull Context context, @NonNull FileList fileList) {
+    public DriveRestoreListViewDateCustomAdaptor(@NonNull Context context, @NonNull FileList fileList, View.OnClickListener clickListener) {
         super(context, R.layout.dialog_prefs_drive_restore_dates_list_item, fileList.getFiles());
-    }
-
-    @Override
-    public void onClick(View v) {
-        File data = (File) v.getTag();
-        Snackbar
-                .make(getContext(), v, data.getName(), Snackbar.LENGTH_LONG)
-                .setAction("no action", null)
-                .show();
+        this.mClickListener = clickListener;
     }
 
     @NonNull
@@ -56,13 +48,13 @@ public class DriveRestoreListViewDateCustomAdaptor extends ArrayAdapter<File> im
         }
         resultView = convertView;
 
-        Animation animation = AnimationUtils.loadAnimation(getContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+        Animation animation = AnimationUtils.loadAnimation(getContext(), (position > mLastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         resultView.startAnimation(animation);
-        lastPosition = position;
+        mLastPosition = position;
 
         viewHolder.textView.setText(data.getName());
         viewHolder.textView.setTag(data);
-        viewHolder.textView.setOnClickListener(this);
+        viewHolder.textView.setOnClickListener(this.mClickListener);
 
         return convertView;
     }

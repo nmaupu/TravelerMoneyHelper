@@ -158,6 +158,7 @@
     <string name="backup_notification_backup_in_progress">Sauvegarde en cours</string>
     <string name="backup_notification_google_not_signed_in">Le compte google n\'est pas connecté!</string>
     <string name="backup_boot_notification_title">Prochaine sauvegarde</string>
+    <string name="backup_restore_no_content_found">Ce dossier est vide!</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>

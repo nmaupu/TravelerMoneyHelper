@@ -159,6 +159,7 @@
     <string name="backup_notification_backup_in_progress">Backup in progress</string>
     <string name="backup_notification_google_not_signed_in">Not signed in to Google account!</string>
     <string name="backup_boot_notification_title">Next backup schedule</string>
+    <string name="backup_restore_no_content_found">This folder is empty!</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>

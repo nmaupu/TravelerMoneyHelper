@@ -37,7 +37,7 @@ public abstract class DriveServiceHelper {
         if (notifier != null)
             notifier.publishProgress(0);
 
-        String backupFolderId = getBackupFolderId(driveService, backupFolderName);
+        String backupFolderId = getBackupFolderId(driveService, backupFolderName, true);
         if (backupFolderId == null) {
             Map<String, String> props = new HashMap<>();
             props.put("app", TmhApplication.APP_NAME);
@@ -131,13 +131,16 @@ public abstract class DriveServiceHelper {
         return taskCompletionSource.getTask();
     }
 
-    private static String getBackupFolderId(Drive driveService, String folderName) throws IOException {
+    private static String getBackupFolderId(Drive driveService, String folderName, boolean checkForTmhProperty) throws IOException {
         StringBuilder q = new StringBuilder()
                 .append("mimeType = 'application/vnd.google-apps.folder'")
                 .append(" and ")
-                .append("trashed = false")
-                .append(" and ")
-                .append("properties has {key='app' and value='" + TmhApplication.APP_NAME + "'}");
+                .append("trashed = false");
+        if (checkForTmhProperty) {
+            q
+                    .append(" and ")
+                    .append("properties has {key='app' and value='" + TmhApplication.APP_NAME + "'}");
+        }
         FileList results = driveService.files()
                 .list()
                 .setQ(q.toString())
@@ -155,15 +158,28 @@ public abstract class DriveServiceHelper {
         return null;
     }
 
+
     public static FileList getAllBackups(Drive driveService, String folderName) throws IOException {
+        return getFolderContent(driveService, folderName, true, true);
+    }
+
+    public static FileList getAllBackupFiles(Drive driveService, String folderName) throws IOException {
+        return getFolderContent(driveService, folderName, false, false);
+    }
+
+    private static FileList getFolderContent(Drive driveService, String folderName, boolean listFolders, boolean ensureIsTmhFolder) throws IOException {
         FileList fileList = new FileList();
 
-        String parentFolderId = getBackupFolderId(driveService, folderName);
+        String parentFolderId = getBackupFolderId(driveService, folderName, ensureIsTmhFolder);
         if (parentFolderId == null || "".equals(parentFolderId))
             return fileList;
 
+        String operator = "=";
+        if (!listFolders)
+            operator = "!=";
+
         StringBuilder q = new StringBuilder()
-                .append("mimeType = 'application/vnd.google-apps.folder'")
+                .append("mimeType " + operator + " 'application/vnd.google-apps.folder'")
                 .append(" and ")
                 .append("trashed = false")
                 .append(" and ")
