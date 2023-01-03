@@ -131,9 +131,13 @@
             android:key="@string/pref_key_drive_manual_backup"
             android:summary="@string/pref_drive_manual_upload_summary" />
 
-        <Preference
-            android:title="test"
-            android:key="test"
-            android:summary="test" />
+        <org.maupu.android.tmh.dialog.DriveRestoreDialogPreference
+            android:id="@+id/drive_restore"
+            android:dialogMessage="Restore"
+            android:key="@string/pref_key_drive_restore"
+            android:negativeButtonText="@string/cancel"
+            android:positiveButtonText="ok"
+            android:summary="Restore a backup from Google Drive"
+            android:title="Drive restore" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -40,10 +40,10 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
+import org.jetbrains.annotations.Contract;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.DatabaseHelper;
-import org.maupu.android.tmh.database.RenameDatabaseFileException;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.StaticPrefs;
@@ -180,54 +180,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             return true;
         });
 
-        Preference testPreference = preferencesFragment.findPreference("test");
-        testPreference.setOnPreferenceClickListener(preference -> {
-            GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-            if (googleSignInAccount != null) {
-                GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Collections.singleton(DriveScopes.DRIVE_FILE));
-                googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
-
-                NetHttpTransport netHttpTransport = null;
-                try {
-                    netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
-                } catch (IOException | GeneralSecurityException e) {
-                    e.printStackTrace();
-                }
-                Drive googleDriveService = new Drive.Builder(
-                        netHttpTransport,
-                        GsonFactory.getDefaultInstance(),
-                        googleAccountCredential)
-                        .setApplicationName(TmhApplication.APP_NAME)
-                        .build();
-
-                IAsyncActivityRefresher refresher = new IAsyncActivityRefresher() {
-                    @Override
-                    public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {
-                        try {
-                            DriveServiceHelper.getAllBackups(googleDriveService, "tmh-backups");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public void handleRefreshEnding(Map<Integer, Object> results) {
-
-                    }
-                };
-                AsyncActivityRefresher aar = new AsyncActivityRefresher(
-                        preferencesFragment.requireActivity(),
-                        refresher,
-                        true,
-                        true,
-                        false);
-                aar.execute();
-
-            }
-            return true;
-        });
-
         // google sign in initialization
         // requesting Drive scope that can create/update/delete our own files only (DriveScopes.DRIVE_FILE)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -331,6 +283,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         super.onDestroy();
     }
 
+    @NonNull
     private CharSequence[] getAllCategoriesEntries() {
         CharSequence[] ret;
 
@@ -349,6 +302,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         return ret;
     }
 
+    @NonNull
     private CharSequence[] getAllCategoriesEntryValues() {
         CharSequence[] ret;
 
@@ -369,7 +323,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     }
 
     @Override
-    public boolean onPreferenceClick(Preference preference) {
+    public boolean onPreferenceClick(@NonNull Preference preference) {
         if (StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
             ((EditTextPreference) preference).setText("");
         } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
@@ -388,6 +342,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         return true;
     }
 
+    @NonNull
+    @Contract(pure = true)
     private Preference.OnPreferenceClickListener onPreferenceClickDriveActivate() {
         return preference -> {
             SwitchPreference pref = (SwitchPreference) preference;
@@ -416,6 +372,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         };
     }
 
+    @NonNull
+    @Contract(pure = true)
     private Preference.OnPreferenceClickListener onPreferenceClickDriveUpload() {
         return preference -> {
             Context context = preferencesFragment.requireContext();
@@ -502,7 +460,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     }
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
         if (StaticData.PREF_KEY_DATABASE.equals(preference.getKey())) {
             TmhLogger.d(TAG, "Opening database " + newValue);
             TmhApplication.changeOrCreateDatabase((String) newValue);
@@ -539,12 +497,11 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                 getString(R.string.database_renamed_successfully),
                                 Snackbar.LENGTH_LONG)
                         .show();
-            } catch (RenameDatabaseFileException rdfe) {
-                rdfe.printStackTrace();
-                Snackbar.make(
-                                preferencesFragment.requireContext(),
+            } catch (Exception e) {
+                e.printStackTrace();
+                Snackbar.make(preferencesFragment.requireContext(),
                                 preferencesFragment.requireView(),
-                                getString(R.string.error) + ": " + rdfe.getMessage(),
+                                getString(R.string.error) + ": " + e.getMessage(),
                                 Snackbar.LENGTH_LONG)
                         .show();
             }
@@ -670,7 +627,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         return sharedPreferences.getString(key, "");
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+    private void handleSignInResult(@NonNull Task<GoogleSignInAccount> completedTask) {
         try {
             googleSignInAccount = completedTask.getResult(ApiException.class);
             if (googleSignInAccount != null) {

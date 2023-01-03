@@ -79,18 +79,18 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         return stripDatabaseFileName(getCurrentDbPath());
     }
 
-    public void renameCurrentDatabase(String newName) throws RenameDatabaseFileException {
+    public void renameCurrentDatabase(String newName) throws Exception {
         String oldDbName = getCurrentDbName();
         File oldDbFile = new File(getCurrentDbPath());
         String dbPath = oldDbFile.getParent();
         File newDbFile = new File(dbPath + "/" + DATABASE_PREFIX + newName);
         if (!oldDbFile.renameTo(newDbFile)) {
-            throw new RenameDatabaseFileException("Unable to rename database");
+            throw new Exception("Unable to rename database");
         }
         File oldDbJournalFile = new File(dbPath + "/" + DATABASE_PREFIX + oldDbName + "-journal");
         File newDbJournalFile = new File(dbPath + "/" + DATABASE_PREFIX + newName + "-journal");
         if (!oldDbJournalFile.renameTo(newDbJournalFile)) {
-            throw new RenameDatabaseFileException("Unable to rename database journal file");
+            throw new Exception("Unable to rename database journal file");
         }
     }
 
