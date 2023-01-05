@@ -93,7 +93,8 @@
     <string name="averageByDay_">Moyenne / jour</string>
     <string name="force_update_currency">Forcer màj des taux de conv.</string>
     <string name="date">Date</string>
-    <string name="database_created_successfully">Base de données créée et selectionnée</string>
+    <string name="database_created_and_selected_successfully">Base de données créée et selectionnée</string>
+    <string name="database_created_successfully">Base de données crée avec succès</string>
     <string name="databases_deleted_successfully">Base(s) de données correctement supprimées</string>
     <string name="database_renamed_successfully">Base de données renommée avec succès</string>
     <string name="database_export_failed">Erreur lors de l\'exportation de la base de données</string>
@@ -159,6 +160,9 @@
     <string name="backup_notification_google_not_signed_in">Le compte google n\'est pas connecté!</string>
     <string name="backup_boot_notification_title">Prochaine sauvegarde</string>
     <string name="backup_restore_no_content_found">Ce dossier est vide!</string>
+    <string name="backup_restore_confirmation_message">Êtes-vous sûr(e) de vouloir restaurer</string>
+    <string name="drive_restore_results_title">Sauvegardes disponibles</string>
+    <string name="days">jour(s)</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
@@ -194,19 +198,19 @@
     <string name="pref_title_import_export">Importer / exporter</string>
     <string name="pref_db_manager_title">Gestion des bases de données</string>
     <string name="pref_db_manager_summary">Supprimer une base de données</string>
-    <string name="pref_backup_category">Sauvegarde</string>
+    <string name="pref_backup_category">Sauvegardes</string>
     <string name="pref_drive_activate">Activer Google Drive</string>
     <string name="pref_google_signin_successfully">Connecté avec succès</string>
     <string name="pref_google_signout_successfully">Déconnecté avec succès</string>
     <string name="pref_drive_default_folder">tmh-backups</string>
     <string name="pref_drive_folder_title">Répertoire de sauvegarde</string>
-    <string name="pref_drive_folder_summary">Configurer le répertoire drive pour les sauvegardes</string>
+    <string name="pref_drive_folder_summary">Configurer le répertoire Drive pour les sauvegardes</string>
     <string name="pref_drive_manual_upload_title">Sauvegarder maintenant</string>
-    <string name="pref_drive_manual_upload_summary">Créer une sauvegarde drive maintenant</string>
+    <string name="pref_drive_manual_upload_summary">Créer une sauvegarde Drive maintenant</string>
     <string name="pref_upload_file_to_drive_success">Fichier envoyé avec succès</string>
-    <string name="pref_upload_file_to_drive_error">Erreur lors de l\'envoi de la sauvegarde vers drive</string>
+    <string name="pref_upload_file_to_drive_error">Erreur lors de l\'envoi de la sauvegarde vers Google Drive</string>
     <string name="pref_drive_retention_title">Durée de rétention</string>
-    <string name="pref_drive_retention_summary">Les sauvegardes plus anciennes seront supprimées (jours)</string>
+    <string name="pref_drive_retention_summary">Les sauvegardes plus anciennes seront supprimées</string>
     <string name="pref_drive_delete_old_backups_title">Suppression</string>
     <string name="pref_drive_delete_old_backups_summary">Supprime les backups trop anciens</string>
     <string name="pref_drive_automatic_backup_title">Sauvegardes automatiques</string>
@@ -221,4 +225,7 @@
     <string name="rename_database_dialog_title">Nom de la base de données</string>
     <string name="rename_database_summary">Renommer la base de données courante</string>
     <string name="rename_database_title">Renommer une base de données</string>
+    <string name="pref_drive_restore_dialog_title">Restauration depuis Drive</string>
+    <string name="pref_drive_restore_dialog_summary">Restaurer une sauvegarde depuis Google Drive</string>
+    <string name="pref_drive_restore_dialog_message">Restoration</string>
 </resources>

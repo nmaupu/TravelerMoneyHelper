@@ -94,7 +94,8 @@
     <string name="averageByDay_">Average / day</string>
     <string name="force_update_currency">Force update rates</string>
     <string name="date">Date</string>
-    <string name="database_created_successfully">Database created and selected</string>
+    <string name="database_created_and_selected_successfully">Database created and selected</string>
+    <string name="database_created_successfully">Database created successfully</string>
     <string name="databases_deleted_successfully">Database(s) deleted successfully</string>
     <string name="database_renamed_successfully">Database renamed successfully</string>
     <string name="database_export_failed">Database export failed</string>
@@ -160,6 +161,9 @@
     <string name="backup_notification_google_not_signed_in">Not signed in to Google account!</string>
     <string name="backup_boot_notification_title">Next backup schedule</string>
     <string name="backup_restore_no_content_found">This folder is empty!</string>
+    <string name="backup_restore_confirmation_message">Are you sure you want to restore</string>
+    <string name="drive_restore_results_title">Available backups</string>
+    <string name="days">day(s)</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>
@@ -213,19 +217,19 @@
     <string name="pref_title_import_export">Import / export</string>
     <string name="pref_db_manager_title">Database manager</string>
     <string name="pref_db_manager_summary">Delete a database</string>
-    <string name="pref_backup_category">Save data</string>
+    <string name="pref_backup_category">Backups</string>
     <string name="pref_drive_activate">Activate Google Drive</string>
     <string name="pref_google_signin_successfully">Signed in successfully</string>
     <string name="pref_google_signout_successfully">Signed out successfully</string>
     <string name="pref_drive_default_folder">tmh-backups</string>
     <string name="pref_drive_folder_title">Backup folder</string>
-    <string name="pref_drive_folder_summary">Configure a drive backup folder</string>
+    <string name="pref_drive_folder_summary">Configure a Drive backup folder</string>
     <string name="pref_drive_manual_upload_title">Backup now</string>
-    <string name="pref_drive_manual_upload_summary">Create a drive backup now</string>
+    <string name="pref_drive_manual_upload_summary">Create a Drive backup now</string>
     <string name="pref_upload_file_to_drive_success">File uploaded successfully !</string>
-    <string name="pref_upload_file_to_drive_error">Error uploading file(s) to drive</string>
+    <string name="pref_upload_file_to_drive_error">Error uploading file(s) to Drive</string>
     <string name="pref_drive_retention_title">Retention duration</string>
-    <string name="pref_drive_retention_summary">Older backups will be deleted (days)</string>
+    <string name="pref_drive_retention_summary">Older backups will be deleted</string>
     <string name="pref_drive_retention_default" translatable="false">30</string>
     <string name="pref_drive_delete_old_backups_title">Delete old backups</string>
     <string name="pref_drive_delete_old_backups_summary">Delete backups if older than retention days</string>
@@ -241,4 +245,8 @@
     <string name="rename_database_dialog_title">Database name</string>
     <string name="rename_database_summary">Rename the current database</string>
     <string name="rename_database_title">Rename database</string>
+    `
+    <string name="pref_drive_restore_dialog_title">Drive restore</string>
+    <string name="pref_drive_restore_dialog_summary">Restore a backup from Google Drive</string>
+    <string name="pref_drive_restore_dialog_message">Restore</string>`
 </resources>

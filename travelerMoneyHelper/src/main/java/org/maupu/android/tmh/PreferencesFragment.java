@@ -10,8 +10,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.maupu.android.tmh.dialog.DriveRestoreDialogPreference;
 import org.maupu.android.tmh.dialog.DriveRestorePreferenceDialogFragmentCompat;
-import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
-import org.maupu.android.tmh.dialog.ImportDBPreferenceDialogFragmentCompat;
 
 public class PreferencesFragment extends PreferenceFragmentCompat {
     @Override
@@ -21,11 +19,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onDisplayPreferenceDialog(@NonNull Preference preference) {
-        if (preference instanceof ImportDBDialogPreference) {
-            DialogFragment dialogFragment = ImportDBPreferenceDialogFragmentCompat.newInstance(preference.getKey());
-            dialogFragment.setTargetFragment(this, 0);
-            dialogFragment.show(getParentFragmentManager(), ImportDBPreferenceDialogFragmentCompat.TAG.getName());
-        } else if (preference instanceof DriveRestoreDialogPreference) {
+        if (preference instanceof DriveRestoreDialogPreference) {
             DialogFragment dialogFragment = DriveRestorePreferenceDialogFragmentCompat.newInstance(preference.getKey());
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getParentFragmentManager(), DriveRestorePreferenceDialogFragmentCompat.TAG.getName());

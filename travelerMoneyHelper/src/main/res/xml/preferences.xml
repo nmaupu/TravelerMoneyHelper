@@ -66,25 +66,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_title_import_export"
-        app:icon="@drawable/ic_baseline_import_export_black_24">
-        <EditTextPreference
-            android:id="@+id/export_filename"
-            android:defaultValue="tmh.db"
-            android:enabled="true"
-            android:key="@string/pref_key_export_filename"
-            android:summary="@string/export_db_summary"
-            android:title="@string/export_db_title" />
-        <org.maupu.android.tmh.dialog.ImportDBDialogPreference
-            android:id="@+id/import_db"
-            android:dialogMessage="@string/import_db_summary"
-            android:key="@string/pref_key_import_db"
-            android:negativeButtonText="@string/cancel"
-            android:positiveButtonText="ok"
-            android:summary="@string/import_db_summary"
-            android:title="@string/import_db_title" />
-    </PreferenceCategory>
-    <PreferenceCategory
         android:title="@string/pref_backup_category"
         android:key="@string/pref_key_backup_category"
         app:icon="@drawable/ic_baseline_backup_black_24">
@@ -133,11 +114,10 @@
 
         <org.maupu.android.tmh.dialog.DriveRestoreDialogPreference
             android:id="@+id/drive_restore"
-            android:dialogMessage="Restore"
+            android:dialogMessage="@string/pref_drive_restore_dialog_message"
             android:key="@string/pref_key_drive_restore"
             android:negativeButtonText="@string/cancel"
-            android:positiveButtonText="ok"
-            android:summary="Restore a backup from Google Drive"
-            android:title="Drive restore" />
+            android:summary="@string/pref_drive_restore_dialog_summary"
+            android:title="@string/pref_drive_restore_dialog_title" />
     </PreferenceCategory>
 </PreferenceScreen>

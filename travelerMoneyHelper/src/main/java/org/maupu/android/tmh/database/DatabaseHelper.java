@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.common.io.Files;
+
 import org.maupu.android.tmh.PreferencesActivity;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.object.Account;
@@ -92,6 +94,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
         if (!oldDbJournalFile.renameTo(newDbJournalFile)) {
             throw new Exception("Unable to rename database journal file");
         }
+    }
+
+    public static String getAppDatabasesDirectory() {
+        String dbPath = TmhApplication.getDatabaseHelper().getCurrentDbPath();
+        File f = new File(dbPath);
+        return f.getParent();
     }
 
     public static String formatDateForSQL(Date date) {
@@ -181,12 +189,12 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Get either list of databases ready to be printed to user
-     * or stored database filename depending on prettyPrint parameter.
+     * or stored database filename depending on stripDatabasePrefix parameter.
      *
-     * @param prettyPrint Weather getting all databases ready to be printed to user or raw filenames
+     * @param stripDatabasePrefix Weather getting all databases ready to be printed to user or raw filenames
      * @return List of all available databases
      */
-    public static CharSequence[] getAllDatabases(boolean prettyPrint, String... exceptions) {
+    public static CharSequence[] getAllDatabases(boolean stripDatabasePrefix, String... exceptions) {
         // For an obscure reason, databaseList() returns strange results on some device
         // such as [TravelerMoneyHelper_appdata, TravelerMoneyHelper_appdata_default, 0]
         // instead of [TravelerMoneyHelper_appdata_default]
@@ -202,7 +210,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
             // We also discard journal DB
             if (vals.length == 2 && !vals[1].contains("-journal") && !stringIsContainedInArray(vals[1], exceptions)) {
                 TmhLogger.d(TAG, "Database filename : " + list[i] + " - database name : " + vals[1]);
-                if (prettyPrint)
+                if (stripDatabasePrefix)
                     listEntries.add(vals[1]);
                 else
                     listEntries.add(list[i].toString());
@@ -219,7 +227,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
      * @return Database name
      */
     public static String stripDatabaseFileName(String name) {
-        String[] vals = ((String) name).split(DatabaseHelper.DATABASE_PREFIX);
+        String[] vals = name.split(DatabaseHelper.DATABASE_PREFIX);
         if (vals.length >= 2) {
             return vals[1];
         }
@@ -260,5 +268,21 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
      */
     public static String getDbAbsolutePath(Context context, String dbName) {
         return context.getDatabasePath(dbName).getAbsolutePath();
+    }
+
+    public static boolean isDatabaseExists(String databaseName) {
+        if (databaseName == null || "".equals(databaseName))
+            return false;
+
+        CharSequence[] dbs = getAllDatabases(true);
+
+        String dbNameWithoutExtension = Files.getNameWithoutExtension(databaseName);
+
+        for (int i = 0; i < dbs.length; i++) {
+            if (dbNameWithoutExtension.equals(dbs[i]))
+                return true;
+        }
+
+        return false;
     }
 }

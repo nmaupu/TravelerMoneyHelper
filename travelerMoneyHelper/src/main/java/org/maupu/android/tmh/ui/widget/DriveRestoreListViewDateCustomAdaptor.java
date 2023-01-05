@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -48,8 +46,8 @@ public class DriveRestoreListViewDateCustomAdaptor extends ArrayAdapter<File> {
         }
         resultView = convertView;
 
-        Animation animation = AnimationUtils.loadAnimation(getContext(), (position > mLastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-        resultView.startAnimation(animation);
+        //Animation animation = AnimationUtils.loadAnimation(getContext(), (position > mLastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+        //resultView.startAnimation(animation);
         mLastPosition = position;
 
         viewHolder.textView.setText(data.getName());

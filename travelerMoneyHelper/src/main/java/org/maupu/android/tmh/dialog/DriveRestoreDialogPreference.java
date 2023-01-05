@@ -13,5 +13,6 @@ public class DriveRestoreDialogPreference extends DialogPreference {
     public DriveRestoreDialogPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setDialogLayoutResource(R.layout.dialog_prefs_drive_restore_listview);
+        setPositiveButtonText(null);
     }
 }

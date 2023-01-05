@@ -49,22 +49,19 @@ import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.database.object.StaticPrefs;
 import org.maupu.android.tmh.databinding.ActivityPreferencesBinding;
 import org.maupu.android.tmh.dialog.DriveAutomaticBackupBottomSheetDialog;
-import org.maupu.android.tmh.dialog.ImportDBDialogPreference;
+import org.maupu.android.tmh.dialog.DriveRestoreDialogPreference;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
-import org.maupu.android.tmh.util.DateUtil;
-import org.maupu.android.tmh.util.ImportExportUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 import org.maupu.android.tmh.util.drive.BackupDbFileHelper;
 import org.maupu.android.tmh.util.drive.DriveServiceHelper;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -123,14 +120,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         editTextPreference.setOnPreferenceChangeListener(this);
         editTextPreference.setOnPreferenceClickListener(this);
 
-        EditTextPreference editTextExportDb = preferencesFragment.findPreference(StaticData.PREF_KEY_EXPORT_DB);
-        editTextExportDb.setOnPreferenceChangeListener(this);
-        editTextExportDb.setOnPreferenceClickListener(this);
-
-        ImportDBDialogPreference importDBDialogPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_IMPORT_DB);
-        importDBDialogPreference.setOnPreferenceChangeListener(this);
-        importDBDialogPreference.setOnPreferenceClickListener(this);
-
         /*
          * drive and backup options
          */
@@ -153,6 +142,11 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         // Force retention edit text to allow only numbers
         EditTextPreference etpDriveRetention = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION);
         etpDriveRetention.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
+        etpDriveRetention.setSummary(getString(R.string.pref_drive_retention_summary) + " (" + StaticData.getPreferenceValueString(StaticData.PREF_KEY_DRIVE_RETENTION) + " " + getString(R.string.days) + ")");
+        etpDriveRetention.setOnPreferenceChangeListener((preference, newValue) -> {
+            preference.setSummary(getString(R.string.pref_drive_retention_summary) + " (" + newValue + " " + getString(R.string.days) + ")");
+            return true;
+        });
 
         CheckBoxPreference cbpDriveDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
         cbpDriveDeleteOld.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -177,6 +171,12 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 dialog.dismiss();
             });
             dlg.show(getSupportFragmentManager(), "ModalPrefAutomaticBackupDialog");
+            return true;
+        });
+
+        DriveRestoreDialogPreference driveRestoreDialogPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RESTORE);
+        driveRestoreDialogPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            refreshDbLists(null);
             return true;
         });
 
@@ -216,6 +216,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         CheckBoxPreference cbpDeleteOld = preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_DELETE_OLD);
         cbpDeleteOld.setEnabled(isActivated);
         preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RETENTION).setEnabled(isActivated && cbpDeleteOld.isChecked());
+        preferencesFragment.findPreference(StaticData.PREF_KEY_DRIVE_RESTORE).setEnabled(isActivated);
     }
 
     private void setDriveAutomaticBackupSummary(int value) {
@@ -326,15 +327,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
             ((EditTextPreference) preference).setText("");
-        } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
-            Calendar cal = Calendar.getInstance();
-            String dateString = DateUtil.dateToStringForFilename(cal.getTime());
-            String filename = new StringBuilder(DatabaseHelper.getPreferredDatabaseName())
-                    .append("-")
-                    .append(dateString)
-                    .append(".db")
-                    .toString();
-            ((EditTextPreference) preference).setText(filename);
         } else if (StaticData.PREF_KEY_RENAME_DATABASE.equals(preference.getKey())) {
             ((EditTextPreference) preference).setText(TmhApplication.getDatabaseHelper().getCurrentDbName());
         }
@@ -507,7 +499,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             }
         } else if (StaticData.PREF_KEY_OER_EDIT.equals(preference.getKey())) {
             try {
-                if (!"".equals((String) newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String) newValue)) {
+                if (!"".equals(newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String) newValue)) {
                     // Set value
                     StaticData.setPreferenceValueString(StaticData.PREF_KEY_OER_EDIT, (String) newValue);
                     StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, true);
@@ -538,27 +530,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                 (dialog, which) -> dialog.dismiss())
                         .show();
             }
-        } else if (StaticData.PREF_KEY_EXPORT_DB.equals(preference.getKey())) {
-            TmhLogger.d(TAG, "Calling export db " + newValue);
-            if (!ImportExportUtil.exportCurrentDatabase(newValue.toString(), findViewById(android.R.id.content))) {
-                Snackbar.make(findViewById(android.R.id.content),
-                        getString(R.string.database_export_failed) + " [" + newValue + "]",
-                        Snackbar.LENGTH_LONG).show();
-            }
-        } else if (StaticData.PREF_KEY_IMPORT_DB.equals(preference.getKey())) {
-            // After importing the db, reload it
-            String db = DatabaseHelper.DATABASE_PREFIX + (newValue);
-            TmhApplication.changeOrCreateDatabase(db);
-
-            // Resetting edit text to empty string
-            ListPreference dbPref = preferencesFragment.findPreference(StaticData.PREF_KEY_DATABASE);
-            dbPref.setEntries(DatabaseHelper.getAllDatabasesListEntries());
-            dbPref.setEntryValues(DatabaseHelper.getAllDatabasesListEntryValues());
-            dbPref.setValue(db);
-
-            Snackbar.make(findViewById(android.R.id.content),
-                    getString(R.string.database_created_successfully) + " [" + newValue + "]",
-                    Snackbar.LENGTH_LONG).show();
         } else if (StaticData.PREF_KEY_MANAGE_DB.equals(preference.getKey())) {
             HashSet<String> dbList = (HashSet<String>) newValue;
             if (dbList.size() > 0) {

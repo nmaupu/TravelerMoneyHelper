@@ -1,5 +1,7 @@
 package org.maupu.android.tmh.util.drive;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.api.client.http.FileContent;
@@ -10,6 +12,7 @@ import com.google.api.services.drive.model.FileList;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.util.DateUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -188,5 +191,14 @@ public abstract class DriveServiceHelper {
                 .list()
                 .setQ(q.toString())
                 .execute();
+    }
+
+    @NonNull
+    public static ByteArrayOutputStream downloadFile(@NonNull Drive driveService, @NonNull File file) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        driveService.files()
+                .get(file.getId())
+                .executeMediaAndDownloadTo(output);
+        return output;
     }
 }
