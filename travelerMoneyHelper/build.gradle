@@ -44,6 +44,13 @@ android {
     }
 }
 
+configurations {
+    all {
+        exclude module: 'httpclient'
+        exclude module: 'commons-logging'
+    }
+}
+
 dependencies {
     def legacy_support_version = "1.0.0"
     def viewpager_version = "1.0.0"

@@ -2,7 +2,6 @@ package org.maupu.android.tmh;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -43,6 +42,7 @@ import com.google.api.services.drive.DriveScopes;
 import org.jetbrains.annotations.Contract;
 import org.maupu.android.tmh.core.TmhApplication;
 import org.maupu.android.tmh.database.CategoryData;
+import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.DatabaseHelper;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
@@ -56,6 +56,7 @@ import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
 import org.maupu.android.tmh.ui.async.AbstractOpenExchangeRates;
 import org.maupu.android.tmh.ui.async.AsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.util.TmhLogger;
 import org.maupu.android.tmh.util.drive.BackupDbFileHelper;
 import org.maupu.android.tmh.util.drive.DriveServiceHelper;
@@ -100,7 +101,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         listDatabases.setOnPreferenceClickListener(this);
         listDatabases.setOnPreferenceChangeListener(this);
 
-        //String currentDB = PreferencesActivity.getStringValue(StaticData.PREF_KEY_DATABASE);
         MultiSelectListPreference listDatabasesForDeletion = preferencesFragment.findPreference(StaticData.PREF_KEY_MANAGE_DB);
         listDatabasesForDeletion.setOnPreferenceChangeListener(this);
         listDatabasesForDeletion.setOnPreferenceClickListener(this);
@@ -115,6 +115,27 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         listCategory.setOnPreferenceClickListener(this);
         listCategory.setEntries(getAllCategoriesEntries());
         listCategory.setEntryValues(getAllCategoriesEntryValues());
+
+        ListPreference listCurrency = preferencesFragment.findPreference(StaticData.PREF_KEY_MAIN_CURRENCY);
+        listCurrency.setOnPreferenceChangeListener((preference, newValue) -> {
+            StaticData.setMainCurrency(Integer.parseInt((String) newValue));
+            // we should update all currencies to reflect the change
+            Cursor c = new Currency().fetchAll();
+            c.moveToFirst();
+            Currency[] allCurrencies = new Currency[c.getCount()];
+            int i = 0;
+            do {
+                Currency cur = new Currency();
+                cur.toDTO(c);
+                allCurrencies[i++] = cur;
+            } while (c.moveToNext());
+
+            OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(preferencesFragment.requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
+            rateUpdater.execute(allCurrencies);
+            return true;
+        });
+        listCurrency.setEntries(getAllCurrenciesEntries());
+        listCurrency.setEntryValues(getAllCurrenciesEntryValues());
 
         EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_OER_EDIT);
         editTextPreference.setOnPreferenceChangeListener(this);
@@ -323,6 +344,44 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         return ret;
     }
 
+    @NonNull
+    private CharSequence[] getAllCurrenciesEntries() {
+        CharSequence[] ret;
+
+        Currency dummy = new Currency();
+        Cursor cursor = dummy.fetchAll();
+        cursor.moveToFirst();
+
+        ret = new CharSequence[cursor.getCount()];
+        for (int i = 0; i < cursor.getCount(); i++) {
+            int idxName = cursor.getColumnIndexOrThrow(CurrencyData.KEY_LONG_NAME);
+            ret[i] = cursor.getString(idxName);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return ret;
+    }
+
+    @NonNull
+    private CharSequence[] getAllCurrenciesEntryValues() {
+        CharSequence[] ret;
+
+        Currency dummy = new Currency();
+        Cursor cursor = dummy.fetchAll();
+        cursor.moveToFirst();
+
+        ret = new CharSequence[cursor.getCount()];
+        for (int i = 0; i < cursor.getCount(); i++) {
+            int idxId = cursor.getColumnIndexOrThrow(CurrencyData.KEY_ID);
+            ret[i] = String.valueOf(cursor.getInt(idxId));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return ret;
+    }
+
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
@@ -506,12 +565,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 } else {
                     // not valid
                     StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
-                    SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_oer_apikey_invalid), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_oer_apikey_invalid), (dialog, which) -> dialog.dismiss()).show();
                 }
             } catch (IOException ioe) {
                 // Error, cannot verify api key - network issue
@@ -561,8 +615,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
 
         // Reset stuff
         if (StaticData.PREF_KEY_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey()) ||
-                StaticData.PREF_KEY_IMPORT_DB.equals(preference.getKey())) {
+                StaticData.PREF_KEY_NEW_DATABASE.equals(preference.getKey())) {
             StaticData.invalidateCurrentAccount();
             resetToHome();
         } else if (StaticData.PREF_KEY_MANAGE_DB.equals(preference.getKey())) {

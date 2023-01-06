@@ -51,6 +51,13 @@
             android:key="@string/pref_key_category_withdrawal"
             android:summary="@string/default_category_withdrawal_summary"
             android:title="@string/default_category_withdrawal" />
+
+        <ListPreference
+            android:id="@+id/main_currency"
+            android:defaultValue="0"
+            android:key="@string/pref_key_main_currency"
+            android:summary="@string/pref_main_currency_summary"
+            android:title="@string/pref_main_currency_title" />
     </PreferenceCategory>
 
     <PreferenceCategory

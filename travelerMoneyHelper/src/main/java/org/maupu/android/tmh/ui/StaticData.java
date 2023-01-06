@@ -5,6 +5,9 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.joda.time.DateTimeConstants;
 import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.core.TmhApplication;
@@ -31,8 +34,6 @@ public abstract class StaticData {
     public static final String PREF_KEY_MANAGE_DB = TmhApplication.getAppContext().getString(R.string.pref_key_manage_db);
     public static final String PREF_KEY_WITHDRAWAL_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_category_withdrawal);
     public static final String PREF_KEY_OER_EDIT = TmhApplication.getAppContext().getString(R.string.pref_key_oer_apikey_edit_text);
-    public static final String PREF_KEY_EXPORT_DB = TmhApplication.getAppContext().getString(R.string.pref_key_export_filename);
-    public static final String PREF_KEY_IMPORT_DB = TmhApplication.getAppContext().getString(R.string.pref_key_import_db);
     public static final String PREF_KEY_BACKUP_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_backup_category);
     public static final String PREF_KEY_DRIVE_ACTIVATE = TmhApplication.getAppContext().getString(R.string.pref_key_drive_activate);
     public static final String PREF_KEY_DRIVE_BACKUP_FOLDER = TmhApplication.getAppContext().getString(R.string.pref_key_drive_backup_folder);
@@ -43,6 +44,7 @@ public abstract class StaticData {
     public static final String PREF_KEY_DRIVE_AUTOMATIC_BACKUP_BOOT_NOTIFICATION = TmhApplication.getAppContext().getString(R.string.pref_key_drive_automatic_backup_boot_notification);
     public static final String PREF_KEY_RENAME_DATABASE = TmhApplication.getAppContext().getString(R.string.pref_key_rename_database);
     public static final String PREF_KEY_DRIVE_RESTORE = TmhApplication.getAppContext().getString(R.string.pref_key_drive_restore);
+    public static final String PREF_KEY_MAIN_CURRENCY = TmhApplication.getAppContext().getString(R.string.pref_key_main_currency);
 
     // Google Drive automatic backups
     public static final String PREF_DRIVE_AUTOMATIC_BACKUP_FREQ_KEY = "pref_drive_automatic_backup_freq";
@@ -93,6 +95,7 @@ public abstract class StaticData {
         return statsExceptedCategories;
     }
 
+    @NonNull
     public static Integer[] getStatsExceptedCategoriesToArray() {
         if (statsExceptedCategories == null || statsExceptedCategories.size() == 0)
             return new Integer[0];
@@ -100,6 +103,7 @@ public abstract class StaticData {
         return statsExceptedCategories.toArray(new Integer[0]);
     }
 
+    @Nullable
     public static Date getCurrentOperationDatePickerDate() {
         SharedPreferences prefs = getPrefs();
         Long date = prefs.getLong(PREF_CURRENT_OPERATION_DATE_PICKER, -1);
@@ -110,6 +114,7 @@ public abstract class StaticData {
         return new Date(date);
     }
 
+    @Nullable
     public static Date getDateField(String key) {
         SharedPreferences prefs = getPrefs();
         Long date = prefs.getLong(key, -1);
@@ -143,6 +148,7 @@ public abstract class StaticData {
         getCurrentAccount();
     }
 
+    @Nullable
     public static Account getCurrentAccount() {
         int id = getPreferenceValueInt(PREF_CURRENT_ACCOUNT);
         if (id < 0) {
@@ -179,6 +185,7 @@ public abstract class StaticData {
         return defaultAccountId;
     }
 
+    @Nullable
     public static Category getCurrentSelectedCategory() {
         Integer id = getPreferenceValueInt(PREF_CURRENT_SELECTED_CATEGORY);
 
@@ -217,6 +224,7 @@ public abstract class StaticData {
     }
 
     // Here, we store a String because PreferenceActivity use string as entryValues
+    @Nullable
     public static Category getWithdrawalCategory() {
         String result = getPreferenceValueString(StaticData.PREF_KEY_WITHDRAWAL_CATEGORY);
 
@@ -283,6 +291,7 @@ public abstract class StaticData {
         return mainCurrency;
     }
 
+    @Nullable
     public static Currency getDefaultMainCurrency() {
         Currency cur = new Currency();
         Cursor c = cur.fetchAllOrderBy(CurrencyData.KEY_ID, "ASC");
@@ -323,21 +332,25 @@ public abstract class StaticData {
         return prefs.getString(key, null);
     }
 
+    @NonNull
     public static Integer getPreferenceValueInt(String key) {
         SharedPreferences prefs = getPrefs();
         return prefs.getInt(key, -1);
     }
 
+    @NonNull
     public static Boolean getPreferenceValueBoolean(String key) {
         SharedPreferences prefs = getPrefs();
         return prefs.getBoolean(key, false);
     }
 
+    @NonNull
     public static Long getPreferenceValueLong(String key) {
         SharedPreferences prefs = getPrefs();
         return prefs.getLong(key, -1);
     }
 
+    @NonNull
     public static Float getPreferenceValueFloat(String key) {
         SharedPreferences prefs = getPrefs();
         return prefs.getFloat(key, -1);

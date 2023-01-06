@@ -68,7 +68,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
     }
 
     public boolean updateRateFromOpenExchangeRates(Currency currency, boolean cacheEnabled) throws Exception {
-        StringBuilder url = super.getUrl(ACTION_CURRENCY_LATEST, apiKey);
+        StringBuilder url = AbstractOpenExchangeRates.getUrl(ACTION_CURRENCY_LATEST, apiKey);
         boolean errorOccurred = false;
 
         StringBuilder builderJson = null;

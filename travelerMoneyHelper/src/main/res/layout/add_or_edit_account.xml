@@ -34,6 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|center_vertical"
                     android:clickable="true"
+                    android:focusable="true"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp"
                     android:src="@drawable/tmh_icon_64" />
@@ -45,8 +46,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:ms_floatingLabelText="@string/currency" />
+
+            <Button
+                android:id="@+id/button_choose_currency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_choose_currency" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 </LinearLayout>

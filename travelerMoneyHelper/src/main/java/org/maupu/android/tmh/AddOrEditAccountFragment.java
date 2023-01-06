@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -16,17 +17,23 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.maupu.android.tmh.database.CurrencyData;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Currency;
+import org.maupu.android.tmh.dialog.CurrencyChooserBottomSheetDialog;
 import org.maupu.android.tmh.dialog.FlagChooserBottomSheetDialog;
 import org.maupu.android.tmh.ui.ApplicationDrawer;
+import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.Flag;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
+import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.ui.widget.SimpleIconAdapter;
 import org.maupu.android.tmh.ui.widget.SpinnerManager;
 import org.maupu.android.tmh.util.ImageUtil;
@@ -38,9 +45,15 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     private ImageView imageViewIcon;
     private TextView textViewName;
     private SpinnerManager spinnerCurrencyManager;
+    private Button buttonChooseCurrency;
+
+    private OpenExchangeRatesAsyncFetcher oerFetcher;
+    List<CurrencyISO4217> currenciesList;
+    ArrayAdapter<CurrencyISO4217> currencyAdapter;
+
     private List<ResolveInfo> mApps;
-    private ImageView icon;
     private String[] popupMenuIconNames;
+
     private static final int MENU_ITEM_APPS = 0;
     private static final int MENU_ITEM_FLAGS = 1;
     private static final int MENU_ITEM_DEFAULT = 2;
@@ -55,11 +68,16 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
     protected View initResources(View view) {
         imageViewIcon = view.findViewById(R.id.icon);
         textViewName = view.findViewById(R.id.name);
+        buttonChooseCurrency = view.findViewById(R.id.button_choose_currency);
+
         Spinner spinnerCurrency = view.findViewById(R.id.currency);
-        //spinnerCurrencyManager = new SpinnerManager(spinnerCurrency);
         spinnerCurrencyManager = new SpinnerManager(requireContext(), spinnerCurrency);
-        icon = view.findViewById(R.id.icon);
-        icon.setOnClickListener(v -> createDialogMenu());
+
+        imageViewIcon.setOnClickListener(v -> createDialogMenu());
+
+        buttonChooseCurrency.setOnClickListener(v -> {
+            showBottomSheetCurrencyDialog();
+        });
 
         // Setting spinner currency values
         Currency dummyCurrency = new Currency();
@@ -73,6 +91,9 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
                 getString(R.string.popup_default_icon)};
 
         loadApps();
+
+        initOerFetcher();
+
         return textViewName;
     }
 
@@ -150,8 +171,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
         final FlagChooserBottomSheetDialog bottomSheetDialog = new FlagChooserBottomSheetDialog(adapter, (v, dlg, flag) -> {
             if (flag != null) {
                 // Set flag
-                imageViewIcon.setImageDrawable(
-                        AddOrEditAccountFragment.this.getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
+                imageViewIcon.setImageDrawable(getResources().getDrawable(flag.getDrawableId(Flag.ICON_LARGE_SIZE)));
                 imageViewIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 dlg.dismiss();
             } else {
@@ -159,6 +179,63 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
             }
         });
         bottomSheetDialog.show(requireActivity().getSupportFragmentManager(), "ModalFlagChooserDialog");
+    }
+
+    @NonNull
+    private void showBottomSheetCurrencyDialog() {
+        final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(
+                currencyAdapter,
+                (v, dlg, currency) -> {
+                    // Add this currency to the db
+                    Currency cur = new Currency();
+                    cur.setIsoCode(currency.getCode());
+                    cur.setLongName(currency.getName());
+                    cur.setShortName(currency.getCurrencySymbol());
+                    try {
+                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
+                        updater.setAsyncListener(() -> {
+                            cur.insertOrUpdate();
+                            ApplicationDrawer.getInstance().updateDrawerBadges();
+
+                            Currency dummyCurrency = new Currency();
+                            Cursor c = dummyCurrency.fetchAll();
+                            spinnerCurrencyManager.setAdapter(c, CurrencyData.KEY_LONG_NAME);
+                            spinnerCurrencyManager.setSpinnerPositionCursor(cur.getLongName(), new Currency());
+
+                            refreshDisplay();
+                            dlg.dismiss();
+                        });
+                        updater.execute(cur);
+                    } catch (Exception e) {
+                        Snackbar.make(
+                                getView(),
+                                getString(R.string.error_currency_update) + " - " + e.getMessage(),
+                                Snackbar.LENGTH_SHORT).show();
+                    }
+                });
+        dialog.show(requireActivity().getSupportFragmentManager(), "ModalBottomSheet");
+    }
+
+    private void initOerFetcher() {
+        oerFetcher = new OpenExchangeRatesAsyncFetcher(getActivity());
+        // init currencies list - set on callback method (async call)
+        try {
+            oerFetcher.setAsyncListener(() -> {
+                currenciesList = oerFetcher.getCurrencies();
+                currencyAdapter = new ArrayAdapter<>(requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        currenciesList);
+            });
+            oerFetcher.execute((Currency[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(
+                            requireContext(),
+                            requireView(),
+                            getString(R.string.error) + " err=" + e.getMessage(),
+                            Snackbar.LENGTH_LONG)
+                    .show();
+        }
     }
 
     @Override

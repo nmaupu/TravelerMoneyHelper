@@ -163,6 +163,7 @@
     <string name="backup_restore_confirmation_message">Êtes-vous sûr(e) de vouloir restaurer</string>
     <string name="drive_restore_results_title">Sauvegardes disponibles</string>
     <string name="days">jour(s)</string>
+    <string name="button_choose_currency">Ou choisir une devise standard</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>
@@ -228,4 +229,6 @@
     <string name="pref_drive_restore_dialog_title">Restauration depuis Drive</string>
     <string name="pref_drive_restore_dialog_summary">Restaurer une sauvegarde depuis Google Drive</string>
     <string name="pref_drive_restore_dialog_message">Restoration</string>
+    <string name="pref_main_currency_title">Devise principale</string>
+    <string name="pref_main_currency_summary">Choisissez une devise principale utilisée pour toutes les conversions</string>
 </resources>

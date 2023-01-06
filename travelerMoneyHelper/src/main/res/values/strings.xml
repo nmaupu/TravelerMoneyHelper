@@ -164,6 +164,7 @@
     <string name="backup_restore_confirmation_message">Are you sure you want to restore</string>
     <string name="drive_restore_results_title">Available backups</string>
     <string name="days">day(s)</string>
+    <string name="button_choose_currency">Or choose a standard currency</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>
@@ -208,6 +209,7 @@
     <string name="pref_key_drive_automatic_backup_boot_notification" translatable="false">automatic_backup_boot_notification</string>
     <string name="pref_key_rename_database" translatable="false">rename_database</string>
     <string name="pref_key_drive_restore" translatable="false">drive_restore</string>
+    <string name="pref_key_main_currency" translatable="false">pref_key_main_currency</string>
 
     <string name="pref_import_db_filename">File path to import</string>
     <string name="pref_import_db_name">DB name to create</string>
@@ -245,8 +247,9 @@
     <string name="rename_database_dialog_title">Database name</string>
     <string name="rename_database_summary">Rename the current database</string>
     <string name="rename_database_title">Rename database</string>
-    `
     <string name="pref_drive_restore_dialog_title">Drive restore</string>
     <string name="pref_drive_restore_dialog_summary">Restore a backup from Google Drive</string>
-    <string name="pref_drive_restore_dialog_message">Restore</string>`
+    <string name="pref_drive_restore_dialog_message">Restore</string>
+    <string name="pref_main_currency_title">Main currency</string>
+    <string name="pref_main_currency_summary">Select a main currency used for all conversions</string>
 </resources>

@@ -283,6 +283,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         }
     }
 
+    @NonNull
     private CurrencyChooserBottomSheetDialog createBottomSheetCurrencyDialog(final int type) {
         final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(
                 currencyAdapter,

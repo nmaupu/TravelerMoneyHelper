@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        <fragment
             android:id="@+id/preferences_fragment"
             android:name="org.maupu.android.tmh.PreferencesFragment"
             android:layout_width="match_parent"

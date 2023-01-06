@@ -34,6 +34,12 @@ public class ManageCurrencyFragment extends ManageableObjectFragment<Currency> {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        refreshDisplay(); // useful to refresh everything in case we edit main currency from preference
+    }
+
+    @Override
     public void onDestroy() {
         closeCursorAdapterIfNeeded();
         super.onDestroy();
