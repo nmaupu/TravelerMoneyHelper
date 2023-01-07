@@ -42,6 +42,19 @@
             android:title="@string/rename_database_title" />
     </PreferenceCategory>
 
+
+    <PreferenceCategory
+        android:title="@string/pref_title_api_configuration"
+        app:icon="@drawable/ic_baseline_https_black_24">
+        <EditTextPreference
+            android:id="@+id/oer_api_key"
+            android:defaultValue=""
+            android:enabled="true"
+            android:key="@string/pref_key_oer_apikey_edit_text"
+            android:summary="@string/oer_api_key_summary"
+            android:title="@string/oer_api_key_title" />
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:title="@string/pref_title_default_parameters"
         app:icon="@drawable/ic_baseline_settings_black_24">
@@ -58,18 +71,6 @@
             android:key="@string/pref_key_main_currency"
             android:summary="@string/pref_main_currency_summary"
             android:title="@string/pref_main_currency_title" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pref_title_api_configuration"
-        app:icon="@drawable/ic_baseline_https_black_24">
-        <EditTextPreference
-            android:id="@+id/oer_api_key"
-            android:defaultValue=""
-            android:enabled="true"
-            android:key="@string/pref_key_oer_apikey_edit_text"
-            android:summary="@string/oer_api_key_summary"
-            android:title="@string/oer_api_key_title" />
     </PreferenceCategory>
 
     <PreferenceCategory
