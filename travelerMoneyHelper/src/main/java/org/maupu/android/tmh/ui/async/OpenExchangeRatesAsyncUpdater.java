@@ -75,7 +75,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
         if (cacheEnabled)
             builderJson = loadFromCache(OER_CACHE_CURRENCIES_LATEST, DEFAULT_CACHE_LIMIT_TIME);
 
-        // Load from internet
+        // Load from the internet
         if (builderJson == null || "".equals(builderJson.toString())) {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .connectTimeout(3, TimeUnit.SECONDS)
@@ -165,7 +165,7 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
 
     /**
      * Get date of the last update given by OpenExchangeRates API
-     * Give the latest update in cache if using cache data
+     * Give the latest cached update if using cache data
      *
      * @return date of the last rates' update
      */

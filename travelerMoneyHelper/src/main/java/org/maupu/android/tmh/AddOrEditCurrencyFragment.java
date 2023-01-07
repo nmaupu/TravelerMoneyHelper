@@ -21,7 +21,6 @@ import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
-import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
 import org.maupu.android.tmh.util.TmhLogger;
@@ -29,14 +28,13 @@ import org.maupu.android.tmh.util.TmhLogger;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> implements AdapterView.OnItemClickListener, IAsync {
+public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> implements AdapterView.OnItemClickListener {
     private EditText editTextLongName = null;
     private EditText editTextShortName = null;
     private EditText editTextValue = null;
     private CheckBox checkBoxUpdate = null;
     private AutoCompleteTextView actvCurrencyCode = null;
     private OpenExchangeRatesAsyncFetcher oerFetcher;
-    private boolean apiKeyValid = false;
 
     public AddOrEditCurrencyFragment() {
         super(R.string.fragment_title_edition_currency, R.layout.add_or_edit_currency, new Currency());
@@ -47,9 +45,8 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         super.onViewCreated(view, savedInstanceState);
 
         // Before going further, verify we have api key to open exchange rates api
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
-        this.apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
-        if (apiKey == null || "".equals(apiKey) || !apiKeyValid) {
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY);
+        if (!StaticData.isOerApiKeyValid()) {
             SimpleDialog.errorDialog(
                     requireContext(),
                     getString(R.string.error),
@@ -59,8 +56,6 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
                         Intent intent = new Intent(requireContext(), PreferencesActivity.class);
                         startActivity(intent);
                     }).show();
-        } else {
-            this.apiKeyValid = true;
         }
 
         updateTextViewRate();
@@ -85,8 +80,6 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
 
     @Override
     public void onResume() {
-        apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
-
         if (StaticData.getMainCurrency() == null || StaticData.getMainCurrency().getId() == null) {
             StaticData.setMainCurrency(StaticData.getDefaultMainCurrency().getId());
         }
@@ -98,7 +91,13 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
         oerFetcher = new OpenExchangeRatesAsyncFetcher(requireActivity());
         // init currencies list - set on callback method (async call)
         try {
-            oerFetcher.setAsyncListener(this);
+            oerFetcher.setAsyncListener(() -> {
+                List<CurrencyISO4217> currenciesList = oerFetcher.getCurrencies();
+                ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<>(requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        currenciesList);
+                actvCurrencyCode.setAdapter(adapter);
+            });
             oerFetcher.execute((Currency[]) null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,16 +108,6 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
                             Snackbar.LENGTH_LONG)
                     .show();
         }
-    }
-
-    @Override
-    public void onFinishAsync() {
-        List<CurrencyISO4217> currenciesList = oerFetcher.getCurrencies();
-
-        ArrayAdapter<CurrencyISO4217> adapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                currenciesList);
-        actvCurrencyCode.setAdapter(adapter);
     }
 
     private void updateTextViewRate() {
@@ -201,7 +190,7 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        TmhLogger.d(AddOrEditCurrencyFragment.class, "on item clicked called !");
+        TmhLogger.d(AddOrEditCurrencyFragment.class, "on item click called !");
 
         String isoCode = actvCurrencyCode.getText().toString();
         CurrencyISO4217 cur = oerFetcher.getCurrency(isoCode);
@@ -212,12 +201,12 @@ public class AddOrEditCurrencyFragment extends AddOrEditFragment<Currency> imple
             editTextLongName.setText(cur.getName());
 
             // Need Open Exchange Rates API key to update from server
-            if (apiKeyValid) {
+            if (StaticData.isOerApiKeyValid()) {
                 final Currency dummyCurrency = new Currency();
                 dummyCurrency.setIsoCode(cur.getCode());
 
                 try {
-                    OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
+                    OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY));
                     updater.setAsyncListener(() -> {
                         if (dummyCurrency.getRateCurrencyLinked() == null) {
                             updateTextViewRate();

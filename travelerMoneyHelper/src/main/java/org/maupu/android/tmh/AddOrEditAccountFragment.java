@@ -183,6 +183,20 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
 
     @NonNull
     private void showBottomSheetCurrencyDialog() {
+        // Check for OER api key before going further
+        if (!StaticData.isOerApiKeyValid()) {
+            SimpleDialog.errorDialog(
+                    requireContext(),
+                    getString(R.string.error),
+                    getString(R.string.error_no_oer_api_key),
+                    (dialog, which) -> {
+                        // Display preferences
+                        Intent intent = new Intent(requireContext(), PreferencesActivity.class);
+                        startActivity(intent);
+                    }).show();
+            return;
+        }
+
         final CurrencyChooserBottomSheetDialog dialog = new CurrencyChooserBottomSheetDialog(
                 currencyAdapter,
                 (v, dlg, currency) -> {
@@ -192,7 +206,7 @@ public class AddOrEditAccountFragment extends AddOrEditFragment<Account> {
                     cur.setLongName(currency.getName());
                     cur.setShortName(currency.getCurrencySymbol());
                     try {
-                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
+                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY));
                         updater.setAsyncListener(() -> {
                             cur.insertOrUpdate();
                             ApplicationDrawer.getInstance().updateDrawerBadges();

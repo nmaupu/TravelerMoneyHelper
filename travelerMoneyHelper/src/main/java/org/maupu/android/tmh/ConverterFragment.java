@@ -1,7 +1,5 @@
 package org.maupu.android.tmh;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -71,7 +69,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
      * Currency tools
      **/
     private OpenExchangeRatesAsyncFetcher oerFetcher;
-    private boolean apiKeyValid = false;
 
     /**
      * Adapters
@@ -86,7 +83,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     private Double rate1, rate2, rateConverter;
     private Double convertedAmount1 = 0d, convertedAmount2 = 0d;
     private Date ratesLastUpdate = null;
-    private boolean ratesCacheEnabled = true;
+    private boolean ratesCacheEnabled = false;
 
     public ConverterFragment() {
         super(R.layout.converter);
@@ -95,6 +92,11 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set a default main currency if none has been configured
+        if (StaticData.getMainCurrency() == null || StaticData.getMainCurrency().getId() == null) {
+            StaticData.setMainCurrency(StaticData.getDefaultMainCurrency().getId());
+        }
     }
 
     @Override
@@ -133,22 +135,24 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
 
         // OpenExchangeRate initialization
         // Before going further, verify we have api key to open exchange rates api
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
-        final Context ctx = getActivity();
-        apiKeyValid = StaticData.getPreferenceValueBoolean(StaticData.PREF_OER_VALID);
-        if (apiKey == null || "".equals(apiKey) || !apiKeyValid) {
-            SimpleDialog.errorDialog(ctx, getString(R.string.error), getString(R.string.error_no_oer_api_key), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Display preferences
-                    Intent intent = new Intent(ctx, PreferencesActivity.class);
-                    startActivity(intent);
-                }
-            }).show();
+        if (!StaticData.isOerApiKeyValid()) {
+            SimpleDialog.errorDialog(
+                    requireContext(),
+                    getString(R.string.error),
+                    getString(R.string.error_no_oer_api_key),
+                    (dialog, which) -> {
+                        // Display preferences
+                        Intent intent = new Intent(requireContext(), PreferencesActivity.class);
+                        startActivity(intent);
+                    }).show();
         } else {
-            apiKeyValid = true;
+            initOerFetcher();
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         initOerFetcher();
     }
 
@@ -243,7 +247,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
 
     private void updateConvertedAmounts() {
         // Need Open Exchange Rates API key to update from server
-        if (apiKeyValid) {
+        if (StaticData.isOerApiKeyValid()) {
             if (currency1 != null && currency2 != null) {
                 try {
                     final Double amount = Double.parseDouble(netAmount.getStringText());
@@ -254,7 +258,10 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                         dummyCurrency1.setIsoCode(currency1.getCode());
                         dummyCurrency2.setIsoCode(currency2.getCode());
 
-                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(getActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), ratesCacheEnabled);
+                        OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(
+                                requireActivity(),
+                                StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY),
+                                ratesCacheEnabled);
                         updater.setAsyncListener(() -> {
                             // rates are calculated against main currency
                             rate1 = dummyCurrency1.getRateCurrencyLinked();

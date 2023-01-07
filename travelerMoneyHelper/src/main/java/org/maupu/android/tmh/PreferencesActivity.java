@@ -68,6 +68,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+// TODO check for api key OER !
+
 public class PreferencesActivity extends AppCompatActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private static final Class<PreferencesActivity> TAG = PreferencesActivity.class;
 
@@ -112,7 +114,6 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         refreshDbLists(null);
 
         ListPreference listCategory = preferencesFragment.findPreference(StaticData.PREF_KEY_WITHDRAWAL_CATEGORY);
-        listCategory.setOnPreferenceClickListener(this);
         listCategory.setEntries(getAllCategoriesEntries());
         listCategory.setEntryValues(getAllCategoriesEntryValues());
 
@@ -130,14 +131,17 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                 allCurrencies[i++] = cur;
             } while (c.moveToNext());
 
-            OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(preferencesFragment.requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT));
+            OpenExchangeRatesAsyncUpdater rateUpdater = new OpenExchangeRatesAsyncUpdater(preferencesFragment.requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY));
             rateUpdater.execute(allCurrencies);
             return true;
         });
         listCurrency.setEntries(getAllCurrenciesEntries());
         listCurrency.setEntryValues(getAllCurrenciesEntryValues());
+        if (StaticData.getMainCurrency() != null && StaticData.getMainCurrency().getId() != null) {
+            listCurrency.setValue(String.valueOf(StaticData.getMainCurrency().getId()));
+        }
 
-        EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_OER_EDIT);
+        EditTextPreference editTextPreference = preferencesFragment.findPreference(StaticData.PREF_KEY_OER_API_KEY);
         editTextPreference.setOnPreferenceChangeListener(this);
         editTextPreference.setOnPreferenceClickListener(this);
 
@@ -227,6 +231,8 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         setEnableDriveBackupPrefs(false);
                     }
                 });
+
+
     }
 
     private void setEnableDriveBackupPrefs(boolean isActivated) {
@@ -556,20 +562,20 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                 Snackbar.LENGTH_LONG)
                         .show();
             }
-        } else if (StaticData.PREF_KEY_OER_EDIT.equals(preference.getKey())) {
+        } else if (StaticData.PREF_KEY_OER_API_KEY.equals(preference.getKey())) {
             try {
                 if (!"".equals(newValue) && AbstractOpenExchangeRates.isValidApiKey(this, (String) newValue)) {
                     // Set value
-                    StaticData.setPreferenceValueString(StaticData.PREF_KEY_OER_EDIT, (String) newValue);
-                    StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, true);
+                    StaticData.setPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY, (String) newValue);
+                    StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_API_KEY_VALID, true);
                 } else {
                     // not valid
-                    StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+                    StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_API_KEY_VALID, false);
                     SimpleDialog.errorDialog(this, getString(R.string.error), getString(R.string.error_oer_apikey_invalid), (dialog, which) -> dialog.dismiss()).show();
                 }
             } catch (IOException ioe) {
                 // Error, cannot verify api key - network issue
-                StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+                StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_API_KEY_VALID, false);
                 SimpleDialog.errorDialog(this,
                                 getString(R.string.error),
                                 getString(R.string.error_network_issue) + " err=" + ioe.getMessage(),
@@ -577,7 +583,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                         .show();
             } catch (Exception e) {
                 // Error, cannot verify api key - network issue
-                StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_VALID, false);
+                StaticData.setPreferenceValueBoolean(StaticData.PREF_OER_API_KEY_VALID, false);
                 SimpleDialog.errorDialog(this,
                                 getString(R.string.error),
                                 getString(R.string.error) + " err=" + e.getMessage(),

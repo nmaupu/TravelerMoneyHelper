@@ -207,7 +207,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     }
 
     private void updateCurrentCurrencyRateValue() {
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY);
         if (apiKey != null && !"".equals(apiKey)) {
             Cursor c = smCurrency.getSelectedItem();
             Currency cur = new Currency();
@@ -219,7 +219,7 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
             try {
                 OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(
                         requireActivity(),
-                        StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT),
+                        StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY),
                         true);
                 updater.setAsyncListener(() -> {
                     if (dc.getRateCurrencyLinked() != null) {

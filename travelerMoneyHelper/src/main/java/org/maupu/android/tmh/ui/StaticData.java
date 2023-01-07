@@ -33,7 +33,7 @@ public abstract class StaticData {
     public static final String PREF_KEY_DATABASE = TmhApplication.getAppContext().getString(R.string.pref_key_database);
     public static final String PREF_KEY_MANAGE_DB = TmhApplication.getAppContext().getString(R.string.pref_key_manage_db);
     public static final String PREF_KEY_WITHDRAWAL_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_category_withdrawal);
-    public static final String PREF_KEY_OER_EDIT = TmhApplication.getAppContext().getString(R.string.pref_key_oer_apikey_edit_text);
+    public static final String PREF_KEY_OER_API_KEY = TmhApplication.getAppContext().getString(R.string.pref_key_oer_apikey_edit_text);
     public static final String PREF_KEY_BACKUP_CATEGORY = TmhApplication.getAppContext().getString(R.string.pref_key_backup_category);
     public static final String PREF_KEY_DRIVE_ACTIVATE = TmhApplication.getAppContext().getString(R.string.pref_key_drive_activate);
     public static final String PREF_KEY_DRIVE_BACKUP_FOLDER = TmhApplication.getAppContext().getString(R.string.pref_key_drive_backup_folder);
@@ -60,7 +60,7 @@ public abstract class StaticData {
     public static final String PREF_MAIN_CURRENCY = "main_currency";
     public static final String PREF_STATS_DATE_BEG = "statsDateBeg";
     public static final String PREF_STATS_DATE_END = "statsDateEnd";
-    public static final String PREF_OER_VALID = "oer_apikey_valid";
+    public static final String PREF_OER_API_KEY_VALID = "oer_apikey_valid";
     public static final String PREF_DRIVE_BACKUP_FOLDER_ID = "drive_backup_folder_id";
 
 
@@ -389,5 +389,11 @@ public abstract class StaticData {
         Editor editor = prefs.edit();
         editor.putFloat(key, value);
         editor.commit();
+    }
+
+    public static boolean isOerApiKeyValid() {
+        String apiKey = getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY);
+        Boolean apiKeyValid = getPreferenceValueBoolean(StaticData.PREF_OER_API_KEY_VALID);
+        return apiKeyValid != null && apiKeyValid && apiKey != null && !"".equals(apiKey);
     }
 }

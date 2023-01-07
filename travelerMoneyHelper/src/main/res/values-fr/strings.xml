@@ -14,7 +14,7 @@
     <string name="error_add_object">Impossible d\'ajouter cet objet, il y a des erreurs de saisie !</string>
     <string name="error_no_category">Il n\'y a aucune catégorie définie, merci d\'en créer une !</string>
     <string name="error_currency_update">Erreur lors de la mise à jour de la devis, code introuvable</string>
-    <string name="error_no_oer_api_key">Pour utiliser les devises, vous devez d\'abord créer un compte sur le site suivant : http://openexchangerates.org (c\'est gratuit). Copiez ensuite la clé d\'API (API key) qu\'on vous donnera dans l\'écran qui va suivre.</string>
+    <string name="error_no_oer_api_key">Pour utiliser les devises, vous devez d\'abord créer un compte sur le site suivant : http://openexchangerates.org (c\'est gratuit). Copiez ensuite la clé d\'API (App ID).</string>
     <string name="error_network_issue">Problème réseau ou réseau non fonctionnel, veuillez réessayer</string>
     <string name="error_oer_apikey_invalid">La clé d\'API n\'est pas valide, s\il vous plaît, corrigez</string>
     <string name="fragment_title_edition_category">Edition de categorie</string>

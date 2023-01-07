@@ -145,7 +145,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
     }
 
     private void updateCurrentCurrencyRateValue() {
-        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT);
+        String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY);
         if (apiKey != null && !"".equals(apiKey)) {
             Account accountTo = new Account();
             Cursor cur = spinnerManagerTo.getSelectedItem();
@@ -155,7 +155,7 @@ public class WithdrawalFragment extends TmhFragment implements AdapterView.OnIte
             dc.setIsoCode(accountTo.getCurrency().getIsoCode());
 
             try {
-                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_EDIT), true);
+                OpenExchangeRatesAsyncUpdater updater = new OpenExchangeRatesAsyncUpdater(requireActivity(), StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY), true);
                 updater.setAsyncListener(() -> {
                     if (dc.getRateCurrencyLinked() != null) {
                         currentCurrencyRateValue = dc.getRateCurrencyLinked();
