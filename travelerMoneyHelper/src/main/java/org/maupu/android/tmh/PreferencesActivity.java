@@ -206,10 +206,11 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         });
 
         // google sign in initialization
-        // requesting Drive scope that can create/update/delete our own files only (DriveScopes.DRIVE_FILE)
+        // requesting Drive scope that can create/update/delete files (DriveScopes.DRIVE)
+        // Tried with DRIVE_FILE (only our own app) but in this case, it doesn't work with shared folders...
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
+                .requestScopes(new Scope(DriveScopes.DRIVE))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(preferencesFragment.requireContext(), gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(preferencesFragment.requireContext());
