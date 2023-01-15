@@ -16,6 +16,13 @@ public abstract class TmhFragment extends Fragment implements IAsyncActivityRefr
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // register account change listener again
+        ApplicationDrawer.getInstance().setOnAccountChangeListener(this);
+    }
+
+    @Override
     public abstract void onAccountChange();
 
     public void refreshDisplay() {

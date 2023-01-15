@@ -339,6 +339,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
         // Avoid multiple calls in a raw
         // For that we keep track of the last afterTextChange call and trigger a refresh only
         // when > 10ms
+        // If we don't, 2 events can occur when displaying the view and
+        // 2 requests to Open Exchange Rates will be done in a row
         if (afterTextChangedLastCallMs == -1 || now - afterTextChangedLastCallMs > 10) {
             updateConvertedAmounts();
             refreshDisplay();

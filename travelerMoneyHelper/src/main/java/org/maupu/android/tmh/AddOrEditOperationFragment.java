@@ -206,6 +206,16 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
         updateCurrentCurrencyRateValue();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     private void updateCurrentCurrencyRateValue() {
         String apiKey = StaticData.getPreferenceValueString(StaticData.PREF_KEY_OER_API_KEY);
         if (apiKey != null && !"".equals(apiKey)) {
@@ -471,5 +481,10 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // smCurrency changed and nothing selected
+    }
+
+    @Override
+    public void onAccountChange() {
+        super.onAccountChange();
     }
 }
