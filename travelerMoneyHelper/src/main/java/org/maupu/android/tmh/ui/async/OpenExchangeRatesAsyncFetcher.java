@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.CurrencyISO4217;
 import org.maupu.android.tmh.ui.StaticData;
@@ -34,7 +35,7 @@ public class OpenExchangeRatesAsyncFetcher extends AbstractOpenExchangeRates {
     private List<CurrencyISO4217> currencies = null;
 
     public OpenExchangeRatesAsyncFetcher(FragmentActivity context) {
-        super(context, "Loading currencies");
+        super(context, context.getString(R.string.update_currency_popup_title));
     }
 
     public List<CurrencyISO4217> getCurrencies() {

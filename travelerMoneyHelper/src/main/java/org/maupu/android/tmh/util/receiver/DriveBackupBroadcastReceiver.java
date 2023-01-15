@@ -99,7 +99,7 @@ public class DriveBackupBroadcastReceiver extends BroadcastReceiver {
         // We have a connection, upload can begin
         GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(
                 context.getApplicationContext(),
-                Collections.singleton(DriveScopes.DRIVE_FILE)
+                Collections.singleton(DriveScopes.DRIVE)
         );
         googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
 

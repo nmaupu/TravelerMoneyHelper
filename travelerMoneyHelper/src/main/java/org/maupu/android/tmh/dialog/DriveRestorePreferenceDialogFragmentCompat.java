@@ -81,7 +81,7 @@ public class DriveRestorePreferenceDialogFragmentCompat extends PreferenceDialog
 
         GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(requireContext());
         if (googleSignInAccount != null) {
-            GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(requireContext(), Collections.singleton(DriveScopes.DRIVE_FILE));
+            GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(requireContext(), Collections.singleton(DriveScopes.DRIVE));
             googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
 
             NetHttpTransport netHttpTransport = null;

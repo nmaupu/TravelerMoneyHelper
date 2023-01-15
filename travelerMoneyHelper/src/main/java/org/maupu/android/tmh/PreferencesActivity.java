@@ -33,6 +33,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -73,6 +74,7 @@ import java.util.Map;
 public class PreferencesActivity extends AppCompatActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private static final Class<PreferencesActivity> TAG = PreferencesActivity.class;
 
+    public static final String DRIVE_SCOPE = DriveScopes.DRIVE;
     private ActivityPreferencesBinding binding;
     private PreferencesFragment preferencesFragment;
 
@@ -210,7 +212,7 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
         // Tried with DRIVE_FILE (only our own app) but in this case, it doesn't work with shared folders...
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestScopes(new Scope(DriveScopes.DRIVE))
+                .requestScopes(new Scope(DRIVE_SCOPE))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(preferencesFragment.requireContext(), gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(preferencesFragment.requireContext());
@@ -440,7 +442,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
             if (googleSignInAccount == null)
                 return true;
 
-            GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(context, Collections.singleton(DriveScopes.DRIVE_FILE));
+            GoogleAccountCredential googleAccountCredential = GoogleAccountCredential.usingOAuth2(
+                    context,
+                    Collections.singleton(DRIVE_SCOPE));
             googleAccountCredential.setSelectedAccount(googleSignInAccount.getAccount());
 
             NetHttpTransport netHttpTransport = null;
@@ -494,6 +498,9 @@ public class PreferencesActivity extends AppCompatActivity implements Preference
                                         Snackbar.make(preferencesFragment.requireView(), context.getString(R.string.pref_upload_file_to_drive_error), Snackbar.LENGTH_LONG).show();
                                 })
                                 .addOnFailureListener(e -> Snackbar.make(preferencesFragment.requireView(), context.getString(R.string.pref_upload_file_to_drive_success) + "(" + e + ")", Snackbar.LENGTH_LONG).show());
+                    } catch (UserRecoverableAuthIOException userRecoverableException) {
+                        Intent intent = userRecoverableException.getIntent();
+                        googleSignInStartForResult.launch(intent);
                     } catch (IOException e) {
                         e.printStackTrace();
                         String err = context.getString(R.string.pref_upload_file_to_drive_error) + " (" + e.getMessage() + ")";

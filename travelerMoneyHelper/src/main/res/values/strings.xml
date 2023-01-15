@@ -165,6 +165,8 @@
     <string name="drive_restore_results_title">Available backups</string>
     <string name="days">day(s)</string>
     <string name="button_choose_currency">Or choose a standard currency</string>
+    <string name="update_currency_popup_title">Updating currencies</string>
+    <string name="update_currency_rates_popup_title">Updating rates</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>

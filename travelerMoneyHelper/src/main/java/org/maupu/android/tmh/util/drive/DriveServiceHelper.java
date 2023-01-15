@@ -33,6 +33,7 @@ public abstract class DriveServiceHelper {
      * @return
      * @throws IOException
      */
+    @NonNull
     public static Task<FileList> upload(Drive driveService, DriveBackupNotifier notifier, String backupFolderName, BackupDbFileHelper[] files, int retentionDurationDays) throws IOException {
         TaskCompletionSource<FileList> taskCompletionSource = new TaskCompletionSource<>();
         FileList fileList = new FileList();

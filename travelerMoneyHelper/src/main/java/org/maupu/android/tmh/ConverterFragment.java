@@ -21,7 +21,6 @@ import org.maupu.android.tmh.ui.SimpleDialog;
 import org.maupu.android.tmh.ui.SoftKeyboardHelper;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.ui.async.AbstractAsyncTask;
-import org.maupu.android.tmh.ui.async.IAsync;
 import org.maupu.android.tmh.ui.async.IAsyncActivityRefresher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncFetcher;
 import org.maupu.android.tmh.ui.async.OpenExchangeRatesAsyncUpdater;
@@ -34,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ConverterFragment extends TmhFragment implements View.OnClickListener, IAsync, TextWatcher, IAsyncActivityRefresher {
+public class ConverterFragment extends TmhFragment implements View.OnClickListener, TextWatcher, IAsyncActivityRefresher {
     private static final Class TAG = ConverterFragment.class;
     private static final int TYPE_LEFT = 0;
     private static final int TYPE_RIGHT = 1;
@@ -84,6 +83,8 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     private Double convertedAmount1 = 0d, convertedAmount2 = 0d;
     private Date ratesLastUpdate = null;
     private boolean ratesCacheEnabled = false;
+
+    private Long afterTextChangedLastCallMs = -1l;
 
     public ConverterFragment() {
         super(R.layout.converter);
@@ -145,8 +146,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                         Intent intent = new Intent(requireContext(), PreferencesActivity.class);
                         startActivity(intent);
                     }).show();
-        } else {
-            initOerFetcher();
         }
     }
 
@@ -167,10 +166,20 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     }
 
     private void initOerFetcher() {
-        oerFetcher = new OpenExchangeRatesAsyncFetcher(getActivity());
+        if (oerFetcher != null)
+            return;
+
+        oerFetcher = new OpenExchangeRatesAsyncFetcher(requireActivity());
         // init currencies list - set on callback method (async call)
         try {
-            oerFetcher.setAsyncListener(this);
+            oerFetcher.setAsyncListener(() -> {
+                // Called when initOerFetcher finishes to update
+                currenciesList = oerFetcher.getCurrencies();
+                currencyAdapter = new ArrayAdapter<>(requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        currenciesList);
+                loadPrefs();
+            });
             oerFetcher.execute((Currency[]) null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -203,16 +212,6 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
                 netAmount.setText(((TextView) v).getText().toString());
             }
         }
-    }
-
-    @Override
-    public void onFinishAsync() {
-        // Called when initOerFetcher finishes to update
-        currenciesList = oerFetcher.getCurrencies();
-        currencyAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                currenciesList);
-        loadPrefs();
     }
 
     public void savePrefs() {
@@ -313,7 +312,7 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     private void handleFocus() {
         try {
             Double value = Double.parseDouble(netAmount.getStringText());
-            if (value == null || value == 0d)
+            if (value == 0d)
                 netAmount.setText("");
         } catch (NumberFormatException nfe) {
             // Nothing to do
@@ -336,8 +335,15 @@ public class ConverterFragment extends TmhFragment implements View.OnClickListen
     @Override
     public void afterTextChanged(Editable s) {
         TmhLogger.d(TAG, "afterTextChanged called");
-        updateConvertedAmounts();
-        refreshDisplay();
+        long now = new Date().getTime();
+        // Avoid multiple calls in a raw
+        // For that we keep track of the last afterTextChange call and trigger a refresh only
+        // when > 10ms
+        if (afterTextChangedLastCallMs == -1 || now - afterTextChangedLastCallMs > 10) {
+            updateConvertedAmounts();
+            refreshDisplay();
+            afterTextChangedLastCallMs = now;
+        }
     }
 
     @Override

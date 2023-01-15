@@ -164,6 +164,8 @@
     <string name="drive_restore_results_title">Sauvegardes disponibles</string>
     <string name="days">jour(s)</string>
     <string name="button_choose_currency">Ou choisir une devise standard</string>
+    <string name="update_currency_popup_title">Mise à jour des devises</string>
+    <string name="update_currency_rates_popup_title">Mise à jour des taux de change</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>

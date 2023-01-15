@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.maupu.android.tmh.R;
 import org.maupu.android.tmh.database.object.Currency;
 import org.maupu.android.tmh.ui.StaticData;
 import org.maupu.android.tmh.util.TmhLogger;
@@ -30,15 +31,14 @@ public class OpenExchangeRatesAsyncUpdater extends AbstractOpenExchangeRates {
      */
     private final static String OER_CURRENCIES_TIMESTAMP = "OERCurrenciesTimestamp";
     private String apiKey;
-    private boolean cacheEnabled = true;
+    private boolean cacheEnabled;
 
     public OpenExchangeRatesAsyncUpdater(FragmentActivity context, String apiKey) {
-        super(context, "Updating currencies");
-        this.apiKey = apiKey;
+        this(context, apiKey, true);
     }
 
     public OpenExchangeRatesAsyncUpdater(FragmentActivity context, String apiKey, boolean cacheEnabled) {
-        super(context, "Updating currencies");
+        super(context, context.getString(R.string.update_currency_rates_popup_title));
         this.apiKey = apiKey;
         this.cacheEnabled = cacheEnabled;
     }
