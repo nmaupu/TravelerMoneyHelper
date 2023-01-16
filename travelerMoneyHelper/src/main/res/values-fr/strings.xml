@@ -166,6 +166,8 @@
     <string name="button_choose_currency">Ou choisir une devise standard</string>
     <string name="update_currency_popup_title">Mise à jour des devises</string>
     <string name="update_currency_rates_popup_title">Mise à jour des taux de change</string>
+    <string name="add_or_edit_operation_explode_checkbox_enable_text">Découper cette opération en plus petites</string>
+    <string name="add_or_edit_operation_explode_textview_perday">Par jour</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Ajout</string>

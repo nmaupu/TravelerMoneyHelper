@@ -356,7 +356,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Explode this operation in smaller ones"
+            android:text="@string/add_or_edit_operation_explode_checkbox_enable_text"
             android:layout_weight="2"
             android:checked="false" />
 
@@ -369,14 +369,15 @@
             android:text="1"
             android:gravity="right"
             android:layout_gravity="center"
-            android:enabled="false" />
+            android:enabled="false"
+            tools:ignore="HardcodedText" />
 
 
         <TextView
             android:id="@+id/explode_textview_perday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="per day"
+            android:text="@string/add_or_edit_operation_explode_textview_perday"
             android:gravity="right"
             android:layout_weight="3"
             android:layout_gravity="center"

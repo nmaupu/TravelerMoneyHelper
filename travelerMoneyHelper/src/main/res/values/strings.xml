@@ -167,6 +167,8 @@
     <string name="button_choose_currency">Or choose a standard currency</string>
     <string name="update_currency_popup_title">Updating currencies</string>
     <string name="update_currency_rates_popup_title">Updating rates</string>
+    <string name="add_or_edit_operation_explode_checkbox_enable_text">Explode this operation in smaller ones</string>
+    <string name="add_or_edit_operation_explode_textview_perday">Per day</string>
 
     <!-- Toolbar relative strings -->
     <string name="toolbar_add">Add</string>
