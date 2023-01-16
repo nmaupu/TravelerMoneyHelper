@@ -56,6 +56,15 @@
                     android:maxWidth="30sp"
                     android:minWidth="30sp"
                     tools:layout_editor_absoluteY="0dp" />
+
+                <ImageView
+                    android:id="@+id/imageViewIsGrouped"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:maxWidth="30sp"
+                    android:minWidth="30sp"
+                    tools:layout_editor_absoluteY="0dp" />
             </LinearLayout>
 
         </LinearLayout>

@@ -3,6 +3,7 @@ package org.maupu.android.tmh.ui.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,14 +64,38 @@ public class OperationCursorAdapter extends SimpleCursorAdapter {
             tvAmount.setTextColor(Operation.COLOR_NEGATIVE_AMOUNT);
 
         // Specify if this operation is credit/debit card or not
-        ImageView creditCardView = view.findViewById(R.id.imageViewIsCard);
+        ImageView creditCardImageView = view.findViewById(R.id.imageViewIsCard);
         int idxIsCash = cursor.getColumnIndexOrThrow(OperationData.KEY_IS_CASH);
         boolean isCash = cursor.getInt(idxIsCash) > 0;
         if (!isCash) {
-            creditCardView.setImageResource(R.drawable.ic_baseline_credit_card_black_24);
-            creditCardView.setColorFilter(view.getResources().getColor(R.color.black_overlay));
-            creditCardView.setScaleX(.75f);
-            creditCardView.setScaleY(.75f);
+            creditCardImageView.setImageResource(R.drawable.ic_baseline_credit_card_black_24);
+            creditCardImageView.setColorFilter(view.getResources().getColor(R.color.black_overlay));
+            creditCardImageView.setScaleX(.75f);
+            creditCardImageView.setScaleY(.75f);
+        }
+
+        ImageView groupedImageView = view.findViewById(R.id.imageViewIsGrouped);
+        int idxGroupUUID = cursor.getColumnIndexOrThrow(OperationData.KEY_GROUP_UUID);
+        String uuid = cursor.getString(idxGroupUUID);
+
+        if (uuid != null && !"".equals(uuid)) {
+            // Generate a unique color for this uuid
+            int hashCode = uuid.hashCode();
+            int colorCode = Math.abs(hashCode) % 0x1000000;
+            int color = Color.parseColor("#000000");
+            String colorHexStr = "#" + Integer.toString(colorCode, 16);
+            if (colorHexStr.length() < 7) {
+                colorHexStr = String.format("%-" + 7 + "s", colorHexStr).replace(" ", "0");
+            }
+            try {
+                color = Color.parseColor(colorHexStr);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+            }
+            groupedImageView.setImageResource(R.drawable.baseline_dataset_linked_black_24);
+            groupedImageView.setColorFilter(color);
+            groupedImageView.setScaleX(.75f);
+            groupedImageView.setScaleY(.75f);
         }
     }
 

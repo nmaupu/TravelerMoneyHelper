@@ -12,7 +12,7 @@ import java.util.List;
 public class OperationFilter extends AFilter implements IFilter, Cloneable {
     private static final long serialVersionUID = 1L;
 
-    private List<Integer> categoryIds = new ArrayList<Integer>();
+    private final List<Integer> categoryIds = new ArrayList<>();
     private QueryBuilder queryBuilder;
 
     public OperationFilter(QueryBuilder baseQueryBuilder) {
@@ -51,7 +51,8 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
                 .addSelectToQuery(OperationData.KEY_CURRENCY_VALUE).append(",")
                 .addSelectToQuery(OperationData.KEY_DATE).append(",")
                 .addSelectToQuery(OperationData.KEY_IS_CASH).append(",")
-                .addSelectToQuery(OperationData.KEY_LINK_TO).append(",");
+                .addSelectToQuery(OperationData.KEY_LINK_TO).append(",")
+                .addSelectToQuery(OperationData.KEY_GROUP_UUID).append(",");
 
         qsb.setCurrentTableAlias("c");
         qsb.addSelectToQuery(CurrencyData.KEY_SHORT_NAME).append(",")
@@ -118,6 +119,8 @@ public class OperationFilter extends AFilter implements IFilter, Cloneable {
             qb.append(" AND o." + OperationData.KEY_AMOUNT + " BETWEEN " + valInf + " AND " + valSup);
         } else if (OperationData.KEY_IS_CASH.equals(operand)) {
             qb.append(" AND o." + OperationData.KEY_IS_CASH + " " + strFunc + value);
+        } else if (OperationData.KEY_GROUP_UUID.equals(operand)) {
+            qb.append(" AND o." + OperationData.KEY_GROUP_UUID + " " + strFunc + "\"" + value + "\"");
         }
 
         if (nested)

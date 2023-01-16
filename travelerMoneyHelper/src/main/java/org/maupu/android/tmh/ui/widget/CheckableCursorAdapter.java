@@ -21,10 +21,10 @@ import java.util.Map;
  */
 public class CheckableCursorAdapter extends SimpleCursorAdapter implements OnClickListener {
     private NumberCheckedListener listener = null;
-    private Map<Integer, Boolean> positionsChecked = new HashMap<Integer, Boolean>();
+    private final Map<Integer, Boolean> positionsChecked = new HashMap<>();
     private int numberChecked = 0;
     private Integer[] toCheck;
-    private Map<Integer, Boolean> inits = new HashMap<Integer, Boolean>();
+    private final Map<Integer, Boolean> inits = new HashMap<>();
 
     public CheckableCursorAdapter(Context context, int layout, Cursor c,
                                   String[] from, int[] to) {

@@ -28,10 +28,10 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
 
     public final static int DEFAULT_COUNT = 25;
     private Map<Integer, OperationPagerItem> items = new HashMap<>();
-    private int count;
-    private int offset;
-    private Date startDate;
-    private TmhFragment parentFragment;
+    private final int count;
+    private final int offset;
+    private final Date startDate;
+    private final TmhFragment parentFragment;
 
     public ViewPagerOperationAdapter(TmhFragment parentFragment) {
         this(parentFragment, DEFAULT_COUNT);
@@ -61,7 +61,7 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
                 cal.add(Calendar.MONTH, offset + position);
                 date = cal.getTime();
             }
-            
+
             // if date is null, all operations will be displayed
             opi = new OperationPagerItem(parentFragment, date);
             items.put(position, opi);

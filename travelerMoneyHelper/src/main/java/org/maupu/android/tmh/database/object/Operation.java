@@ -38,6 +38,7 @@ public class Operation extends BaseObject {
     private Double currencyValueOnCreation;
     private String type;
     private Integer linkToOperation;
+    private String groupUUID;
     private OperationFilter filter = new OperationFilter();
 
     public Operation() {
@@ -63,6 +64,7 @@ public class Operation extends BaseObject {
         o.setCurrencyValueOnCreated(currencyValueOnCreation);
         o.setType(type);
         o.setLinkToOperation(linkToOperation);
+        o.setGroupUUID(groupUUID);
         return o;
     }
 
@@ -160,6 +162,13 @@ public class Operation extends BaseObject {
         this.linkToOperation = linkToOperation;
     }
 
+    public void setGroupUUID(String groupUUID) {
+        this.groupUUID = groupUUID;
+    }
+
+    public String getGroupUUID() {
+        return groupUUID;
+    }
 
     public ContentValues createContentValues() {
         ContentValues cv = new ContentValues();
@@ -176,6 +185,7 @@ public class Operation extends BaseObject {
         cv.put(OperationData.KEY_CURRENCY_VALUE, this.getCurrencyValueOnCreated());
         cv.put(OperationData.KEY_LINK_TO, this.getLinkToOperation());
         cv.put(OperationData.KEY_IS_CASH, this.isCash());
+        cv.put(OperationData.KEY_GROUP_UUID, this.getGroupUUID());
 
         return cv;
     }
@@ -198,6 +208,7 @@ public class Operation extends BaseObject {
         int idxCurrencyValueOnCreated = cursor.getColumnIndexOrThrow(OperationData.KEY_CURRENCY_VALUE);
         int idxLinkToOperation = cursor.getColumnIndexOrThrow(OperationData.KEY_LINK_TO);
         int idxIsCash = cursor.getColumnIndexOrThrow(OperationData.KEY_IS_CASH);
+        int idxGroupUUID = cursor.getColumnIndexOrThrow(OperationData.KEY_GROUP_UUID);
 
         Account account = new Account();
         Category category = new Category();
@@ -215,6 +226,8 @@ public class Operation extends BaseObject {
 
             int isCashInt = cursor.getInt(idxIsCash);
             this.setIsCash(isCashInt > 0);
+
+            this.setGroupUUID(cursor.getString(idxGroupUUID));
 
             Cursor tmpCursor;
             tmpCursor = account.fetch(cursor.getInt(idxAccount));
@@ -239,6 +252,15 @@ public class Operation extends BaseObject {
         return super.getFromCache();
     }
 
+    public int deleteAllWithDb(SQLiteDatabase db, String uuid) {
+        return db.delete(getTableName(), OperationData.KEY_GROUP_UUID + "=?", new String[]{uuid});
+    }
+
+    public int deleteAll(String uuid) {
+        return deleteAllWithDb(TmhApplication.getDatabaseHelper().getDb(), uuid);
+    }
+
+    @Override
     public Cursor fetchAll() {
         QueryBuilder qsb = filter.getQueryBuilder().append("ORDER BY o." + OperationData.KEY_DATE + " ASC");
         return TmhApplication.getDatabaseHelper().getDb().rawQuery(qsb.getStringBuilder().toString(), null);
@@ -439,9 +461,7 @@ public class Operation extends BaseObject {
         Date d;
         try {
             d = DateUtil.stringSQLToDate(c.getString(idxDate));
-        } catch (ParseException pe) {
-            d = null;
-        } catch (CursorIndexOutOfBoundsException cioobe) {
+        } catch (ParseException | CursorIndexOutOfBoundsException pe) {
             d = null;
         }
 
@@ -591,6 +611,7 @@ public class Operation extends BaseObject {
         this.account = null;
         this.currencyValueOnCreation = null;
         this.linkToOperation = null;
+        this.groupUUID = null;
     }
 
     @Override
@@ -623,6 +644,7 @@ public class Operation extends BaseObject {
             opLinked.setIsCash(isCash());
             opLinked.setCurrencyValueOnCreated(getCurrencyValueOnCreated());
             opLinked.updateWithoutLink();
+            opLinked.setGroupUUID(getGroupUUID());
         }
 
         return super.update();

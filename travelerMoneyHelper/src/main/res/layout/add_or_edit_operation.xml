@@ -344,4 +344,45 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <include layout="@layout/separator" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/explode_checkbox_enable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Explode this operation in smaller ones"
+            android:layout_weight="2"
+            android:checked="false" />
+
+        <EditText
+            android:id="@+id/explode_edittext_numdays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_weight="2"
+            android:text="1"
+            android:gravity="right"
+            android:layout_gravity="center"
+            android:enabled="false" />
+
+
+        <TextView
+            android:id="@+id/explode_textview_perday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="per day"
+            android:gravity="right"
+            android:layout_weight="3"
+            android:layout_gravity="center"
+            android:layout_marginEnd="5sp"
+            android:enabled="false" />
+
+    </LinearLayout>
+
 </LinearLayout>

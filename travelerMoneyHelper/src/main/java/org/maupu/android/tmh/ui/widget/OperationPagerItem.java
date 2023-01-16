@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import org.maupu.android.tmh.AddOrEditOperationFragment;
 import org.maupu.android.tmh.MainActivity;
 import org.maupu.android.tmh.R;
@@ -45,13 +47,13 @@ import java.util.Set;
 public class OperationPagerItem implements OnClickListener, NumberCheckedListener, IAsyncActivityRefresher {
     private static final Class TAG = OperationPagerItem.class;
 
-    private TmhFragment parentFragment;
-    private View view;
-    private Date date;
+    private final TmhFragment parentFragment;
+    private final View view;
+    private final Date date;
     private Button editButton;
     private Button deleteButton;
     private ListView listView;
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
     private ImageView imageViewIcon;
     private TextView textViewAccountName;
     private TextView textViewTitleMonth;
@@ -61,7 +63,7 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
     private TextView textViewBalance;
     private TextView textViewTotalCard;
 
-    public OperationPagerItem(TmhFragment parentFragment, Date date) {
+    public OperationPagerItem(@NonNull TmhFragment parentFragment, Date date) {
         this.date = date;
         this.parentFragment = parentFragment;
         this.inflater = parentFragment.getLayoutInflater();
@@ -232,12 +234,12 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         }
 
         if (this.date != null) {
-            SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM");
+            SimpleDateFormat sdfMonth = new SimpleDateFormat("MMMM", Locale.US);
             String dateString = sdfMonth.format(this.date);
             TmhLogger.d(TAG, "OperationPagerItem - month displayed : " + dateString);
             textViewTitleMonth.setText(dateString);
 
-            SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+            SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy", Locale.US);
             dateString = sdfYear.format(this.date);
             textViewTitleYear.setText(dateString);
         } else {

@@ -8,7 +8,9 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -22,6 +24,8 @@ import com.polyak.iconswitch.IconSwitch;
 
 import org.maupu.android.tmh.database.CategoryData;
 import org.maupu.android.tmh.database.CurrencyData;
+import org.maupu.android.tmh.database.OperationData;
+import org.maupu.android.tmh.database.filter.AFilter;
 import org.maupu.android.tmh.database.object.Account;
 import org.maupu.android.tmh.database.object.Category;
 import org.maupu.android.tmh.database.object.Currency;
@@ -39,9 +43,11 @@ import org.maupu.android.tmh.util.ImageUtil;
 import org.maupu.android.tmh.util.NumberUtil;
 import org.maupu.android.tmh.util.TmhLogger;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.UUID;
 
 public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, TextWatcher, AdapterView.OnItemSelectedListener {
     private int mYear;
@@ -72,6 +78,11 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     private Button buttonToday;
     private IconSwitch switchCreditDebitCard;
     private TextView switchCreditDebitCardTextView;
+
+    private CheckBox explodeCheckBoxEnable;
+    private TextView explodeTextViewPerDay;
+    private EditText explodeEditTextNumDays;
+
     private static final String PLUS = "+";
     private static final String MINUS = "-";
 
@@ -134,7 +145,13 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 radioButtonExchangeRateUpdate.setChecked(true);
             }
         });
-
+        explodeEditTextNumDays = view.findViewById(R.id.explode_edittext_numdays);
+        explodeTextViewPerDay = view.findViewById(R.id.explode_textview_perday);
+        explodeCheckBoxEnable = view.findViewById(R.id.explode_checkbox_enable);
+        explodeCheckBoxEnable.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            explodeEditTextNumDays.setEnabled(isChecked);
+            explodeTextViewPerDay.setEnabled(isChecked);
+        });
 
         // Set spinners content
         Cursor c;
@@ -282,6 +299,34 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
                 // Updating
                 linearLayoutRateUpdater.setVisibility(View.VISIBLE);
                 radioButtonExchangeRateKeepFromOperation.setChecked(true);
+
+                if (obj.getGroupUUID() != null) {
+                    // Updating obj so that it regroup all operations
+                    Operation dummy = new Operation();
+                    dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_GROUP_UUID, obj.getGroupUUID());
+                    Cursor c = dummy.fetchAll(); // Fetch all filtered ordered by date ASC
+                    obj.setAmount(0d);
+                    c.moveToFirst();
+                    int num = 0;
+                    do {
+                        int idxDate = c.getColumnIndexOrThrow(OperationData.KEY_DATE);
+                        int idxAmount = c.getColumnIndexOrThrow(OperationData.KEY_AMOUNT);
+
+                        if (num == 0) {
+                            try {
+                                obj.setDate(DateUtil.stringSQLToDate(c.getString(idxDate)));
+                            } catch (ParseException pe) {
+                            }
+                        }
+
+                        obj.setAmount(obj.getAmount() + c.getDouble(idxAmount));
+                        num++;
+                    } while (c.moveToNext());
+
+                    explodeCheckBoxEnable.setChecked(true);
+                    explodeEditTextNumDays.setText(String.valueOf(num));
+                }
+
                 d = obj.getDate();
             } else {
                 // New operation - set date and time to now by default
@@ -486,5 +531,85 @@ public class AddOrEditOperationFragment extends AddOrEditFragment<Operation> imp
     @Override
     public void onAccountChange() {
         super.onAccountChange();
+    }
+
+    @Override
+    protected boolean saveOrEdit(boolean returnToPreviousFragment) {
+        boolean validated = validate();
+        String explodeNumDaysStr = explodeEditTextNumDays.getText().toString();
+        int explodeNumDays = 1;
+        try {
+            explodeNumDays = Integer.parseInt(explodeNumDaysStr);
+        } catch (NumberFormatException nfe) {
+        }
+
+        // explode this operation into multiple ones
+        if (validated && (
+                (explodeCheckBoxEnable.isChecked() && explodeNumDays > 1) ||
+                        (getObj() != null && getObj().getGroupUUID() != null))
+        ) {
+            fieldsToBaseObject(getObj());
+
+            String uuid = UUID.randomUUID().toString();
+            Double amountPerDay = getObj().getAmount() / explodeNumDays;
+
+            if (getObj().getId() == null) {
+                // Create operations
+                createExplodedOperations(uuid, amountPerDay, explodeNumDays);
+                if (returnToPreviousFragment) {
+                    requireActivity().onBackPressed();
+                }
+            } else if (getObj().getGroupUUID() != null) { // update with existing uuid
+                final int finalExplodeNumDays = explodeNumDays;
+                final double finalAmountPerDay = amountPerDay;
+                SimpleDialog.confirmDialog(getContext(), getString(R.string.confirm_modification), (dialog, which) -> {
+                    String currentUUID = getObj().getGroupUUID();
+                    // Delete old grouped operations
+                    new Operation().deleteAll(currentUUID);
+
+                    int lambdaExplodeNumDays = finalExplodeNumDays;
+                    double lambdaAmountPerDay = finalAmountPerDay;
+                    if (!explodeCheckBoxEnable.isChecked() || finalExplodeNumDays == 1) {
+                        currentUUID = null;
+                        lambdaExplodeNumDays = 1;
+                        lambdaAmountPerDay = getObj().getAmount();
+                    }
+                    createExplodedOperations(currentUUID, lambdaAmountPerDay, lambdaExplodeNumDays);
+                    if (returnToPreviousFragment) {
+                        requireActivity().onBackPressed();
+                    }
+                }).show();
+            } else if (getObj().getGroupUUID() == null) { // update but no uuid yet
+                int finalExplodeNumDays = explodeNumDays;
+                SimpleDialog.confirmDialog(getContext(), getString(R.string.confirm_modification), (dialog, which) -> {
+                    getObj().delete();
+                    createExplodedOperations(uuid, amountPerDay, finalExplodeNumDays);
+                    if (returnToPreviousFragment) {
+                        requireActivity().onBackPressed();
+                    }
+                }).show();
+            }
+        } else if (validated) {
+            return super.saveOrEdit(returnToPreviousFragment);
+        } else {
+            SimpleDialog.errorDialog(requireActivity(), getString(R.string.error), getString(R.string.error_add_object)).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void createExplodedOperations(String uuid, double amountPerDay, int numDays) {
+        for (int i = 0; i < numDays; i++) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(getObj().getDate());
+            cal.add(Calendar.HOUR, i * 24);
+
+            Operation dummy = (Operation) getObj().copy();
+            dummy.setGroupUUID(uuid);
+            dummy.setAmount(amountPerDay);
+            dummy.setDate(cal.getTime());
+            dummy.insert();
+        }
     }
 }

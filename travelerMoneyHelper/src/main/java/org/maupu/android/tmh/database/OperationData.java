@@ -14,7 +14,7 @@ public class OperationData extends APersistedData {
     // Store also a copy of currency value for each operation
     public static final String KEY_CURRENCY_VALUE = "currencyValue";
     public static final String KEY_LINK_TO = "idOperationLinked";
-
+    public static final String KEY_GROUP_UUID = "groupUUID";
 
     public static final String TABLE_NAME = "operation";
     private static final String CREATE_TABLE =
@@ -28,7 +28,8 @@ public class OperationData extends APersistedData {
                     KEY_ID_CATEGORY + " INTEGER NOT NULL," +
                     KEY_ID_CURRENCY + " INTEGER NOT NULL," +
                     KEY_CURRENCY_VALUE + " REAL," +
-                    KEY_LINK_TO + " INTEGER" +
+                    KEY_LINK_TO + " INTEGER," +
+                    KEY_GROUP_UUID + " TEXT DEFAULT NULL" +
                     ")";
 
     public OperationData() {
@@ -43,10 +44,13 @@ public class OperationData extends APersistedData {
             db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + KEY_LINK_TO + " INTEGER");
         }
 
-
         if (oldVersion < 16 && newVersion >= 16) {
             // Adding column isCash to determine if an operation is paid by cash or using credit/debit card
             db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + KEY_IS_CASH + " INTEGER NOT NULL DEFAULT 1");
+        }
+
+        if (oldVersion < 19 && newVersion >= 19) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + KEY_GROUP_UUID + " TEXT DEFAULT NULL");
         }
     }
 }
