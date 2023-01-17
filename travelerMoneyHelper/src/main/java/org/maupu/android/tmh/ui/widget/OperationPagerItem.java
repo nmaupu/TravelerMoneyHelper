@@ -39,6 +39,7 @@ import org.maupu.android.tmh.util.TmhLogger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -144,8 +145,30 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                 ((MainActivity) parentFragment.requireActivity()).changeFragment(AddOrEditOperationFragment.class, true, bundle);
             }
         } else if (v.getId() == R.id.button_delete) {
+            // Counting objects to delete
+            Map<String, Integer> nbObjects = new HashMap<>();
+            for (Integer pos : posChecked) {
+                Cursor cursor = (Cursor) listView.getItemAtPosition(pos);
+                obj.toDTO(cursor);
+                if (obj.getGroupUUID() != null && nbObjects.get(obj.getGroupUUID()) == null) {
+                    Operation dummy = new Operation();
+                    dummy.getFilter().addFilter(AFilter.FUNCTION_EQUAL, OperationData.KEY_GROUP_UUID, obj.getGroupUUID());
+                    nbObjects.put(obj.getGroupUUID(), dummy.fetchAll().getCount());
+                } else if (obj.getGroupUUID() == null) {
+                    Integer c = nbObjects.get("null");
+                    if (c == null)
+                        c = 0;
+                    nbObjects.put("null", ++c);
+                }
+            }
+
+            int totalObjsCount = 0;
+            for (String key : nbObjects.keySet()) {
+                totalObjsCount += nbObjects.get(key);
+            }
+
             SimpleDialog.confirmDialog(parentFragment.getContext(),
-                    parentFragment.getString(R.string.manageable_obj_del_confirm_question),
+                    parentFragment.getString(R.string.manageable_obj_del_confirm_question) + " (" + totalObjsCount + ")",
                     (dialog, which) -> {
                         String errMessage = parentFragment.getString(R.string.manageable_obj_del_error);
                         boolean err = false;
@@ -161,7 +184,9 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
                             SimpleDialog.errorDialog(parentFragment.getContext(), parentFragment.getString(R.string.error), errMessage).show();
 
                         dialog.dismiss();
-                        refreshDisplay();
+                        // Refresh current + left and right panes in case we are deleting operations
+                        // on more than one month (possible with exploded operations)
+                        parentFragment.refreshDisplay();
                     }).show();
         }
     }
@@ -412,7 +437,6 @@ public class OperationPagerItem implements OnClickListener, NumberCheckedListene
         // Disable buttons if needed
         initButtons();
     }
-
 
     @Override
     public Map<Integer, Object> handleRefreshBackground(AbstractAsyncTask asyncTask) {

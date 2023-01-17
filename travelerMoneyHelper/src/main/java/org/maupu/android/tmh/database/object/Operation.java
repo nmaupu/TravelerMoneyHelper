@@ -665,6 +665,9 @@ public class Operation extends BaseObject {
             opLinked.deleteWithoutLink();
         }
 
+        if (getGroupUUID() != null)
+            return deleteAll(getGroupUUID()) > 0;
+        
         return super.delete();
     }
 

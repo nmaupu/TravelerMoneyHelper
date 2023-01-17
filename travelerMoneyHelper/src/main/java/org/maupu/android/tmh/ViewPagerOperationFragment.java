@@ -185,7 +185,7 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
 
     @Override
     public void refreshDisplay() {
-        ((ViewPagerOperationAdapter) viewpager.getAdapter()).refreshItemView(currentPosition);
+        ((ViewPagerOperationAdapter) viewpager.getAdapter()).refreshItemView(currentPosition, false);
     }
 
     // Not used
@@ -219,17 +219,18 @@ public class ViewPagerOperationFragment extends TmhFragment implements ViewPager
     }
 
     public void setViewpagerAdapter(ViewPagerOperationAdapter adapter) {
-        if (viewpager != null) {
-            if (StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS) == LIST_BY_MONTH) {
-                this.adapter = adapter;
-            } else {
-                this.adapterRaw = adapter;
-            }
+        if (viewpager == null)
+            return;
 
-            viewpager.setAdapter(adapter);
-            currentPosition = adapter.getCount() / 2;
-            viewpager.setCurrentItem(currentPosition);
+        if (StaticData.getPreferenceValueInt(STATIC_DATA_LIST_STATUS) == LIST_BY_MONTH) {
+            this.adapter = adapter;
+        } else {
+            this.adapterRaw = adapter;
         }
+
+        viewpager.setAdapter(adapter);
+        currentPosition = adapter.getCount() / 2;
+        viewpager.setCurrentItem(currentPosition);
     }
 
     public void onDateSet(int year, int monthOfYear, int dayOfMonth) {

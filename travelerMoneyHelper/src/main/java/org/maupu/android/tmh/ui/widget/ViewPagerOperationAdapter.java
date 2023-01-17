@@ -94,10 +94,11 @@ public class ViewPagerOperationAdapter extends PagerAdapter {
         return count;
     }
 
-    public void refreshItemView(int position) {
+    public void refreshItemView(int position, boolean onlyLeftAndRight) {
         // Refreshing previous, current and next pages
         doRefreshItemView(position - 1);
-        doRefreshItemView(position);
+        if (!onlyLeftAndRight)
+            doRefreshItemView(position);
         doRefreshItemView(position + 1);
     }
 
